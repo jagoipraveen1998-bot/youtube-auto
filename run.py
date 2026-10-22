@@ -48,7 +48,7 @@ def fmt_ts(seconds: float) -> str:
     return f"{s // 3600}:{s // 60 % 60:02d}:{s % 60:02d}" if s >= 3600 else f"{s // 60:02d}:{s % 60:02d}"
 
 
-def build_description(script: dict, chapters: list[tuple[float, str]], used_pexels: bool,
+def build_description(script: dict, chapters: list[tuple[float, str]], footage: str,
                       channel: str) -> str:
     parts = [script["description"].strip(), "", "Chapters"]
     parts += [f"{fmt_ts(t)} {name}" for t, name in chapters]
@@ -58,8 +58,8 @@ def build_description(script: dict, chapters: list[tuple[float, str]], used_pexe
         parts += [f"- {s['title']} ({s['source']}) {s['link']}" for s in sources]
     parts += ["", f"Subscribe to {channel} for a daily news update.",
               "Narration is an AI-generated voice; script prepared with AI from public news reports."]
-    if used_pexels:
-        parts.append("Stock footage: Pexels (pexels.com)")
+    if footage:
+        parts.append(f"Stock footage: {footage} ({footage.lower()}.com)")
     tags = [t for t in script.get("tags", []) if " " not in t.strip()][:2]
     parts += ["", " ".join(["#news"] + [f"#{t.strip('#')}" for t in tags])]
     return "\n".join(parts)
@@ -98,7 +98,7 @@ def main() -> None:
     # 3-5. Voice + visuals + render, one segment at a time
     from autotube.visuals import get_clips
     parts, chapters, elapsed = [], [], 0.0
-    used_ids: set[int] = set()
+    used_ids: set = set()
     first_clip = None
     stories = script["stories"]
     plan = [("intro", "Intro", script["intro"], None)]
@@ -140,7 +140,9 @@ def main() -> None:
     bg = video.grab_frame(first_clip, OUT / "parts" / "thumb_bg.jpg") if first_clip else None
     thumb = graphics.thumbnail(OUT / "thumbnail.jpg", script["thumbnail_text"], channel, lang, bg,
                                date_text.upper())
-    description = build_description(script, chapters, bool(used_ids), channel)
+    from autotube.visuals import provider
+    footage = provider()[0] if used_ids and provider() else ""
+    description = build_description(script, chapters, footage, channel)
     (OUT / "description.txt").write_text(description, encoding="utf-8")
 
     # 6. Upload

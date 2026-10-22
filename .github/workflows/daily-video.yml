@@ -1,0 +1,78 @@
+name: Daily YouTube video
+
+on:
+  schedule:
+    - cron: "20 1 * * *"    # every day at 01:20 UTC = 6:50 AM India time
+  workflow_dispatch:         # "Run workflow" button for manual runs
+    inputs:
+      mode:
+        description: "What to do"
+        type: choice
+        default: full
+        options:
+          - full          # make the video and upload it
+          - no-upload     # make the video only (download it from the run page)
+          - sample        # test run with a built-in sample script
+
+permissions:
+  contents: write            # lets the run save data/history.json
+
+concurrency:
+  group: daily-video
+  cancel-in-progress: false
+
+jobs:
+  make-video:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install ffmpeg and fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg fonts-noto-core fonts-dejavu-core > /dev/null
+
+      - name: Install Python packages
+        run: pip install -q -r requirements.txt
+
+      - name: Make (and upload) the video
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'full' }}
+        run: |
+          case "$MODE" in
+            sample)    python run.py --sample ;;
+            no-upload) python run.py --no-upload ;;
+            *)         python run.py ;;
+          esac
+
+      - name: Keep the video for 3 days (download from this run's page)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: video-${{ github.run_number }}
+          path: |
+            output/video.mp4
+            output/thumbnail.jpg
+            output/description.txt
+            output/script.json
+          retention-days: 3
+          if-no-files-found: ignore
+
+      - name: Save history (so stories are never repeated)
+        if: success()
+        run: |
+          git config user.name "autotube-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/history.json
+          git diff --cached --quiet || (git commit -m "History: $(date -u +%F)" && git push)

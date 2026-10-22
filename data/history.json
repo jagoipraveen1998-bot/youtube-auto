@@ -1,4 +1,19 @@
 {
-  "used_links": [],
-  "videos": []
+  "used_links": [
+    "https://www.thehindu.com/news/national/face-off-with-china-continues-at-multiple-locations-along-arunachal-border-itbp-d-g/article71612994.ece",
+    "https://www.thehindu.com/news/national/prime-minister-narendra-modi-meets-poland-pm-donald-tusk/article71610641.ece",
+    "https://www.thehindu.com/news/national/indian-embassy-engaging-with-airlines-for-early-return-of-affected-pilgrims-from-saudi-arabia-mea/article71611708.ece",
+    "https://www.thehindu.com/news/national/sbi-data-leak-a-matter-of-grave-concern-cpim-mp-aa-rahim/article71612219.ece",
+    "https://www.thehindu.com/news/national/karnataka/karnataka-to-frame-policy-against-hospitals-withholding-bodies-over-unpaid-bills/article71612752.ece",
+    "https://www.thehindu.com/news/national/chhattisgarh/murmu-hails-youth-joining-mainstream-after-breaking-free-from-maoism/article71612851.ece",
+    "https://www.thehindu.com/news/national/west-bengal/one-more-person-arrested-in-connection-with-kolkata-durga-puja-stampede/article71612080.ece"
+  ],
+  "videos": [
+    {
+      "date": "2026-10-22",
+      "video_id": "clGG4GMZlp0",
+      "title": "India Daily Brief: ITBP on China Border, SBI Data Alert & World News | 22 Oct 2026",
+      "length": "09:05"
+    }
+  ]
 }

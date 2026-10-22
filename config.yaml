@@ -34,7 +34,7 @@ video:
   music_volume: 0.08                 # 0.0 - 1.0
 
 ai:
-  gemini_model: "gemini-2.5-flash"   # free tier model; change if Google renames it
+  gemini_model: "auto"               # "auto" = newest Gemini Flash; or a name like "gemini-2.5-flash"
 
 youtube:
   # "private" while you test. Change to "public" once videos look right

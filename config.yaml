@@ -1,0 +1,46 @@
+# =============================================================
+#  YouTube Auto News - settings
+#  Change these values, commit, and the next run uses them.
+# =============================================================
+
+channel:
+  name: "India Daily Brief"          # shown on the video and thumbnail
+  topic: "top India news of the day" # what the channel covers (guides the AI)
+  language: "en"                     # "en" = English, "ta" = Tamil
+
+# Text-to-speech voice (free Microsoft Edge voices).
+#   English (India): en-IN-PrabhatNeural (male), en-IN-NeerjaNeural (female)
+#   Tamil:           ta-IN-ValluvarNeural (male), ta-IN-PallaviNeural (female)
+voice:
+  name: "en-IN-PrabhatNeural"
+  rate: "+5%"                        # speed: "-10%" slower, "+10%" faster
+
+# Where the news comes from. Any RSS feed works.
+news:
+  feeds:
+    - "https://news.google.com/rss?hl=en-IN&gl=IN&ceid=IN:en"
+    - "https://www.thehindu.com/news/national/feeder/default.rss"
+    - "https://timesofindia.indiatimes.com/rssfeedstopstories.cms"
+    - "https://feeds.feedburner.com/ndtvnews-top-stories"
+  max_age_hours: 30                  # ignore older articles
+  candidates: 30                     # how many headlines the AI chooses from
+
+# Video length: stories x words per story. ~150 words = ~1 minute of speech.
+video:
+  stories: 7                         # 7 stories x 160 words ~= 8-9 minutes
+  words_per_story: 160
+  clips_per_story: 3                 # stock clips shown per story
+  background_music: "assets/music.mp3"  # optional; skipped if the file is missing
+  music_volume: 0.08                 # 0.0 - 1.0
+
+ai:
+  gemini_model: "gemini-2.5-flash"   # free tier model; change if Google renames it
+
+youtube:
+  # "private" while you test. Change to "public" once videos look right
+  # (and after your Google API project passes YouTube's audit - see README).
+  privacy: "private"
+  category_id: "25"                  # 25 = News & Politics
+  made_for_kids: false
+  contains_synthetic_media: false    # set true if you add realistic AI-generated footage
+  extra_tags: ["india news", "daily news", "news today"]

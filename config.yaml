@@ -4,7 +4,7 @@
 # =============================================================
 
 channel:
-  name: "Giggle Rhymes"              # shown on videos and thumbnails - change to your channel name
+  name: "Giggle Rhymes Kids"         # shown on videos and thumbnails - change to your channel name
   topic: "funny new nursery rhymes for toddlers"
   language: "en"
 

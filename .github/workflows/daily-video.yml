@@ -1,4 +1,4 @@
-name: Daily YouTube video
+name: Daily kids rhymes
 
 on:
   schedule:
@@ -10,54 +10,69 @@ on:
         type: choice
         default: full
         options:
-          - full          # make the video and upload it
-          - no-upload     # make the video only (download it from the run page)
-          - sample        # test run with a built-in sample script
+          - full          # make the videos and upload them
+          - no-upload     # make the videos only (download them from the run page)
+          - sample        # quick test with built-in sample rhymes (no AI, no upload)
+      lang:
+        description: "Language"
+        type: choice
+        default: both
+        options: [both, en, ta]
 
 permissions:
-  contents: write            # lets the run save data/history.json
-
-concurrency:
-  group: daily-video
-  cancel-in-progress: false
+  contents: write            # lets the run save the rhyme history
 
 jobs:
-  make-video:
+  make-videos:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        lang: [en, ta]
     steps:
+      - name: Skip languages not asked for
+        id: want
+        run: |
+          WANT="${{ github.event_name == 'workflow_dispatch' && inputs.lang || 'both' }}"
+          if [ "$WANT" = "both" ] || [ "$WANT" = "${{ matrix.lang }}" ]; then echo "go=yes" >> "$GITHUB_OUTPUT"; else echo "go=no" >> "$GITHUB_OUTPUT"; fi
+
       - uses: actions/checkout@v4
+        if: steps.want.outputs.go == 'yes'
 
       - uses: actions/setup-python@v5
+        if: steps.want.outputs.go == 'yes'
         with:
           python-version: "3.12"
           cache: pip
 
       - name: Install ffmpeg and fonts (fast path)
         id: apt
+        if: steps.want.outputs.go == 'yes'
         continue-on-error: true
-        timeout-minutes: 6
+        timeout-minutes: 8
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
           sudo rm -f /var/lib/man-db/auto-update
-          EXTRA=""
-          if grep -q 'language: *"ta"' config.yaml; then EXTRA="fonts-noto-core"; fi
-          sudo timeout 240 apt-get install -y -qq --no-install-recommends ffmpeg fonts-dejavu-core $EXTRA \
-            || (sudo timeout 120 apt-get update -qq && sudo timeout 240 apt-get install -y -qq --no-install-recommends ffmpeg fonts-dejavu-core $EXTRA)
+          PKGS="ffmpeg fonts-dejavu-core fonts-noto-core fonts-noto-color-emoji fonts-comic-neue"
+          sudo timeout 300 apt-get install -y -qq --no-install-recommends $PKGS \
+            || (sudo timeout 120 apt-get update -qq && sudo timeout 300 apt-get install -y -qq --no-install-recommends $PKGS)
           ffmpeg -version | head -1
 
       - name: Install ffmpeg (backup download)
-        if: steps.apt.outcome != 'success'
+        if: steps.want.outputs.go == 'yes' && steps.apt.outcome != 'success'
         uses: FedericoCarboni/setup-ffmpeg@v3
         timeout-minutes: 5
 
       - name: Install Python packages
+        if: steps.want.outputs.go == 'yes'
         timeout-minutes: 5
         run: pip install -q -r requirements.txt
 
-      - name: Make (and upload) the video
-        timeout-minutes: 40
+      - name: Make (and upload) today's rhymes
+        if: steps.want.outputs.go == 'yes'
+        timeout-minutes: 55
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
@@ -68,28 +83,35 @@ jobs:
           MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'full' }}
         run: |
           case "$MODE" in
-            sample)    python run.py --sample ;;
-            no-upload) python run.py --no-upload ;;
-            *)         python run.py ;;
+            sample)    python run_rhymes.py --lang ${{ matrix.lang }} --sample ;;
+            no-upload) python run_rhymes.py --lang ${{ matrix.lang }} --no-upload ;;
+            *)         python run_rhymes.py --lang ${{ matrix.lang }} ;;
           esac
 
-      - name: Keep the video for 3 days (download from this run's page)
-        if: always()
+      - name: Keep the videos for 3 days (download from this run's page)
+        if: always() && steps.want.outputs.go == 'yes'
         uses: actions/upload-artifact@v4
         with:
-          name: video-${{ github.run_number }}
+          name: rhymes-${{ matrix.lang }}-${{ github.run_number }}
           path: |
-            output/video.mp4
-            output/thumbnail.jpg
-            output/description.txt
-            output/script.json
+            output_${{ matrix.lang }}/compilation.mp4
+            output_${{ matrix.lang }}/short.mp4
+            output_${{ matrix.lang }}/thumb_compilation.jpg
+            output_${{ matrix.lang }}/description.txt
+            output_${{ matrix.lang }}/rhymes.json
           retention-days: 3
           if-no-files-found: ignore
 
-      - name: Save history (so stories are never repeated)
-        if: success()
+      - name: Save history (so rhymes are never repeated)
+        if: success() && steps.want.outputs.go == 'yes'
         run: |
           git config user.name "autotube-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/history.json
-          git diff --cached --quiet || (git commit -m "History: $(date -u +%F)" && git push)
+          git add data/rhymes_history_${{ matrix.lang }}.json 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -q -m "Rhymes history (${{ matrix.lang }}): $(date -u +%F)"
+            for i in 1 2 3 4 5; do
+              git pull -q --rebase && git push -q && break
+              sleep $((RANDOM % 10 + 3))
+            done
+          fi

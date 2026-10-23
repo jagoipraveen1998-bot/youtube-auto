@@ -1,46 +1,68 @@
 # =============================================================
-#  YouTube Auto News - settings
+#  YouTube Auto - settings
 #  Change these values, commit, and the next run uses them.
 # =============================================================
 
 channel:
-  name: "India Daily Brief"          # shown on the video and thumbnail
-  topic: "top India news of the day" # what the channel covers (guides the AI)
-  language: "en"                     # "en" = English, "ta" = Tamil
+  name: "Giggle Rhymes"              # shown on videos and thumbnails - change to your channel name
+  topic: "funny new nursery rhymes for toddlers"
+  language: "en"
 
-# Text-to-speech voice (free Microsoft Edge voices).
-#   English (India): en-IN-PrabhatNeural (male), en-IN-NeerjaNeural (female)
-#   Tamil:           ta-IN-ValluvarNeural (male), ta-IN-PallaviNeural (female)
+# ---------------- Funny baby rhymes (what runs every day) ----------------
+rhymes:
+  per_compilation: 10                # rhymes in the long video (~10 min)
+  music_volume: 0.30                 # background music loudness under the voice
+  voices:                            # free Microsoft Edge voices
+    en: { name: "en-US-AnaNeural", rate: "-5%", pitch: "+0Hz" }       # child voice
+    ta: { name: "ta-IN-PallaviNeural", rate: "-8%", pitch: "+25Hz" }  # brighter, child-like
+  greeting:
+    en:
+      hello: "Hello friends! Let's sing some funny rhymes!"
+      bye_title: "Bye bye!"
+      bye: "Bye bye friends! See you tomorrow!"
+      chapter_intro: "Hello friends!"
+      chapters_label: "Rhymes in this video"
+      footer: "New funny rhymes every day! Original songs written for little ones."
+    ta:
+      hello: "வணக்கம் குட்டீஸ்! வாங்க ஜாலியா பாடலாம்!"
+      bye_title: "டாட்டா!"
+      bye: "டாட்டா குட்டீஸ்! நாளைக்கு பார்க்கலாம்!"
+      chapter_intro: "வணக்கம்!"
+      chapters_label: "இந்த வீடியோவில் உள்ள பாடல்கள்"
+      footer: "தினமும் புதிய வேடிக்கை பாடல்கள்! குழந்தைகளுக்காக எழுதப்பட்ட புதிய பாடல்கள்."
+  extra_tags:
+    en: ["nursery rhymes", "kids songs", "baby songs", "funny rhymes", "toddler songs", "rhymes for kids"]
+    ta: ["tamil rhymes", "tamil kids songs", "kulanthai padalgal", "tamil nursery rhymes", "chutti padalgal"]
+  hashtags:
+    en: ["#nurseryrhymes", "#kidssongs", "#funnyrhymes"]
+    ta: ["#tamilrhymes", "#tamilkidssongs", "#kulanthaipadalgal"]
+
+ai:
+  gemini_model: "auto"               # "auto" = newest Gemini Flash; or a name like "gemini-2.5-flash"
+
+youtube:
+  # "private" while Google reviews your API audit. Change to "public" after approval.
+  privacy: "private"
+  category_id: "1"                   # 1 = Film & Animation
+  made_for_kids: true                # required for content aimed at children
+  contains_synthetic_media: false
+  extra_tags: []
+
+# ---------------- News videos (old mode, not scheduled any more) ----------------
 voice:
   name: "en-IN-PrabhatNeural"
-  rate: "+5%"                        # speed: "-10%" slower, "+10%" faster
-
-# Where the news comes from. Any RSS feed works.
+  rate: "+5%"
 news:
   feeds:
     - "https://news.google.com/rss?hl=en-IN&gl=IN&ceid=IN:en"
     - "https://www.thehindu.com/news/national/feeder/default.rss"
     - "https://timesofindia.indiatimes.com/rssfeedstopstories.cms"
     - "https://feeds.feedburner.com/ndtvnews-top-stories"
-  max_age_hours: 30                  # ignore older articles
-  candidates: 30                     # how many headlines the AI chooses from
-
-# Video length: stories x words per story. ~150 words = ~1 minute of speech.
+  max_age_hours: 30
+  candidates: 30
 video:
-  stories: 7                         # 7 stories x 160 words ~= 8-9 minutes
+  stories: 7
   words_per_story: 160
-  clips_per_story: 3                 # stock clips shown per story
-  background_music: "assets/music.mp3"  # optional; skipped if the file is missing
-  music_volume: 0.08                 # 0.0 - 1.0
-
-ai:
-  gemini_model: "auto"               # "auto" = newest Gemini Flash; or a name like "gemini-2.5-flash"
-
-youtube:
-  # "private" while you test. Change to "public" once videos look right
-  # (and after your Google API project passes YouTube's audit - see README).
-  privacy: "private"
-  category_id: "25"                  # 25 = News & Politics
-  made_for_kids: false
-  contains_synthetic_media: false    # set true if you add realistic AI-generated footage
-  extra_tags: ["india news", "daily news", "news today"]
+  clips_per_story: 3
+  background_music: "assets/music.mp3"
+  music_volume: 0.08

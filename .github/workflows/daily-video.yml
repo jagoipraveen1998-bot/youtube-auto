@@ -95,7 +95,7 @@ jobs:
           name: rhymes-${{ matrix.lang }}-${{ github.run_number }}
           path: |
             output_${{ matrix.lang }}/compilation.mp4
-            output_${{ matrix.lang }}/short.mp4
+            output_${{ matrix.lang }}/short_*.mp4
             output_${{ matrix.lang }}/thumb_compilation.jpg
             output_${{ matrix.lang }}/description.txt
             output_${{ matrix.lang }}/rhymes.json

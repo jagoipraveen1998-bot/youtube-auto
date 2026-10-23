@@ -16,8 +16,8 @@ on:
       lang:
         description: "Language"
         type: choice
-        default: both
-        options: [both, en, ta]
+        default: en
+        options: [en]
 
 permissions:
   contents: write            # lets the run save the rhyme history
@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        lang: [en, ta]
+        lang: [en]
     steps:
       - name: Skip languages not asked for
         id: want

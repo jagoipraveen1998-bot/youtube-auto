@@ -8,13 +8,13 @@ from .util import log, media_duration
 TICKS = 10_000_000  # edge-tts reports time in 100-nanosecond units
 
 
-async def _speak(text: str, voice: str, rate: str, out: Path) -> list[dict]:
+async def _speak(text: str, voice: str, rate: str, out: Path, pitch: str = "+0Hz") -> list[dict]:
     import edge_tts
 
     try:
-        com = edge_tts.Communicate(text, voice, rate=rate, boundary="WordBoundary")
+        com = edge_tts.Communicate(text, voice, rate=rate, pitch=pitch, boundary="WordBoundary")
     except TypeError:  # older edge-tts versions always send word boundaries
-        com = edge_tts.Communicate(text, voice, rate=rate)
+        com = edge_tts.Communicate(text, voice, rate=rate, pitch=pitch)
     words = []
     with open(out, "wb") as f:
         async for chunk in com.stream():
@@ -29,8 +29,20 @@ async def _speak(text: str, voice: str, rate: str, out: Path) -> list[dict]:
     return words
 
 
+def speak_words(text: str, voice: str, rate: str, pitch: str, out: Path) -> tuple[float, list[dict]]:
+    """Create "out" (mp3). Returns (duration_seconds, word_timings)."""
+    for attempt in range(4):
+        try:
+            words = asyncio.run(_speak(text, voice, rate, out, pitch))
+            if out.exists() and out.stat().st_size > 500:
+                return media_duration(out), words
+        except Exception as exc:
+            log(f"TTS attempt {attempt + 1} failed: {exc}")
+    raise RuntimeError(f"Text-to-speech failed for: {text[:40]}")
+
+
 def speak(text: str, cfg: dict, out: Path) -> tuple[float, list[dict]]:
-    """Create `out` (mp3). Returns (duration_seconds, subtitle_cues)."""
+    """Create "out" (mp3). Returns (duration_seconds, subtitle_cues)."""
     voice, rate = cfg["voice"]["name"], cfg["voice"].get("rate", "+0%")
     for attempt in range(3):
         try:

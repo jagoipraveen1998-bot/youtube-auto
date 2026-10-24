@@ -9,7 +9,17 @@
     "Where Is Kitty?",
     "Beep Boop Hug",
     "Sleepy Rooster Barnaby",
-    "Monkey Mango Milkshake"
+    "Monkey Mango Milkshake",
+    "Ducky Boots Go Splash",
+    "Shake That Mango!",
+    "Billy Chews a Kite",
+    "Big Dino, Little Mouse",
+    "Sunny Puts On Shades",
+    "Flappy Cow",
+    "The Shy Little Cloud",
+    "Dancing Cupcake",
+    "Yummy Rainbow Bowl",
+    "Giraffe's Super Long Scarf"
   ],
   "videos": [
     {
@@ -17,6 +27,16 @@
       "compilation": "OgrQe9LLC_Y",
       "short": "YBrsvqYlWPs",
       "length": "08:22"
+    },
+    {
+      "date": "2026-10-24",
+      "compilation": "0IAGZaiNkdA",
+      "shorts": [
+        "-DI_iNLwoS4",
+        "nHyxFFxfn5M",
+        "ord3lH0ZiJg"
+      ],
+      "length": "08:18"
     }
   ]
 }

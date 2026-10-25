@@ -1,0 +1,6 @@
+{
+  "engine": "EEVEE",
+  "portraits_s": 453,
+  "loop_error": "Blender render failed: timeout",
+  "vertical_error": "Blender render failed: timeout"
+}

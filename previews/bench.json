@@ -1,0 +1,42 @@
+[
+  {
+    "name": "workbench 960x540",
+    "total_s": 15.1,
+    "frame_times": [],
+    "per_frame_s": null,
+    "engine_used": [
+      "BLENDER_WORKBENCH"
+    ],
+    "tail": "utube-auto/output_bench/c0/f_0002.png'\nTime: 00:01.28 (Saving: 00:00.05)\n\nSaved: '/home/runner/work/youtube-auto/youtube-auto/output_bench/c0/f_0003.png'\nTime: 00:01.25 (Saving: 00:00.05)\n\nSaved: '/home/runner/work/youtube-auto/youtube-auto/output_bench/c0/f_0004.png'\nTime: 00:01.25 (Saving: 00:00.03)\n\nSaved: '/home/runner/work/youtube-auto/youtube-auto/output_bench/c0/f_0005.png'\nTime: 00:00.82 (Saving: 00:00.03)\n\nSaved: '/home/runner/work/youtube-auto/youtube-auto/output_bench/c0/f_0006.png'\nTime: 00:00.78 (Saving: 00:00.03)\n\nENGINE BLENDER_WORKBENCH\nRENDERED 6 frames in 10.9s\n\nBlender quit\n"
+  },
+  {
+    "name": "eevee 640x360 s4",
+    "total_s": 35.5,
+    "frame_times": [],
+    "per_frame_s": null,
+    "engine_used": [
+      "BLENDER_EEVEE_NEXT"
+    ],
+    "tail": "00:00.01)\n\nFra:5 Mem:93.69M (Peak 99.11M) | Time:00:01.71 | Rendering 1 / 4 samples\nFra:5 Mem:93.69M (Peak 99.11M) | Time:00:03.68 | Rendering 4 / 4 samples\nSaved: '/home/runner/work/youtube-auto/youtube-auto/output_bench/c1/f_0005.png'\nTime: 00:03.70 (Saving: 00:00.01)\n\nFra:6 Mem:93.69M (Peak 99.11M) | Time:00:01.68 | Rendering 1 / 4 samples\nFra:6 Mem:93.69M (Peak 99.11M) | Time:00:03.63 | Rendering 4 / 4 samples\nSaved: '/home/runner/work/youtube-auto/youtube-auto/output_bench/c1/f_0006.png'\nTime: 00:03.66 (Saving: 00:00.01)\n\nENGINE BLENDER_EEVEE_NEXT\nRENDERED 6 frames in 32.1s\n\nBlender quit\n"
+  },
+  {
+    "name": "cycles 640x360 s8",
+    "total_s": 38.6,
+    "frame_times": [],
+    "per_frame_s": null,
+    "engine_used": [
+      "CYCLES"
+    ],
+    "tail": " (Peak 414.60M) | Time:00:00.03 | Mem:95.75M, Peak:95.75M | Scene, ViewLayer | Sample 0/8\nFra:6 Mem:143.72M (Peak 414.60M) | Time:00:00.46 | Remaining:00:03.01 | Mem:95.75M, Peak:95.75M | Scene, ViewLayer | Sample 1/8\nFra:6 Mem:150.75M (Peak 414.60M) | Time:00:05.26 | Mem:95.75M, Peak:95.75M | Scene, ViewLayer | Sample 8/8\nFra:6 Mem:150.75M (Peak 414.60M) | Time:00:05.26 | Mem:95.75M, Peak:95.75M | Scene, ViewLayer | Finished\nSaved: '/home/runner/work/youtube-auto/youtube-auto/output_bench/c2/f_0006.png'\nTime: 00:05.28 (Saving: 00:00.01)\n\nENGINE CYCLES\nRENDERED 6 frames in 32.5s\n\nBlender quit\n"
+  },
+  {
+    "name": "cycles 960x540 s6",
+    "total_s": 65.0,
+    "frame_times": [],
+    "per_frame_s": null,
+    "engine_used": [
+      "CYCLES"
+    ],
+    "tail": "14.60M) | Time:00:00.03 | Mem:116.63M, Peak:116.63M | Scene, ViewLayer | Sample 0/6\nFra:6 Mem:164.59M (Peak 414.60M) | Time:00:01.00 | Remaining:00:04.84 | Mem:116.63M, Peak:116.63M | Scene, ViewLayer | Sample 1/6\nFra:6 Mem:180.42M (Peak 414.60M) | Time:00:09.65 | Mem:116.63M, Peak:116.63M | Scene, ViewLayer | Sample 6/6\nFra:6 Mem:180.42M (Peak 414.60M) | Time:00:09.65 | Mem:116.63M, Peak:116.63M | Scene, ViewLayer | Finished\nSaved: '/home/runner/work/youtube-auto/youtube-auto/output_bench/c3/f_0006.png'\nTime: 00:09.69 (Saving: 00:00.04)\n\nENGINE CYCLES\nRENDERED 6 frames in 59.8s\n\nBlender quit\n"
+  }
+]

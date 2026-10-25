@@ -3,6 +3,7 @@ import json
 import random
 import time
 
+from .scene3d import CHARACTERS, SETTINGS
 from .script_writer import pick_models
 from .util import env, log
 
@@ -22,6 +23,8 @@ Rules for every rhyme:
   real people, or copyrighted characters/songs. Include a tiny good habit when natural
   (sharing, brushing teeth, saying sorry) without preaching.
 - Do NOT reuse lines from famous nursery rhymes.
+- The videos are 3D cartoons, so each rhyme's star MUST be one of these characters: {ids}.
+  Pick a matching setting for the scene from: {settings}.
 These titles were used before, do not repeat them: {used}
 
 Return ONLY JSON:
@@ -31,6 +34,9 @@ Return ONLY JSON:
       "title": "short funny title in {language_short}",
       "title_en": "the same title in English",
       "character": "1-3 ENGLISH words naming the main cute character, e.g. 'cartoon cow'",
+      "character_id": "the main character, EXACTLY one id from: {ids}",
+      "friends": ["0-2 more ids from the same list who appear in the rhyme"],
+      "setting": "EXACTLY one of: {settings}",
       "emoji": "one emoji for the main character",
       "lines": ["line 1", "line 2", "..."]
     }}
@@ -46,20 +52,17 @@ Return ONLY JSON:
 
 THEMES = [
     "a cow who wants to fly", "a dancing banana", "a sleepy moon", "a duck in rain boots",
-    "a hungry little caterpillar who shares", "brushing teeth with a crocodile",
-    "an elephant learning to whistle", "a cat who sings opera", "a tiny bus full of animals",
-    "a bouncing ball that won't stop", "monkeys making a mango milkshake",
-    "a shy cloud who makes rain", "a turtle in a hurry", "a puppy with hiccups",
-    "a rooster who oversleeps", "colors of a rainbow fruit salad", "a fish who wants a hat",
-    "a lion who says sorry", "counting little frogs", "a bear's birthday cake",
-    "a parrot who copies everything", "the wheels of an auto-rickshaw", "a peacock's dance party",
-    "a chick learning to say good morning", "a snowman on a beach holiday",
-    "a giraffe with a very long scarf", "an owl who can't stay awake", "a pig who loves bath time",
-    "a train of animals saying hello", "a kitten playing hide and seek",
-    "a goat who eats a kite", "a mosquito who says excuse me", "a sun who wears sunglasses",
-    "a dinosaur who is scared of a mouse", "brushing a lion's mane", "a bunny's carrot race",
-    "a little star learning to twinkle", "a squirrel's nut party", "a camel with two lunchboxes",
-    "a zebra who lost its stripes", "a cupcake who wants to dance", "a robot learning to hug",
+    "brushing teeth with a smiling dinosaur", "an elephant learning to whistle", "a cat who sings opera",
+    "a tiny bus full of animals", "a bouncing ball that won't stop", "monkeys making a mango milkshake",
+    "a shy cloud who makes rain", "a turtle in a hurry", "a puppy with hiccups", "a chick who oversleeps",
+    "a lion who says sorry", "counting little frogs", "a bear's birthday cupcake",
+    "a parrot who copies everything", "the wheels of an auto-rickshaw", "a pig who loves bath time",
+    "a chick learning to say good morning", "a snowman on a beach holiday", "a giraffe with a very long scarf",
+    "an owl who can't stay awake", "a train of animals saying hello", "a kitten playing hide and seek",
+    "a sun who wears sunglasses", "a dinosaur who is scared of a mouse", "a bunny's carrot race",
+    "a little star learning to twinkle", "a robot learning to hug", "a sheep who can't stop dancing",
+    "a mouse who builds a tiny house", "a frog's splashy jump contest", "a cupcake who wants to dance",
+    "a bear who shares his honey", "an elephant's bubble bath", "a duck family's picnic",
 ]
 
 
@@ -75,6 +78,7 @@ def write_rhymes(cfg: dict, lang: str, used_titles: list[str]) -> dict:
         channel=cfg["channel"]["name"], count=count, language=LANG[lang],
         language_short="Tamil" if lang == "ta" else "English",
         themes="; ".join(themes), used=", ".join(used_titles[-80:]) or "none",
+        ids=", ".join(CHARACTERS), settings=", ".join(SETTINGS),
     )
     client = genai.Client(api_key=env("GEMINI_API_KEY"))
     models = pick_models(client, cfg["ai"].get("gemini_model", "auto"))
@@ -106,6 +110,11 @@ def _check(data: dict) -> None:
             r.setdefault("title_en", r["title"])
             r.setdefault("character", "cute animal")
             r.setdefault("emoji", "⭐")
+            if r.get("character_id") not in CHARACTERS:
+                r.pop("character_id", None)
+            if r.get("setting") not in SETTINGS:
+                r.pop("setting", None)
+            r["friends"] = [f for f in r.get("friends", []) if f in CHARACTERS][:2] if isinstance(r.get("friends"), list) else []
             good.append(r)
     if len(good) < 3:
         raise ValueError("fewer than 3 usable rhymes")

@@ -10,6 +10,7 @@ from pathlib import Path
 import requests
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
+from . import scene3d
 from .music import make_music, pick_style
 from .util import FPS, env, log, run
 from .voice import speak_words
@@ -243,9 +244,18 @@ def render_rhyme(rhyme: dict, lang: str, cfg: dict, work: Path, out: Path, verti
     title_ln, lines = spoken[0], spoken[1:]
 
     # 3. pictures + subtitles + music
-    bg = background(size, seed, work / f"bg_{'v' if vertical else 'h'}.png")
+    W, H = size
     cpx = 640 if not vertical else 760
     ch = work / f"char_{cpx}.png"
+    loop = None
+    if scene3d.enabled(cfg):
+        try:
+            loop, portrait, _ = scene3d.render_loop(rhyme, vertical, bpm, seed, work, cfg, size)
+            if portrait and not ch.exists():
+                shutil.copy(portrait, ch)
+        except Exception as exc:
+            log(f"3D render failed, using the 2D look for this part: {exc}")
+            loop = None
     if not ch.exists():
         character(rhyme, cpx, ch)
     _, family = fonts(lang)
@@ -253,26 +263,35 @@ def render_rhyme(rhyme: dict, lang: str, cfg: dict, work: Path, out: Path, verti
                     (title_ln["show"], title_ln["hide"]), lines, vertical)
     music = make_music(work / "music.wav", total, bpm, key, seed)
 
-    # 4. ffmpeg: background + bouncing character + karaoke + mixed audio
-    inputs = ["-loop", "1", "-t", f"{total:.2f}", "-i", str(bg),
-              "-loop", "1", "-t", f"{total:.2f}", "-i", str(ch), "-i", str(music)]
+    # 4. ffmpeg: animated 3D loop (or 2D background + bouncing character) + karaoke + mixed audio
+    subs = (f"ass=filename='{_escf(ass)}':fontsdir='{_escf(Path(fonts(lang)[0]).parent)}',"
+            f"fade=t=in:st=0:d=0.3,fade=t=out:st={total - 0.4:.2f}:d=0.4[v]")
+    if loop is not None:
+        band = (f"drawbox=x=0:y=ih-320:w=iw:h=320:color=0x1a0d2e@0.30:t=fill" if not vertical else
+                f"drawbox=x=0:y=ih-660:w=iw:h=460:color=0x1a0d2e@0.30:t=fill")
+        inputs = ["-stream_loop", "-1", "-i", str(loop), "-i", str(music)]
+        fl = [f"[0:v]scale={W}:{H},setsar=1,format=yuv420p,{band}[v1]", f"[v1]{subs}"]
+        mi, vi = 1, 2
+    else:
+        bg = background(size, seed, work / f"bg_{'v' if vertical else 'h'}.png")
+        inputs = ["-loop", "1", "-t", f"{total:.2f}", "-i", str(bg),
+                  "-loop", "1", "-t", f"{total:.2f}", "-i", str(ch), "-i", str(music)]
+        cy = int(H * 0.36) if not vertical else int(H * 0.40)
+        bounce = 34 if not vertical else 42
+        fl = [f"[0:v]scale={W}:{H},setsar=1,format=yuv420p[bg]",
+              f"[1:v]format=rgba[ch]",
+              f"[bg][ch]overlay=x='(W-w)/2+18*sin(2*PI*t/{bar:.4f})':"
+              f"y='{cy}-h/2-{bounce}*abs(sin(PI*t/{beat:.4f}))':format=auto,format=yuv420p[v1]",
+              f"[v1]{subs}"]
+        mi, vi = 2, 3
     for ln in spoken:
         inputs += ["-i", str(ln["mp3"])]
-    W, H = size
-    cy = int(H * 0.36) if not vertical else int(H * 0.40)
-    bounce = 34 if not vertical else 42
-    fl = [f"[0:v]scale={W}:{H},setsar=1,format=yuv420p[bg]",
-          f"[1:v]format=rgba[ch]",
-          f"[bg][ch]overlay=x='(W-w)/2+18*sin(2*PI*t/{bar:.4f})':"
-          f"y='{cy}-h/2-{bounce}*abs(sin(PI*t/{beat:.4f}))':format=auto,format=yuv420p[v1]",
-          f"[v1]ass=filename='{_escf(ass)}':fontsdir='{_escf(Path(fonts(lang)[0]).parent)}',"
-          f"fade=t=in:st=0:d=0.3,fade=t=out:st={total - 0.4:.2f}:d=0.4[v]"]
     mix = []
     for i, ln in enumerate(spoken):
         ms = int(ln["at"] * 1000)
-        fl.append(f"[{3 + i}:a]aresample=48000,adelay={ms}|{ms},volume=1.7[s{i}]")
+        fl.append(f"[{vi + i}:a]aresample=48000,adelay={ms}|{ms},volume=1.7[s{i}]")
         mix.append(f"[s{i}]")
-    fl.append(f"[2:a]aresample=48000,volume={cfg['rhymes'].get('music_volume', 0.30)}[m]")
+    fl.append(f"[{mi}:a]aresample=48000,volume={cfg['rhymes'].get('music_volume', 0.30)}[m]")
     fl.append("".join(mix) + f"[m]amix=inputs={len(mix) + 1}:normalize=0:duration=longest,"
               f"alimiter=limit=0.95,atrim=duration={total:.2f}[a]")
     run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", *inputs, "-filter_complex", ";".join(fl),

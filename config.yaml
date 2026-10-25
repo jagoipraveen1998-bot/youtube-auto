@@ -40,12 +40,15 @@ rhymes:
 # ---------------- 3D cartoon look (Blender, free) ----------------
 threed:
   enabled: true                      # false = old 2D look
-  engine: "auto"                     # auto = EEVEE if it works on the machine, else Cycles
-  width: 960                         # render size (scaled up to 1080p for YouTube)
-  height: 540
-  fps: 15                            # animation frame rate (video is 30 fps)
-  samples_eevee: 16
-  samples_cycles: 12
+  engine: "CYCLES"                   # CYCLES (best look) | WORKBENCH (very fast) | EEVEE (too slow on GitHub)
+  width: 640                         # render size (scaled up to 1080p for YouTube)
+  height: 360
+  fps: 12                            # animation frame rate (video is 30 fps)
+  samples_cycles: 8
+  samples_eevee: 4
+  samples_workbench: 1
+  exposure: 0.0                      # brightness boost for WORKBENCH
+  studio_light: "Default"            # WORKBENCH light
   timeout: 1500                      # seconds per scene before falling back to 2D
 
 ai:

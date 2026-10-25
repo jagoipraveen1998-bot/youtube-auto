@@ -14,11 +14,11 @@ from autotube import scene3d
 from autotube.util import ROOT, log
 from preview_3d import label_font
 
-CONFIGS = [  # name, engine, width, height, samples
-    ("workbench 960x540", "WORKBENCH", 960, 540, 1),
-    ("eevee 640x360 s4", "EEVEE", 640, 360, 4),
-    ("cycles 640x360 s8", "CYCLES", 640, 360, 8),
-    ("cycles 960x540 s6", "CYCLES", 960, 540, 6),
+CONFIGS = [  # name, engine, width, height, samples, extra spec
+    ("workbench exp 0.8", "WORKBENCH", 960, 540, 1, {"exposure": 0.8}),
+    ("workbench exp 1.2", "WORKBENCH", 960, 540, 1, {"exposure": 1.2}),
+    ("workbench outdoor exp 0.8", "WORKBENCH", 960, 540, 1, {"exposure": 0.8, "studio_light": "outdoor.sl"}),
+    ("cycles 640x360 s8", "CYCLES", 640, 360, 8, {}),
 ]
 FRAMES = 6
 
@@ -29,12 +29,12 @@ def main():
     out = ROOT / "previews"
     out.mkdir(exist_ok=True)
     results, tiles = [], []
-    for i, (name, engine, w, h, samples) in enumerate(CONFIGS):
+    for i, (name, engine, w, h, samples, extra) in enumerate(CONFIGS):
         folder = work / f"c{i}"
         folder.mkdir(parents=True)
         spec = {"mode": "loop", "out_dir": str(folder), "width": w, "height": h, "fps": 12, "frames": FRAMES,
                 "engine": engine, "samples": samples, "seed": 42, "setting": "farm", "main": "cow",
-                "friends": ["pig", "chick"], "vertical": False}
+                "friends": ["pig", "chick"], "vertical": False, **extra}
         (folder / "spec.json").write_text(json.dumps(spec))
         cmd = [scene3d.blender_bin(), "-b", "--factory-startup", "-noaudio", "-P", str(scene3d.SCRIPT), "--",
                str(folder / "spec.json")]
@@ -48,7 +48,7 @@ def main():
             text = "TIMEOUT " + str(exc.stdout or "")[-2000:]
         total = time.time() - t0
         times = []
-        for mm, ss in re.findall(r"Saved: .*?Time: (\d+):(\d+\.\d+)", text):
+        for mm, ss in re.findall(r"Saved: [^\n]*\s+Time: (\d+):(\d+\.\d+)", text):
             times.append(int(mm) * 60 + float(ss))
         steady = sorted(times[1:])[len(times[1:]) // 2] if len(times) > 1 else None
         r = {"name": name, "total_s": round(total, 1), "frame_times": [round(t, 2) for t in times],

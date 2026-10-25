@@ -25,7 +25,7 @@ permissions:
 jobs:
   make-videos:
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
@@ -65,6 +65,31 @@ jobs:
         uses: FedericoCarboni/setup-ffmpeg@v3
         timeout-minutes: 5
 
+      - name: Cache Blender
+        if: steps.want.outputs.go == 'yes'
+        uses: actions/cache@v4
+        with:
+          path: ~/blender
+          key: blender-4.2.3-linux-x64
+
+      - name: Install Blender (free 3D; videos fall back to 2D if this fails)
+        if: steps.want.outputs.go == 'yes'
+        continue-on-error: true
+        timeout-minutes: 10
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          if [ ! -x "$HOME/blender/blender" ]; then
+            mkdir -p "$HOME/blender"
+            curl -fsSL --retry 3 https://download.blender.org/release/Blender4.2/blender-4.2.3-linux-x64.tar.xz \
+              | tar -xJ -C "$HOME/blender" --strip-components=1
+          fi
+          GL="xvfb libxi6 libxxf86vm1 libxfixes3 libxrender1 libxkbcommon0 libsm6 libgl1 libegl1 libgl1-mesa-dri"
+          sudo timeout 300 apt-get install -y -qq --no-install-recommends $GL > /dev/null \
+            || (sudo timeout 120 apt-get update -qq && sudo timeout 300 apt-get install -y -qq --no-install-recommends $GL > /dev/null)
+          "$HOME/blender/blender" --version | head -1
+          echo "BLENDER=$HOME/blender/blender" >> "$GITHUB_ENV"
+
       - name: Install Python packages
         if: steps.want.outputs.go == 'yes'
         timeout-minutes: 5
@@ -72,7 +97,7 @@ jobs:
 
       - name: Make (and upload) today's rhymes
         if: steps.want.outputs.go == 'yes'
-        timeout-minutes: 55
+        timeout-minutes: 100
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}

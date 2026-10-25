@@ -175,7 +175,7 @@ def render_loop(rhyme: dict, vertical: bool, bpm: int, seed: int, work: Path, cf
     spec = {"mode": "loop", "out_dir": str(folder), "width": rw, "height": rh, "fps": fps, "frames": frames,
             "engine": engine, "samples": int(tc.get(f"samples_{engine.lower()}", 16 if engine == "EEVEE" else 12)),
             "seed": seed, "setting": setting, "main": main, "friends": friends, "vertical": vertical,
-            "portrait": str(portrait)}
+            "portrait": str(portrait), "exposure": tc.get("exposure", 0.0), "studio_light": tc.get("studio_light", "Default")}
     log(f"3D: {main} + {', '.join(friends)} in the {setting} ({'9:16' if vertical else '16:9'}, {frames} frames, {engine})")
     t0 = time.time()
     ok, tail = _run_blender(spec, folder / "spec.json", int(tc.get("timeout", 1500)))
@@ -195,7 +195,9 @@ def render_portraits(ids: list[str], out_dir: Path, cfg: dict, size: int = 320) 
     out_dir.mkdir(parents=True, exist_ok=True)
     engine = _pick_engine(cfg, out_dir)
     spec = {"mode": "portraits", "out_dir": str(out_dir), "width": size, "height": size, "fps": 24, "frames": 1,
-            "engine": engine, "samples": 16, "seed": 3, "ids": ids}
+            "engine": engine, "samples": 16, "seed": 3, "ids": ids,
+            "exposure": cfg.get("threed", {}).get("exposure", 0.0),
+            "studio_light": cfg.get("threed", {}).get("studio_light", "Default")}
     ok, tail = _run_blender(spec, out_dir / "spec.json", 1800)
     if not ok:
         log(f"Portraits failed: {tail[-800:]}")

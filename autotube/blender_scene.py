@@ -827,6 +827,10 @@ def setup_render(w, h, fps, frames, engine, samples, transparent=False):
             except Exception:
                 pass
         try:
+            sh.studio_light = SPEC.get("studio_light", "Default")
+        except Exception:
+            pass
+        try:
             sc.display.render_aa = "8"
         except Exception:
             pass
@@ -853,6 +857,7 @@ def setup_render(w, h, fps, frames, engine, samples, transparent=False):
     try:
         sc.view_settings.view_transform = "Standard"
         sc.view_settings.look = "None"
+        sc.view_settings.exposure = float(SPEC.get("exposure", 0.0)) if sc.render.engine == "BLENDER_WORKBENCH" else 0.0
     except Exception:
         pass
 

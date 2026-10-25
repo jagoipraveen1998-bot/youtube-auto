@@ -127,6 +127,22 @@ jobs:
           retention-days: 3
           if-no-files-found: ignore
 
+      - name: Save test videos to the repo so they can be watched (sample mode only)
+        if: success() && steps.want.outputs.go == 'yes' && github.event_name == 'workflow_dispatch' && inputs.mode == 'sample'
+        run: |
+          mkdir -p previews
+          cp output_${{ matrix.lang }}/short_1.mp4 previews/test_short.mp4
+          cp output_${{ matrix.lang }}/compilation.mp4 previews/test_compilation.mp4
+          cp output_${{ matrix.lang }}/thumb_compilation.jpg previews/test_thumbnail.jpg
+          git config user.name "autotube-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add previews/test_short.mp4 previews/test_compilation.mp4 previews/test_thumbnail.jpg
+          git commit -q -m "Test 3D videos (run ${GITHUB_RUN_NUMBER})"
+          for i in 1 2 3 4 5; do
+            git pull -q --rebase && git push -q && break
+            sleep $((RANDOM % 10 + 3))
+          done
+
       - name: Save history (so rhymes are never repeated)
         if: success() && steps.want.outputs.go == 'yes'
         run: |

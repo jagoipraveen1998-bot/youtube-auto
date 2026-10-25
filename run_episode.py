@@ -11,6 +11,7 @@ from google import genai
 from google.genai import types
 
 from autotube import rhymes_video as rv
+from autotube.scene3d import CHARACTERS, SETTINGS
 from autotube.script_writer import pick_models
 from autotube.uploader import upload
 from autotube.util import ROOT, env, load_config, log
@@ -22,15 +23,18 @@ Episode title must be different from these recent titles: {used}
 Create a complete story with a clear beginning, a silly problem, two funny attempts, a kind resolution, and a gentle lesson.
 Use simple spoken English, gentle humor, safe situations, and recurring characters Milo the curious mouse and Pippa the cheerful parrot.
 Make 4 to 6 distinct scenes. Each scene has 3 to 5 short spoken lines, each line 3 to 10 words. Keep events and characters consistent.
+The episode is a 3D cartoon. In each scene list who is on screen using ONLY these ids: {ids}
+(Milo is "mouse", Pippa is "parrot"; put the scene's main speaker first, at most 3 ids). Pick each scene's setting from: {settings}.
 No scary scenes, unsafe imitation, violence, insults, brands, copyrighted characters, famous song lyrics, or requests to like/subscribe.
 Return only JSON in this schema:
-{{"episode_title":"...","description":"...","lesson":"...","scenes":[{{"title":"short scene heading","character":"English character description","emoji":"one emoji","lines":["..."]}}]}}
+{{"episode_title":"...","description":"...","lesson":"...","scenes":[{{"title":"short scene heading","character":"English character description","characters":["mouse","parrot"],"setting":"meadow","emoji":"one emoji","lines":["..."]}}]}}
 Channel: {channel}
 """
 
 
 def story(client, models, channel, used):
-    prompt = PROMPT.format(channel=channel, used=", ".join(used[-30:]) or "none")
+    prompt = PROMPT.format(channel=channel, used=", ".join(used[-30:]) or "none",
+                           ids=", ".join(CHARACTERS), settings=", ".join(SETTINGS))
     last = None
     for attempt in range(5):
         try:
@@ -48,11 +52,15 @@ def story(client, models, channel, used):
                     raise ValueError("Each scene needs a title and at least 3 spoken lines")
                 scene.setdefault("character", "Milo and Pippa in a garden")
                 scene.setdefault("emoji", "🐭")
+                chars = [c for c in scene.get("characters", []) if c in CHARACTERS] if isinstance(scene.get("characters"), list) else []
+                scene["characters"] = chars or ["mouse", "parrot"]
+                if scene.get("setting") not in SETTINGS:
+                    scene.pop("setting", None)
             return data
         except Exception as exc:
             last = exc
             log(f"Story generation attempt {attempt + 1} failed: {exc}")
-        
+
     raise RuntimeError(f"Could not generate a valid story: {last}")
 
 

@@ -23,7 +23,7 @@ concurrency:
 jobs:
   make-episode:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 190
     steps:
       - uses: actions/checkout@v4
 
@@ -77,7 +77,7 @@ jobs:
         run: pip install -q -r requirements.txt
 
       - name: Write today's funny English story episode
-        timeout-minutes: 100
+        timeout-minutes: 170
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}

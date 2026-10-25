@@ -25,7 +25,7 @@ permissions:
 jobs:
   make-videos:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 190
     strategy:
       fail-fast: false
       matrix:
@@ -97,7 +97,7 @@ jobs:
 
       - name: Make (and upload) today's rhymes
         if: steps.want.outputs.go == 'yes'
-        timeout-minutes: 100
+        timeout-minutes: 170
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}

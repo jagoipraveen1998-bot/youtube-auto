@@ -105,7 +105,7 @@ def cast(rhyme: dict, seed: int) -> tuple[str, list[str], str]:
 def _run_blender(spec: dict, spec_path: Path, timeout: int) -> tuple[bool, str]:
     spec_path.write_text(json.dumps(spec))
     cmd = [blender_bin(), "-b", "--factory-startup", "-noaudio", "-P", str(SCRIPT), "--", str(spec_path)]
-    if shutil.which("xvfb-run") and spec.get("engine") == "EEVEE":
+    if shutil.which("xvfb-run") and spec.get("engine") in ("EEVEE", "WORKBENCH"):
         cmd = ["xvfb-run", "-a", "-s", "-screen 0 1280x720x24"] + cmd
     try:
         p = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
@@ -133,7 +133,7 @@ def _pick_engine(cfg: dict, work: Path) -> str:
     if _ENGINE:
         return _ENGINE
     want = cfg.get("threed", {}).get("engine", "auto").upper()
-    if want in ("EEVEE", "CYCLES"):
+    if want in ("EEVEE", "CYCLES", "WORKBENCH"):
         _ENGINE = want
         return _ENGINE
     probe = work / "_engine_probe"
@@ -173,7 +173,7 @@ def render_loop(rhyme: dict, vertical: bool, bpm: int, seed: int, work: Path, cf
     folder.mkdir(parents=True)
     engine = _pick_engine(cfg, work.parent if work.parent.exists() else work)
     spec = {"mode": "loop", "out_dir": str(folder), "width": rw, "height": rh, "fps": fps, "frames": frames,
-            "engine": engine, "samples": int(tc.get("samples_eevee" if engine == "EEVEE" else "samples_cycles", 16 if engine == "EEVEE" else 12)),
+            "engine": engine, "samples": int(tc.get(f"samples_{engine.lower()}", 16 if engine == "EEVEE" else 12)),
             "seed": seed, "setting": setting, "main": main, "friends": friends, "vertical": vertical,
             "portrait": str(portrait)}
     log(f"3D: {main} + {', '.join(friends)} in the {setting} ({'9:16' if vertical else '16:9'}, {frames} frames, {engine})")

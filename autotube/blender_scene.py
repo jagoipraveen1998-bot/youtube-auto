@@ -564,6 +564,7 @@ def build_set(name, vertical):
     scene = bpy.context.scene
     world = bpy.data.worlds.new("world")
     scene.world = world
+    world.color = hex_lin(st["sky"][1])  # used by the Workbench engine
     world.use_nodes = True
     nt = world.node_tree
     bg = nt.nodes.get("Background")
@@ -793,7 +794,7 @@ def camera(target, loc, lens):
 
 def setup_render(w, h, fps, frames, engine, samples, transparent=False):
     sc = bpy.context.scene
-    names = ["BLENDER_EEVEE_NEXT", "BLENDER_EEVEE"] if engine == "EEVEE" else ["CYCLES"]
+    names = {"EEVEE": ["BLENDER_EEVEE_NEXT", "BLENDER_EEVEE"], "WORKBENCH": ["BLENDER_WORKBENCH"]}.get(engine, ["CYCLES"])
     for n in names:
         try:
             sc.render.engine = n
@@ -816,12 +817,27 @@ def setup_render(w, h, fps, frames, engine, samples, transparent=False):
         except Exception:
             pass
         sc.render.use_persistent_data = True
+    elif sc.render.engine == "BLENDER_WORKBENCH":
+        sh = getattr(getattr(sc, "display", None), "shading", None)
+        for attr, val in (("light", "STUDIO"), ("color_type", "MATERIAL"), ("show_shadows", True),
+                          ("shadow_intensity", 0.35), ("show_cavity", True), ("cavity_type", "BOTH"),
+                          ("show_specular_highlight", True)):
+            try:
+                setattr(sh, attr, val)
+            except Exception:
+                pass
+        try:
+            sc.display.render_aa = "8"
+        except Exception:
+            pass
     else:
         try:
             sc.eevee.taa_render_samples = samples
         except Exception:
             pass
-        for attr, val in (("use_gtao", True), ("use_soft_shadows", True), ("use_shadows", True)):
+        for attr, val in (("use_gtao", True), ("use_soft_shadows", True), ("use_shadows", True),
+                          ("use_raytracing", False), ("shadow_ray_count", 1), ("shadow_step_count", 2),
+                          ("shadow_resolution_scale", 0.5)):
             try:
                 setattr(sc.eevee, attr, val)
             except Exception:

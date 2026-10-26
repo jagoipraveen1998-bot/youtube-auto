@@ -13,7 +13,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 from . import scene3d
 from .music import make_music, pick_style
 from .util import FPS, env, log, run
-from .voice import speak_words
+from .voice import say, voice_for
 
 ENC = ["-c:v", "libx264", "-preset", "veryfast", "-crf", "21", "-pix_fmt", "yuv420p",
        "-r", str(FPS), "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2"]
@@ -220,16 +220,19 @@ def render_rhyme(rhyme: dict, lang: str, cfg: dict, work: Path, out: Path, verti
     bpm, key = pick_style(seed)
     beat, bar = 60 / bpm, 240 / bpm
 
-    # 1. voice lines (title is spoken too)
-    texts = [rhyme["title"]] + rhyme["lines"]
+    # 1. voice lines (title is spoken too); a line may name the character speaking it
+    texts = [{"who": "narrator", "text": rhyme["title"]}]
+    for line in rhyme["lines"]:
+        texts.append(line if isinstance(line, dict) else {"text": str(line)})
     spoken = []
-    for i, text in enumerate(texts):
+    for i, item in enumerate(texts):
+        text = str(item.get("text", "")).strip()
         mp3 = work / f"l{i:02d}.mp3"
         cache = work / f"l{i:02d}.json"
         if mp3.exists() and cache.exists():
             dur, words = json.loads(cache.read_text())
         else:
-            dur, words = speak_words(text, vc["name"], vc.get("rate", "+0%"), vc.get("pitch", "+0Hz"), mp3)
+            dur, words = say(text, voice_for(vc, item.get("who")), mp3)
             cache.write_text(json.dumps([dur, words], ensure_ascii=False))
         spoken.append({"text": text, "mp3": mp3, "dur": dur, "words": words})
 

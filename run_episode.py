@@ -9,6 +9,7 @@ import copy
 import hashlib
 import json
 import shutil
+import time
 from datetime import datetime, timedelta, timezone
 
 from google import genai
@@ -110,6 +111,8 @@ def story(client, models, channel, used, scenes):
         except Exception as exc:
             last = exc
             log(f"Story attempt {attempt + 1} failed: {exc}")
+            if attempt < 4:  # Gemini is often just busy; wait before trying the next model
+                time.sleep(20 * (attempt + 1))
     raise RuntimeError(f"Could not generate a valid story: {last}")
 
 

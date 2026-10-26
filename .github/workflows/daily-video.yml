@@ -1,9 +1,7 @@
 name: Daily kids rhymes
 
 on:
-  schedule:
-    - cron: "20 1 * * *"    # every day at 01:20 UTC = 6:50 AM India time
-  workflow_dispatch:         # "Run workflow" button for manual runs
+  workflow_dispatch:         # manual only - the daily video is the Milo story episode now
     inputs:
       mode:
         description: "What to do"
@@ -55,7 +53,7 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           sudo rm -f /var/lib/man-db/auto-update
-          PKGS="ffmpeg fonts-dejavu-core fonts-noto-core fonts-noto-color-emoji fonts-comic-neue"
+          PKGS="ffmpeg fonts-dejavu-core fonts-noto-core fonts-noto-color-emoji fonts-comic-neue espeak-ng"
           sudo timeout 300 apt-get install -y -qq --no-install-recommends $PKGS \
             || (sudo timeout 120 apt-get update -qq && sudo timeout 300 apt-get install -y -qq --no-install-recommends $PKGS)
           ffmpeg -version | head -1
@@ -93,7 +91,9 @@ jobs:
       - name: Install Python packages
         if: steps.want.outputs.go == 'yes'
         timeout-minutes: 5
-        run: pip install -q -r requirements.txt
+        run: |
+          pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -q -r requirements.txt
 
       - name: Make (and upload) today's rhymes
         if: steps.want.outputs.go == 'yes'

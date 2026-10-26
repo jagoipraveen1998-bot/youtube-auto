@@ -1,4 +1,4 @@
-name: Daily English story episodes
+name: Daily Milo story episode
 
 on:
   schedule:
@@ -40,7 +40,7 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           sudo rm -f /var/lib/man-db/auto-update
-          PKGS="ffmpeg fonts-dejavu-core fonts-noto-core fonts-noto-color-emoji fonts-comic-neue"
+          PKGS="ffmpeg fonts-dejavu-core fonts-noto-core fonts-noto-color-emoji fonts-comic-neue espeak-ng"
           sudo timeout 300 apt-get install -y -qq --no-install-recommends $PKGS || (sudo timeout 120 apt-get update -qq && sudo timeout 300 apt-get install -y -qq --no-install-recommends $PKGS)
           ffmpeg -version | head -1
 
@@ -74,9 +74,11 @@ jobs:
 
       - name: Install Python packages
         timeout-minutes: 5
-        run: pip install -q -r requirements.txt
+        run: |
+          pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -q -r requirements.txt
 
-      - name: Write today's funny English story episode
+      - name: Make today's Milo story episode and Shorts
         timeout-minutes: 170
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -99,6 +101,7 @@ jobs:
           name: english-story-episode-${{ github.run_number }}
           path: |
             output_episodes/episode.mp4
+            output_episodes/short_*.mp4
             output_episodes/thumbnail.jpg
             output_episodes/description.txt
             output_episodes/script.json

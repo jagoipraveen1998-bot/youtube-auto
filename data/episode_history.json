@@ -1,6 +1,7 @@
 {
   "titles": [
-    "The Big Fluffy Sock"
+    "The Big Fluffy Sock",
+    "The Bouncy Big Ball"
   ],
   "episodes": [
     {
@@ -8,6 +9,12 @@
       "title": "The Big Fluffy Sock",
       "video_id": "tYc_mzm6BRI",
       "lesson": "When something is too big for one, sharing makes it just right for two."
+    },
+    {
+      "date": "2026-10-26",
+      "title": "The Bouncy Big Ball",
+      "video_id": "9JO_rs0_hq8",
+      "lesson": "Playing together and sharing makes every game more fun."
     }
   ]
 }

@@ -5,16 +5,30 @@
 
 channel:
   name: "Giggle Rhymes Kids"         # shown on videos and thumbnails - change to your channel name
-  topic: "funny new nursery rhymes for toddlers"
+  topic: "funny Milo the Mouse story episodes for toddlers"
   language: "en"
 
-# ---------------- Funny baby rhymes (what runs every day) ----------------
+# ---------------- Funny baby rhymes (manual runs only now) ----------------
 rhymes:
   per_compilation: 4                 # rhymes in the long video (~3 min); the 3 Shorts come from these
   music_volume: 0.30                 # background music loudness under the voice
-  voices:                            # free Microsoft Edge voices
-    en: { name: "en-US-AnaNeural", rate: "-5%", pitch: "+0Hz" }       # child voice
-    ta: { name: "ta-IN-PallaviNeural", rate: "-8%", pitch: "+25Hz" }  # brighter, child-like
+  voices:                            # Kokoro (free, natural); Edge voices are the backup
+    en:
+      engine: "kokoro"               # kokoro | edge
+      kokoro_lang: "a"               # a = American English, b = British
+      kokoro_voice: "af_heart"       # the storyteller voice
+      speed: 0.95
+      semitones: 0.0
+      name: "en-US-AnaNeural"        # backup voice if Kokoro cannot run
+      rate: "-5%"
+      pitch: "+0Hz"
+      cast:                          # a different voice for every character
+        narrator: { kokoro_voice: "af_heart",  speed: 0.95, semitones: 0.0 }
+        milo:     { kokoro_voice: "am_puck",   speed: 1.00, semitones: 4.0 }
+        pippa:    { kokoro_voice: "af_bella",  speed: 1.02, semitones: 2.0 }
+        mum:      { kokoro_voice: "bf_emma",   speed: 0.95, semitones: 0.0 }
+        friend:   { kokoro_voice: "af_nicole", speed: 1.00, semitones: 2.0 }
+    ta: { engine: "edge", name: "ta-IN-PallaviNeural", rate: "-8%", pitch: "+25Hz" }
   greeting:
     en:
       hello: "Hello friends! Let's sing some funny rhymes!"
@@ -36,6 +50,11 @@ rhymes:
   hashtags:
     en: ["#nurseryrhymes", "#kidssongs", "#funnyrhymes"]
     ta: ["#tamilrhymes", "#tamilkidssongs", "#kulanthaipadalgal"]
+
+# ---------------- Milo story episodes (the main daily video) ----------------
+episodes:
+  scenes: 6                          # scenes per episode; more scenes = longer watch time
+  shorts: 2                          # vertical Shorts cut from each episode (these bring subscribers)
 
 # ---------------- 3D cartoon look (Blender, free) ----------------
 threed:

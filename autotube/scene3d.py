@@ -43,6 +43,24 @@ SET_WORDS = [
     ("road", "town"), ("city", "town"), ("garden", "garden"), ("flower", "garden"), ("bee", "garden"),
 ]
 
+ACTIONS = ["dance", "jump", "spin", "walk", "peek", "wave", "sleep", "cheer", "chase"]
+ACTION_WORDS = [  # what the characters are doing, taken from the scene's own words
+    ("jump", "jump"), ("hop", "jump"), ("bounce", "jump"), ("boing", "jump"), ("leap", "jump"),
+    ("spin", "spin"), ("twirl", "spin"), ("roll", "spin"), ("turn", "spin"), ("round", "spin"),
+    ("walk", "walk"), ("march", "walk"), ("stroll", "walk"), ("step", "walk"), ("wander", "walk"),
+    ("hide", "peek"), ("peek", "peek"), ("seek", "peek"), ("behind", "peek"),
+    ("wave", "wave"), ("hello", "wave"), ("goodbye", "wave"), ("bye", "wave"), ("welcome", "wave"),
+    ("sleep", "sleep"), ("sleepy", "sleep"), ("nap", "sleep"), ("yawn", "sleep"), ("goodnight", "sleep"),
+    ("dream", "sleep"), ("tired", "sleep"),
+    ("cheer", "cheer"), ("hooray", "cheer"), ("hurray", "cheer"), ("clap", "cheer"), ("yay", "cheer"),
+    ("proud", "cheer"), ("win", "cheer"),
+    ("run", "chase"), ("chase", "chase"), ("race", "chase"), ("hurry", "chase"), ("catch", "chase"),
+    ("fast", "chase"), ("zoom", "chase"),
+    ("dance", "dance"), ("sing", "dance"), ("wiggle", "dance"), ("shake", "dance"), ("song", "dance"),
+]
+MOVING = {"walk", "chase"}  # these need a wide shot so nobody wanders out of frame
+SHOTS = ["wide", "medium", "low", "high"]
+
 _ENGINE = None  # decided once per run
 
 
@@ -73,6 +91,30 @@ def _all(text: str, table) -> list:
 def _guess(text: str, table, default):
     hits = _all(text, table)
     return hits[0] if hits else default
+
+
+def spoken_text(rhyme: dict) -> str:
+    """Everything said in this scene, for working out what is happening."""
+    out = []
+    for line in rhyme.get("lines", []) or []:
+        out.append(str(line.get("text", "")) if isinstance(line, dict) else str(line))
+    return " ".join(out)
+
+
+def perform(rhyme: dict, seed: int) -> tuple[str, str]:
+    """(action, camera shot) for this scene."""
+    r = random.Random(seed ^ 0x5EED)
+    given = str(rhyme.get("action", "")).strip().lower()
+    if given in ACTIONS:
+        action = given
+    else:
+        words = _all(" ".join([str(rhyme.get("title", "")), str(rhyme.get("title_en", "")),
+                               spoken_text(rhyme)]), ACTION_WORDS)
+        action = words[0] if words else r.choice(["dance", "jump", "wave", "dance", "spin"])
+    shot = str(rhyme.get("shot", "")).strip().lower()
+    if shot not in SHOTS:
+        shot = "wide" if action in MOVING else r.choice(["wide", "medium", "medium", "low", "high"])
+    return action, shot
 
 
 def cast(rhyme: dict, seed: int) -> tuple[str, list[str], str]:
@@ -163,7 +205,9 @@ def render_loop(rhyme: dict, vertical: bool, bpm: int, seed: int, work: Path, cf
     beat = 60.0 / bpm
     frames = max(16, round(8 * beat * fps))
     main, friends, setting = cast(rhyme, seed)
-    key = hashlib.md5(json.dumps([main, friends, setting, vertical, frames, fps, rw, rh, seed]).encode()).hexdigest()[:10]
+    action, shot = perform(rhyme, seed)
+    key = hashlib.md5(json.dumps([main, friends, setting, action, shot, vertical, frames, fps, rw, rh,
+                                  seed]).encode()).hexdigest()[:10]
     folder = work / f"3d_{'v' if vertical else 'h'}_{key}"
     loop = folder / "loop.mp4"
     portrait = folder / "portrait.png"
@@ -175,8 +219,10 @@ def render_loop(rhyme: dict, vertical: bool, bpm: int, seed: int, work: Path, cf
     spec = {"mode": "loop", "out_dir": str(folder), "width": rw, "height": rh, "fps": fps, "frames": frames,
             "engine": engine, "samples": int(tc.get(f"samples_{engine.lower()}", 16 if engine == "EEVEE" else 12)),
             "seed": seed, "setting": setting, "main": main, "friends": friends, "vertical": vertical,
+            "action": action, "shot": shot,
             "portrait": str(portrait), "exposure": tc.get("exposure", 0.0), "studio_light": tc.get("studio_light", "Default")}
-    log(f"3D: {main} + {', '.join(friends)} in the {setting} ({'9:16' if vertical else '16:9'}, {frames} frames, {engine})")
+    log(f"3D: {main} + {', '.join(friends)} {action} in the {setting}, {shot} shot "
+        f"({'9:16' if vertical else '16:9'}, {frames} frames, {engine})")
     t0 = time.time()
     ok, tail = _run_blender(spec, folder / "spec.json", int(tc.get("timeout", 1500)))
     if not ok or not _frames_ok(folder, frames):

@@ -692,8 +692,69 @@ def snowflakes(n):
 
 
 # ------------------------------------------------------------------ animation
+ACTIONS = ["dance", "jump", "spin", "walk", "peek", "wave", "sleep", "cheer", "chase"]
+
+
+def motion(act, k, beat, u, s):
+    """What this character is doing right now. Every action loops seamlessly."""
+    squash = (1 - s) ** 3
+    hop = 0.2 if k == 0 else 0.13
+    mo = {"dx": 0.0, "dy": 0.0, "dz": 0.0, "sx": 1.0, "sy": 1.0, "sz": 1.0,
+          "rx": 0.0, "ry": 0.0, "rz": 0.0, "arm": None, "droop": 0.0}
+    if act == "jump":
+        mo["dz"] = hop * 2.4 * s
+        mo["sx"] = mo["sy"] = 1 + 0.12 * squash
+        mo["sz"] = 1 - 0.16 * squash
+        mo["rz"] = 0.10 * math.sin(math.pi * beat / 2)
+    elif act == "spin":
+        mo["dz"] = hop * 0.6 * s
+        mo["rz"] = TAU * u
+        mo["sz"] = 1 - 0.06 * squash
+    elif act == "walk":
+        mo["dx"] = (1.2 if k == 0 else 0.8) * math.sin(TAU * u)
+        mo["dz"] = hop * 0.8 * abs(math.sin(TAU * 2 * u))
+        mo["ry"] = -0.12 * math.cos(TAU * u)
+    elif act == "peek":
+        up = 0.5 - 0.5 * math.cos(TAU * u)  # 0 -> 1 -> 0
+        mo["dz"] = -0.5 * (1 - up)
+        mo["sz"] = 1 - 0.12 * (1 - up)
+        mo["rz"] = 0.4 * math.sin(TAU * u)
+    elif act == "wave":
+        mo["dz"] = hop * 0.25 * s
+        mo["rz"] = 0.20 * math.sin(math.pi * beat / 2)
+        mo["arm"] = 1.35
+    elif act == "sleep":
+        breath = 0.5 + 0.5 * math.sin(TAU * u)
+        mo["sx"] = mo["sy"] = 1 + 0.035 * breath
+        mo["sz"] = 1 - 0.025 * breath
+        mo["dz"] = 0.02 * breath
+        mo["arm"] = 0.12
+        mo["droop"] = 0.38
+    elif act == "cheer":
+        mo["dz"] = hop * 1.8 * s
+        mo["sx"] = mo["sy"] = 1 + 0.10 * squash
+        mo["sz"] = 1 - 0.12 * squash
+        mo["arm"] = 1.55
+    elif act == "chase":
+        lag = 0.14 * k
+        mo["dx"] = (1.5 if k == 0 else 1.2) * math.sin(TAU * (u - lag))
+        mo["dz"] = hop * abs(math.sin(TAU * 2 * (u - lag)))
+        mo["ry"] = -0.16 * math.cos(TAU * (u - lag))
+    else:  # dance
+        mo["dz"] = hop * s
+        mo["sx"] = mo["sy"] = 1 + 0.07 * squash
+        mo["sz"] = 1 - 0.09 * squash
+        mo["ry"] = 0.07 * math.sin(math.pi * beat / 2)
+        mo["rz"] = 0.16 * math.sin(math.pi * beat / 2)
+    return mo
+
+
 def animate(rigs, clouds, ballo, flakes, cam, N):
     bf = N / 8.0  # frames per beat (the loop is two bars)
+    act = SPEC.get("action", "dance")
+    if act not in ACTIONS:
+        act = "dance"
+    print("ACTION", act)
     for f in range(1, N + 1):
         t = (f - 1)
         for k, rig in enumerate(rigs):
@@ -701,25 +762,29 @@ def animate(rigs, clouds, ballo, flakes, cam, N):
             b = rig["base"]
             beat = t / bf + ph
             s = abs(math.sin(math.pi * beat))
-            hop = (0.2 if k == 0 else 0.13) * s
-            squash = (1 - s) ** 3
+            u = t / N + (0.0 if k == 0 else 0.1 * k)  # never wrapped, so spins stay smooth
+            mo = motion(act, k, beat, u, s)
             root = rig["root"]
-            root.location = b["loc"] + Vector((0, 0, hop * b["scale"]))
             sc = b["scale"]
-            root.scale = (sc * (1 + 0.07 * squash), sc * (1 + 0.07 * squash), sc * (1 - 0.09 * squash))
-            root.rotation_euler = (0, 0.07 * math.sin(math.pi * beat / 2 * 2 / 2), b["rot"] + 0.16 * math.sin(math.pi * beat / 2))
+            root.location = b["loc"] + Vector((mo["dx"] * sc, mo["dy"] * sc, mo["dz"] * sc))
+            root.scale = (sc * mo["sx"], sc * mo["sy"], sc * mo["sz"])
+            root.rotation_euler = (mo["rx"], mo["ry"], b["rot"] + mo["rz"])
             root.keyframe_insert("location", frame=f)
             root.keyframe_insert("scale", frame=f)
             root.keyframe_insert("rotation_euler", frame=f)
             head = rig.get("head")
             if head is not None:
-                head.rotation_euler = (0.08 * math.sin(TAU * beat / 2), 0.1 * math.sin(math.pi * beat / 2 + 0.5), 0)
+                nod = 0.08 * math.sin(TAU * beat / 2) + mo["droop"]
+                head.rotation_euler = (nod, 0.1 * math.sin(math.pi * beat / 2 + 0.5), rig.get("look", 0.0))
                 head.keyframe_insert("rotation_euler", frame=f)
             for sh, sx in rig["arms"]:
-                if rig["kind"] in ("duck", "chick", "parrot", "owl"):
-                    sh.rotation_euler = (0, sx * (0.25 + 0.45 * abs(math.sin(TAU * beat))), 0)
+                if mo["arm"] is not None:
+                    swing = mo["arm"] * (0.75 + 0.25 * math.sin(TAU * beat + (0 if sx > 0 else math.pi)))
+                elif rig["kind"] in ("duck", "chick", "parrot", "owl"):
+                    swing = 0.25 + 0.45 * abs(math.sin(TAU * beat))
                 else:
-                    sh.rotation_euler = (0, sx * (0.5 + 0.55 * (0.5 + 0.5 * math.sin(math.pi * beat + (0 if sx > 0 else math.pi)))), 0)
+                    swing = 0.5 + 0.55 * (0.5 + 0.5 * math.sin(math.pi * beat + (0 if sx > 0 else math.pi)))
+                sh.rotation_euler = (0, sx * swing, 0)
                 sh.keyframe_insert("rotation_euler", frame=f)
             mouth = rig.get("mouth")
             if mouth is not None:
@@ -863,6 +928,20 @@ def setup_render(w, h, fps, frames, engine, samples, transparent=False):
 
 
 # ------------------------------------------------------------------ modes
+SHOTS = {  # where the camera sits: (what it looks at, where it is, lens)
+    "wide":   ((0, 0.5, 1.05), (0, -7.4, 1.95), 32),
+    "medium": ((0, 0.4, 1.10), (0, -5.8, 1.70), 42),
+    "low":    ((0, 0.4, 1.25), (0, -6.2, 0.70), 36),
+    "high":   ((0, 0.5, 0.85), (0, -6.6, 3.30), 34),
+}
+SHOTS_V = {
+    "wide":   ((0, 0.6, 1.25), (0, -8.2, 2.50), 30),
+    "medium": ((0, 0.5, 1.30), (0, -6.6, 2.10), 38),
+    "low":    ((0, 0.5, 1.40), (0, -7.0, 1.00), 33),
+    "high":   ((0, 0.6, 1.05), (0, -7.4, 3.60), 32),
+}
+
+
 def mode_loop():
     vertical = SPEC.get("vertical", False)
     st, clouds = build_set(SPEC.get("setting", "meadow"), vertical)
@@ -872,14 +951,16 @@ def mode_loop():
     rigs = [build_character(main, "main", (0, 0, 0), 1.25 if not vertical else 1.15)]
     spots = [(-2.4, 1.6, 0), (2.4, 1.6, 0)] if not vertical else [(-1.3, 2.0, 0), (1.3, 2.0, 0)]
     for i, fk in enumerate(friends):
-        rigs.append(build_character(fk, f"friend{i}", spots[i], 0.85 if not vertical else 0.75,
-                                    facing=0.35 if spots[i][0] < 0 else -0.35))
+        friend = build_character(fk, f"friend{i}", spots[i], 0.85 if not vertical else 0.75,
+                                 facing=0.35 if spots[i][0] < 0 else -0.35)
+        friend["look"] = 0.25 if spots[i][0] < 0 else -0.25  # glance at the star of the scene
+        rigs.append(friend)
     ballo = balloons(3, vertical)
     flakes = snowflakes(70) if st.get("snow") else []
-    if vertical:
-        cam, _ = camera((0, 0.6, 1.25), (0, -8.2, 2.5), 30)
-    else:
-        cam, _ = camera((0, 0.5, 1.05), (0, -7.4, 1.95), 32)
+    table = SHOTS_V if vertical else SHOTS
+    target, where, lens = table.get(SPEC.get("shot", "wide"), table["wide"])
+    print("SHOT", SPEC.get("shot", "wide"))
+    cam, _ = camera(target, where, lens)
     N = int(SPEC["frames"])
     animate(rigs, clouds, ballo, flakes, cam, N)
     setup_render(SPEC["width"], SPEC["height"], SPEC["fps"], N, SPEC.get("engine", "EEVEE"), SPEC.get("samples", 16))

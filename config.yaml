@@ -5,7 +5,7 @@
 
 channel:
   name: "Giggle Rhymes Kids"         # shown on videos and thumbnails - change to your channel name
-  topic: "funny Milo the Mouse story episodes for toddlers"
+  topic: "funny Milo the Mouse stories from Marigold Town, for toddlers"
   language: "en"
 
 # ---------------- Funny baby rhymes (manual runs only now) ----------------
@@ -26,8 +26,10 @@ rhymes:
         narrator: { kokoro_voice: "af_heart",  speed: 0.95, semitones: 0.0 }
         milo:     { kokoro_voice: "am_puck",   speed: 1.00, semitones: 4.0 }
         pippa:    { kokoro_voice: "af_bella",  speed: 1.02, semitones: 2.0 }
-        mum:      { kokoro_voice: "bf_emma",   speed: 0.95, semitones: 0.0 }
-        friend:   { kokoro_voice: "af_nicole", speed: 1.00, semitones: 2.0 }
+        bramble:  { kokoro_voice: "am_michael", speed: 0.90, semitones: -2.0 }
+        tilly:    { kokoro_voice: "bf_emma",    speed: 0.95, semitones: 1.0 }
+        mum:      { kokoro_voice: "bf_isabella", speed: 0.95, semitones: 0.0 }
+        friend:   { kokoro_voice: "af_nicole",  speed: 1.00, semitones: 2.0 }
     ta: { engine: "edge", name: "ta-IN-PallaviNeural", rate: "-8%", pitch: "+25Hz" }
   greeting:
     en:

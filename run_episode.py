@@ -22,10 +22,18 @@ from autotube.uploader import upload
 from autotube.util import ROOT, env, load_config, log
 
 IST = timezone(timedelta(hours=5, minutes=30))
-SPEAKERS = ["narrator", "milo", "pippa", "friend", "mum"]
+SPEAKERS = ["narrator", "milo", "pippa", "bramble", "tilly", "friend", "mum"]
 
 PROMPT = """Write one original, funny animated story episode for the English kids channel "{channel}", for children aged 2-5.
-The channel's series is "Milo the Mouse": Milo is a curious little mouse and Pippa is his cheerful parrot friend.
+The series is "Milo the Mouse", set in Marigold Town: a bright little toy town of painted houses, striped shop
+awnings, lamp posts and bunting, where everyone is a friendly animal. Milo is a curious little mouse who drives
+the town's small yellow taxi and loves helping his neighbours. The regulars are:
+  milo    - Milo the mouse, the taxi driver: eager, kind, a bit clumsy
+  pippa   - Pippa the parrot, his best friend: chatty, quick, repeats funny words
+  bramble - Constable Bramble, a gentle bear who keeps the town tidy and safe
+  tilly   - Mrs Tilly, a duck who runs the cake shop and always has crumbs to spare
+Stories are everyday town troubles solved by kindness: a lost parcel, a squeaky wheel, a cake that will not rise,
+a puddle nobody can cross. Never a villain and never real danger.
 
 Episode title must be different from these recent titles: {used}
 Tell a complete story: a warm opening, a silly problem, two funny attempts that fail, a kind resolution, and a gentle lesson.
@@ -33,11 +41,14 @@ Use simple spoken English, gentle humour, safe situations, playful sounds (squea
 Make exactly {scenes} scenes. Each scene has 3 to 5 spoken lines, each line 3 to 12 words. Keep the events and characters consistent across scenes.
 
 Every line must say who speaks it. Use ONLY these speakers: {speakers}
-("milo" is Milo the mouse, "pippa" is Pippa the parrot, "friend" is any other animal character, "mum" is a grown-up, "narrator" tells the story.)
-Give most lines to milo and pippa so it sounds like a cartoon, not a reading.
+("friend" is any other townsfolk, "mum" is any other grown-up, "narrator" tells the story.)
+Give most lines to milo and pippa so it sounds like a cartoon, not a reading, and bring in bramble or tilly where the story needs them.
 
 The episode is a 3D cartoon. In each scene list who is on screen using ONLY these ids: {ids}
-(Milo is "mouse", Pippa is "parrot"; put the scene's main speaker first, at most 3 ids). Pick each scene's setting from: {settings}.
+(Milo is "mouse", Pippa is "parrot", Constable Bramble is "bear", Mrs Tilly is "duck"; put the scene's main speaker
+first, at most 3 ids; "rickshaw" or "bus" can appear as Milo's little taxi).
+Pick each scene's setting from: {settings}. Use "town" for most scenes, since that is Marigold Town itself, and only
+move to garden, meadow, farm, beach, snow or night when the story really goes there.
 No scary scenes, unsafe imitation, violence, insults, brands, copyrighted characters, famous song lyrics, or requests to like/subscribe.
 
 Return only JSON in this schema:

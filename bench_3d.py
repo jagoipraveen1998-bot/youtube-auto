@@ -15,10 +15,12 @@ from autotube.util import ROOT, log
 from preview_3d import label_font
 
 CONFIGS = [  # name, engine, width, height, samples, extra spec
-    ("wide shot", "WORKBENCH", 640, 360, 1, {"shot": "wide", "action": "jump"}),
-    ("medium shot", "WORKBENCH", 640, 360, 1, {"shot": "medium", "action": "jump"}),
-    ("low shot", "WORKBENCH", 640, 360, 1, {"shot": "low", "action": "jump"}),
-    ("high shot", "WORKBENCH", 640, 360, 1, {"shot": "high", "action": "cheer"}),
+    ("Marigold Town, wide", "WORKBENCH", 960, 540, 1, {"shot": "wide", "action": "wave"}),
+    ("Marigold Town, medium", "WORKBENCH", 960, 540, 1, {"shot": "medium", "action": "jump"}),
+    ("Marigold Town, low", "WORKBENCH", 960, 540, 1, {"shot": "low", "action": "cheer"}),
+    ("frog and turtle eyes", "WORKBENCH", 960, 540, 1, {"shot": "medium", "action": "wave",
+                                                        "main": "frog", "friends": ["turtle", "mouse"],
+                                                        "setting": "garden"}),
 ]
 FRAMES = 6
 
@@ -33,8 +35,8 @@ def main():
         folder = work / f"c{i}"
         folder.mkdir(parents=True)
         spec = {"mode": "loop", "out_dir": str(folder), "width": w, "height": h, "fps": 12, "frames": FRAMES,
-                "engine": engine, "samples": samples, "seed": 42, "setting": "garden", "main": "frog",
-                "friends": ["bear", "giraffe"], "vertical": False, **extra}
+                "engine": engine, "samples": samples, "seed": 42, "setting": "town", "main": "mouse",
+                "friends": ["parrot", "rickshaw"], "vertical": False, **extra}
         (folder / "spec.json").write_text(json.dumps(spec))
         cmd = [scene3d.blender_bin(), "-b", "--factory-startup", "-noaudio", "-P", str(scene3d.SCRIPT), "--",
                str(folder / "spec.json")]

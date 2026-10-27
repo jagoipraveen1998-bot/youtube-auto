@@ -142,7 +142,7 @@ def main():
         log(f"Scene {number}/{len(data['scenes'])}: {scene['title']}")
         clip = out / "work" / f"scene_{number}.mp4"
         seconds = rv.render_rhyme(scene, "en", cfg, out / "work" / f"scene_{number}", clip, False,
-                                  seed_for(today, number, scene["title"]), channel)
+                                  seed_for(today, number, scene["title"]), channel, show_next=False)
         chapters.append((elapsed, scene["title"]))
         clips.append(clip)
         elapsed += seconds
@@ -170,7 +170,7 @@ def main():
         path = out / f"short_{n}.mp4"
         log(f"Short {n}: {scene['title']}")
         rv.render_rhyme(scene, "en", cfg, out / "work" / f"scene_{index + 1}", path, True,
-                        seed_for(today, "short", index), channel)
+                        seed_for(today, "short", index), channel, show_next=False)
         short_files.append((index, path))
 
     if args.no_upload:

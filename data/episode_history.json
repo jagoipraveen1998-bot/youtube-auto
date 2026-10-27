@@ -1,7 +1,8 @@
 {
   "titles": [
     "The Big Fluffy Sock",
-    "The Bouncy Big Ball"
+    "The Bouncy Big Ball",
+    "The Big Slippery Banana"
   ],
   "episodes": [
     {
@@ -15,6 +16,17 @@
       "title": "The Bouncy Big Ball",
       "video_id": "9JO_rs0_hq8",
       "lesson": "Playing together and sharing makes every game more fun."
+    },
+    {
+      "date": "2026-10-27",
+      "title": "The Big Slippery Banana",
+      "video_id": "CL6Tn41njEQ",
+      "shorts": [
+        "4N5PEfzfETY",
+        "3Djkm1vPDkc"
+      ],
+      "length": "02:43",
+      "lesson": "Working together makes big jobs easy and fun."
     }
   ]
 }

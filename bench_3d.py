@@ -15,10 +15,10 @@ from autotube.util import ROOT, log
 from preview_3d import label_font
 
 CONFIGS = [  # name, engine, width, height, samples, extra spec
-    ("workbench exp 0.8", "WORKBENCH", 960, 540, 1, {"exposure": 0.8}),
-    ("workbench exp 1.2", "WORKBENCH", 960, 540, 1, {"exposure": 1.2}),
-    ("workbench outdoor exp 0.8", "WORKBENCH", 960, 540, 1, {"exposure": 0.8, "studio_light": "outdoor.sl"}),
-    ("cycles 640x360 s8", "CYCLES", 640, 360, 8, {}),
+    ("wide shot", "WORKBENCH", 640, 360, 1, {"shot": "wide", "action": "jump"}),
+    ("medium shot", "WORKBENCH", 640, 360, 1, {"shot": "medium", "action": "jump"}),
+    ("low shot", "WORKBENCH", 640, 360, 1, {"shot": "low", "action": "jump"}),
+    ("high shot", "WORKBENCH", 640, 360, 1, {"shot": "high", "action": "cheer"}),
 ]
 FRAMES = 6
 
@@ -33,8 +33,8 @@ def main():
         folder = work / f"c{i}"
         folder.mkdir(parents=True)
         spec = {"mode": "loop", "out_dir": str(folder), "width": w, "height": h, "fps": 12, "frames": FRAMES,
-                "engine": engine, "samples": samples, "seed": 42, "setting": "farm", "main": "cow",
-                "friends": ["pig", "chick"], "vertical": False, **extra}
+                "engine": engine, "samples": samples, "seed": 42, "setting": "garden", "main": "frog",
+                "friends": ["bear", "giraffe"], "vertical": False, **extra}
         (folder / "spec.json").write_text(json.dumps(spec))
         cmd = [scene3d.blender_bin(), "-b", "--factory-startup", "-noaudio", "-P", str(scene3d.SCRIPT), "--",
                str(folder / "spec.json")]
@@ -56,7 +56,7 @@ def main():
              "tail": text[-600:] if not times else ""}
         results.append(r)
         log(f"BENCH {r}")
-        frame = folder / "f_0003.png"
+        frame = folder / "f_0002.png"
         tiles.append((frame if frame.exists() else None, f"{name}: {r['per_frame_s']} s/frame"))
     cell = (640, 360)
     img = Image.new("RGB", (cell[0] * 2, (cell[1] + 40) * 2), (236, 244, 255))

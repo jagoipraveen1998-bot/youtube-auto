@@ -152,15 +152,22 @@ def surf(c, r, x, z, push=0.0):
 # ------------------------------------------------------------------ faces
 def face(c, r, parent, eye_scale=1.0, eyes_top=False, wide_mouth=False, cheeks=True, sleepy=False):
     rig = {"eyes": []}
-    ez = 0.12 * r if not eyes_top else 0.55 * r
-    ex = 0.36 * r if not eyes_top else 0.42 * r
+    ez = 0.12 * r if not eyes_top else 0.40 * r
+    ex = 0.36 * r if not eyes_top else 0.32 * r
+    er = 0.2 * r * eye_scale
     for sx in (-1, 1):
-        p = surf(c, r, sx * ex, ez, push=-0.02 * r) if not eyes_top else Vector((c[0] + sx * ex, c[1] - 0.45 * r, c[2] + ez))
-        er = 0.2 * r * eye_scale
-        white = sphere(p, er, "#ffffff", parent, scale=(1, 0.65, 1.15 if not sleepy else 0.35), rough=0.25)
+        # frogs and turtles have eyes that bulge off the top of the head, but the
+        # pupils still face the camera so children can see where they are looking
+        push = -0.02 * r if not eyes_top else 0.42 * er
+        p = surf(c, r, sx * ex, ez, push=push)
+        if eyes_top:
+            p = Vector((p.x, p.y, p.z + 0.30 * er))
+        white = sphere(p, er, "#ffffff", parent, scale=(1, 0.65 if not eyes_top else 0.9, 1.15 if not sleepy else 0.35),
+                       rough=0.25)
         rig["eyes"].append(white)
         if not sleepy:
-            pp = p + Vector((0, -0.11 * er / 0.2 * 0.2 - 0.06 * r, -0.03 * r))
+            fwd = (0.72 * er) if eyes_top else (0.11 * er + 0.06 * r)
+            pp = p + Vector((0, -fwd, -0.03 * r))
             sphere(pp, er * 0.62, "#1b1b2f", parent, scale=(1, 0.6, 1.1), rough=0.15)
             sphere(pp + Vector((0.035 * r, -0.05 * r, 0.06 * r)), er * 0.2, "#ffffff", parent, emit=1.5, seg=12)
     mp = surf(c, r, 0, -0.33 * r, push=0.0)
@@ -518,7 +525,8 @@ SETTINGS = {
     "night": dict(sky=("#3b2a6b", "#0d1640"), ground="#2f6b4f", hill="#245a42", trees="round", night=True),
     "beach": dict(sky=("#d9f6ff", "#4fc3f7"), ground="#f3d9a4", hill=None, trees="palm", sea=True),
     "snow": dict(sky=("#eef6ff", "#9ccfff"), ground="#f7fbff", hill="#e3f0fb", trees="pine", snow=True),
-    "town": dict(sky=("#dff4ff", "#6ec6ff"), ground="#8fd26e", hill="#78c25c", trees="round", houses=True),
+    "town": dict(sky=("#dff4ff", "#6ec6ff"), ground="#8fd26e", hill="#78c25c", trees="round", houses=True,
+                 toytown=True, flowers=26),
 }
 
 
@@ -627,13 +635,18 @@ def build_set(name, vertical):
             box((0, 2.6, z), (18, 0.07, 0.1), "#d9a46c", bevel=0.02)
     if st.get("houses"):
         cols = ["#ff8a80", "#82b1ff", "#ffd180", "#b9f6ca", "#ea80fc"]
-        for i, x in enumerate((-8, -4.5, 4.5, 8)):
+        roofs = ["#8d4b3b", "#5d8aa8", "#c2703d", "#6b8e5a", "#9a6fb0"]
+        for i, x in enumerate((-8.5, -5.0, 5.0, 8.5)):
             box((x, 8, 1.2), (2.4, 2.2, 2.4), cols[i % 5], bevel=0.06)
-            cone((x, 8, 2.4), (x, 8, 3.6), 1.9, "#8d4b3b", verts=4)
+            cone((x, 8, 2.4), (x, 8, 3.6), 1.9, roofs[i % 5], verts=4)
             box((x, 6.88, 0.75), (0.6, 0.05, 1.1), "#6d4c41", bevel=0.02)
+            sphere((x + 0.22, 6.82, 0.75), 0.05, "#ffd54f", rough=0.2)  # door knob
             for dx in (-0.65, 0.65):
                 box((x + dx, 6.88, 1.75), (0.45, 0.05, 0.45), "#bbdefb", bevel=0.02, rough=0.1)
+            cyl((x, 7.4, 3.3), (x, 7.4, 4.1), 0.18, "#b0564a")          # chimney
         box((0, 5.5, 0.01), (40, 2.2, 0.02), "#9e9e9e", bevel=0)
+    if st.get("toytown"):
+        toy_town()
     # sky decorations
     clouds = []
     for i in range(5):
@@ -651,6 +664,45 @@ def build_set(name, vertical):
     elif not st.get("snow"):
         sphere((-9, 32, 13), 2.2, "#fff176", emit=3.0)
     return st, clouds
+
+
+def toy_town():
+    """A cheerful little town square: shops, lamp posts, a postbox and bunting."""
+    # two shop fronts facing the camera, set back behind the road
+    shops = (("#ffd3e0", "#e05c8a", -2.6), ("#d6f0ff", "#3f8fd0", 2.6))
+    for wall, awning, x in shops:
+        box((x, 11.2, 1.5), (3.0, 2.6, 3.0), wall, bevel=0.06)
+        cone((x, 11.2, 3.0), (x, 11.2, 4.1), 2.4, "#7b4a4a", verts=4)
+        box((x, 9.85, 1.0), (1.0, 0.08, 2.0), "#7a4b2a", bevel=0.03)          # doorway
+        box((x, 9.88, 2.5), (2.2, 0.10, 0.30), awning, bevel=0.04)            # awning board
+        for i in range(7):                                                     # striped awning
+            box((x - 0.95 + i * 0.32, 9.72, 2.22), (0.16, 0.42, 0.06),
+                awning if i % 2 else "#ffffff", bevel=0.02, rot=(0.5, 0, 0))
+    # pavement and a road across the middle distance
+    box((0, 6.9, 0.03), (44, 1.0, 0.06), "#e8e2d4", bevel=0)
+    box((0, 5.5, 0.04), (44, 2.0, 0.04), "#8d8d8d", bevel=0)
+    for i in range(11):                                                        # dashes down the road
+        box((-10 + i * 2.0, 5.5, 0.07), (0.8, 0.10, 0.02), "#fdfdfd", bevel=0)
+    # lamp posts
+    for x in (-6.2, 6.2):
+        cyl((x, 6.6, 0), (x, 6.6, 2.9), 0.075, "#37474f")
+        cyl((x, 6.6, 2.9), (x, 6.6, 3.05), 0.22, "#37474f")
+        sphere((x, 6.6, 3.22), 0.26, "#fff6c2", emit=2.2, rough=0.2)
+    # a round red postbox, and a bench
+    cyl((-4.2, 6.5, 0), (-4.2, 6.5, 1.15), 0.33, "#d84a3a")
+    sphere((-4.2, 6.5, 1.15), 0.33, "#d84a3a", scale=(1, 1, 0.55))
+    box((-4.2, 6.16, 0.85), (0.34, 0.06, 0.09), "#2b2b2b", bevel=0.01)
+    box((4.3, 6.6, 0.42), (1.5, 0.45, 0.10), "#c28a55", bevel=0.03)
+    for dx in (-0.6, 0.6):
+        box((4.3 + dx, 6.6, 0.2), (0.12, 0.42, 0.40), "#8d5a36", bevel=0.02)
+    box((4.3, 6.82, 0.72), (1.5, 0.10, 0.45), "#c28a55", bevel=0.03)
+    # bunting between the lamp posts
+    cols = ["#ff5a5f", "#ffd23f", "#3fa9f5", "#2ecc71", "#c38fff"]
+    for i in range(13):
+        t = i / 12
+        x = -6.2 + t * 12.4
+        z = 2.75 - 0.55 * math.sin(math.pi * t)
+        cone((x, 6.6, z), (x, 6.6, z - 0.34), 0.17, cols[i % 5], verts=3)
 
 
 def lights(st):

@@ -164,10 +164,22 @@ def _esc(s: str) -> str:
     return s.replace("{", "(").replace("}", ")").replace("\n", " ")
 
 
+def band_filter(vertical: bool, show_next: bool) -> str:
+    """The soft strip behind the words, just tall enough for them."""
+    if vertical:
+        h = 430 if show_next else 300
+        return f"drawbox=x=0:y=ih-{h + 200}:w=iw:h={h}:color=0x1a0d2e@0.34:t=fill"
+    h = 250 if show_next else 185
+    return f"drawbox=x=0:y=ih-{h}:w=iw:h={h}:color=0x1a0d2e@0.34:t=fill"
+
+
 def write_ass(path: Path, size: tuple[int, int], family: str, title: str, title_span: tuple[float, float],
-              lines: list[dict], vertical: bool) -> Path:
+              lines: list[dict], vertical: bool, show_next: bool = True) -> Path:
     w, h = size
-    lyr = 108 if not vertical else 96
+    if show_next:  # rhymes: the line being sung, with the next one underneath
+        lyr, sing_v, next_v = (96, 140, 58) if not vertical else (88, 430, 330)
+    else:          # stories: one clean line of speech
+        lyr, sing_v, next_v = (84, 95, 40) if not vertical else (80, 330, 250)
     head = f"""[Script Info]
 ScriptType: v4.00+
 PlayResX: {w}
@@ -176,8 +188,8 @@ WrapStyle: 0
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Sing,{family},{lyr},&H0000E5FF,&H00FFFFFF,&H00862A5E,&H64000000,-1,0,0,0,100,100,1,0,1,7,3,2,60,60,{120 if not vertical else 430},1
-Style: Next,{family},{int(lyr * 0.55)},&H00F0F0F0,&H00F0F0F0,&H00862A5E,&H00000000,-1,0,0,0,100,100,0,0,1,5,0,2,60,60,{50 if not vertical else 330},1
+Style: Sing,{family},{lyr},&H0000E5FF,&H00FFFFFF,&H00862A5E,&H64000000,-1,0,0,0,100,100,1,0,1,7,3,2,70,70,{sing_v},1
+Style: Next,{family},{int(lyr * 0.55)},&H00F0F0F0,&H00F0F0F0,&H00862A5E,&H00000000,-1,0,0,0,100,100,0,0,1,5,0,2,70,70,{next_v},1
 Style: Title,{family},{150 if not vertical else 120},&H00FFFFFF,&H00FFFFFF,&H004A1FE9,&H64000000,-1,0,0,0,100,100,2,0,1,10,4,8,80,80,{60 if not vertical else 230},1
 
 [Events]
@@ -200,7 +212,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
             cursor = we
         ev.append(f"Dialogue: 0,{_ass_t(start)},{_ass_t(end)},Sing,,0,0,0,,"
                   r"{\fad(120,120)}" + "".join(parts).strip())
-        if i + 1 < len(lines):
+        if show_next and i + 1 < len(lines):
             ev.append(f"Dialogue: 0,{_ass_t(start)},{_ass_t(end)},Next,,0,0,0,,{_esc(lines[i + 1]['text'])}")
     path.write_text(head + "\n".join(ev) + "\n", encoding="utf-8")
     return path
@@ -212,7 +224,7 @@ def _escf(p: Path | str) -> str:
 
 # ---------------------------------------------------------------- render one rhyme
 def render_rhyme(rhyme: dict, lang: str, cfg: dict, work: Path, out: Path, vertical: bool,
-                 seed: int, channel: str) -> float:
+                 seed: int, channel: str, show_next: bool = True) -> float:
     """Render one rhyme to "out". Returns its duration (seconds)."""
     work.mkdir(parents=True, exist_ok=True)
     vc = cfg["rhymes"]["voices"][lang]
@@ -263,15 +275,14 @@ def render_rhyme(rhyme: dict, lang: str, cfg: dict, work: Path, out: Path, verti
         character(rhyme, cpx, ch)
     _, family = fonts(lang)
     ass = write_ass(work / f"lyrics_{'v' if vertical else 'h'}.ass", size, family, rhyme["title"],
-                    (title_ln["show"], title_ln["hide"]), lines, vertical)
+                    (title_ln["show"], title_ln["hide"]), lines, vertical, show_next)
     music = make_music(work / "music.wav", total, bpm, key, seed)
 
     # 4. ffmpeg: animated 3D loop (or 2D background + bouncing character) + karaoke + mixed audio
     subs = (f"ass=filename='{_escf(ass)}':fontsdir='{_escf(Path(fonts(lang)[0]).parent)}',"
             f"fade=t=in:st=0:d=0.3,fade=t=out:st={total - 0.4:.2f}:d=0.4[v]")
     if loop is not None:
-        band = (f"drawbox=x=0:y=ih-240:w=iw:h=240:color=0x1a0d2e@0.34:t=fill" if not vertical else
-                f"drawbox=x=0:y=ih-560:w=iw:h=360:color=0x1a0d2e@0.34:t=fill")
+        band = band_filter(vertical, show_next)
         inputs = ["-stream_loop", "-1", "-i", str(loop), "-i", str(music)]
         fl = [f"[0:v]scale={W}:{H},setsar=1,format=yuv420p,{band}[v1]", f"[v1]{subs}"]
         mi, vi = 1, 2

@@ -673,6 +673,9 @@ def toy_town():
         box((x, 11.4, 1.5), (3.0, 2.6, 3.0), wall, bevel=0.06)
         cone((x, 11.4, 3.0), (x, 11.4, 4.0), 2.4, "#7b4a4a", verts=4)
         box((x, 10.05, 1.0), (1.0, 0.08, 2.0), "#7a4b2a", bevel=0.03)          # doorway
+        sphere((x + 0.36, 9.99, 1.0), 0.05, "#ffd54f", rough=0.2)              # door knob
+        for dx in (-1.0, 1.0):                                                 # shop windows
+            box((x + dx, 10.03, 1.35), (0.7, 0.06, 0.8), "#bbdefb", bevel=0.03, rough=0.1)
         box((x, 10.08, 2.5), (2.2, 0.10, 0.30), awning, bevel=0.04)            # awning board
         for i in range(7):                                                     # striped awning
             box((x - 0.95 + i * 0.32, 9.92, 2.22), (0.16, 0.42, 0.06),
@@ -697,11 +700,15 @@ def toy_town():
     box((6.1, 8.72, 0.72), (1.5, 0.10, 0.45), "#c28a55", bevel=0.03)
     # bunting strung between the two lamp posts
     cols = ["#ff5a5f", "#ffd23f", "#3fa9f5", "#2ecc71", "#c38fff"]
+    flags = []
     for i in range(15):
         t = i / 14
         x = -7.6 + t * 15.2
         z = 2.25 - 0.5 * math.sin(math.pi * t)
+        flags.append((x, z))
         cone((x, 8.4, z), (x, 8.4, z - 0.30), 0.15, cols[i % 5], verts=3)
+    for (x1, z1), (x2, z2) in zip(flags, flags[1:]):  # the string they hang from
+        cyl((x1, 8.4, z1), (x2, 8.4, z2), 0.018, "#5d4037")
 
 
 def lights(st):

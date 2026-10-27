@@ -636,15 +636,14 @@ def build_set(name, vertical):
     if st.get("houses"):
         cols = ["#ff8a80", "#82b1ff", "#ffd180", "#b9f6ca", "#ea80fc"]
         roofs = ["#8d4b3b", "#5d8aa8", "#c2703d", "#6b8e5a", "#9a6fb0"]
-        for i, x in enumerate((-8.5, -5.0, 5.0, 8.5)):
-            box((x, 8, 1.2), (2.4, 2.2, 2.4), cols[i % 5], bevel=0.06)
-            cone((x, 8, 2.4), (x, 8, 3.6), 1.9, roofs[i % 5], verts=4)
-            box((x, 6.88, 0.75), (0.6, 0.05, 1.1), "#6d4c41", bevel=0.02)
-            sphere((x + 0.22, 6.82, 0.75), 0.05, "#ffd54f", rough=0.2)  # door knob
+        for i, x in enumerate((-9.6, 9.6)):
+            box((x, 13.0, 1.2), (2.4, 2.2, 2.4), cols[i % 5], bevel=0.06)
+            cone((x, 13.0, 2.4), (x, 13.0, 3.5), 1.9, roofs[i % 5], verts=4)
+            box((x, 11.88, 0.75), (0.6, 0.05, 1.1), "#6d4c41", bevel=0.02)
+            sphere((x + 0.22, 11.82, 0.75), 0.05, "#ffd54f", rough=0.2)  # door knob
             for dx in (-0.65, 0.65):
-                box((x + dx, 6.88, 1.75), (0.45, 0.05, 0.45), "#bbdefb", bevel=0.02, rough=0.1)
-            cyl((x, 7.4, 3.3), (x, 7.4, 4.1), 0.18, "#b0564a")          # chimney
-        box((0, 5.5, 0.01), (40, 2.2, 0.02), "#9e9e9e", bevel=0)
+                box((x + dx, 11.88, 1.75), (0.45, 0.05, 0.45), "#bbdefb", bevel=0.02, rough=0.1)
+            cyl((x, 12.4, 3.2), (x, 12.4, 3.8), 0.18, "#b0564a")         # chimney
     if st.get("toytown"):
         toy_town()
     # sky decorations
@@ -669,40 +668,40 @@ def build_set(name, vertical):
 def toy_town():
     """A cheerful little town square: shops, lamp posts, a postbox and bunting."""
     # two shop fronts facing the camera, set back behind the road
-    shops = (("#ffd3e0", "#e05c8a", -2.6), ("#d6f0ff", "#3f8fd0", 2.6))
+    shops = (("#ffd3e0", "#e05c8a", -4.0), ("#d6f0ff", "#3f8fd0", 4.0))
     for wall, awning, x in shops:
-        box((x, 11.2, 1.5), (3.0, 2.6, 3.0), wall, bevel=0.06)
-        cone((x, 11.2, 3.0), (x, 11.2, 4.1), 2.4, "#7b4a4a", verts=4)
-        box((x, 9.85, 1.0), (1.0, 0.08, 2.0), "#7a4b2a", bevel=0.03)          # doorway
-        box((x, 9.88, 2.5), (2.2, 0.10, 0.30), awning, bevel=0.04)            # awning board
+        box((x, 11.4, 1.5), (3.0, 2.6, 3.0), wall, bevel=0.06)
+        cone((x, 11.4, 3.0), (x, 11.4, 4.0), 2.4, "#7b4a4a", verts=4)
+        box((x, 10.05, 1.0), (1.0, 0.08, 2.0), "#7a4b2a", bevel=0.03)          # doorway
+        box((x, 10.08, 2.5), (2.2, 0.10, 0.30), awning, bevel=0.04)            # awning board
         for i in range(7):                                                     # striped awning
-            box((x - 0.95 + i * 0.32, 9.72, 2.22), (0.16, 0.42, 0.06),
+            box((x - 0.95 + i * 0.32, 9.92, 2.22), (0.16, 0.42, 0.06),
                 awning if i % 2 else "#ffffff", bevel=0.02, rot=(0.5, 0, 0))
-    # pavement and a road across the middle distance
-    box((0, 6.9, 0.03), (44, 1.0, 0.06), "#e8e2d4", bevel=0)
-    box((0, 5.5, 0.04), (44, 2.0, 0.04), "#8d8d8d", bevel=0)
+    # pavement and a road, set well back so the characters have clear grass
+    box((0, 8.6, 0.03), (44, 1.2, 0.06), "#e8e2d4", bevel=0)
+    box((0, 7.0, 0.04), (44, 2.0, 0.04), "#8d8d8d", bevel=0)
     for i in range(11):                                                        # dashes down the road
-        box((-10 + i * 2.0, 5.5, 0.07), (0.8, 0.10, 0.02), "#fdfdfd", bevel=0)
-    # lamp posts
-    for x in (-6.2, 6.2):
-        cyl((x, 6.6, 0), (x, 6.6, 2.9), 0.075, "#37474f")
-        cyl((x, 6.6, 2.9), (x, 6.6, 3.05), 0.22, "#37474f")
-        sphere((x, 6.6, 3.22), 0.26, "#fff6c2", emit=2.2, rough=0.2)
+        box((-10 + i * 2.0, 7.0, 0.07), (0.8, 0.10, 0.02), "#fdfdfd", bevel=0)
+    # lamp posts, short enough to stay inside the frame
+    for x in (-7.6, 7.6):
+        cyl((x, 8.4, 0), (x, 8.4, 2.3), 0.075, "#37474f")
+        cyl((x, 8.4, 2.3), (x, 8.4, 2.45), 0.22, "#37474f")
+        sphere((x, 8.4, 2.6), 0.26, "#fff6c2", emit=2.2, rough=0.2)
     # a round red postbox, and a bench
-    cyl((-4.2, 6.5, 0), (-4.2, 6.5, 1.15), 0.33, "#d84a3a")
-    sphere((-4.2, 6.5, 1.15), 0.33, "#d84a3a", scale=(1, 1, 0.55))
-    box((-4.2, 6.16, 0.85), (0.34, 0.06, 0.09), "#2b2b2b", bevel=0.01)
-    box((4.3, 6.6, 0.42), (1.5, 0.45, 0.10), "#c28a55", bevel=0.03)
+    cyl((-6.0, 8.5, 0), (-6.0, 8.5, 1.15), 0.33, "#d84a3a")
+    sphere((-6.0, 8.5, 1.15), 0.33, "#d84a3a", scale=(1, 1, 0.55))
+    box((-6.0, 8.16, 0.85), (0.34, 0.06, 0.09), "#2b2b2b", bevel=0.01)
+    box((6.1, 8.5, 0.42), (1.5, 0.45, 0.10), "#c28a55", bevel=0.03)
     for dx in (-0.6, 0.6):
-        box((4.3 + dx, 6.6, 0.2), (0.12, 0.42, 0.40), "#8d5a36", bevel=0.02)
-    box((4.3, 6.82, 0.72), (1.5, 0.10, 0.45), "#c28a55", bevel=0.03)
-    # bunting between the lamp posts
+        box((6.1 + dx, 8.5, 0.2), (0.12, 0.42, 0.40), "#8d5a36", bevel=0.02)
+    box((6.1, 8.72, 0.72), (1.5, 0.10, 0.45), "#c28a55", bevel=0.03)
+    # bunting strung between the two lamp posts
     cols = ["#ff5a5f", "#ffd23f", "#3fa9f5", "#2ecc71", "#c38fff"]
-    for i in range(13):
-        t = i / 12
-        x = -6.2 + t * 12.4
-        z = 2.75 - 0.55 * math.sin(math.pi * t)
-        cone((x, 6.6, z), (x, 6.6, z - 0.34), 0.17, cols[i % 5], verts=3)
+    for i in range(15):
+        t = i / 14
+        x = -7.6 + t * 15.2
+        z = 2.25 - 0.5 * math.sin(math.pi * t)
+        cone((x, 8.4, z), (x, 8.4, z - 0.30), 0.15, cols[i % 5], verts=3)
 
 
 def lights(st):

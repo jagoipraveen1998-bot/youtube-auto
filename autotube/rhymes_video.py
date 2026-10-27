@@ -167,7 +167,7 @@ def _esc(s: str) -> str:
 def write_ass(path: Path, size: tuple[int, int], family: str, title: str, title_span: tuple[float, float],
               lines: list[dict], vertical: bool) -> Path:
     w, h = size
-    lyr = 92 if not vertical else 84
+    lyr = 108 if not vertical else 96
     head = f"""[Script Info]
 ScriptType: v4.00+
 PlayResX: {w}
@@ -176,8 +176,8 @@ WrapStyle: 0
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Sing,{family},{lyr},&H0000E5FF,&H00FFFFFF,&H00862A5E,&H64000000,-1,0,0,0,100,100,1,0,1,7,3,2,60,60,{150 if not vertical else 430},1
-Style: Next,{family},{int(lyr * 0.62)},&H00F0F0F0,&H00F0F0F0,&H00862A5E,&H00000000,-1,0,0,0,100,100,0,0,1,5,0,2,60,60,{60 if not vertical else 330},1
+Style: Sing,{family},{lyr},&H0000E5FF,&H00FFFFFF,&H00862A5E,&H64000000,-1,0,0,0,100,100,1,0,1,7,3,2,60,60,{120 if not vertical else 430},1
+Style: Next,{family},{int(lyr * 0.55)},&H00F0F0F0,&H00F0F0F0,&H00862A5E,&H00000000,-1,0,0,0,100,100,0,0,1,5,0,2,60,60,{50 if not vertical else 330},1
 Style: Title,{family},{150 if not vertical else 120},&H00FFFFFF,&H00FFFFFF,&H004A1FE9,&H64000000,-1,0,0,0,100,100,2,0,1,10,4,8,80,80,{60 if not vertical else 230},1
 
 [Events]
@@ -270,8 +270,8 @@ def render_rhyme(rhyme: dict, lang: str, cfg: dict, work: Path, out: Path, verti
     subs = (f"ass=filename='{_escf(ass)}':fontsdir='{_escf(Path(fonts(lang)[0]).parent)}',"
             f"fade=t=in:st=0:d=0.3,fade=t=out:st={total - 0.4:.2f}:d=0.4[v]")
     if loop is not None:
-        band = (f"drawbox=x=0:y=ih-320:w=iw:h=320:color=0x1a0d2e@0.30:t=fill" if not vertical else
-                f"drawbox=x=0:y=ih-660:w=iw:h=460:color=0x1a0d2e@0.30:t=fill")
+        band = (f"drawbox=x=0:y=ih-240:w=iw:h=240:color=0x1a0d2e@0.34:t=fill" if not vertical else
+                f"drawbox=x=0:y=ih-560:w=iw:h=360:color=0x1a0d2e@0.34:t=fill")
         inputs = ["-stream_loop", "-1", "-i", str(loop), "-i", str(music)]
         fl = [f"[0:v]scale={W}:{H},setsar=1,format=yuv420p,{band}[v1]", f"[v1]{subs}"]
         mi, vi = 1, 2

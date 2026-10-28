@@ -1057,6 +1057,30 @@ def portrait(rig, path, size=640):
         o.hide_render = False
 
 
+def mode_art():
+    """One wide still of the whole gang standing together, for channel artwork."""
+    st, _ = build_set(SPEC.get("setting", "town"), False)
+    lights(st)
+    ids = SPEC.get("ids") or ["mouse", "parrot", "bear", "duck"]
+    spread = float(SPEC.get("spread", 2.3))
+    for i, kind in enumerate(ids):
+        x = (i - (len(ids) - 1) / 2) * spread
+        rig = build_character(kind, f"art{i}", (x, 0.5 if i % 2 else 0.0, 0),
+                              1.15 if i == 0 else 0.95, facing=-0.16 * x)
+        for sh, sx in rig["arms"]:  # arms out a little, so they do not look stiff
+            sh.rotation_euler = (0, sx * 0.55, 0)
+    balloons(3, False)
+    target, where, lens = SHOTS.get(SPEC.get("shot", "wide"), SHOTS["wide"])
+    camera(target, where, lens)
+    setup_render(SPEC["width"], SPEC["height"], 24, 1, SPEC.get("engine", "EEVEE"),
+                 SPEC.get("samples", 16))
+    sc = bpy.context.scene
+    sc.frame_set(1)
+    sc.render.filepath = SPEC["out_dir"].rstrip("/") + "/art"
+    bpy.ops.render.render(write_still=True)
+    print("ART", ",".join(ids))
+
+
 def mode_portraits():
     st, _ = build_set("meadow", False)
     lights(st)
@@ -1071,5 +1095,7 @@ def mode_portraits():
 bpy.ops.wm.read_factory_settings(use_empty=True)
 if SPEC.get("mode") == "portraits":
     mode_portraits()
+elif SPEC.get("mode") == "art":
+    mode_art()
 else:
     mode_loop()

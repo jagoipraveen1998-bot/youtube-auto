@@ -102,15 +102,15 @@ def banner(work, cfg):
     # a soft band behind the words so they read against the sky
     band = Image.new("RGBA", BANNER, (0, 0, 0, 0))
     ImageDraw.Draw(band).rounded_rectangle(
-        [sx + 40, sy - 6, sx + SAFE[0] - 40, sy + 196], 60, fill=(26, 13, 46, 92))
+        [sx + 40, sy - 18, sx + SAFE[0] - 40, sy + 180], 60, fill=(26, 13, 46, 92))
     img = Image.alpha_composite(img.convert("RGBA"), band.filter(ImageFilter.GaussianBlur(6))).convert("RGB")
     d = ImageDraw.Draw(img)
 
     title_font = fit(d, TITLE, 150, SAFE[0] - 180)
-    d.text((BANNER[0] / 2, sy + 62), TITLE, font=title_font, anchor="mm",
+    d.text((BANNER[0] / 2, sy + 48), TITLE, font=title_font, anchor="mm",
            fill=(255, 235, 59), stroke_width=11, stroke_fill=(94, 42, 134))
     tag_font = fit(d, TAGLINE, 62, SAFE[0] - 200)
-    d.text((BANNER[0] / 2, sy + 152), TAGLINE, font=tag_font, anchor="mm",
+    d.text((BANNER[0] / 2, sy + 136), TAGLINE, font=tag_font, anchor="mm",
            fill=(255, 255, 255), stroke_width=6, stroke_fill=(94, 42, 134))
 
     out = ROOT / "channel" / "banner.png"

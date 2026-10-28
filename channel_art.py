@@ -39,6 +39,20 @@ def fit(draw, text: str, start: int, width: int):
     return font_at(24)
 
 
+def head_crop(img):
+    """Crop a full-body portrait down to head and shoulders, so it reads when tiny."""
+    box = img.getbbox()
+    if not box:
+        return img
+    x0, y0, x1, y1 = box
+    tall = y1 - y0
+    side = int(tall * 0.62)
+    cx = (x0 + x1) // 2
+    top = max(0, y0 - int(tall * 0.05))
+    left = max(0, cx - side // 2)
+    return img.crop((left, top, min(img.width, left + side), min(img.height, top + side)))
+
+
 def avatar(work, cfg):
     folder = work / "portrait"
     scene3d.render_portraits(["mouse"], folder, cfg, 1024)
@@ -49,12 +63,12 @@ def avatar(work, cfg):
     d = ImageDraw.Draw(img)
     # a soft sunny disc behind him, so the round crop looks deliberate
     d.ellipse([0, 0, AVATAR, AVATAR], fill=(255, 214, 102, 255))
-    d.ellipse([int(AVATAR * 0.07)] * 2 + [int(AVATAR * 0.93)] * 2, fill=(255, 236, 179, 255))
-    milo = Image.open(src).convert("RGBA")
-    milo.thumbnail((int(AVATAR * 0.82), int(AVATAR * 0.82)), Image.LANCZOS)
+    d.ellipse([int(AVATAR * 0.04)] * 2 + [int(AVATAR * 0.96)] * 2, fill=(255, 236, 179, 255))
+    milo = head_crop(Image.open(src).convert("RGBA"))
+    milo = milo.resize((int(AVATAR * 0.90), int(AVATAR * 0.90)), Image.LANCZOS)
     shadow = Image.new("RGBA", img.size, (0, 0, 0, 0))
     mask = milo.split()[-1].point(lambda v: 70 if v > 12 else 0)
-    shadow.paste((90, 60, 20, 255), ((AVATAR - milo.width) // 2, (AVATAR - milo.height) // 2 + 14), mask)
+    shadow.paste((90, 60, 20, 255), ((AVATAR - milo.width) // 2, (AVATAR - milo.height) // 2 + 12), mask)
     img.alpha_composite(shadow.filter(ImageFilter.GaussianBlur(18)))
     img.alpha_composite(milo, ((AVATAR - milo.width) // 2, (AVATAR - milo.height) // 2))
     out = ROOT / "channel" / "avatar.png"
@@ -88,15 +102,15 @@ def banner(work, cfg):
     # a soft band behind the words so they read against the sky
     band = Image.new("RGBA", BANNER, (0, 0, 0, 0))
     ImageDraw.Draw(band).rounded_rectangle(
-        [sx + 40, sy + 8, sx + SAFE[0] - 40, sy + 212], 60, fill=(26, 13, 46, 92))
+        [sx + 40, sy - 6, sx + SAFE[0] - 40, sy + 196], 60, fill=(26, 13, 46, 92))
     img = Image.alpha_composite(img.convert("RGBA"), band.filter(ImageFilter.GaussianBlur(6))).convert("RGB")
     d = ImageDraw.Draw(img)
 
     title_font = fit(d, TITLE, 150, SAFE[0] - 180)
-    d.text((BANNER[0] / 2, sy + 78), TITLE, font=title_font, anchor="mm",
+    d.text((BANNER[0] / 2, sy + 62), TITLE, font=title_font, anchor="mm",
            fill=(255, 235, 59), stroke_width=11, stroke_fill=(94, 42, 134))
     tag_font = fit(d, TAGLINE, 62, SAFE[0] - 200)
-    d.text((BANNER[0] / 2, sy + 170), TAGLINE, font=tag_font, anchor="mm",
+    d.text((BANNER[0] / 2, sy + 152), TAGLINE, font=tag_font, anchor="mm",
            fill=(255, 255, 255), stroke_width=6, stroke_fill=(94, 42, 134))
 
     out = ROOT / "channel" / "banner.png"

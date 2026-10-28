@@ -1,0 +1,74 @@
+name: Channel artwork
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install ffmpeg and fonts
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo rm -f /var/lib/man-db/auto-update
+          PKGS="ffmpeg fonts-dejavu-core fonts-comic-neue xvfb libxi6 libxxf86vm1 libxfixes3 libxrender1 libxkbcommon0 libsm6 libgl1 libegl1 libgl1-mesa-dri"
+          sudo timeout 300 apt-get install -y -qq --no-install-recommends $PKGS \
+            || (sudo timeout 120 apt-get update -qq && sudo timeout 300 apt-get install -y -qq --no-install-recommends $PKGS)
+
+      - name: Cache Blender
+        uses: actions/cache@v4
+        with:
+          path: ~/blender
+          key: blender-4.2.3-linux-x64
+
+      - name: Install Blender (free 3D)
+        timeout-minutes: 10
+        run: |
+          if [ ! -x "$HOME/blender/blender" ]; then
+            mkdir -p "$HOME/blender"
+            curl -fsSL --retry 3 https://download.blender.org/release/Blender4.2/blender-4.2.3-linux-x64.tar.xz \
+              | tar -xJ -C "$HOME/blender" --strip-components=1
+          fi
+          "$HOME/blender/blender" --version | head -1
+          echo "BLENDER=$HOME/blender/blender" >> "$GITHUB_ENV"
+
+      - name: Install Python packages
+        run: pip install -q pyyaml pillow numpy requests
+
+      - name: Render the profile picture and banner
+        run: python channel_art.py
+
+      - name: Save previews to the repo
+        if: always()
+        run: |
+          git config user.name "autotube-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add channel/avatar.png channel/banner.png channel/report.json 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -q -m "Channel artwork (run ${GITHUB_RUN_NUMBER})"
+            for i in 1 2 3 4 5; do
+              git pull -q --rebase && git push -q && break
+              sleep $((RANDOM % 10 + 3))
+            done
+          fi
+
+      - name: Keep the artwork for 3 days
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: channel-art-${{ github.run_number }}
+          path: channel/
+          retention-days: 3
+          if-no-files-found: ignore

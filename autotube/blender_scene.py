@@ -1062,11 +1062,15 @@ def mode_art():
     st, _ = build_set(SPEC.get("setting", "town"), False)
     lights(st)
     ids = SPEC.get("ids") or ["mouse", "parrot", "bear", "duck"]
-    spread = float(SPEC.get("spread", 2.3))
-    for i, kind in enumerate(ids):
-        x = (i - (len(ids) - 1) / 2) * spread
-        rig = build_character(kind, f"art{i}", (x, 0.5 if i % 2 else 0.0, 0),
-                              1.15 if i == 0 else 0.95, facing=-0.16 * x)
+    spread = float(SPEC.get("spread", 1.6))
+    back = float(SPEC.get("back", 1.0))  # stand them further off so nobody is clipped
+    star, rest = ids[0], list(ids[1:])
+    order = rest[:]
+    order.insert(max(0, len(ids) // 2 - 1), star)  # the star stands near the middle
+    for i, kind in enumerate(order):
+        x = (i - (len(order) - 1) / 2) * spread
+        rig = build_character(kind, f"art{i}", (x, back + (0.4 if i % 2 else 0.0), 0),
+                              1.2 if kind == star else 0.88, facing=-0.16 * x)
         for sh, sx in rig["arms"]:  # arms out a little, so they do not look stiff
             sh.rotation_euler = (0, sx * 0.55, 0)
     balloons(3, False)
@@ -1078,7 +1082,7 @@ def mode_art():
     sc.frame_set(1)
     sc.render.filepath = SPEC["out_dir"].rstrip("/") + "/art"
     bpy.ops.render.render(write_still=True)
-    print("ART", ",".join(ids))
+    print("ART", ",".join(order))
 
 
 def mode_portraits():

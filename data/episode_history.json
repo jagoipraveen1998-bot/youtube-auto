@@ -2,7 +2,8 @@
   "titles": [
     "The Big Fluffy Sock",
     "The Bouncy Big Ball",
-    "The Big Slippery Banana"
+    "The Big Slippery Banana",
+    "The Giant Giggly Cushion"
   ],
   "episodes": [
     {
@@ -26,6 +27,17 @@
         "3Djkm1vPDkc"
       ],
       "length": "02:43",
+      "lesson": "Working together makes big jobs easy and fun."
+    },
+    {
+      "date": "2026-10-28",
+      "title": "The Giant Giggly Cushion",
+      "video_id": "9tMDltaVezk",
+      "shorts": [
+        "X4YpvnMHCcU",
+        "WUVUIDGFpxE"
+      ],
+      "length": "02:36",
       "lesson": "Working together makes big jobs easy and fun."
     }
   ]

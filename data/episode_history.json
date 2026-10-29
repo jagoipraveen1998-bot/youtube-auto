@@ -3,7 +3,8 @@
     "The Big Fluffy Sock",
     "The Bouncy Big Ball",
     "The Big Slippery Banana",
-    "The Giant Giggly Cushion"
+    "The Giant Giggly Cushion",
+    "The Giant Wobbly Jelly"
   ],
   "episodes": [
     {
@@ -39,6 +40,17 @@
       ],
       "length": "02:36",
       "lesson": "Working together makes big jobs easy and fun."
+    },
+    {
+      "date": "2026-10-29",
+      "title": "The Giant Wobbly Jelly",
+      "video_id": "B34Zs_XZhTY",
+      "shorts": [
+        "4jeH2-CNdz0",
+        "8p5u7xyBKus"
+      ],
+      "length": "02:52",
+      "lesson": "working together makes solving tricky problems easy and fun"
     }
   ]
 }

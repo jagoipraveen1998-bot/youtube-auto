@@ -76,9 +76,8 @@ ai:
   gemini_model: "auto"               # "auto" = newest Gemini Flash; or a name like "gemini-2.5-flash"
 
 youtube:
-  # "public" so episodes go live by themselves. If Google has not approved the API
-  # audit yet, YouTube quietly keeps them private and you can switch them by hand.
-  privacy: "public"
+  # "private" so nothing goes live until you have watched it and published it yourself.
+  privacy: "private"
   category_id: "1"                   # 1 = Film & Animation
   made_for_kids: true                # required for content aimed at children
   contains_synthetic_media: false

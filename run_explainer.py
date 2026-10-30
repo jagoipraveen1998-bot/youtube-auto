@@ -82,7 +82,7 @@ def main():
         elapsed += secs
 
     video = ev.join(parts, out / "explainer.mp4")
-    thumb = ev.thumbnail(data["title"], channel, out / "thumbnail.jpg")
+    thumb = ev.thumbnail(data.get("thumbnail_text") or data["title"], channel, out / "thumbnail.jpg")
     log(f"Explainer ready ({fmt(elapsed)})")
 
     description = "\n".join([
@@ -90,8 +90,9 @@ def main():
         "Chapters"] + [f"{fmt(at)} {name}" for at, name in chapters] +
         ["", f"{channel} explains how everyday systems actually work."])
     (out / "description.txt").write_text(description, encoding="utf-8")
-    tags = list(dict.fromkeys(list(data.get("tags", [])) + ["how it works", "explained", "retail",
-                                                            "supply chain", "logistics"]))
+    tags = list(dict.fromkeys(list(data.get("tags", [])) + ["how it works", "explained",
+                                                            "technology explained", "science",
+                                                            "engineering", "how things work"]))
 
     if args.no_upload:
         log(f"Upload skipped. Files are in {out.name}/")

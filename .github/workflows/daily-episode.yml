@@ -1,8 +1,7 @@
 name: Daily Milo story episode
 
 on:
-  schedule:
-    - cron: "20 3 * * *" # 8:50 AM India time
+  # Paused while the channel moves to a new subject. Put the schedule back to resume.
   workflow_dispatch:
     inputs:
       mode:

@@ -63,6 +63,33 @@ Return only JSON in this schema:
 """
 
 
+def bookends(channel: str) -> tuple[dict, dict]:
+    """The branded hello at the start and the goodbye at the end."""
+    intro = {
+        "title": channel,
+        "character": "Milo and Pippa waving hello",
+        "characters": ["mouse", "parrot"], "setting": "town",
+        "action": "wave", "shot": "medium", "emoji": "👋",
+        "lines": [
+            {"who": "milo", "text": "Hello friends! Welcome back to Marigold Town!"},
+            {"who": "pippa", "text": "Hello! Hello! We are so happy you are here!"},
+            {"who": "milo", "text": "Are you ready? Let's begin today's story!"},
+        ],
+    }
+    outro = {
+        "title": "Bye bye, friends!",
+        "character": "Milo and Pippa waving goodbye",
+        "characters": ["mouse", "parrot"], "setting": "town",
+        "action": "wave", "shot": "medium", "emoji": "🌟",
+        "lines": [
+            {"who": "milo", "text": "Thank you for watching, friends!"},
+            {"who": "pippa", "text": "Bye bye! Bye bye!"},
+            {"who": "milo", "text": "Come back tomorrow for a brand new story!"},
+        ],
+    }
+    return intro, outro
+
+
 def fmt(seconds: float) -> str:
     s = int(seconds)
     return f"{s // 60:02d}:{s % 60:02d}"
@@ -147,14 +174,22 @@ def main():
     data = story(client, models, channel, history["titles"], int(ec.get("scenes", 6)))
     (out / "script.json").write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
 
-    # 1. the episode: one 3D scene after another
+    # 1. the episode: a branded hello, the scenes, then the goodbye
+    intro, outro = bookends(channel)
+    plan = [("intro", intro)] + [(f"scene_{i}", sc) for i, sc in enumerate(data["scenes"], start=1)]
+    plan.append(("outro", outro))
     clips, chapters, elapsed = [], [], 0.0
-    for number, scene in enumerate(data["scenes"], start=1):
-        log(f"Scene {number}/{len(data['scenes'])}: {scene['title']}")
-        clip = out / "work" / f"scene_{number}.mp4"
-        seconds = rv.render_rhyme(scene, "en", cfg, out / "work" / f"scene_{number}", clip, False,
-                                  seed_for(today, number, scene["title"]), channel, show_next=False)
-        chapters.append((elapsed, scene["title"]))
+    for key, scene in plan:
+        log(f"{key}: {scene['title']}")
+        clip = out / "work" / f"{key}.mp4"
+        # the hello and goodbye use fixed seeds, so they look the same in every episode
+        seed = seed_for("bookend", key) if key in ("intro", "outro") else seed_for(today, key, scene["title"])
+        seconds = rv.render_rhyme(scene, "en", cfg, out / "work" / key, clip, False, seed, channel,
+                                  show_next=False)
+        if key == "intro":
+            chapters.append((0.0, "Hello friends"))
+        elif key != "outro":
+            chapters.append((elapsed, scene["title"]))
         clips.append(clip)
         elapsed += seconds
     video = rv.join(clips, out / "episode.mp4")

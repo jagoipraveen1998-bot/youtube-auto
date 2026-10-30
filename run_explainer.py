@@ -77,7 +77,8 @@ def main():
     if data.get("takeaway"):
         clip, secs = ev.render_section(
             {"heading": "In short", "narration": data["takeaway"],
-             "visual": {"type": "points", "items": [data["thumbnail_text"]]}}, vcfg, work, "end")
+             "visual": {"type": "number", "value": data["thumbnail_text"], "caption": ""}},
+            vcfg, work, "end")
         parts.append(clip)
         elapsed += secs
 

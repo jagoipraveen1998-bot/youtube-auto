@@ -4,8 +4,8 @@
 # =============================================================
 
 channel:
-  name: "Giggle Rhymes Kids"         # shown on videos and thumbnails - change to your channel name
-  topic: "funny Milo the Mouse stories from Marigold Town, for toddlers"
+  name: "How It Actually Works"       # shown on videos and thumbnails - change to your channel name
+  topic: "how modern technology actually works, explained clearly"
   language: "en"
 
 # ---------------- Funny baby rhymes (manual runs only now) ----------------
@@ -53,7 +53,20 @@ rhymes:
     en: ["#nurseryrhymes", "#kidssongs", "#funnyrhymes"]
     ta: ["#tamilrhymes", "#tamilkidssongs", "#kulanthaipadalgal"]
 
-# ---------------- Milo story episodes (the main daily video) ----------------
+# ---------------- Explainer videos (the main daily video now) ----------------
+explainers:
+  sections: 6                        # sections per video; each is about 20-30 seconds
+  voice:                             # a clear adult narrator, not the children's voice
+    engine: "kokoro"
+    kokoro_lang: "b"                 # b = British English
+    kokoro_voice: "bf_emma"
+    speed: 1.0
+    semitones: 0.0
+    name: "en-GB-SoniaNeural"        # backup voice if Kokoro cannot run
+    rate: "+0%"
+    pitch: "+0Hz"
+
+# ---------------- Milo story episodes (paused) ----------------
 episodes:
   scenes: 6                          # scenes per episode; more scenes = longer watch time
   shorts: 2                          # vertical Shorts cut from each episode (these bring subscribers)
@@ -78,8 +91,8 @@ ai:
 youtube:
   # "private" so nothing goes live until you have watched it and published it yourself.
   privacy: "private"
-  category_id: "1"                   # 1 = Film & Animation
-  made_for_kids: true                # required for content aimed at children
+  category_id: "27"                  # 27 = Education
+  made_for_kids: false               # the explainers are for adults
   contains_synthetic_media: false
   extra_tags: []
 

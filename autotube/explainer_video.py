@@ -5,6 +5,7 @@ clean subtitles run along the bottom. No 3D, so a whole video renders in a
 couple of minutes rather than an hour.
 """
 import json
+import re
 from pathlib import Path
 
 from . import explainer_art as art
@@ -37,6 +38,9 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     rows = []
     for c in cues:
         text = str(c["text"]).replace("{", "(").replace("}", ")").replace("\n", " ")
+        text = re.sub(r"\s+([,.;:!?])", r"\1", text).strip(" ,;:")   # no floating punctuation
+        if not text:
+            continue
         rows.append(f"Dialogue: 0,{_t(c['start'])},{_t(c['end'])},Say,,0,0,0,,{text}")
     path.write_text(head + "\n".join(rows) + "\n", encoding="utf-8")
     return path
@@ -111,10 +115,10 @@ def join(parts: list[Path], out: Path) -> Path:
     return out
 
 
-def thumbnail(title: str, channel: str, out: Path) -> Path:
-    """A plain, readable thumbnail: the question, large."""
+def thumbnail(text: str, channel: str, out: Path) -> Path:
+    """A few huge words, readable at thumbnail size on a phone."""
     from PIL import ImageDraw
-    img = art.title_card(title, channel)
+    img = art.thumb_card(text, channel)
     d = ImageDraw.Draw(img)
     d.rounded_rectangle([art.W - 430, 70, art.W - 90, 170], 18, fill=art.ACCENTS[0])
     d.text((art.W - 260, 120), "EXPLAINED", font=art.font(40, True), fill=art.BG, anchor="mm")

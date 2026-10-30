@@ -19,6 +19,8 @@ BG2 = (22, 38, 64)
 FG = (238, 244, 255)
 MUTED = (131, 152, 184)
 ACCENTS = [(255, 196, 61), (79, 195, 247), (126, 231, 160), (255, 138, 128), (186, 141, 255)]
+SUBS_TOP = 870          # the subtitles live below this line, so no diagram may reach it
+AREA_TOP = 260          # the heading sits above this line
 _FONTS: dict = {}
 
 
@@ -119,7 +121,7 @@ def flow(items: list[str], step: int) -> Image.Image:
     bh = 260
     total = bw * n + gap * (n - 1)
     x = (W - total) / 2
-    y = H / 2 - bh / 2 + 40
+    y = AREA_TOP + (SUBS_TOP - AREA_TOP - bh) / 2
     for i, label in enumerate(items):
         if i >= step:
             break
@@ -141,12 +143,12 @@ def bars(pairs: list[tuple[str, float]], step: int, unit: str = "") -> Image.Ima
         return img
     top = max(v for _, v in pairs) or 1.0
     n = len(pairs)
-    bw = min(200, int((W - 400) / n) - 50)
-    gap = 60
+    bw = min(280, int((W - 400) / n) - 50)
+    gap = 110
     total = bw * n + gap * (n - 1)
     x = (W - total) / 2
-    base = H - 260
-    high = 440
+    base = SUBS_TOP - 110      # leave room for the labels under the axis
+    high = 400
     for i, (label, value) in enumerate(pairs):
         if i >= step:
             break
@@ -167,16 +169,18 @@ def points(items: list[str], step: int) -> Image.Image:
     """A numbered list that appears one line at a time."""
     img = canvas()
     d = ImageDraw.Draw(img)
-    y = H / 2 - min(len(items), 5) * 70 + 40
+    shown = min(len(items), 5)
+    gap = 140 if shown >= 4 else (170 if shown == 3 else 210)   # fewer points, more air
+    y = AREA_TOP + (SUBS_TOP - AREA_TOP - ((shown - 1) * gap + 64)) / 2
     for i, text in enumerate(items[:5]):
         if i >= step:
             break
         colour = ACCENTS[i % len(ACCENTS)]
         d.ellipse([200, y, 200 + 64, y + 64], fill=colour)
         d.text((232, y + 32), str(i + 1), font=font(36, True), fill=BG, anchor="mm")
-        f = fit_font(d, text, 48, W - 560, False, 30)
+        f = fit_font(d, text, 54 if shown <= 3 else 48, W - 560, False, 30)
         d.text((300, y + 32), text, font=f, fill=FG, anchor="lm")
-        y += 140
+        y += gap
     return img
 
 
@@ -185,19 +189,26 @@ def compare(left_title: str, left: list[str], right_title: str, right: list[str]
     img = canvas()
     d = ImageDraw.Draw(img)
     mid = W / 2
-    for side, (title, rows, colour) in enumerate(((left_title, left, ACCENTS[1]),
-                                                  (right_title, right, ACCENTS[3]))):
-        x0 = 150 if side == 0 else mid + 40
-        x1 = mid - 40 if side == 0 else W - 150
-        d.rounded_rectangle([x0, 300, x1, H - 160], 28, fill=BG2, outline=colour, width=4)
+    rf = font(34, False)
+    sides = ((left_title, left, ACCENTS[1]), (right_title, right, ACCENTS[3]))
+    boxes = [(150, mid - 40), (mid + 40, W - 150)]
+    # measure both columns first, so the panels are only as tall as their contents
+    wrapped = []
+    for (title, rows, _), (x0, x1) in zip(sides, boxes):
+        groups = [wrap(d, "• " + row, rf, (x1 - x0) - 80)[:2] for row in rows[:4]]
+        wrapped.append(groups)
+    body = max((sum(len(g) * 44 + 26 for g in groups) for groups in wrapped), default=0)
+    top = max(290, AREA_TOP + (SUBS_TOP - AREA_TOP - (150 + body + 40)) / 2)
+    bottom = min(SUBS_TOP - 10, top + 150 + body + 40)
+    for side, ((title, rows, colour), (x0, x1)) in enumerate(zip(sides, boxes)):
+        d.rounded_rectangle([x0, top, x1, bottom], 28, fill=BG2, outline=colour, width=4)
         f = fit_font(d, title, 52, (x1 - x0) - 60, True, 32)
-        d.text(((x0 + x1) / 2, 360), title, font=f, fill=colour, anchor="mm")
-        y = 450
+        d.text(((x0 + x1) / 2, top + 60), title, font=f, fill=colour, anchor="mm")
         if side >= step:   # left column first, then the right one
             continue
-        for i, row in enumerate(rows[:4]):
-            rf = font(34, False)
-            for line in wrap(d, "• " + row, rf, (x1 - x0) - 80)[:2]:
+        y = top + 150
+        for group in wrapped[side]:
+            for line in group:
                 d.text((x0 + 40, y), line, font=rf, fill=FG)
                 y += 44
             y += 26
@@ -233,6 +244,36 @@ def title_card(title: str, channel: str) -> Image.Image:
         y += f.size + 24
     d.text((W / 2, H - 150), channel.upper(), font=font(38, True), fill=ACCENTS[0], anchor="mm")
     d.rounded_rectangle([W / 2 - 70, H - 108, W / 2 + 70, H - 102], 3, fill=ACCENTS[0])
+    return img
+
+
+def thumb_card(text: str, channel: str) -> Image.Image:
+    """A thumbnail built to be read at the size of a thumb: a few huge words."""
+    img = canvas()
+    glow = Image.new("RGB", (W, H), BG)
+    gd = ImageDraw.Draw(glow)
+    gd.ellipse([-200, H / 2 - 420, W * 0.62, H / 2 + 420], fill=(34, 58, 96))
+    img = Image.blend(img, glow.filter(ImageFilter.GaussianBlur(120)), 0.8)
+    d = ImageDraw.Draw(img)
+    words = (text or channel).strip().upper()
+    size, lines = 190, []
+    while size > 80:                        # as big as it can be in at most three lines
+        f = font(size, True)
+        lines = wrap(d, words, f, W - 260)
+        if len(lines) <= 3:
+            break
+        size -= 10
+    f = font(size, True)
+    gap = int(size * 1.08)
+    y = H / 2 - (len(lines) * gap) / 2 - 20
+    for i, line in enumerate(lines):
+        # the last line in yellow, so the eye lands somewhere at thumbnail size
+        colour = ACCENTS[0] if (len(lines) > 1 and i == len(lines) - 1) else FG
+        d.text((132, y + 6), line, font=f, fill=(0, 0, 0))      # a hard shadow, for contrast
+        d.text((126, y), line, font=f, fill=colour)
+        y += gap
+    d.rounded_rectangle([126, y + 18, 126 + 220, y + 32], 7, fill=ACCENTS[0])
+    d.text((126, H - 72), channel.upper(), font=font(42, True), fill=ACCENTS[0], anchor="ls")
     return img
 
 

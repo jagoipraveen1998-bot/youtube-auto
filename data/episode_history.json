@@ -4,7 +4,8 @@
     "The Bouncy Big Ball",
     "The Big Slippery Banana",
     "The Giant Giggly Cushion",
-    "The Giant Wobbly Jelly"
+    "The Giant Wobbly Jelly",
+    "The Shiny Soap Bubble"
   ],
   "episodes": [
     {
@@ -51,6 +52,17 @@
       ],
       "length": "02:52",
       "lesson": "working together makes solving tricky problems easy and fun"
+    },
+    {
+      "date": "2026-10-30",
+      "title": "The Shiny Soap Bubble",
+      "video_id": "Tn8N0b7qGIA",
+      "shorts": [
+        "6ZWq4-OlbQk",
+        "AntWSHJUVBQ"
+      ],
+      "length": "02:53",
+      "lesson": "Gentle patience and teamwork solve silly troubles best."
     }
   ]
 }

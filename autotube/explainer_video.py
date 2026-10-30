@@ -9,6 +9,7 @@ import re
 from pathlib import Path
 
 from . import explainer_art as art
+from . import explainer_scene as scene
 from .util import FPS, log, media_duration, run
 from .voice import say, words_to_cues
 
@@ -50,20 +51,6 @@ def _escf(p) -> str:
     return str(p).replace("\\", "/").replace(":", r"\:").replace("'", r"\'")
 
 
-def _slides(frames: list[Path], seconds: float, list_file: Path) -> Path:
-    """A concat list that spreads the reveal steps across the narration."""
-    n = max(1, len(frames))
-    first = seconds * 0.34 if n > 1 else seconds       # hold the opening state a little longer
-    rest = (seconds - first) / max(1, n - 1) if n > 1 else 0.0
-    lines = []
-    for i, f in enumerate(frames):
-        lines.append(f"file '{f.resolve().as_posix()}'")
-        lines.append(f"duration {first if i == 0 else rest:.3f}")
-    lines.append(f"file '{frames[-1].resolve().as_posix()}'")  # concat needs the last one twice
-    list_file.write_text("\n".join(lines) + "\n")
-    return list_file
-
-
 def render_section(section: dict, vcfg: dict, work: Path, name: str) -> tuple[Path, float]:
     """One narrated section with its diagram. Returns (clip, seconds)."""
     work.mkdir(parents=True, exist_ok=True)
@@ -78,17 +65,18 @@ def render_section(section: dict, vcfg: dict, work: Path, name: str) -> tuple[Pa
     seconds = dur + 0.5
     visual = dict(section.get("visual") or {})
     visual.setdefault("heading", section.get("heading", ""))
-    frames = art.frames_for(visual, work / "frames", name)
-    lst = _slides(frames, seconds, work / f"{name}.txt")
+    pattern, _count = scene.animate(visual, seconds, work / "frames", name)
     subs = write_subs(work / f"{name}.ass", words_to_cues(words, narration, dur, max_words=9))
     clip = work / f"{name}.mp4"
     run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
-         "-f", "concat", "-safe", "0", "-i", str(lst), "-i", str(mp3),
+         "-framerate", str(scene.FPS_ART), "-i", pattern, "-i", str(mp3),
          "-filter_complex",
          f"[0:v]fps={FPS},scale={art.W}:{art.H},setsar=1,ass=filename='{_escf(subs)}',"
          f"fade=t=in:st=0:d=0.25,fade=t=out:st={seconds - 0.3:.2f}:d=0.3[v];"
          f"[1:a]aresample=48000,apad=pad_dur=0.5[a]",
          "-map", "[v]", "-map", "[a]", "-t", f"{seconds:.2f}", *ENC, str(clip)])
+    for frame in (work / "frames").glob(f"{name}_*.jpg"):
+        frame.unlink()          # the clip holds them now; keep peak disk small
     return clip, seconds
 
 

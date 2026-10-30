@@ -6,12 +6,35 @@ import time
 from .script_writer import pick_models
 from .util import env, log
 
-VISUALS = """Each section carries one picture. Choose the type that genuinely fits; do not force one.
-  {"type":"flow","items":["step one","step two","step three"]}            - a process, 3 to 5 steps
-  {"type":"points","items":["first point","second point"]}                 - 2 to 5 short points
+VISUALS = """Each section carries one picture, and the picture is the point of the video.
+
+PREFER a DRAWING of the real thing. These are animated: the lift moves, the ions drift, the
+rotor turns. Use one whenever the section is about a physical mechanism. "labels" is 1 to 3
+captions of at most 5 words each; leave it out if the drawing speaks for itself.
+  {"type":"building","floors":5,"stops":[1,5,3],"labels":[...]}   a lift in a shaft, moving between floors
+  {"type":"orbit","bodies":4,"labels":[...]}                       satellites circling, beaming down to a receiver
+  {"type":"wave","mode":"travel"|"cancel"|"modulate","rows":["Noise","Anti-noise","You hear"],"labels":[...]}
+                                                                   sound, radio, light as waves. cancel = two waves
+                                                                   adding to silence; modulate = a signal riding a carrier
+  {"type":"layers","items":["Glass","Electrode","Backlight"]}      a cross-section, 3 to 6 layers, scanned top to bottom
+  {"type":"particles","left":"Anode","right":"Cathode","labels":[...]}  charge crossing a cell, with the outside circuit
+  {"type":"rotor","teeth":11,"labels":[...]}                       anything that spins: motor, turbine, engine, gearbox
+  {"type":"network","labels":[...]}                                one request fanning out to many machines
+  {"type":"beam","labels":[...]}                                   light bouncing along inside a fibre or a pipe
+  {"type":"grid_scan","labels":[...]}                              dots projected onto a surface and read back as depth
+  {"type":"thermal","labels":[...]}                                racks making heat, and the air carrying it away
+  {"type":"pipeline","items":["Your card","Merchant","Your bank"]} 2 to 5 stages with something travelling through them
+
+Use a TEXT picture only when the section really is a list, a contrast or a figure:
+  {"type":"flow","items":["step one","step two","step three"]}            a process, 3 to 5 steps
+  {"type":"points","items":["first point","second point"]}                 2 to 5 short points
   {"type":"compare","left_title":"...","left":["..."],"right_title":"...","right":["..."]}
-  {"type":"bars","unit":"%","items":[{"label":"...","value":42}]}          - 2 to 5 bars
-  {"type":"number","value":"1 in 13","caption":"what the figure means"}    - one striking figure"""
+  {"type":"bars","unit":"%","items":[{"label":"...","value":42}]}          2 to 5 bars
+  {"type":"number","value":"1 in 13","caption":"what the figure means"}    one striking figure
+
+Across the whole video, at least half the sections must use a drawing rather than a text picture,
+and do not use the same type twice in a row. Pick the drawing that matches what the narration
+is describing at that moment - never one that merely looks impressive."""
 
 PROMPT = """You write short, genuinely informative explainer videos for the YouTube channel "{channel}".
 The audience is curious adults in the UK and the US who want to understand how modern technology actually works.
@@ -93,8 +116,56 @@ def choose_topic(used: list[str]) -> str:
     return random.choice(fresh or TOPICS)
 
 
+def _texts(value, n: int, limit: int) -> list[str]:
+    out = [str(x).strip()[:limit] for x in (value or []) if str(x).strip()]
+    return out[:n]
+
+
+def _scene(v: dict, heading: str) -> dict:
+    """Keep a drawing's fields inside what the renderer can actually draw."""
+    kind = v["type"]
+    v["labels"] = _texts(v.get("labels"), 3, 44)
+    if kind == "building":
+        try:
+            v["floors"] = max(3, min(6, int(v.get("floors", 5))))
+        except (TypeError, ValueError):
+            v["floors"] = 5
+        stops = []
+        for s in (v.get("stops") or [])[:4]:
+            try:
+                stops.append(max(1, min(v["floors"], int(s))))
+            except (TypeError, ValueError):
+                continue
+        v["stops"] = stops or [1, v["floors"], 2]
+    elif kind == "orbit":
+        try:
+            v["bodies"] = max(2, min(5, int(v.get("bodies", 4))))
+        except (TypeError, ValueError):
+            v["bodies"] = 4
+    elif kind == "wave":
+        mode = str(v.get("mode", "travel")).lower()
+        v["mode"] = mode if mode in ("travel", "cancel", "modulate") else "travel"
+        rows = {"cancel": 3, "modulate": 2}.get(v["mode"], 1)
+        v["rows"] = _texts(v.get("rows"), rows, 18)
+    elif kind == "rotor":
+        try:
+            v["teeth"] = max(7, min(14, int(v.get("teeth", 11))))
+        except (TypeError, ValueError):
+            v["teeth"] = 11
+    elif kind == "particles":
+        v["left"] = str(v.get("left", "Anode"))[:24]
+        v["right"] = str(v.get("right", "Cathode"))[:24]
+    elif kind in ("layers", "pipeline"):
+        items = _texts(v.get("items"), 6 if kind == "layers" else 5, 40)
+        if len(items) < 2:
+            return {"type": "points", "items": [heading or "..."]}
+        v["items"] = items
+    return v
+
+
 def _clean(data: dict, wanted: int) -> dict:
-    allowed = {"flow", "points", "compare", "bars", "number"}
+    from .explainer_scene import SCENES
+    allowed = {"flow", "points", "compare", "bars", "number"} | set(SCENES)
     sections = data.get("sections", [])
     if not data.get("title") or not (3 <= len(sections) <= 9):
         raise ValueError("needs a title and 3-9 sections")
@@ -107,6 +178,9 @@ def _clean(data: dict, wanted: int) -> dict:
         if not isinstance(v, dict) or str(v.get("type", "")).lower() not in allowed:
             v = {"type": "points", "items": [s["heading"] or "..."]}
         v["type"] = str(v["type"]).lower()
+        if v["type"] in SCENES:
+            s["visual"] = _scene(v, s["heading"])
+            continue
         if v["type"] in ("flow", "points"):
             v["items"] = [str(x)[:70] for x in (v.get("items") or [])][:5] or [s["heading"]]
         if v["type"] == "bars":

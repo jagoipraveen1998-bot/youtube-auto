@@ -116,9 +116,11 @@ def flow(items: list[str], step: int) -> Image.Image:
     img = canvas()
     d = ImageDraw.Draw(img)
     n = max(1, len(items))
-    gap = 60
-    bw = min(380, int((W - 320 - gap * (n - 1)) / n))
-    bh = 260
+    gap = 90 if n <= 3 else 60
+    cap = {1: 700, 2: 540, 3: 450, 4: 380}.get(n, 340)   # fewer boxes, bigger boxes
+    bw = min(cap, int((W - 320 - gap * (n - 1)) / n))
+    bh = max(250, 380 - 24 * n)
+    size = 52 if n <= 2 else (44 if n == 3 else 36)
     total = bw * n + gap * (n - 1)
     x = (W - total) / 2
     y = AREA_TOP + (SUBS_TOP - AREA_TOP - bh) / 2
@@ -126,7 +128,7 @@ def flow(items: list[str], step: int) -> Image.Image:
         if i >= step:
             break
         bx = x + i * (bw + gap)
-        _chip(d, [bx, y, bx + bw, y + bh], label, ACCENTS[i % len(ACCENTS)])
+        _chip(d, [bx, y, bx + bw, y + bh], label, ACCENTS[i % len(ACCENTS)], size)
         if i + 1 < min(step, n):
             ax = bx + bw + 12
             ay = y + bh / 2
@@ -219,8 +221,20 @@ def number(value: str, caption: str, step: int) -> Image.Image:
     """One big figure, for a statistic worth pausing on."""
     img = canvas()
     d = ImageDraw.Draw(img)
-    f = fit_font(d, value, 320, W - 400, True, 90)
-    d.text((W / 2, H / 2 - 40), value, font=f, fill=ACCENTS[0], anchor="mm")
+    max_lines = 1 if len(value.split()) <= 3 else 2   # a figure fits on one line, a phrase on two
+    avail = SUBS_TOP - AREA_TOP - (90 if caption else 20)
+    size, lines = 300, [value]
+    while size > 70:
+        f = font(size, True)
+        lines = wrap(d, value, f, W - 360)
+        if len(lines) <= max_lines and len(lines) * size * 1.15 <= avail:
+            break
+        size -= 12
+    f = font(size, True)
+    y = (AREA_TOP + SUBS_TOP) / 2 - (len(lines) - 1) * size * 0.6 - (60 if caption else 0)
+    for line in lines:
+        d.text((W / 2, y), line, font=f, fill=ACCENTS[0], anchor="mm")
+        y += size * 1.15
     if step > 1 and caption:
         cf = fit_font(d, caption, 54, W - 500, False, 30)
         for i, line in enumerate(wrap(d, caption, cf, W - 500)[:2]):

@@ -68,7 +68,7 @@ def main():
     # 2. the sections
     for i, section in enumerate(data["sections"], start=1):
         log(f"Section {i}/{len(data['sections'])}: {section['heading']}")
-        clip, secs = ev.render_section(section, vcfg, work, f"s{i}")
+        clip, secs = ev.render_section(section, vcfg, work, f"s{i}", threed_cfg=xc.get("threed", {}), context=" ".join([str(data.get("topic", "")), str(section.get("heading", "")), str(section.get("narration", ""))]))
         chapters.append((elapsed, section["heading"] or f"Part {i}"))
         parts.append(clip)
         elapsed += secs
@@ -78,7 +78,7 @@ def main():
         clip, secs = ev.render_section(
             {"heading": "In short", "narration": data["takeaway"],
              "visual": {"type": "number", "value": data["thumbnail_text"], "caption": ""}},
-            vcfg, work, "end")
+            vcfg, work, "end", threed_cfg=xc.get("threed", {}), context=" ".join([str(data.get("topic", "")), str(data.get("takeaway", ""))]))
         parts.append(clip)
         elapsed += secs
 

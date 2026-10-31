@@ -1,13 +1,13 @@
 """Turn an explainer script into a finished video.
 
-Each section is narrated, its diagram builds up while the narrator talks, and
-clean subtitles run along the bottom. No 3D, so a whole video renders in a
-couple of minutes rather than an hour.
+Sections use either the existing 2D diagrams or optional Blender-rendered
+3D mechanism scenes. Narration and bottom subtitles stay shared by both modes.
 """
 import json
 import re
 from pathlib import Path
 
+from . import explainer_3d
 from . import explainer_art as art
 from . import explainer_scene as scene
 from .util import FPS, log, media_duration, run
@@ -22,7 +22,13 @@ def _t(seconds: float) -> str:
     return f"{cs // 360000}:{cs // 6000 % 60:02d}:{cs // 100 % 60:02d}.{cs % 100:02d}"
 
 
-def write_subs(path: Path, cues: list[dict], family: str = "DejaVu Sans") -> Path:
+def _safe_ass(text: str) -> str:
+    text = str(text).replace("{", "(").replace("}", ")").replace("\n", " ")
+    return re.sub(r"\s+([,.;:!?])", r"\1", text).strip(" ,;:")
+
+
+def write_subs(path: Path, cues: list[dict], family: str = "DejaVu Sans",
+               heading: str = "", seconds: float = 0) -> Path:
     head = f"""[Script Info]
 ScriptType: v4.00+
 PlayResX: {art.W}
@@ -32,17 +38,19 @@ WrapStyle: 0
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Say,{family},54,&H00FFFFFF,&H00FFFFFF,&H00241A0E,&HA0000000,-1,0,0,0,100,100,0,0,3,0,0,2,220,220,70,1
+Style: Heading,{family},44,&H0000E6F2,&H0000E6F2,&H00101828,&HA0000000,-1,0,0,0,100,100,0,0,1,3,1,8,120,120,65,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """
     rows = []
+    title = _safe_ass(heading)
+    if title and seconds > 0:
+        rows.append(f"Dialogue: 1,0:00:00.00,{_t(seconds)},Heading,,0,0,0,,{title}")
     for c in cues:
-        text = str(c["text"]).replace("{", "(").replace("}", ")").replace("\n", " ")
-        text = re.sub(r"\s+([,.;:!?])", r"\1", text).strip(" ,;:")   # no floating punctuation
-        if not text:
-            continue
-        rows.append(f"Dialogue: 0,{_t(c['start'])},{_t(c['end'])},Say,,0,0,0,,{text}")
+        text = _safe_ass(c["text"])
+        if text:
+            rows.append(f"Dialogue: 0,{_t(c['start'])},{_t(c['end'])},Say,,0,0,0,,{text}")
     path.write_text(head + "\n".join(rows) + "\n", encoding="utf-8")
     return path
 
@@ -51,8 +59,9 @@ def _escf(p) -> str:
     return str(p).replace("\\", "/").replace(":", r"\:").replace("'", r"\'")
 
 
-def render_section(section: dict, vcfg: dict, work: Path, name: str) -> tuple[Path, float]:
-    """One narrated section with its diagram. Returns (clip, seconds)."""
+def render_section(section: dict, vcfg: dict, work: Path, name: str,
+                   threed_cfg: dict | None = None, context: str = "") -> tuple[Path, float]:
+    """Render one narrated section with a looped diagram or 3D scene."""
     work.mkdir(parents=True, exist_ok=True)
     narration = str(section.get("narration", "")).strip()
     mp3 = work / f"{name}.mp3"
@@ -65,18 +74,35 @@ def render_section(section: dict, vcfg: dict, work: Path, name: str) -> tuple[Pa
     seconds = dur + 0.5
     visual = dict(section.get("visual") or {})
     visual.setdefault("heading", section.get("heading", ""))
-    pattern, _count = scene.animate(visual, seconds, work / "frames", name)
-    subs = write_subs(work / f"{name}.ass", words_to_cues(words, narration, dur, max_words=9))
+    use_3d = bool(threed_cfg and threed_cfg.get("enabled", False))
+    if use_3d:
+        pattern, _count, source_fps = explainer_3d.render(visual, context, work, name, threed_cfg)
+    else:
+        pattern, _count = scene.animate(visual, seconds, work / "frames", name)
+        source_fps = scene.FPS_ART
+
+    subs = write_subs(work / f"{name}.ass", words_to_cues(words, narration, dur, max_words=9),
+                      heading=str(visual.get("heading", "")), seconds=seconds)
+    video_input = ["-framerate", str(source_fps)]
+    if use_3d:
+        video_input += ["-stream_loop", "-1"]
+    video_input += ["-i", pattern]
     clip = work / f"{name}.mp4"
-    run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
-         "-framerate", str(scene.FPS_ART), "-i", pattern, "-i", str(mp3),
+    run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", *video_input, "-i", str(mp3),
          "-filter_complex",
          f"[0:v]fps={FPS},scale={art.W}:{art.H},setsar=1,ass=filename='{_escf(subs)}',"
-         f"fade=t=in:st=0:d=0.25,fade=t=out:st={seconds - 0.3:.2f}:d=0.3[v];"
+         f"fade=t=in:st=0:d=0.25,fade=t=out:st={max(0.1, seconds - 0.3):.2f}:d=0.3[v];"
          f"[1:a]aresample=48000,apad=pad_dur=0.5[a]",
          "-map", "[v]", "-map", "[a]", "-t", f"{seconds:.2f}", *ENC, str(clip)])
-    for frame in (work / "frames").glob(f"{name}_*.jpg"):
-        frame.unlink()          # the clip holds them now; keep peak disk small
+
+    frame_path = Path(pattern)
+    for frame in frame_path.parent.glob("*.png" if use_3d else f"{name}_*.jpg"):
+        frame.unlink()
+    if use_3d:
+        try:
+            frame_path.parent.rmdir()
+        except OSError:
+            pass
     return clip, seconds
 
 
@@ -85,7 +111,7 @@ def render_card(image_path: Path, seconds: float, work: Path, name: str,
     """A still card (the opening title, or the closing frame)."""
     clip = work / f"{name}.mp4"
     audio = (["-i", str(mp3)] if mp3 else
-             ["-f", "lavfi", "-i", f"anullsrc=channel_layout=stereo:sample_rate=48000"])
+             ["-f", "lavfi", "-i", "anullsrc=channel_layout=stereo:sample_rate=48000"])
     run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
          "-loop", "1", "-t", f"{seconds:.2f}", "-i", str(image_path), *audio,
          "-vf", f"fps={FPS},scale={art.W}:{art.H},setsar=1,fade=t=in:st=0:d=0.3,"

@@ -31,7 +31,7 @@ MODEL_RULES = [
 TYPE_MODELS = {
     "building": "elevator", "orbit": "orbit", "wave": "wave", "layers": "chip",
     "particles": "battery", "rotor": "engine", "network": "network", "beam": "fiber",
-    "grid_scan": "sensor", "thermal": "data_center", "pipeline": "payment",
+    "grid_scan": "sensor", "thermal": "data_center", "pipeline": "pipeline",
     "bars": "mechanism", "compare": "mechanism", "flow": "network",
     "points": "mechanism", "number": "mechanism",
 }

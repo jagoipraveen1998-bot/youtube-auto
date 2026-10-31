@@ -107,8 +107,8 @@ def model(kind, M):
                 rod("vessel support", (x, y, 0.78), (x, y, 3.35), 0.095, steel)
         for z in (0.9, 3.25):
             torus("vessel flange", (0, 0, z), 1.12, 0.10, gold)
-        cyl("reactor core", (0, 0, 2.05), 0.48, 1.75, navy)
-        sphere("glowing core", (0, 0, 2.12), 0.34, gold)
+        cyl("reactor core", (0, 0, 2.05), 0.32, 1.75, navy)
+        sphere("glowing core", (0, 0, 2.12), 0.44, gold)
         for i in range(8):
             a = math.tau * i / 8
             rod("fuel rod", (math.cos(a) * 0.64, math.sin(a) * 0.64, 1.05), (math.cos(a) * 0.64, math.sin(a) * 0.64, 3.02), 0.05, teal)

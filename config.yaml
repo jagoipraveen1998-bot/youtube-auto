@@ -66,6 +66,16 @@ explainers:
     rate: "+0%"
     pitch: "+0Hz"
 
+  threed:
+    enabled: true
+    engine: "WORKBENCH"
+    width: 640
+    height: 360
+    fps: 12
+    loop_seconds: 4
+    samples: 1
+    timeout: 900
+
 # ---------------- Milo story episodes (paused) ----------------
 episodes:
   scenes: 6                          # scenes per episode; more scenes = longer watch time

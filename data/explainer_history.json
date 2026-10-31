@@ -1,6 +1,7 @@
 {
   "topics": [
-    "how a nuclear reactor turns atoms into electricity"
+    "how a nuclear reactor turns atoms into electricity",
+    "how a hard drive physically stores a file"
   ],
   "videos": [
     {
@@ -8,6 +9,12 @@
       "title": "How a Nuclear Reactor Actually Works",
       "video_id": "8_gAca5iH-A",
       "length": "02:52"
+    },
+    {
+      "date": "2026-10-31",
+      "title": "How a Hard Drive Physically Stores a File",
+      "video_id": "s77XFtOkA1w",
+      "length": "02:32"
     }
   ]
 }

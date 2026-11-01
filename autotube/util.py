@@ -75,3 +75,35 @@ def font_path(language: str = "en", bold: bool = True) -> str:
 def font_family(language: str = "en") -> str:
     """Font family name used inside subtitle (ASS) files."""
     return "Noto Sans Tamil" if language == "ta" else "Noto Sans"
+
+
+def check_playable(path, min_seconds: float, max_seconds: float) -> float:
+    """Refuse to publish a file that is not a real, watchable video.
+
+    Nothing reviews these before they go live, so a silent clip, a truncated
+    render or a stray zero-byte file has to stop here rather than on the channel.
+    """
+    import json as _json
+    import subprocess as _sp
+    from pathlib import Path as _Path
+
+    path = _Path(path)
+    if not path.exists() or path.stat().st_size < 200_000:
+        raise RuntimeError(f"{path.name} is missing or too small to be a real video")
+    out = _sp.run(["ffprobe", "-v", "error", "-show_entries",
+                   "format=duration:stream=codec_type,width,height",
+                   "-of", "json", str(path)], capture_output=True, text=True)
+    if out.returncode:
+        raise RuntimeError(f"{path.name} could not be read back by ffprobe")
+    data = _json.loads(out.stdout or "{}")
+    kinds = [s.get("codec_type") for s in data.get("streams", [])]
+    if "video" not in kinds:
+        raise RuntimeError(f"{path.name} has no video stream")
+    if "audio" not in kinds:
+        raise RuntimeError(f"{path.name} has no audio: the narration did not make it in")
+    seconds = float(data.get("format", {}).get("duration", 0) or 0)
+    if not (min_seconds <= seconds <= max_seconds):
+        raise RuntimeError(f"{path.name} is {seconds:.0f}s, outside the "
+                           f"{min_seconds:.0f}-{max_seconds:.0f}s a publishable video should be")
+    log(f"{path.name} checks out: {seconds:.0f}s, video and audio present")
+    return seconds

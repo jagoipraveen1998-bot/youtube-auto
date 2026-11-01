@@ -60,7 +60,8 @@ def _escf(p) -> str:
 
 
 def render_section(section: dict, vcfg: dict, work: Path, name: str,
-                   threed_cfg: dict | None = None, context: str = "") -> tuple[Path, float]:
+                   threed_cfg: dict | None = None, context: str = "",
+                   avoid: tuple = ()) -> tuple[Path, float]:
     """Render one narrated section with a looped diagram or 3D scene."""
     work.mkdir(parents=True, exist_ok=True)
     narration = str(section.get("narration", "")).strip()
@@ -74,15 +75,28 @@ def render_section(section: dict, vcfg: dict, work: Path, name: str,
     seconds = dur + 0.5
     visual = dict(section.get("visual") or {})
     visual.setdefault("heading", section.get("heading", ""))
-    use_3d = bool(threed_cfg and threed_cfg.get("enabled", False))
-    if use_3d:
-        pattern, _count, source_fps = explainer_3d.render(visual, context, work, name, threed_cfg)
-    else:
+    # 3D suits a mechanism; a list, a contrast or a figure has to stay 2D, or its
+    # content would be replaced by a generic loop. Either way a 3D failure must
+    # never cost us the day's video, so it falls back to the drawn scene.
+    model = None
+    if threed_cfg and threed_cfg.get("enabled", False) and scene.is_scene(visual.get("type")):
+        model = explainer_3d.choose_model(context, visual, avoid, strict=True)
+    use_3d = False
+    if model:
+        try:
+            pattern, _count, source_fps = explainer_3d.render(visual, context, work, name,
+                                                              threed_cfg, avoid)
+            use_3d = True
+            section["_model"] = model
+        except Exception as exc:
+            log(f"3D scene for {name} fell back to the drawn version: {exc}")
+    if not use_3d:
         pattern, _count = scene.animate(visual, seconds, work / "frames", name)
         source_fps = scene.FPS_ART
 
+    # the drawn scenes already carry their heading inside the frame
     subs = write_subs(work / f"{name}.ass", words_to_cues(words, narration, dur, max_words=9),
-                      heading=str(visual.get("heading", "")), seconds=seconds)
+                      heading=str(visual.get("heading", "")) if use_3d else "", seconds=seconds)
     video_input = ["-framerate", str(source_fps)]
     if use_3d:
         video_input += ["-stream_loop", "-1"]

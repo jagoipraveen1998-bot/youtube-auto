@@ -18,8 +18,8 @@ MODEL_RULES = [
     ("battery", r"\b(battery|lithium|anode|cathode|electrolyte|ion)\b"),
     ("orbit", r"\b(gps|satellite|orbit|spacecraft|receiver in space)\b"),
     ("data_center", r"\b(data cent(re|er)|server rack|cooling|servers)\b"),
-    ("elevator", r"\b(lift|elevator|floor|shaft)\b"),
-    ("engine", r"\b(engine|turbine|motor|gearbox|propeller|jet|rocket|piston)\b"),
+    ("engine", r"\b(engine|turbine|motor|gearbox|propeller|jet|rocket|piston|crankshaft)\b"),
+    ("elevator", r"\b(lift|elevator|hoist|lift shaft|storey|floors?)\b"),
     ("fiber", r"\b(fibre|fiber|optic|optical cable|light pulse)\b"),
     ("wave", r"\b(sound|noise|wave|frequency|headphones|radio)\b"),
     ("screen", r"\b(screen|display|touchscreen|pixel|led|oled|backlight)\b"),
@@ -37,19 +37,37 @@ TYPE_MODELS = {
 }
 
 
-def choose_model(context: str, visual: dict) -> str:
-    parts = [context, str(visual.get("heading", "")), str(visual.get("type", ""))]
-    parts.extend(str(visual.get(k, "")) for k in ("left", "right", "mode"))
-    parts.extend(str(x) for x in visual.get("labels", []) if x)
-    parts.extend(str(x) for x in visual.get("items", []) if x)
-    text = " ".join(parts).lower()
-    for model, pattern in MODEL_RULES:
-        if re.search(pattern, text):
-            return model
-    return TYPE_MODELS.get(str(visual.get("type", "")), "mechanism")
+def choose_model(context: str, visual: dict, avoid: tuple = (),
+                 strict: bool = False) -> str | None:
+    """Pick the model this SECTION is about, not the one the whole video is about.
+
+    The topic words appear in every section, so matching on them first made all
+    six sections render the same loop. The section's own words come first, the
+    visual it asked for next, and the topic only when nothing else decides.
+    """
+    own = [str(visual.get("heading", ""))]
+    own.extend(str(visual.get(k, "")) for k in ("left", "right", "mode"))
+    own.extend(str(x) for x in visual.get("labels", []) if x)
+    own.extend(str(x) for x in visual.get("items", []) if x)
+    fallback = TYPE_MODELS.get(str(visual.get("type", "")).lower())
+    texts = [" ".join(own).lower()] if strict else [" ".join(own).lower(), str(context).lower()]
+    for text in texts:
+        hits = [m for m, pattern in MODEL_RULES if re.search(pattern, text)]
+        for model in hits:
+            if model not in avoid:
+                return model
+        if hits and not strict:
+            return fallback if (fallback and fallback not in avoid) else hits[0]
+    if strict:
+        # This section does not name a thing we have a model of, or the only model
+        # that fits was just used. The drawn diagram says more than a generic prop
+        # would, so the caller stays 2D - which keeps the video varied too.
+        return None
+    return fallback or "mechanism"
 
 
-def render(visual: dict, context: str, work: Path, name: str, cfg: dict) -> tuple[str, int, int]:
+def render(visual: dict, context: str, work: Path, name: str, cfg: dict,
+           avoid: tuple = ()) -> tuple[str, int, int]:
     """Render a short seamless 3D loop; return image pattern, count, and FPS."""
     blender = blender_bin()
     if not blender:
@@ -70,7 +88,7 @@ def render(visual: dict, context: str, work: Path, name: str, cfg: dict) -> tupl
     spec = {
         "out_dir": str(folder), "width": width, "height": height, "fps": fps,
         "frames": frames, "engine": engine, "samples": int(cfg.get("samples", 1)),
-        "timeout": int(cfg.get("timeout", 900)), "model": choose_model(context, visual),
+        "timeout": int(cfg.get("timeout", 900)), "model": choose_model(context, visual, avoid) or "mechanism",
         "visual": visual, "context": context,
     }
     spec_path = folder / "spec.json"

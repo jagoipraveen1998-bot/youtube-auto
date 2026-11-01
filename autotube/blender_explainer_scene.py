@@ -332,7 +332,7 @@ def main():
     scene.display.shading.curvature_valley_factor = 1.1
     frames = max(2, int(spec.get("frames", 48)))
     for i in range(frames):
-        phase = math.tau * i / (frames - 1)
+        phase = math.tau * i / frames      # not frames - 1, or the loop seam stutters
         for update in updates:
             update(phase)
         scene.frame_set(i + 1)

@@ -74,7 +74,8 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
 
 def render_beat(beat: dict, vcfg: dict, work: Path, name: str, back: Path,
-                threed_cfg: dict | None = None, context: str = "") -> tuple[Path, float]:
+                threed_cfg: dict | None = None, context: str = "",
+                avoid: tuple = ()) -> tuple[Path, float]:
     """One narrated beat of a Short. Returns (clip, seconds)."""
     work.mkdir(parents=True, exist_ok=True)
     narration = str(beat.get("narration", "")).strip()
@@ -89,7 +90,9 @@ def render_beat(beat: dict, vcfg: dict, work: Path, name: str, back: Path,
     visual = dict(beat.get("visual") or {})
     visual["heading"] = ""                      # the label above the diagram says it instead
 
-    pattern, source_fps, loop = _frames(visual, context, seconds, work, name, threed_cfg)
+    pattern, source_fps, loop, model = _frames(visual, context, seconds, work, name,
+                                               threed_cfg, avoid)
+    beat["_model"] = model
     caps = write_caps(work / f"{name}.ass",
                       words_to_cues(words, narration, dur, max_words=3), beat.get("caption", ""),
                       seconds)
@@ -112,17 +115,22 @@ def render_beat(beat: dict, vcfg: dict, work: Path, name: str, back: Path,
     return clip, seconds
 
 
-def _frames(visual, context, seconds, work, name, threed_cfg):
-    """3D when it is available and the visual is a mechanism, 2D otherwise."""
+def _frames(visual, context, seconds, work, name, threed_cfg, avoid=()):
+    """3D only when the beat's own words name something we have a model of, and
+    that model was not just used; otherwise the drawn scene. Returns
+    (pattern, fps, loops, model)."""
     if threed_cfg and threed_cfg.get("enabled") and scene.is_scene(visual.get("type")):
-        try:
-            from . import explainer_3d
-            pattern, _n, fps = explainer_3d.render(visual, context, work, name, threed_cfg)
-            return pattern, fps, True
-        except Exception as exc:
-            log(f"3D beat {name} fell back to the drawn scene: {exc}")
+        from . import explainer_3d
+        model = explainer_3d.choose_model(context, visual, avoid, strict=True)
+        if model:
+            try:
+                pattern, _n, fps = explainer_3d.render(visual, context, work, name,
+                                                       threed_cfg, avoid)
+                return pattern, fps, True, model
+            except Exception as exc:
+                log(f"3D beat {name} fell back to the drawn scene: {exc}")
     pattern, _n = scene.animate(visual, seconds, work / "frames", name)
-    return pattern, scene.FPS_ART, False
+    return pattern, scene.FPS_ART, False, None
 
 
 def join(parts: list[Path], out: Path) -> Path:

@@ -44,12 +44,16 @@ def main():
     threed = sc.get("threed", cfg.get("explainers", {}).get("threed", {}))
 
     parts, elapsed = [], 0.0
+    recent: list[str] = []         # recent 3D models, so no two beats in a row repeat one
     for i, beat in enumerate(data["beats"], start=1):
         log(f"Beat {i}/{len(data['beats'])}: {beat['caption']}")
         clip, secs = sv.render_beat(
             beat, vcfg, work, f"b{i}", back, threed_cfg=threed,
             context=" ".join([str(data.get("topic", "")), str(beat.get("caption", "")),
-                              str(beat.get("narration", ""))]))
+                              str(beat.get("narration", ""))]),
+            avoid=tuple(recent[-2:]))
+        if beat.get("_model"):
+            recent.append(beat["_model"])
         if elapsed + secs > MAX_SECONDS and parts:
             log(f"Stopping at {len(parts)} beats to stay under {MAX_SECONDS:.0f}s")
             break

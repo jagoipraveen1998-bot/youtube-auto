@@ -1,0 +1,139 @@
+name: Daily short
+
+on:
+  schedule:
+    - cron: "20 13 * * *"   # 13:20 UTC, US morning and UK afternoon
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Render only by default, or upload privately"
+        type: choice
+        default: no-upload
+        options:
+          - no-upload
+          - full
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-short-${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  make-short:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install ffmpeg and fonts
+        id: apt
+        continue-on-error: true
+        timeout-minutes: 8
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo rm -f /var/lib/man-db/auto-update
+          PKGS="ffmpeg fonts-dejavu-core fonts-noto-core fonts-noto-color-emoji fonts-comic-neue espeak-ng"
+          sudo timeout 300 apt-get install -y -qq --no-install-recommends $PKGS || (sudo timeout 120 apt-get update -qq && sudo timeout 300 apt-get install -y -qq --no-install-recommends $PKGS)
+          ffmpeg -version | head -1
+
+      - name: Install ffmpeg (backup download)
+        if: steps.apt.outcome != 'success'
+        uses: FedericoCarboni/setup-ffmpeg@v3
+        timeout-minutes: 5
+
+      - name: Cache Blender
+        uses: actions/cache@v4
+        with:
+          path: ~/blender
+          key: blender-4.2.3-linux-x64
+
+      - name: Install Blender for 3D scenes
+        timeout-minutes: 20
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          if [ ! -x "$HOME/blender/blender" ]; then
+            mkdir -p "$HOME/blender"
+            curl -fsSL --retry 3 https://download.blender.org/release/Blender4.2/blender-4.2.3-linux-x64.tar.xz | tar -xJ -C "$HOME/blender" --strip-components=1
+          fi
+          GL="xvfb libxi6 libxxf86vm1 libxfixes3 libxrender1 libxkbcommon0 libsm6 libgl1 libegl1 libgl1-mesa-dri"
+          sudo timeout 300 apt-get install -y -qq --no-install-recommends $GL > /dev/null || (sudo timeout 120 apt-get update -qq && sudo timeout 300 apt-get install -y -qq --no-install-recommends $GL > /dev/null)
+          "$HOME/blender/blender" --version | head -1
+          echo "BLENDER=$HOME/blender/blender" >> "$GITHUB_ENV"
+
+      - name: Install Python packages
+        timeout-minutes: 5
+        run: |
+          pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -q -r requirements.txt
+
+      - name: Make today's Short
+        timeout-minutes: 60
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'full' }}
+        run: |
+          if [ "$MODE" = "no-upload" ]; then
+            python run_short.py --no-upload
+          else
+            python run_short.py
+          fi
+
+      - name: Save the test Short so it can be watched (no-upload runs)
+        if: success() && github.event_name == 'workflow_dispatch' && inputs.mode == 'no-upload'
+        run: |
+          mkdir -p previews
+          cp output_short/short.mp4 previews/test_short.mp4
+          cp output_short/cover.jpg previews/test_short_thumb.jpg || true
+          git config user.name "autotube-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add previews/test_short*
+          git commit -q -m "Test short (run ${GITHUB_RUN_NUMBER})"
+          for i in 1 2 3 4 5; do
+            git pull -q --rebase && git push -q && break
+            sleep $((RANDOM % 10 + 3))
+          done
+
+      - name: Keep the Short for 3 days
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: short-${{ github.run_number }}
+          path: |
+            output_short/short.mp4
+            output_short/cover.jpg
+            output_short/description.txt
+            output_short/script.json
+          retention-days: 3
+          if-no-files-found: ignore
+
+      - name: Save short history
+        if: success()
+        run: |
+          git config user.name "autotube-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/shorts_history.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No history changes to save"
+            exit 0
+          fi
+          git commit -m "Save short history for run ${GITHUB_RUN_NUMBER}"
+          for i in 1 2 3 4 5; do
+            if git pull -q --rebase && git push -q; then exit 0; fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((RANDOM % 10 + 3))
+          done
+          echo "Could not push short history after five retries" >&2
+          exit 1

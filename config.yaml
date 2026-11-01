@@ -4,7 +4,7 @@
 # =============================================================
 
 channel:
-  name: "How It Actually Works"       # shown on videos and thumbnails - change to your channel name
+  name: "Inner Mechanics"            # shown on videos and thumbnails - keep in step with the YouTube channel name
   topic: "how modern technology actually works, explained clearly"
   language: "en"
 

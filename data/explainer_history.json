@@ -1,7 +1,8 @@
 {
   "topics": [
     "how a nuclear reactor turns atoms into electricity",
-    "how a hard drive physically stores a file"
+    "how a hard drive physically stores a file",
+    "how a fingerprint sensor reads a finger through glass"
   ],
   "videos": [
     {
@@ -15,6 +16,12 @@
       "title": "How a Hard Drive Physically Stores a File",
       "video_id": "s77XFtOkA1w",
       "length": "02:32"
+    },
+    {
+      "date": "2026-11-01",
+      "title": "How Under-Display Fingerprint Scanners Actually Work",
+      "video_id": "xyf30Uh7aak",
+      "length": "02:34"
     }
   ]
 }

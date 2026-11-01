@@ -76,6 +76,28 @@ explainers:
     samples: 1
     timeout: 900
 
+# ---------------- Daily Short (the vertical one) ----------------
+shorts:
+  beats: 5                           # beats per Short; each is one or two sentences
+  voice:                             # the same narrator as the long videos
+    engine: "kokoro"
+    kokoro_lang: "b"
+    kokoro_voice: "bf_emma"
+    speed: 1.06                      # a little quicker; a Short has no time to wander
+    semitones: 0.0
+    name: "en-GB-SoniaNeural"
+    rate: "+6%"
+    pitch: "+0Hz"
+  threed:
+    enabled: true
+    engine: "WORKBENCH"
+    width: 640
+    height: 360
+    fps: 12
+    loop_seconds: 4
+    samples: 1
+    timeout: 900
+
 # ---------------- Milo story episodes (paused) ----------------
 episodes:
   scenes: 6                          # scenes per episode; more scenes = longer watch time
@@ -99,8 +121,9 @@ ai:
   gemini_model: "auto"               # "auto" = newest Gemini Flash; or a name like "gemini-2.5-flash"
 
 youtube:
-  # "private" so nothing goes live until you have watched it and published it yourself.
-  privacy: "private"
+  # "public" - the channel publishes itself. Set this back to "private" if you
+  # ever want to watch each one before it goes live.
+  privacy: "public"
   category_id: "27"                  # 27 = Education
   made_for_kids: false               # the explainers are for adults
   contains_synthetic_media: false

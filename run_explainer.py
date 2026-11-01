@@ -13,7 +13,7 @@ from datetime import datetime, timedelta, timezone
 from autotube import explainer_art as art
 from autotube import explainer_video as ev
 from autotube.explainer_writer import write_explainer
-from autotube.util import ROOT, load_config, log
+from autotube.util import ROOT, check_playable, load_config, log
 
 IST = timezone(timedelta(hours=5, minutes=30))
 
@@ -48,6 +48,7 @@ def main():
             or cfg["rhymes"]["voices"]["en"])  # falls back to the voice already configured
 
     parts, chapters, elapsed = [], [], 0.0
+    recent: list[str] = []        # the last two 3D models, so sections do not repeat one
 
     # 1. opening card, with the hook read over it
     art.title_card(data["title"], channel).save(work / "title.png")
@@ -68,7 +69,13 @@ def main():
     # 2. the sections
     for i, section in enumerate(data["sections"], start=1):
         log(f"Section {i}/{len(data['sections'])}: {section['heading']}")
-        clip, secs = ev.render_section(section, vcfg, work, f"s{i}", threed_cfg=xc.get("threed", {}), context=" ".join([str(data.get("topic", "")), str(section.get("heading", "")), str(section.get("narration", ""))]))
+        clip, secs = ev.render_section(
+            section, vcfg, work, f"s{i}", threed_cfg=xc.get("threed", {}),
+            context=" ".join([str(data.get("topic", "")), str(section.get("heading", "")),
+                              str(section.get("narration", ""))]),
+            avoid=tuple(recent[-2:]))
+        if section.get("_model"):
+            recent.append(section["_model"])
         chapters.append((elapsed, section["heading"] or f"Part {i}"))
         parts.append(clip)
         elapsed += secs
@@ -94,6 +101,8 @@ def main():
     tags = list(dict.fromkeys(list(data.get("tags", [])) + ["how it works", "explained",
                                                             "technology explained", "science",
                                                             "engineering", "how things work"]))
+
+    check_playable(video, 60, 900)
 
     if args.no_upload:
         log(f"Upload skipped. Files are in {out.name}/")

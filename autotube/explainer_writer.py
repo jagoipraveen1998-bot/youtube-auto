@@ -48,7 +48,8 @@ Write a video of {sections} sections. Rules that matter:
 - Explain the MECHANISM. The viewer should finish knowing how it really works, step by step, not just what it does.
 - Give the viewer the one counter-intuitive idea at the heart of it. That is why they stay.
 - Be specific. Name the real parts, the real physics, the real trade-offs. Avoid filler and hype.
-- Each section's narration is 2 to 4 sentences, 35 to 70 words, written to be read aloud in plain English.
+- Each section's narration is 3 to 5 sentences, 55 to 80 words, written to be read aloud in plain English.
+  The whole video runs about 4 minutes, so pace it: one idea per section, no rushing, no padding.
 - Explain jargon the moment you use it, in the same sentence.
 - DO NOT INVENT STATISTICS OR FACTS. Only state something if it is well established and checkable. If you are
   not certain of a figure, a date or a name, explain the mechanism in words instead and use no number. Never

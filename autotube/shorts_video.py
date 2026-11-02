@@ -37,6 +37,9 @@ def backdrop(channel: str, out: Path) -> Path:
     ImageDraw.Draw(glow).ellipse([-260, ART_Y - 220, SW + 260, ART_Y + ART_H + 220],
                                  fill=(30, 52, 88))
     img = Image.blend(img, glow.filter(ImageFilter.GaussianBlur(140)), 0.75)
+    if art.STYLE == "anime":
+        from .anime_style import sky
+        img = sky(SW, SH, 0.7).copy()
     d = ImageDraw.Draw(img)
     d.text((SW / 2, 128), channel.upper(), font=art.font(44, True), fill=art.ACCENTS[0],
            anchor="mm")

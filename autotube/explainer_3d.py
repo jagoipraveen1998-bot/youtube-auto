@@ -89,7 +89,7 @@ def render(visual: dict, context: str, work: Path, name: str, cfg: dict,
         "out_dir": str(folder), "width": width, "height": height, "fps": fps,
         "frames": frames, "engine": engine, "samples": int(cfg.get("samples", 1)),
         "timeout": int(cfg.get("timeout", 900)), "model": choose_model(context, visual, avoid) or "mechanism",
-        "visual": visual, "context": context,
+        "visual": visual, "context": context, "style": str(cfg.get("style", "")),
     }
     spec_path = folder / "spec.json"
     spec_path.write_text(json.dumps(spec, ensure_ascii=False), encoding="utf-8")
@@ -109,5 +109,8 @@ def render(visual: dict, context: str, work: Path, name: str, cfg: dict,
     rendered = list(folder.glob("f_*.png"))
     if len(rendered) != frames or any(p.stat().st_size < 1024 for p in rendered[:1]):
         raise RuntimeError(f"3D scene produced {len(rendered)} of {frames} expected frames")
+    if spec["style"].lower() == "anime":
+        from . import anime_style
+        anime_style.stylize_folder(folder)
     log(f"3D scene {spec['model']} rendered {frames} frames in {time.time() - started:.0f}s")
     return str(folder / "f_%04d.png"), frames, fps

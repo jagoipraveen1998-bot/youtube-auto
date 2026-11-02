@@ -81,7 +81,21 @@ def fit_font(draw, text: str, start: int, width: int, bold: bool = True, floor: 
 
 
 # ---------------------------------------------------------------- canvas
+STYLE = ""
+
+
+def use_style(style: str | None) -> None:
+    """Switch every drawn frame to a look: "" (the plain navy) or "anime"."""
+    global STYLE, MUTED
+    STYLE = str(style or "").lower()
+    if STYLE == "anime":
+        MUTED = (206, 210, 236)       # secondary text must stay legible over a dusk sky
+
+
 def canvas() -> Image.Image:
+    if STYLE == "anime":
+        from .anime_style import sky
+        return sky(W, H, 0.55).copy()      # a darker horizon, so text over it stays readable
     img = Image.new("RGB", (W, H), BG)
     d = ImageDraw.Draw(img)
     for y in range(H):  # a soft vertical lift, so it is not flat black
@@ -248,7 +262,8 @@ def title_card(title: str, channel: str) -> Image.Image:
     glow = Image.new("RGB", (W, H), BG)
     gd = ImageDraw.Draw(glow)
     gd.ellipse([W / 2 - 560, H / 2 - 360, W / 2 + 560, H / 2 + 360], fill=BG2)
-    img = Image.blend(img, glow.filter(ImageFilter.GaussianBlur(90)), 0.75)
+    if STYLE != "anime":
+        img = Image.blend(img, glow.filter(ImageFilter.GaussianBlur(90)), 0.75)
     d = ImageDraw.Draw(img)
     f = fit_font(d, title, 110, W - 360, True, 54)
     lines = wrap(d, title, f, W - 360)[:3]
@@ -267,7 +282,8 @@ def thumb_card(text: str, channel: str) -> Image.Image:
     glow = Image.new("RGB", (W, H), BG)
     gd = ImageDraw.Draw(glow)
     gd.ellipse([-200, H / 2 - 420, W * 0.62, H / 2 + 420], fill=(34, 58, 96))
-    img = Image.blend(img, glow.filter(ImageFilter.GaussianBlur(120)), 0.8)
+    if STYLE != "anime":
+        img = Image.blend(img, glow.filter(ImageFilter.GaussianBlur(120)), 0.8)
     d = ImageDraw.Draw(img)
     words = (text or channel).strip().upper()
     size, lines = 190, []

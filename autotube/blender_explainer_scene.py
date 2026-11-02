@@ -306,8 +306,10 @@ def main():
     }
     kind = str(spec.get("model", "mechanism")).lower()
     updates = model(kind, M)
-    bpy.ops.mesh.primitive_plane_add(size=200, location=(0, 0, 0))
-    bpy.context.object.data.materials.append(M["navy"])
+    anime = str(spec.get("style", "")).lower() == "anime"
+    if not anime:
+        bpy.ops.mesh.primitive_plane_add(size=200, location=(0, 0, 0))
+        bpy.context.object.data.materials.append(M["navy"])
     bpy.ops.object.camera_add(location=(6, -10, 7))
     cam = bpy.context.object
     track(cam, (0, 0, 1.55))
@@ -320,13 +322,15 @@ def main():
     scene.render.resolution_y = int(spec.get("height", 360))
     scene.render.resolution_percentage = 100
     scene.render.image_settings.file_format = "PNG"
-    scene.render.film_transparent = False
+    scene.render.film_transparent = anime
+    scene.render.image_settings.color_mode = "RGBA" if anime else "RGB"
     scene.render.fps = int(spec.get("fps", 12))
     scene.world.color = (0.018, 0.035, 0.085)
     scene.display.shading.light = "STUDIO"
     scene.display.shading.color_type = "MATERIAL"
     scene.display.shading.show_shadows = True
-    scene.display.shading.show_cavity = True
+    scene.display.shading.show_cavity = not anime
+    scene.display.shading.show_specular_highlight = not anime
     scene.display.shading.cavity_type = "BOTH"
     scene.display.shading.curvature_ridge_factor = 1.4
     scene.display.shading.curvature_valley_factor = 1.1

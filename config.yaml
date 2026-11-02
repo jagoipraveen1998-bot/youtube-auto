@@ -55,12 +55,13 @@ rhymes:
 
 # ---------------- Explainer videos (the main daily video now) ----------------
 explainers:
-  sections: 6                        # sections per video; each is about 20-30 seconds
+  sections: 8                        # sections per video; about 4 minutes in all
+  style: "anime"                     # painted dusk sky, cel shading, ink lines; "" = the plain navy look
   voice:                             # a clear adult narrator, not the children's voice
     engine: "kokoro"
     kokoro_lang: "b"                 # b = British English
     kokoro_voice: "bf_emma"
-    speed: 1.0
+    speed: 0.93                      # unhurried, so a 4-minute script breathes
     semitones: 0.0
     name: "en-GB-SoniaNeural"        # backup voice if Kokoro cannot run
     rate: "+0%"
@@ -69,8 +70,9 @@ explainers:
   threed:
     enabled: true
     engine: "WORKBENCH"
-    width: 640
-    height: 360
+    style: "anime"
+    width: 960
+    height: 540
     fps: 12
     loop_seconds: 4
     samples: 1
@@ -91,8 +93,9 @@ shorts:
   threed:
     enabled: true
     engine: "WORKBENCH"
-    width: 640
-    height: 360
+    style: "anime"
+    width: 960
+    height: 540
     fps: 12
     loop_seconds: 4
     samples: 1

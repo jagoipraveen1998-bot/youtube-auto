@@ -18,6 +18,12 @@ from autotube.util import ROOT, check_playable, load_config, log
 IST = timezone(timedelta(hours=5, minutes=30))
 
 
+def next_queued():
+    """The oldest script waiting as data/next_*.json, if any."""
+    files = sorted((ROOT / "data").glob("next_*.json"))
+    return files[0] if files else None
+
+
 def fmt(seconds: float) -> str:
     s = int(seconds)
     return f"{s // 60:02d}:{s % 60:02d}"
@@ -31,6 +37,7 @@ def main():
 
     cfg = load_config()
     xc = cfg.get("explainers", {})
+    art.use_style(xc.get("style"))
     channel = cfg["channel"]["name"]
     today = datetime.now(IST).strftime("%Y-%m-%d")
     out = ROOT / "output_explainer"
@@ -41,7 +48,17 @@ def main():
     hist_path = ROOT / "data" / "explainer_history.json"
     hist = json.loads(hist_path.read_text(encoding="utf-8")) if hist_path.exists() else {"topics": [], "videos": []}
 
-    data = write_explainer(cfg, hist["topics"], args.topic)
+    queued = next_queued()
+    if queued and not args.topic:
+        # A script written ahead of time goes out instead of a generated one.
+        from autotube.explainer_writer import _clean
+        data = _clean(json.loads(queued.read_text(encoding="utf-8")),
+                      int(xc.get("sections", 8)))
+        data.setdefault("topic", data["title"])
+        log(f"Using queued script {queued.name}: {data['title']}")
+    else:
+        queued = None
+        data = write_explainer(cfg, hist["topics"], args.topic)
     (out / "script.json").write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
 
     vcfg = (cfg.get("explainers", {}).get("voice")
@@ -116,7 +133,9 @@ def main():
     hist["videos"] = (hist["videos"] + [{"date": today, "title": data["title"], "video_id": video_id,
                                          "length": fmt(elapsed)}])[-200:]
     hist_path.write_text(json.dumps(hist, indent=2, ensure_ascii=False), encoding="utf-8")
-    log(f"Uploaded (private, waiting for your review): https://youtu.be/{video_id}")
+    if queued:
+        queued.unlink()          # used: the next run goes back to writing its own
+    log(f"Uploaded ({cfg['youtube'].get('privacy', 'private')}): https://youtu.be/{video_id}")
 
 
 if __name__ == "__main__":

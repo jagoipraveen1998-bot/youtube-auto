@@ -23,6 +23,8 @@ def main():
     args = ap.parse_args()
 
     cfg = load_config()
+    from autotube import explainer_art as _art
+    _art.use_style(cfg.get("shorts", {}).get("style") or cfg.get("explainers", {}).get("style"))
     sc = cfg.get("shorts", {})
     channel = cfg["channel"]["name"]
     today = datetime.now(IST).strftime("%Y-%m-%d")

@@ -7,6 +7,7 @@ Uploads are private by default, so nothing goes live until you have watched it.
 """
 import argparse
 import json
+import os
 import shutil
 from datetime import datetime, timedelta, timezone
 
@@ -47,6 +48,11 @@ def main():
 
     hist_path = ROOT / "data" / "explainer_history.json"
     hist = json.loads(hist_path.read_text(encoding="utf-8")) if hist_path.exists() else {"topics": [], "videos": []}
+    if (not args.no_upload and os.environ.get("GITHUB_EVENT_NAME") == "schedule"
+            and any(v.get("date") == today for v in hist["videos"])):
+        # Today's explainer already went out from a manual run; one a day is enough.
+        log(f"An explainer was already uploaded on {today}; the scheduled run stops here.")
+        return
 
     queued = next_queued()
     if queued and not args.topic:

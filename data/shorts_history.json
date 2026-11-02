@@ -1,6 +1,7 @@
 {
   "topics": [
-    "how face unlock tells you from a photograph"
+    "how face unlock tells you from a photograph",
+    "how GPS works out where you are from space"
   ],
   "videos": [
     {
@@ -8,6 +9,12 @@
       "title": "How Face Unlock Spots Fake Photos #Shorts",
       "video_id": "Z4XyRraPPlg",
       "length": "38s"
+    },
+    {
+      "date": "2026-11-02",
+      "title": "How GPS Really Works From Space #Shorts",
+      "video_id": "Y8U068pqChA",
+      "length": "39s"
     }
   ]
 }

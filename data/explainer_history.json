@@ -2,7 +2,8 @@
   "topics": [
     "how a nuclear reactor turns atoms into electricity",
     "how a hard drive physically stores a file",
-    "how a fingerprint sensor reads a finger through glass"
+    "how a fingerprint sensor reads a finger through glass",
+    "how a smartphone knows which way up it is"
   ],
   "videos": [
     {
@@ -22,6 +23,12 @@
       "title": "How Under-Display Fingerprint Scanners Actually Work",
       "video_id": "xyf30Uh7aak",
       "length": "02:34"
+    },
+    {
+      "date": "2026-11-02",
+      "title": "How Your Phone Actually Knows Which Way Up It Is",
+      "video_id": "-4ECe2DIQ20",
+      "length": "02:36"
     }
   ]
 }

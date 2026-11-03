@@ -1,7 +1,8 @@
 {
   "topics": [
     "how face unlock tells you from a photograph",
-    "how GPS works out where you are from space"
+    "how GPS works out where you are from space",
+    "how a credit card payment clears in two seconds"
   ],
   "videos": [
     {
@@ -15,6 +16,12 @@
       "title": "How GPS Really Works From Space #Shorts",
       "video_id": "Y8U068pqChA",
       "length": "39s"
+    },
+    {
+      "date": "2026-11-03",
+      "title": "How a Credit Card Payment Clears in Two Seconds #Shorts",
+      "video_id": "Q_IiBirp-Sg",
+      "length": "32s"
     }
   ]
 }

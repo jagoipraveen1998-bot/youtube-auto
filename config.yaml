@@ -59,9 +59,9 @@ explainers:
   style: "anime"                     # painted dusk sky, cel shading, ink lines; "" = the plain navy look
   voice:                             # a clear adult narrator, not the children's voice
     engine: "kokoro"
-    kokoro_lang: "b"                 # b = British English
-    kokoro_voice: "bf_emma"
-    speed: 0.93                      # unhurried, so a 4-minute script breathes
+    kokoro_lang: "a"                 # a = American English
+    kokoro_voice: "af_heart"
+    speed: 0.99                      # approved preview narrator pace
     semitones: 0.0
     name: "en-GB-SoniaNeural"        # backup voice if Kokoro cannot run
     rate: "+0%"
@@ -83,9 +83,9 @@ shorts:
   beats: 5                           # beats per Short; each is one or two sentences
   voice:                             # the same narrator as the long videos
     engine: "kokoro"
-    kokoro_lang: "b"
-    kokoro_voice: "bf_emma"
-    speed: 1.06                      # a little quicker; a Short has no time to wander
+    kokoro_lang: "a"
+    kokoro_voice: "af_heart"
+    speed: 0.99                      # same approved preview narrator pace
     semitones: 0.0
     name: "en-GB-SoniaNeural"
     rate: "+6%"

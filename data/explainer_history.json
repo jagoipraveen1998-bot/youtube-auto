@@ -4,7 +4,8 @@
     "how a hard drive physically stores a file",
     "how a fingerprint sensor reads a finger through glass",
     "how a smartphone knows which way up it is",
-    "how a lithium battery stores and releases energy"
+    "how a lithium battery stores and releases energy",
+    "how a quantum computer differs from the one on your desk"
   ],
   "videos": [
     {
@@ -36,6 +37,12 @@
       "title": "How a Lithium Battery Actually Stores Energy",
       "video_id": "aAn8ehQ6Yh0",
       "length": "03:04"
+    },
+    {
+      "date": "2026-11-04",
+      "title": "How Quantum Computers Actually Work",
+      "video_id": "5Ygqigtu_FA",
+      "length": "04:14"
     }
   ]
 }

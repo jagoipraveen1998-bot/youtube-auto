@@ -28,3 +28,14 @@ print(f"YT_CLIENT_ID      = {info['client_id']}")
 print(f"YT_CLIENT_SECRET  = {info['client_secret']}")
 print(f"YT_REFRESH_TOKEN  = {creds.refresh_token}")
 print("\nKeep these private. Do not upload client_secret.json to GitHub.")
+
+# also save them next to this script, so they can't vanish with the window
+out = Path("youtube_token.txt")
+out.write_text(
+    f"YT_CLIENT_ID      = {info['client_id']}\n"
+    f"YT_CLIENT_SECRET  = {info['client_secret']}\n"
+    f"YT_REFRESH_TOKEN  = {creds.refresh_token}\n"
+    "\nFor CreepyCartoonTales, save the refresh token as the GitHub secret YT_HORROR_REFRESH_TOKEN.\n"
+    "Delete this file once the secret is saved.\n", encoding="utf-8")
+print(f"\nAlso saved to {out.resolve()}")
+input("\nPress Enter to close...")

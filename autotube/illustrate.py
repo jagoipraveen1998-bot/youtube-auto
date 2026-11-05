@@ -129,14 +129,49 @@ class Painter:
     def __init__(self, cfg: dict, folder: Path):
         ic = cfg.get("explainers", {}).get("illustrate", {})
         self.models = [m for m in ([ic.get("model")] + list(ic.get("fallback_models", []))) if m]
+        # free first: Cloudflare Workers AI gives a daily allowance at no charge
+        self.providers = list(ic.get("providers", ["cloudflare", "gemini"]))
+        self.cf_model = str(ic.get("cloudflare_model", "@cf/black-forest-labs/flux-1-schnell"))
+        self.cf_steps = int(ic.get("cloudflare_steps", 6))
+        self.cf_account = env("CF_ACCOUNT_ID", required=False)
+        self.cf_token = env("CF_API_TOKEN", required=False)
+        if "cloudflare" in self.providers and not (self.cf_account and self.cf_token):
+            self.providers.remove("cloudflare")
+        self.cf_dead = False
         self.size = str(ic.get("image_size", "1K"))
         self.folder = Path(folder)
         self.folder.mkdir(parents=True, exist_ok=True)
         self.budget = int(ic.get("max_images", 26))
         self.made = 0
         self.dead = False
-        self.key = env("GEMINI_API_KEY")
+        self.gemini_dead = False
+        self.key = env("GEMINI_API_KEY", required=False)
         self._client = None
+        if not self.providers or self.providers == ["gemini"] and not self.key:
+            self.dead = True
+
+    def _cloudflare(self, prompt: str, aspect: str) -> bytes | None:
+        """FLUX.1 [schnell] on Cloudflare Workers AI (free daily allowance).
+        It paints a square, so the prompt asks for the subject in the middle band
+        and we crop the frame from that."""
+        import random
+        import requests
+        band = ("Keep every important element inside the middle horizontal band of the square, "
+                "with only sky, floor or background above and below, so it can be cropped to "
+                + ("a wide 16:9 frame." if aspect == "16:9" else "a tall 9:16 frame."
+                   if aspect == "9:16" else "any shape."))
+        url = (f"https://api.cloudflare.com/client/v4/accounts/{self.cf_account}"
+               f"/ai/run/{self.cf_model}")
+        r = requests.post(url, headers={"Authorization": f"Bearer {self.cf_token}"},
+                          json={"prompt": f"{prompt}\n{band}"[:2048], "steps": self.cf_steps,
+                                "seed": random.randint(1, 2**31 - 1)}, timeout=120)
+        if r.status_code in (401, 403):
+            raise PermissionError(f"Cloudflare refused the token ({r.status_code}): {r.text[:200]}")
+        if r.status_code == 429:
+            raise RuntimeError(f"Cloudflare daily free allowance used up: {r.text[:200]}")
+        r.raise_for_status()
+        image = (r.json().get("result") or {}).get("image")
+        return base64.b64decode(image) if image else None
 
     def _sdk(self, model: str, prompt: str, aspect: str) -> bytes | None:
         from google import genai
@@ -171,31 +206,63 @@ class Painter:
             log(f"Image budget of {self.budget} reached; {name} stays a diagram")
             return None
         last = None
+        for provider in self.providers:
+            if provider == "cloudflare" and not self.cf_dead:
+                for attempt in range(3):
+                    try:
+                        raw = self._cloudflare(full, aspect)
+                        if raw:
+                            out.write_bytes(raw)
+                            self.made += 1
+                            return out
+                        last = "Cloudflare returned no image"
+                    except PermissionError as exc:
+                        last, self.cf_dead = exc, True
+                        log(f"Cloudflare images off for this run: {exc}")
+                        break
+                    except Exception as exc:
+                        last = exc
+                        if "allowance used up" in str(exc):
+                            self.cf_dead = True
+                            log(str(exc))
+                            break
+                        time.sleep(6 * (attempt + 1))
+            elif provider == "gemini" and self.key and not self.gemini_dead:
+                raw, last = self._gemini(full, aspect, last)
+                if raw:
+                    out.write_bytes(raw)
+                    self.made += 1
+                    return out
+        log(f"Could not paint {name}: {last}")
+        if (self.cf_dead or "cloudflare" not in self.providers) and \
+                (self.gemini_dead or "gemini" not in self.providers or not self.key):
+            log("No image service is available for this run; the rest of the video uses diagrams.")
+            self.dead = True
+        return None
+
+    def _gemini(self, full: str, aspect: str, last):
         for model in self.models:
             for attempt in range(3):
                 try:
                     raw = self._sdk(model, full, aspect)
                     if raw:
-                        out.write_bytes(raw)
-                        self.made += 1
-                        return out
+                        return raw, last
                     last = "no image in the reply (likely a safety block)"
-                    break                       # same prompt will be refused again
+                    break
                 except Exception as exc:
                     last = exc
                     text = str(exc).lower()
                     if any(k in text for k in ("billing", "permission", "api key", "not found",
-                                                "limit: 0", "free_tier", "free tier")):
-                        break                   # this model will not work for this key
+                                                "limit: 0", "free_tier", "free tier",
+                                                "resource_exhausted", "quota")):
+                        break
                     time.sleep(8 * (attempt + 1))
-        log(f"Could not paint {name}: {last}")
         if self.made == 0 and last and any(k in str(last).lower() for k in
                                            ("billing", "permission", "limit: 0", "free_tier",
-                                            "free tier", "api key")):
-            log("Image generation is not available on this Gemini key (billing needed?); "
-                "the rest of the video uses diagrams.")
-            self.dead = True
-        return None
+                                            "free tier", "api key", "quota")):
+            log("Gemini image generation needs billing on this key; not using it this run.")
+            self.gemini_dead = True
+        return None, last
 
 
 def paint_shots(painter: Painter, shots: list[dict], name: str) -> list[dict]:

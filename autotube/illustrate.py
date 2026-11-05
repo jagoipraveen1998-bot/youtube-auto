@@ -93,7 +93,7 @@ def storyboard(cfg: dict, data: dict) -> bool:
 
     client = genai.Client(api_key=env("GEMINI_API_KEY"))
     models = pick_models(client, cfg["ai"].get("gemini_model", "auto"))
-    for attempt in range(3):
+    for attempt in range(6):
         model = models[min(attempt, len(models) - 1)]
         try:
             resp = client.models.generate_content(
@@ -118,9 +118,27 @@ def storyboard(cfg: dict, data: dict) -> bool:
             log(f"Storyboard by {model}: {n} section shots")
             return True
         except Exception as exc:
-            log(f"Storyboard attempt {attempt + 1} failed: {exc}")
-            time.sleep(10 * (attempt + 1))
-    return False
+            log(f"Storyboard attempt {attempt + 1} failed: {str(exc)[:160]}")
+            time.sleep(15 * (attempt + 1))
+    # Gemini is busy: plan the shots straight from the narration instead, so the
+    # video still gets its pictures.
+    log("Storyboard falling back to shots planned from the narration")
+    subject = data.get("topic") or data["title"]
+    for pid, text in pieces:
+        sents = _sentences(text) or [text]
+        n = want[pid]
+        groups = [" ".join(sents[round(k * len(sents) / n):round((k + 1) * len(sents) / n)])
+                  for k in range(n)]
+        shots = [{"prompt": f"An illustration explaining {subject}. Show exactly this: {g}",
+                  "label": ""} for g in groups if g.strip()]
+        if pid == "hook":
+            data["hook_shots"] = shots
+        elif pid == "end":
+            data["end_shots"] = shots
+        else:
+            data["sections"][int(pid[1:]) - 1]["shots"] = shots
+    data["thumb_prompt"] = f"A striking, simple, glowing hero picture of {subject}"
+    return True
 
 
 class Painter:

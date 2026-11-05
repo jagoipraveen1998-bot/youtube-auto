@@ -7,7 +7,8 @@
     "how a lithium battery stores and releases energy",
     "how a quantum computer differs from the one on your desk",
     "how wifi carries data straight through a wall",
-    "how a microwave oven heats food from the inside out"
+    "how a microwave oven heats food from the inside out",
+    "how a rocket steers when there is nothing to push against"
   ],
   "videos": [
     {
@@ -57,6 +58,12 @@
       "title": "How a Microwave Oven Actually Heats Food",
       "video_id": "teFBuwpBEVg",
       "length": "03:34"
+    },
+    {
+      "date": "2026-11-06",
+      "title": "How Rockets Actually Steer in Space",
+      "video_id": "7xrL-YOIMFk",
+      "length": "04:12"
     }
   ]
 }

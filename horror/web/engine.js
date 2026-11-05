@@ -1,6 +1,8 @@
 // ---------- core ----------
-const W = 1080, H = 1920;
+const FORMAT = ((window.PLAN || {}).format) || 'vertical';
+const W = FORMAT === 'landscape' ? 1920 : 1080, H = FORMAT === 'landscape' ? 1080 : 1920;
 const cv = document.getElementById('c');
+cv.width = W; cv.height = H;
 let ctx = cv.getContext('2d');
 const MAIN = ctx;
 const INK = '#22112a';
@@ -60,10 +62,10 @@ function camT(c, cam) {
 function withCam(cam, fn) { CZ = cam.z; ctx.save(); camT(ctx, cam); fn(); ctx.restore(); }
 
 // ---------- lighting (multiply light map) ----------
-const LM = document.createElement('canvas'); LM.width = 540; LM.height = 960; const lctx = LM.getContext('2d');
+const LM = document.createElement('canvas'); LM.width = W / 2; LM.height = H / 2; const lctx = LM.getContext('2d');
 function lightPass(cam, ambient, lightsFn) {
   lctx.setTransform(1, 0, 0, 1, 0, 0); lctx.globalCompositeOperation = 'source-over'; lctx.globalAlpha = 1;
-  lctx.fillStyle = ambient; lctx.fillRect(0, 0, 540, 960);
+  lctx.fillStyle = ambient; lctx.fillRect(0, 0, W / 2, H / 2);
   lctx.setTransform(0.5, 0, 0, 0.5, 0, 0); camT(lctx, cam);
   lctx.globalCompositeOperation = 'lighter'; lightsFn(lctx);
   ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = 'multiply'; ctx.drawImage(LM, 0, 0, W, H); ctx.restore();
@@ -87,22 +89,40 @@ const OUT = {
   nightie: { top: '#b98bc9', stripe: '#d6b4e2', pants: '#b98bc9' },
   shadow: { top: '#0b0710', pants: '#0b0710' },
   ghost: { top: '#cfd9e6', pants: '#b7c3d3' },
+  cardigan: { top: '#8a6a44', stripe: '#9c7b52', pants: '#4a4038', collar: true },
+  dress: { top: '#e7a3b8', pants: '#e7a3b8', lace: true },
+  suit: { top: '#24222e', pants: '#1c1a24', collar: true },
+  uniform: { top: '#7a5a34', pants: '#5a4430', badge: true },
+  apron: { top: '#5f8a6a', pants: '#3e3a48', apron: true },
+};
+// villain designs: palette + accessories, merged over the per-story look
+const KINDS = {
+  doll: { skin: '#f6ede6', hair: '#e8c46a', hairStyle: 'curly', outfit: 'dress', acc: { bow: '#d24a6a', cheeks: true, cracks: true }, eyeCol: '#141018', pupil: 0.1 },
+  neighbour: { skin: '#e3b48e', hair: '#c9c4bd', hairStyle: 'bald', outfit: 'cardigan', acc: { glasses: true, mustache: true } },
+  tall: { skin: '#e9e6ef', hair: '#151320', hairStyle: 'mop', outfit: 'suit', stretch: true, eyeCol: '#ffffff', pupil: 0.1 },
+  delivery: { skin: '#d9a07a', hair: '#2a1d16', hairStyle: 'spiky', outfit: 'uniform', acc: { cap: '#7a5a34' } },
 };
 function guy(o) {
   const s = o.s;
   const _skin = SKIN, _hair = HAIR;
-  if (o.kind === 'shadow') { SKIN = '#0b0710'; HAIR = '#05030a'; o = Object.assign({}, o, { outfit: 'shadow', eyeCol: '#ffffff', pupil: 0.1, mouth: o.mouth === 'grin' ? 'grin' : 'none' }); }
+  if (KINDS[o.kind]) { const k = KINDS[o.kind]; o = Object.assign({}, o, k, { acc: Object.assign({}, o.acc || {}, k.acc || {}) }); }
+  if (o.kind === 'shadow') { SKIN = '#0b0710'; HAIR = '#05030a'; o = Object.assign({}, o, { outfit: 'shadow', eyeCol: '#ffffff', pupil: 0.1, mouth: o.mouth === 'grin' ? 'grin' : 'none', acc: {} }); }
   else if (o.kind === 'ghost') { SKIN = '#dfe8f2'; HAIR = o.hair || '#9aa6b8'; o = Object.assign({}, o, { outfit: 'ghost', eyeCol: '#1a1424', pupil: 0.1 }); }
   else { if (o.skin) SKIN = o.skin; if (o.hair) HAIR = o.hair; }
+  if (o.talk && ['flat', 'smile', 'wobble', 'droop', 'none', undefined].includes(o.mouth) && o.kind !== 'shadow') {
+    const open = noise1(F * 0.9 + (o.seed || 0) * 7) ;
+    if (open > 0.45) { o = Object.assign({}, o, { mouth: 'o', mo: 0.35 + 0.5 * (open - 0.45) * 2 }); }
+  }
   ctx.save();
   if (o.alpha != null) ctx.globalAlpha = clamp(o.alpha);
   const tr = o.tremble ? (rnd(F * 7.31 + o.x) - 0.5) * o.tremble : 0;
   ctx.translate(o.x + tr, o.y);
   ctx.scale(s * (o.flip ? -1 : 1), s);
   ctx.rotate(o.lean || 0);
+  if (o.stretch) ctx.scale(0.84, 1.3);
   const br = 1 + 0.012 * Math.sin(F * 0.13 + (o.seed || 0)) + (o.sq || 0);
   ctx.scale(1 / Math.sqrt(br), br);
-  const out = OUT[o.outfit || 'pj'];
+  const out = Object.assign({}, OUT[o.outfit || 'pj'] || OUT.pj, o.top ? { top: o.top } : {}, o.stripe ? { stripe: o.stripe } : {});
   const lw = 6.5 / s;
   const SF = (p, fill) => { ctx.fillStyle = fill; ctx.fill(p); ctx.lineWidth = L(lw); ctx.strokeStyle = INK; ctx.lineJoin = 'round'; ctx.stroke(p); };
   if (!o.noLegs) {
@@ -144,7 +164,11 @@ function guy(o) {
     ctx.fillStyle = INK; for (let y = -420; y < -200; y += 60) { ctx.beginPath(); ctx.arc(0, y, 9, 0, 7); ctx.fill(); }
   }
   if (out.collar && (o.turn ?? 1) <= 0.5) SF(rr(-80, -530, 160, 40, 16), '#e8f2fb');
+  if (out.lace && (o.turn ?? 1) > 0.5) { SF(rr(-120, -520, 240, 50, 25), '#fbf3f6'); for (let x = -100; x <= 100; x += 40) SF(ell(x, -180, 22, 16), '#fbf3f6'); }
+  if (out.badge && (o.turn ?? 1) > 0.5) SF(rr(50, -440, 60, 44, 8), '#e9d8a8');
+  if (out.apron && (o.turn ?? 1) > 0.5) SF(rr(-110, -420, 220, 250, 30), '#f1ece2');
   if (out.hood) SF(ell(0, -700, 250, 210), out.top);
+  if (o.acc && o.acc.ponytail && (o.turn ?? 1) < 0.6) SF(ell(0, -560, 70, 150), HAIR);
   head(o, lw, SF);
   if (front) arms();
   if (o.sweat) {
@@ -204,8 +228,40 @@ function head(o, lw, SF) {
   ctx.restore();
   ctx.lineWidth = L(lw); ctx.strokeStyle = INK; ctx.stroke(hp);
   const fy = lerp(150, -118, ss(clamp((t - 0.15) / 0.7)));
-  SF(o.hairStyle === 'bob' ? bobPath(fy) : hairPath(fy, (o.hairUp || 0) * 80), HAIR);
+  const st = o.hairStyle || 'spiky', acc = o.acc || {};
+  if (st === 'braids') for (const sd of [-1, 1]) { SF(ell(sd * 215, 150, 46, 120), HAIR); SF(ell(sd * 215, 290, 30, 22), acc.tie || '#d24a6a'); }
+  if (st === 'ponytail' && t > 0.5) SF(ell(205, -160, 60, 130, -0.5), HAIR);
+  if (st === 'bob') SF(bobPath(fy), HAIR);
+  else if (st === 'curly') SF(curlyPath(fy), HAIR);
+  else if (st === 'mop') SF(mopPath(fy), HAIR);
+  else if (st === 'bald') { if (t > 0.3) for (const sd of [-1, 1]) SF(ell(sd * 200, -60, 40, 70), HAIR); }
+  else if (st === 'ponytail' || st === 'braids') SF(slickPath(fy), HAIR);
+  else SF(hairPath(fy, (o.hairUp || 0) * 80), HAIR);
+  if (acc.bow && t > 0.3) { SF(ell(-150, -210, 60, 36, -0.4), acc.bow); SF(ell(-60, -235, 60, 36, 0.4), acc.bow); SF(ell(-105, -222, 22, 22), acc.bow); }
+  if (acc.cap && t > 0.3) { SF(rr(-225, -275, 450, 130, [120, 120, 10, 10]), acc.cap); SF(rr(-40, -160, 300, 34, 17), acc.cap); }
   ctx.restore();
+}
+function curlyPath(fy) {
+  const p = new Path2D(); const n = 11;
+  for (let i = 0; i <= n; i++) {
+    const a = Math.PI + (i / n) * Math.PI, x = Math.cos(a) * 235, y = Math.sin(a) * 255 + 20;
+    i ? p.quadraticCurveTo(Math.cos(a - 0.15) * 300, Math.sin(a - 0.15) * 310 + 20, x, y) : p.moveTo(x, Math.max(y, fy + 120));
+  }
+  p.lineTo(235, fy + 120);
+  for (let x = 235; x >= -235; x -= 47) p.quadraticCurveTo(x - 23, fy + 60, x - 47, fy + 100);
+  p.closePath(); return p;
+}
+function mopPath(fy) {
+  const p = new Path2D();
+  p.moveTo(-235, 60); p.bezierCurveTo(-260, -230, -120, -275, 0, -272); p.bezierCurveTo(120, -275, 260, -230, 235, 60);
+  for (let x = 235; x >= -235; x -= 39) p.lineTo(x - 19, Math.max(fy - 20, -140) + ((x / 39) % 2 ? 30 : 0));
+  p.closePath(); return p;
+}
+function slickPath(fy) {
+  const p = new Path2D();
+  p.moveTo(-228, 40); p.bezierCurveTo(-250, -200, -110, -268, 0, -268); p.bezierCurveTo(110, -268, 250, -200, 228, 40);
+  p.bezierCurveTo(180, fy - 20, 60, fy - 40, 0, fy - 10); p.bezierCurveTo(-60, fy - 40, -180, fy - 20, -228, 40);
+  p.closePath(); return p;
 }
 function face(o, lw, SF) {
   const ew = o.eyeW || 1, lk = o.look || 0, lkY = o.lookY || 0;
@@ -240,8 +296,19 @@ function face(o, lw, SF) {
     ctx.lineWidth = 15; ctx.lineCap = 'round'; ctx.strokeStyle = INK;
     ctx.beginPath(); ctx.moveTo(sd * 40, y1 - (ew - 1) * 60); ctx.lineTo(sd * 124, y2 - (ew - 1) * 60); ctx.stroke();
   }
+  const acc = o.acc || {};
+  if (acc.cheeks) for (const sd of [-1, 1]) { ctx.fillStyle = 'rgba(232,96,120,0.55)'; ctx.beginPath(); ctx.ellipse(sd * 120, 100, 44, 28, 0, 0, 7); ctx.fill(); }
+  if (acc.freckles) { ctx.fillStyle = 'rgba(120,60,30,0.55)'; for (const sd of [-1, 1]) for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.arc(sd * (70 + (i % 3) * 24), 82 + Math.floor(i / 3) * 20 + (i % 2) * 6, 6, 0, 7); ctx.fill(); } }
+  if (acc.cracks) { ctx.strokeStyle = 'rgba(60,40,50,0.7)'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(60, -240); ctx.lineTo(90, -150); ctx.lineTo(70, -110); ctx.lineTo(110, -40); ctx.moveTo(90, -150); ctx.lineTo(130, -130); ctx.stroke(); }
+  if (acc.glasses) {
+    ctx.strokeStyle = INK; ctx.lineWidth = 12;
+    for (const sd of [-1, 1]) { ctx.beginPath(); ctx.ellipse(sd * 84, 6, 70, 66, 0, 0, 7); ctx.stroke(); }
+    ctx.beginPath(); ctx.moveTo(-14, 0); ctx.quadraticCurveTo(0, -12, 14, 0); ctx.stroke();
+  }
   ctx.lineWidth = L(lw); ctx.strokeStyle = INK;
   ctx.beginPath(); ctx.arc(0, 66, 16, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
+  if (acc.beard) SF((() => { const p = new Path2D(); p.moveTo(-200, 40); p.bezierCurveTo(-190, 230, -80, 260, 0, 262); p.bezierCurveTo(80, 260, 190, 230, 200, 40); p.bezierCurveTo(140, 140, 60, 110, 0, 112); p.bezierCurveTo(-60, 110, -140, 140, -200, 40); return p; })(), HAIR);
+  if (acc.mustache) SF((() => { const p = new Path2D(); p.moveTo(-95, 120); p.quadraticCurveTo(-50, 80, 0, 104); p.quadraticCurveTo(50, 80, 95, 120); p.quadraticCurveTo(50, 112, 0, 118); p.quadraticCurveTo(-50, 112, -95, 120); return p; })(), HAIR);
   const m = o.mouth || 'flat', my = 142;
   const MOUTH = '#3a1830';
   if (m === 'none') { }

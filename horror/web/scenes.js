@@ -84,6 +84,7 @@ function calendarScene(f, top = 'MONDAY', big = '13') {
 }
 
 function hallway(f, peek) {
+  fillR(-1600, -800, 2020, 3600, '#7a7fae'); fillR(660, -800, 2200, 3600, '#6f74a3');   // walls run on past the edges in 16:9
   sf(poly([[-300, -300], [1380, -300], [660, 640], [420, 640]]), '#5b5f86', 0);
   sf(poly([[-300, 2300], [1380, 2300], [660, 1080], [420, 1080]]), '#6e5447', 0);
   // floor boards converging

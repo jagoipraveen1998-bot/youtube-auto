@@ -207,13 +207,15 @@ def repair(story: dict) -> dict:
     return story
 
 
-def write_story(cfg: dict, used: list[str]) -> dict:
+def write_story(cfg: dict, used: list[str], hint: str | None = None) -> dict:
     from google import genai
     from google.genai import types
 
     client = genai.Client(api_key=env("GEMINI_API_KEY"))
     scenes = "\n".join(f"- {k}: {v}" for k, v in SCENES.items())
     prompt = PROMPT.format(scenes=scenes, used="; ".join(used[-60:]) or "none yet")
+    if hint:
+        prompt += f"\nFor this story: {hint}\n"
     models = pick_models(client, cfg.get("ai", {}).get("gemini_model", "auto"))
     last = None
     models = models + [m for m in ("gemini-flash-lite-latest", "gemini-2.5-flash-lite", "gemini-2.5-flash") if m not in models]

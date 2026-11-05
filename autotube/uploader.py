@@ -37,7 +37,7 @@ def _tags(tags: list[str]) -> list[str]:
 
 
 def upload(video: Path, thumb: Path | None, title: str, description: str, tags: list[str],
-           cfg: dict, token_env: str = "YT_REFRESH_TOKEN") -> str:
+           cfg: dict, token_env: str = "YT_REFRESH_TOKEN", publish_at: str | None = None) -> str:
     from googleapiclient.http import MediaFileUpload
 
     yt_cfg = cfg["youtube"]
@@ -57,6 +57,9 @@ def upload(video: Path, thumb: Path | None, title: str, description: str, tags: 
             "containsSyntheticMedia": bool(yt_cfg.get("contains_synthetic_media", False)),
         },
     }
+    if publish_at:   # scheduled: stays private until publish_at (RFC 3339, UTC), then goes public by itself
+        body["status"]["privacyStatus"] = "private"
+        body["status"]["publishAt"] = publish_at
     yt = _client(token_env)
     request = yt.videos().insert(
         part="snippet,status", body=body,

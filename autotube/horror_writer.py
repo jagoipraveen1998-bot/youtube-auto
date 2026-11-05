@@ -124,7 +124,8 @@ def repair(story: dict) -> dict:
             out["hero"] = {"pose": pose,
                            "expr": h.get("expr") if h.get("expr") in EXPRS else "worried",
                            "expr2": h.get("expr2") if h.get("expr2") in EXPRS else None}
-        elif scene in {"bedroom", "hallway", "closeup", "bathroom"} or (scene == "cctv" and out["room"] == "bedroom"):
+        elif (scene in {"bedroom", "hallway", "bathroom"} or (scene == "cctv" and out["room"] == "bedroom")
+              or (scene == "closeup" and not (isinstance(b.get("other"), dict) and b["other"].get("state") not in (None, "hidden")))):
             out["hero"] = {"pose": "sleep" if scene == "cctv" else ("peek" if scene == "hallway" else "sit" if scene == "bedroom" else "stand"),
                            "expr": "asleep" if scene == "cctv" else "worried", "expr2": None}
         else:
@@ -172,8 +173,10 @@ def write_story(cfg: dict, used: list[str]) -> dict:
     prompt = PROMPT.format(scenes=scenes, used="; ".join(used[-60:]) or "none yet")
     models = pick_models(client, cfg.get("ai", {}).get("gemini_model", "auto"))
     last = None
-    for attempt in range(5):
-        model = models[min(attempt, len(models) - 1)]
+    models = models + [m for m in ("gemini-flash-lite-latest", "gemini-2.5-flash-lite", "gemini-2.5-flash") if m not in models]
+    for attempt in range(10):
+        # "503 high demand" is common: rotate through every model, waiting longer each time (~7 min in all)
+        model = models[attempt % len(models)]
         try:
             resp = client.models.generate_content(
                 model=model, contents=prompt,
@@ -187,5 +190,5 @@ def write_story(cfg: dict, used: list[str]) -> dict:
         except Exception as exc:
             last = exc
             log(f"Gemini attempt {attempt + 1} failed: {exc}")
-            time.sleep(8 * (attempt + 1))
+            time.sleep(min(70, 8 * (attempt + 1)))
     raise RuntimeError(f"Could not get a story from Gemini: {last}")

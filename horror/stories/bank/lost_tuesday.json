@@ -1,0 +1,141 @@
+{
+ "title": "My calendar skipped a day. Nobody remembers my Tuesday #shorts #horror",
+ "story_id": "lost-tuesday",
+ "description": "Yesterday was Monday. Today is Wednesday. Something used my Tuesday.",
+ "tags": [
+  "horror story",
+  "creepy double",
+  "doppelganger"
+ ],
+ "hero": {
+  "look": "boy",
+  "outfit": "pj"
+ },
+ "villain": "double",
+ "beats": [
+  {
+   "line": "My calendar skipped a day.",
+   "scene": "calendar",
+   "cam": "push_in",
+   "react": "text_change",
+   "beat_word": "skipped",
+   "text": {
+    "top": "MONDAY",
+    "big": "14",
+    "top2": "WEDNESDAY",
+    "big2": "16"
+   }
+  },
+  {
+   "line": "Yesterday was Monday, and today is Wednesday.",
+   "scene": "calendar",
+   "cam": "close",
+   "react": "none",
+   "beat_word": "wednesday",
+   "text": {
+    "top": "WEDNESDAY",
+    "big": "16"
+   }
+  },
+  {
+   "line": "Nobody remembers my Tuesday.",
+   "scene": "closeup",
+   "cam": "close",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "tuesday"
+  },
+  {
+   "line": "But my shoes were muddy, by the door.",
+   "scene": "front_door",
+   "cam": "push_in",
+   "focus": "prop",
+   "prop": "shoes",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "muddy"
+  },
+  {
+   "line": "And my phone had one sent message.",
+   "scene": "phone",
+   "cam": "push_in",
+   "react": "none",
+   "beat_word": "message",
+   "text": {
+    "from": "To: Mum",
+    "msg": "Don't worry. I'll take Tuesdays.",
+    "time": "TUE"
+   }
+  },
+  {
+   "line": "I don't remember writing it.",
+   "scene": "closeup",
+   "cam": "snap",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": "shock"
+   },
+   "react": "jolt",
+   "beat_word": "remember"
+  },
+  {
+   "line": "So on Monday night, I stayed awake.",
+   "scene": "desk",
+   "cam": "push_in",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "tired",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "awake",
+   "jump": true
+  },
+  {
+   "line": "At midnight, the wardrobe creaked open.",
+   "scene": "wardrobe",
+   "cam": "push_in",
+   "focus": "gap",
+   "hero": {
+    "pose": "cheeks",
+    "expr": "shock",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "appear",
+   "beat_word": "creaked"
+  },
+  {
+   "line": "Out stepped me, smiling, and said: my turn.",
+   "scene": "kitchen",
+   "cam": "snap",
+   "focus": "other",
+   "hero": {
+    "pose": "stand",
+    "expr": "scream",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "grin",
+   "beat_word": "turn",
+   "twist": true,
+   "light": "dawn"
+  }
+ ]
+}

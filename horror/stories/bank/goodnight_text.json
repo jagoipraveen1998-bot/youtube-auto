@@ -1,0 +1,21 @@
+{
+  "title": "Someone texts me goodnight every night at 3:07 #shorts #horror",
+  "story_id": "goodnight-text",
+  "description": "Every night at 3:07 I get the same message. Tonight I checked who sent it.",
+  "tags": ["horror story", "scary text"],
+  "hero": {"look": "girl", "outfit": "hoodie"},
+  "villain": "shadow",
+  "beats": [
+    {"line": "Every night at three oh seven, someone texts me goodnight.", "scene": "phone", "cam": "push_in", "react": "ring", "beat_word": "texts", "text": {"from": "Unknown", "msg": "Goodnight. Sleep well.", "time": "3:07"}},
+    {"line": "I sleep with my door shut.", "scene": "bedroom", "cam": "medium", "focus": "door", "hero": {"pose": "sit", "expr": "worried"}, "react": "none", "beat_word": "shut"},
+    {"line": "Tonight it was open.", "scene": "bedroom", "cam": "snap", "focus": "door", "hero": {"pose": "sit", "expr": "worried", "expr2": "shock"}, "other": {"state": "lurk", "where": "door"}, "react": "appear", "beat_word": "open"},
+    {"line": "Something tapped on my window.", "scene": "window", "cam": "push_in", "focus": "other", "other": {"state": "stare"}, "react": "knock", "beat_word": "tapped", "fx": ["rain"]},
+    {"line": "Someone knocked at the front door.", "scene": "front_door", "cam": "medium", "focus": "door", "hero": {"pose": "stand", "expr": "worried"}, "other": {"state": "stare", "where": "under_door"}, "react": "knock", "beat_word": "knocked"},
+    {"line": "The wardrobe creaked open.", "scene": "wardrobe", "cam": "push_in", "focus": "gap", "hero": {"pose": "cheeks", "expr": "shock"}, "other": {"state": "stare"}, "react": "appear", "beat_word": "creaked"},
+    {"line": "I hid in the bathroom.", "scene": "bathroom", "cam": "push_in", "focus": "hero", "hero": {"pose": "stand", "expr": "worried"}, "react": "none", "beat_word": "bathroom", "jump": true},
+    {"line": "My reflection smiled first.", "scene": "bathroom", "cam": "close", "focus": "other", "hero": {"pose": "stand", "expr": "shock"}, "other": {"state": "stare"}, "react": "grin", "beat_word": "smiled", "twist": true},
+    {"line": "I screamed.", "scene": "closeup", "cam": "snap", "hero": {"pose": "stand", "expr": "shock", "expr2": "scream"}, "react": "jolt", "beat_word": "screamed", "tint": "#ff5050"},
+    {"line": "Then my phone buzzed.", "scene": "phone", "cam": "close", "react": "text_change", "beat_word": "buzzed", "text": {"from": "Unknown", "msg": "Goodnight. Sleep well.", "msg2": "Turn around.", "time": "3:07"}},
+    {"line": "Behind me, someone was reading over my shoulder.", "scene": "desk", "cam": "pull_out", "focus": "other", "hero": {"pose": "stand", "expr": "tired"}, "other": {"state": "grin"}, "react": "appear", "beat_word": "behind"}
+  ]
+}

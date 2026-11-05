@@ -1,0 +1,27 @@
+{
+  "title": "My alarm goes off at 6AM... I don't own an alarm #shorts #horror",
+  "story_id": "six-am",
+  "description": "Every morning someone makes my coffee. I live alone.",
+  "tags": ["horror story", "scary short", "cctv horror"],
+  "hero": {"look": "boy", "outfit": "pj"},
+  "villain": "double",
+  "beats": [
+    {"line": "Every morning, my alarm goes off at six.", "scene": "bedroom", "cam": "close", "focus": "hero", "hero": {"pose": "sit", "expr": "shock"}, "react": "ring", "beat_word": "six"},
+    {"line": "I live alone.", "scene": "bedroom", "cam": "pull_out", "focus": "hero", "hero": {"pose": "sit", "expr": "shock"}, "react": "none", "beat_word": "alone"},
+    {"line": "I don't own an alarm.", "scene": "bedroom", "cam": "pan", "focus": "prop", "focus2": "wide", "hero": {"pose": "sit", "expr": "worried"}, "react": "none", "beat_word": "alarm"},
+    {"line": "It started on a Monday.", "scene": "calendar", "cam": "push_in", "focus": "prop", "react": "none", "beat_word": "monday", "text": {"top": "MONDAY", "big": "13"}},
+    {"line": "A soft beep from the kitchen.", "scene": "hallway", "cam": "push_in", "focus": "door", "hero": {"pose": "peek", "expr": "worried"}, "react": "ring", "beat_word": "beep"},
+    {"line": "Then the coffee was already made.", "scene": "kitchen", "cam": "pull_out", "focus": "prop", "hero": {"pose": "walk", "expr": "worried"}, "react": "none", "beat_word": "made", "light": "dawn"},
+    {"line": "Still warm.", "scene": "kitchen", "cam": "snap", "focus": "hero", "hero": {"pose": "reach", "expr": "worried", "expr2": "shock"}, "react": "jolt", "beat_word": "warm", "light": "dawn"},
+    {"line": "Tuesday, my shoes were by the door.", "scene": "front_door", "cam": "medium", "focus": "prop", "hero": {"pose": "stand", "expr": "worried"}, "prop": "shoes", "react": "none", "beat_word": "door", "jump": true},
+    {"line": "Laced.", "scene": "front_door", "cam": "close", "focus": "prop", "hero": {"pose": "stand", "expr": "worried"}, "prop": "shoes", "react": "jolt", "beat_word": "laced"},
+    {"line": "Wednesday, someone had ironed my shirt.", "scene": "wardrobe", "cam": "push_in", "focus": "prop", "hero": {"pose": "cheeks", "expr": "shock"}, "prop": "shirt", "react": "none", "beat_word": "ironed", "jump": true},
+    {"line": "So I set up a camera and watched the footage.", "scene": "desk", "cam": "push_in", "focus": "hero", "hero": {"pose": "stand", "expr": "tired"}, "react": "none", "beat_word": "footage"},
+    {"line": "At six, the kitchen light flicks on.", "scene": "cctv", "cam": "wide", "react": "lights_on", "beat_word": "flicks", "room": "kitchen", "other": {"state": "back"}, "text": {"label": "CAM 01", "time": "THU 06:00"}},
+    {"line": "Someone in my clothes is making my coffee.", "scene": "cctv", "cam": "push_in", "focus": "other", "react": "none", "beat_word": "coffee", "room": "kitchen", "light": "on", "other": {"state": "back"}, "text": {"label": "CAM 01", "time": "THU 06:00"}},
+    {"line": "He turns to the camera and smiles.", "scene": "cctv", "cam": "medium", "focus": "other", "react": "turn", "beat_word": "turns", "room": "kitchen", "light": "on", "other": {"state": "back"}, "text": {"label": "CAM 01", "time": "THU 06:00"}},
+    {"line": "It's me.", "scene": "cctv", "cam": "close", "focus": "other", "react": "grin", "beat_word": "me", "twist": true, "room": "kitchen", "light": "on", "other": {"state": "grin"}, "text": {"label": "CAM 01", "time": "THU 06:00"}},
+    {"line": "From tomorrow.", "scene": "cctv", "cam": "medium", "focus": "other", "react": "text_change", "beat_word": "tomorrow", "room": "kitchen", "light": "on", "other": {"state": "grin"}, "text": {"label": "CAM 01", "time": "THU 06:00", "time2": "FRI 06:00"}},
+    {"line": "And he looks... exhausted.", "scene": "cctv", "cam": "close", "focus": "other", "react": "droop", "beat_word": "exhausted", "room": "kitchen", "light": "on", "other": {"state": "grin"}, "text": {"label": "CAM 01", "time": "FRI 06:00"}}
+  ]
+}

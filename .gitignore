@@ -4,3 +4,5 @@ __pycache__/
 client_secret*.json
 token*.json
 .env
+youtube_token.txt
+output_horror/

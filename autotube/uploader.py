@@ -7,13 +7,13 @@ SCOPES = ["https://www.googleapis.com/auth/youtube.upload",
           "https://www.googleapis.com/auth/youtube"]
 
 
-def _client():
+def _client(token_env: str = "YT_REFRESH_TOKEN"):
     from google.oauth2.credentials import Credentials
     from googleapiclient.discovery import build
 
     creds = Credentials(
         None,
-        refresh_token=env("YT_REFRESH_TOKEN"),
+        refresh_token=env(token_env),
         client_id=env("YT_CLIENT_ID"),
         client_secret=env("YT_CLIENT_SECRET"),
         token_uri="https://oauth2.googleapis.com/token",
@@ -37,7 +37,7 @@ def _tags(tags: list[str]) -> list[str]:
 
 
 def upload(video: Path, thumb: Path | None, title: str, description: str, tags: list[str],
-           cfg: dict) -> str:
+           cfg: dict, token_env: str = "YT_REFRESH_TOKEN") -> str:
     from googleapiclient.http import MediaFileUpload
 
     yt_cfg = cfg["youtube"]
@@ -57,7 +57,7 @@ def upload(video: Path, thumb: Path | None, title: str, description: str, tags: 
             "containsSyntheticMedia": bool(yt_cfg.get("contains_synthetic_media", False)),
         },
     }
-    yt = _client()
+    yt = _client(token_env)
     request = yt.videos().insert(
         part="snippet,status", body=body,
         media_body=MediaFileUpload(str(video), mimetype="video/mp4", chunksize=8 << 20, resumable=True),

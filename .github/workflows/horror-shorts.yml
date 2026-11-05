@@ -1,0 +1,107 @@
+name: Horror shorts (CreepyCartoonTales)
+
+on:
+  schedule:
+    # three a day; GitHub often starts scheduled runs 10-40 minutes late
+    - cron: "7 3 * * *"     # 03:07 UTC = 08:37 IST, out by ~09:00
+    - cron: "7 8 * * *"     # 08:07 UTC = 13:37 IST, out by ~14:00
+    - cron: "7 14 * * *"    # 14:07 UTC = 19:37 IST, out by ~20:00
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Render only (watch it in the run's files), or make and publish"
+        type: choice
+        default: no-upload
+        options:
+          - no-upload
+          - full
+
+permissions:
+  contents: write
+
+concurrency:
+  group: horror-shorts
+  cancel-in-progress: false
+
+jobs:
+  make-horror-short:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install ffmpeg and fonts
+        id: apt
+        continue-on-error: true
+        timeout-minutes: 8
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo rm -f /var/lib/man-db/auto-update
+          PKGS="ffmpeg fonts-dejavu-core espeak-ng"
+          sudo timeout 300 apt-get install -y -qq --no-install-recommends $PKGS || (sudo timeout 120 apt-get update -qq && sudo timeout 300 apt-get install -y -qq --no-install-recommends $PKGS)
+          ffmpeg -version | head -1
+
+      - name: Install ffmpeg (backup download)
+        if: steps.apt.outcome != 'success'
+        uses: FedericoCarboni/setup-ffmpeg@v3
+        timeout-minutes: 5
+
+      - name: Install Python packages and the cartoon browser
+        timeout-minutes: 10
+        run: |
+          pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -q -r requirements.txt
+          python -m playwright install --with-deps chromium
+
+      - name: Make the horror Short
+        timeout-minutes: 40
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_HORROR_REFRESH_TOKEN: ${{ secrets.YT_HORROR_REFRESH_TOKEN }}
+          MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'full' }}
+        run: |
+          if [ "$MODE" = "no-upload" ]; then
+            python run_horror.py --no-upload
+          else
+            python run_horror.py
+          fi
+
+      - name: Keep the video for 3 days
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: horror-short-${{ github.run_number }}
+          path: |
+            output_horror/short.mp4
+            output_horror/cover.jpg
+            output_horror/story.json
+            output_horror/description.txt
+          retention-days: 3
+          if-no-files-found: ignore
+
+      - name: Save horror history
+        if: success()
+        run: |
+          git config user.name "autotube-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/horror_history.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No history changes to save"
+            exit 0
+          fi
+          git commit -m "Save horror history for run ${GITHUB_RUN_NUMBER}"
+          for i in 1 2 3 4 5; do
+            if git pull -q --rebase && git push -q; then exit 0; fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((RANDOM % 10 + 3))
+          done
+          echo "Could not push horror history after five retries" >&2
+          exit 1

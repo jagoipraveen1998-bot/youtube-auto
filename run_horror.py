@@ -1,0 +1,80 @@
+"""Make (and upload) one horror Short for CreepyCartoonTales.
+
+    python run_horror.py                     # write, animate, upload
+    python run_horror.py --no-upload         # build it only (output_horror/short.mp4)
+    python run_horror.py --story horror/stories/six_am.json --voice-file voice.mp3 --no-upload   # local test
+"""
+import argparse
+import json
+import random
+import shutil
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+from autotube import horror_video as hv
+from autotube.horror_writer import repair, write_story
+from autotube.util import ROOT, check_playable, load_config, log
+
+IST = timezone(timedelta(hours=5, minutes=30))
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--no-upload", action="store_true")
+    ap.add_argument("--story", help="use a story JSON file instead of asking Gemini")
+    ap.add_argument("--voice-file", help="use a recorded narration (testing)")
+    args = ap.parse_args()
+
+    cfg = load_config()
+    hcfg = cfg["horror"]
+    out = ROOT / "output_horror"
+    shutil.rmtree(out, ignore_errors=True)
+    work = out / "work"
+    work.mkdir(parents=True)
+
+    hist_path = ROOT / "data" / "horror_history.json"
+    hist = json.loads(hist_path.read_text(encoding="utf-8")) if hist_path.exists() else {"stories": [], "videos": []}
+
+    if args.story:
+        story = repair(json.loads(Path(args.story).read_text(encoding="utf-8")))
+    else:
+        story = write_story(cfg, hist["stories"])
+    (out / "story.json").write_text(json.dumps(story, indent=2, ensure_ascii=False), encoding="utf-8")
+
+    seed = random.randint(0, 10_000)
+    video, thumb, plan = hv.make_short(story, hcfg["voice"], work, seed,
+                                       Path(args.voice_file) if args.voice_file else None)
+    length = check_playable(video, 15, 59)
+
+    description = "\n".join([story["description"], "",
+                             "A Creepy Cartoon Tale: an original animated horror short. New horror Shorts every day.",
+                             "", " ".join(hcfg.get("hashtags", ["#shorts", "#horror"]))])
+    (out / "description.txt").write_text(description, encoding="utf-8")
+    tags = list(dict.fromkeys(story.get("tags", []) + hcfg.get("extra_tags", [])))
+    title = story["title"] if "#shorts" in story["title"].lower() else (story["title"] + " #shorts")[:100]
+
+    if args.no_upload:
+        log(f"Upload skipped. Files are in {out.name}/ ({length:.0f}s)")
+        return
+
+    from autotube.uploader import _client, upload
+    # safety: never post a horror Short to the wrong channel
+    me = _client("YT_HORROR_REFRESH_TOKEN").channels().list(part="snippet", mine=True).execute()
+    names = [c["snippet"]["title"] for c in me.get("items", [])]
+    want = hcfg.get("channel", "CreepyCartoonTales").lower().replace(" ", "")
+    if not any(want in n.lower().replace(" ", "").replace(".", "") for n in names):
+        raise SystemExit(f"YT_HORROR_REFRESH_TOKEN belongs to {names}, not {hcfg.get('channel')}. "
+                         "Re-run get_youtube_token.py and pick CreepyCartoonTales.")
+    ycfg = {"youtube": hcfg["youtube"], "channel": {"language": "en"}}
+    video_id = upload(video, thumb, title, description, tags, ycfg, token_env="YT_HORROR_REFRESH_TOKEN")
+    today = datetime.now(IST).strftime("%Y-%m-%d %H:%M")
+    hist["stories"] = (hist["stories"] + [f"{story['story_id']}: {story['beats'][0]['line']}"])[-300:]
+    hist["videos"] = (hist["videos"] + [{"date": today, "title": title, "video_id": video_id,
+                                         "length": f"{length:.0f}s"}])[-300:]
+    hist_path.parent.mkdir(parents=True, exist_ok=True)
+    hist_path.write_text(json.dumps(hist, indent=2, ensure_ascii=False), encoding="utf-8")
+    log(f"Horror Short uploaded: https://youtube.com/shorts/{video_id}")
+
+
+if __name__ == "__main__":
+    main()

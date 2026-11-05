@@ -1,0 +1,165 @@
+{
+ "title": "Grandma calls me from the attic. We don't have an attic #shorts #horror",
+ "story_id": "attic-grandma",
+ "description": "Grandma rings every night to say goodnight. From a room our house doesn't have.",
+ "tags": [
+  "grandma horror",
+  "phone horror",
+  "ghost story"
+ ],
+ "hero": {
+  "look": "boy",
+  "outfit": "hoodie"
+ },
+ "villain": "ghost",
+ "villain_look": "woman",
+ "cast": [
+  {
+   "role": "grandma"
+  }
+ ],
+ "beats": [
+  {
+   "line": "Grandma calls me every night at ten.",
+   "scene": "phone",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "react": "ring",
+   "beat_word": "calls",
+   "text": {
+    "from": "Grandma",
+    "msg": "Goodnight, sweetheart. From the attic.",
+    "time": "22:00"
+   }
+  },
+  {
+   "line": "She says she's calling from the attic.",
+   "scene": "phone",
+   "speaker": "narrator",
+   "cam": "close",
+   "react": "none",
+   "beat_word": "attic",
+   "text": {
+    "from": "Grandma",
+    "msg": "Goodnight, sweetheart. From the attic.",
+    "time": "22:00"
+   }
+  },
+  {
+   "line": "We don't have an attic.",
+   "scene": "closeup",
+   "speaker": "narrator",
+   "cam": "snap",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "expr2": "shock"
+   },
+   "react": "jolt",
+   "beat_word": "attic"
+  },
+  {
+   "line": "So I asked Grandma about it at breakfast.",
+   "scene": "kitchen",
+   "speaker": "narrator",
+   "cam": "medium",
+   "side": "grandma",
+   "sideExpr": "calm",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "breakfast",
+   "jump": true
+  },
+  {
+   "line": "Darling, I don't even know how to text.",
+   "scene": "kitchen",
+   "speaker": "grandma",
+   "cam": "close",
+   "focus": "other",
+   "side": "grandma",
+   "sideExpr": "curious",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "text"
+  },
+  {
+   "line": "That night, the phone rang again.",
+   "scene": "bedroom",
+   "speaker": "narrator",
+   "cam": "medium",
+   "focus": "prop",
+   "hero": {
+    "pose": "sit",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "ring",
+   "beat_word": "rang"
+  },
+  {
+   "line": "Don't tell her about me, sweetheart.",
+   "scene": "closeup",
+   "speaker": "villain",
+   "cam": "close",
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "none",
+   "beat_word": "sweetheart"
+  },
+  {
+   "line": "Something creaked above my ceiling.",
+   "scene": "bedroom",
+   "speaker": "narrator",
+   "cam": "snap",
+   "focus": "hero",
+   "hero": {
+    "pose": "sit",
+    "expr": "shock",
+    "expr2": "scream"
+   },
+   "react": "jolt",
+   "beat_word": "creaked"
+  },
+  {
+   "line": "A pale grandma waved from my doorway.",
+   "scene": "bedroom",
+   "speaker": "narrator",
+   "cam": "snap",
+   "focus": "door",
+   "hero": {
+    "pose": "sit",
+    "expr": "shock",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": "door"
+   },
+   "react": "appear",
+   "beat_word": "waved"
+  },
+  {
+   "line": "Your real grandma's in the attic now.",
+   "scene": "closeup",
+   "speaker": "villain",
+   "cam": "close",
+   "other": {
+    "state": "grin",
+    "where": null
+   },
+   "react": "grin",
+   "beat_word": "attic",
+   "twist": true
+  }
+ ]
+}

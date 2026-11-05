@@ -1,0 +1,141 @@
+{
+ "title": "My reflection has always been a little slow... #shorts #horror",
+ "story_id": "slow-reflection",
+ "description": "My reflection is half a second behind me. This morning I tested it.",
+ "tags": [
+  "mirror horror",
+  "horror story",
+  "creepy reflection"
+ ],
+ "hero": {
+  "look": "girl",
+  "outfit": "nightie"
+ },
+ "villain": "double",
+ "beats": [
+  {
+   "line": "My reflection has always been a little slow.",
+   "scene": "bathroom",
+   "cam": "push_in",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "calm",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "slow"
+  },
+  {
+   "line": "Half a second behind me, maybe less.",
+   "scene": "bathroom",
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "behind"
+  },
+  {
+   "line": "I blamed my tired eyes.",
+   "scene": "closeup",
+   "cam": "close",
+   "hero": {
+    "pose": "stand",
+    "expr": "tired",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "tired"
+  },
+  {
+   "line": "This morning, I stood still and stared.",
+   "scene": "bathroom",
+   "cam": "push_in",
+   "focus": "other",
+   "hero": {
+    "pose": "stand",
+    "expr": "stare",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "none",
+   "beat_word": "stared",
+   "jump": true
+  },
+  {
+   "line": "My reflection kept smiling.",
+   "scene": "bathroom",
+   "cam": "snap",
+   "focus": "other",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": "shock"
+   },
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "grin",
+   "beat_word": "smiling"
+  },
+  {
+   "line": "I wasn't smiling.",
+   "scene": "closeup",
+   "cam": "snap",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": "scream"
+   },
+   "react": "jolt",
+   "beat_word": "wasn't",
+   "tint": "#ff5050"
+  },
+  {
+   "line": "Then my phone buzzed with a message.",
+   "scene": "phone",
+   "cam": "push_in",
+   "react": "ring",
+   "beat_word": "buzzed",
+   "text": {
+    "from": "Me",
+    "msg": "Stop staring.",
+    "time": "7:02"
+   }
+  },
+  {
+   "line": "It came from my own number.",
+   "scene": "phone",
+   "cam": "close",
+   "react": "none",
+   "beat_word": "number",
+   "text": {
+    "from": "Me",
+    "msg": "Stop staring.",
+    "time": "7:02"
+   }
+  },
+  {
+   "line": "It said: you're the reflection.",
+   "scene": "phone",
+   "cam": "close",
+   "react": "text_change",
+   "beat_word": "reflection",
+   "twist": true,
+   "text": {
+    "from": "Me",
+    "msg": "Stop staring.",
+    "msg2": "You're the reflection.",
+    "time": "7:02"
+   }
+  }
+ ]
+}

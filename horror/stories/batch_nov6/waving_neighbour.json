@@ -1,0 +1,169 @@
+{
+ "title": "My neighbour waves at me every night at 3AM #shorts #horror",
+ "story_id": "waving-neighbour",
+ "description": "Mr Pemberton is very friendly. Too friendly. Especially at three in the morning.",
+ "tags": [
+  "neighbour horror",
+  "3am",
+  "creepy neighbour"
+ ],
+ "hero": {
+  "look": "girl",
+  "outfit": "pj"
+ },
+ "villain": "neighbour",
+ "cast": [],
+ "beats": [
+  {
+   "line": "My neighbour waves at me every night at three.",
+   "scene": "window",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "other",
+   "other": {
+    "state": "grin",
+    "where": null
+   },
+   "fx": [
+    "rain"
+   ],
+   "react": "none",
+   "beat_word": "waves"
+  },
+  {
+   "line": "From his window. Which faces a brick wall.",
+   "scene": "closeup",
+   "speaker": "narrator",
+   "cam": "snap",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "expr2": "shock"
+   },
+   "react": "jolt",
+   "beat_word": "wall"
+  },
+  {
+   "line": "I waved back once to be polite.",
+   "scene": "bedroom",
+   "speaker": "narrator",
+   "cam": "medium",
+   "focus": "window",
+   "hero": {
+    "pose": "sit",
+    "expr": "calm",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "polite"
+  },
+  {
+   "line": "Big mistake.",
+   "scene": "closeup",
+   "speaker": "narrator",
+   "cam": "close",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "mistake"
+  },
+  {
+   "line": "Now he waves from my hallway.",
+   "scene": "hallway",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "door",
+   "hero": {
+    "pose": "peek",
+    "expr": "shock",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "appear",
+   "beat_word": "hallway",
+   "jump": true
+  },
+  {
+   "line": "Lovely evening for it, isn't it?",
+   "scene": "closeup",
+   "speaker": "villain",
+   "cam": "close",
+   "other": {
+    "state": "grin",
+    "where": null
+   },
+   "react": "none",
+   "beat_word": "evening"
+  },
+  {
+   "line": "I called the landlord about it.",
+   "scene": "phone",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "react": "ring",
+   "beat_word": "called",
+   "text": {
+    "from": "Landlord",
+    "msg": "Nobody lives next door.",
+    "time": "3:04"
+   }
+  },
+  {
+   "line": "He said nobody has lived next door for forty years.",
+   "scene": "phone",
+   "speaker": "narrator",
+   "cam": "close",
+   "react": "text_change",
+   "beat_word": "forty",
+   "text": {
+    "from": "Landlord",
+    "msg": "Nobody lives next door.",
+    "msg2": "Not for forty years. Stop waving.",
+    "time": "3:05"
+   }
+  },
+  {
+   "line": "Then why is he standing beside my bed?",
+   "scene": "cctv",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "other",
+   "room": "bedroom",
+   "other": {
+    "state": "back",
+    "where": "beside"
+   },
+   "react": "turn",
+   "beat_word": "beside",
+   "text": {
+    "label": "BEDROOM",
+    "time": "SAT 03:06"
+   }
+  },
+  {
+   "line": "Still waving.",
+   "scene": "cctv",
+   "speaker": "narrator",
+   "cam": "close",
+   "focus": "other",
+   "room": "bedroom",
+   "other": {
+    "state": "grin",
+    "where": "beside"
+   },
+   "react": "grin",
+   "beat_word": "waving",
+   "twist": true,
+   "text": {
+    "label": "BEDROOM",
+    "time": "SAT 03:06"
+   }
+  }
+ ]
+}

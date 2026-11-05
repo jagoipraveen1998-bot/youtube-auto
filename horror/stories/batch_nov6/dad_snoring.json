@@ -1,0 +1,156 @@
+{
+ "title": "I could hear Dad snoring. But Dad was downstairs #shorts #horror",
+ "story_id": "dad-snoring",
+ "description": "The snoring came from Dad's room. Dad was in the kitchen, making tea.",
+ "tags": [
+  "dad horror",
+  "bedroom horror",
+  "creepy"
+ ],
+ "hero": {
+  "look": "boy",
+  "outfit": "pj"
+ },
+ "villain": "shadow",
+ "cast": [
+  {
+   "role": "dad"
+  }
+ ],
+ "beats": [
+  {
+   "line": "Dad snores like a broken motorbike.",
+   "scene": "bedroom",
+   "speaker": "narrator",
+   "cam": "medium",
+   "focus": "hero",
+   "hero": {
+    "pose": "sit",
+    "expr": "tired",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "motorbike"
+  },
+  {
+   "line": "Every night, through the wall.",
+   "scene": "bedroom",
+   "speaker": "narrator",
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "sit",
+    "expr": "sleepy",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "wall"
+  },
+  {
+   "line": "Last night, I went down for water.",
+   "scene": "hallway",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "door",
+   "hero": {
+    "pose": "peek",
+    "expr": "sleepy",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "water",
+   "jump": true
+  },
+  {
+   "line": "Dad was in the kitchen, making tea.",
+   "scene": "kitchen",
+   "speaker": "narrator",
+   "cam": "medium",
+   "side": "dad",
+   "sideExpr": "calm",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "expr2": null
+   },
+   "light": "on",
+   "react": "none",
+   "beat_word": "tea"
+  },
+  {
+   "line": "Can't sleep either, champ?",
+   "scene": "kitchen",
+   "speaker": "dad",
+   "cam": "close",
+   "focus": "other",
+   "side": "dad",
+   "sideExpr": "relieved",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "light": "on",
+   "react": "none",
+   "beat_word": "sleep"
+  },
+  {
+   "line": "Upstairs, the snoring kept going.",
+   "scene": "closeup",
+   "speaker": "narrator",
+   "cam": "snap",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": "shock"
+   },
+   "react": "jolt",
+   "beat_word": "snoring"
+  },
+  {
+   "line": "We crept up together.",
+   "scene": "hallway",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "door",
+   "hero": {
+    "pose": "peek",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "crept"
+  },
+  {
+   "line": "Something was sleeping in Dad's bed.",
+   "scene": "bedroom",
+   "speaker": "narrator",
+   "cam": "snap",
+   "focus": "door",
+   "hero": {
+    "pose": "sit",
+    "expr": "shock",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": "beside"
+   },
+   "react": "appear",
+   "beat_word": "sleeping"
+  },
+  {
+   "line": "It sat up and said: keep it down, champ.",
+   "scene": "closeup",
+   "speaker": "villain",
+   "cam": "close",
+   "other": {
+    "state": "grin",
+    "where": null
+   },
+   "react": "grin",
+   "beat_word": "champ",
+   "twist": true
+  }
+ ]
+}

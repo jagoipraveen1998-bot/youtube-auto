@@ -1,0 +1,156 @@
+{
+ "title": "My kitchen light turns on by itself at midnight #shorts #horror",
+ "story_id": "midnight-tea",
+ "description": "New bulb, perfect wiring, and still the light comes on at midnight. So I watched the camera.",
+ "tags": [
+  "ghost story",
+  "horror story",
+  "kitchen ghost"
+ ],
+ "hero": {
+  "look": "boy",
+  "outfit": "hoodie"
+ },
+ "villain": "ghost",
+ "beats": [
+  {
+   "line": "My kitchen light turns on by itself at midnight.",
+   "scene": "kitchen",
+   "cam": "push_in",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "light": "dark",
+   "react": "lights_on",
+   "beat_word": "on"
+  },
+  {
+   "line": "The bulb is brand new.",
+   "scene": "kitchen",
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "expr2": null
+   },
+   "light": "on",
+   "react": "none",
+   "beat_word": "new"
+  },
+  {
+   "line": "So I stayed up and watched the camera.",
+   "scene": "desk",
+   "cam": "push_in",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "tired",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "camera",
+   "jump": true
+  },
+  {
+   "line": "At midnight, the switch clicked.",
+   "scene": "cctv",
+   "cam": "wide",
+   "room": "kitchen",
+   "react": "lights_on",
+   "beat_word": "clicked",
+   "text": {
+    "label": "KITCHEN",
+    "time": "SAT 00:00"
+   }
+  },
+  {
+   "line": "A pale girl stood at the counter.",
+   "scene": "cctv",
+   "cam": "push_in",
+   "focus": "other",
+   "room": "kitchen",
+   "light": "on",
+   "other": {
+    "state": "back",
+    "where": null
+   },
+   "react": "appear",
+   "beat_word": "girl",
+   "text": {
+    "label": "KITCHEN",
+    "time": "SAT 00:00"
+   }
+  },
+  {
+   "line": "She poured two cups of tea.",
+   "scene": "cctv",
+   "cam": "medium",
+   "focus": "other",
+   "room": "kitchen",
+   "light": "on",
+   "other": {
+    "state": "back",
+    "where": null
+   },
+   "react": "none",
+   "beat_word": "two",
+   "text": {
+    "label": "KITCHEN",
+    "time": "SAT 00:01"
+   }
+  },
+  {
+   "line": "Then she turned and waved at the camera.",
+   "scene": "cctv",
+   "cam": "medium",
+   "focus": "other",
+   "room": "kitchen",
+   "light": "on",
+   "other": {
+    "state": "back",
+    "where": null
+   },
+   "react": "turn",
+   "beat_word": "turned",
+   "text": {
+    "label": "KITCHEN",
+    "time": "SAT 00:01"
+   }
+  },
+  {
+   "line": "The second cup was for me.",
+   "scene": "closeup",
+   "cam": "snap",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": "shock"
+   },
+   "react": "jolt",
+   "beat_word": "me"
+  },
+  {
+   "line": "She's been waiting a year for me to notice I'm dead too.",
+   "scene": "cctv",
+   "cam": "close",
+   "focus": "other",
+   "room": "kitchen",
+   "light": "on",
+   "other": {
+    "state": "grin",
+    "where": null
+   },
+   "react": "grin",
+   "beat_word": "dead",
+   "twist": true,
+   "text": {
+    "label": "KITCHEN",
+    "time": "SAT 00:02"
+   }
+  }
+ ]
+}

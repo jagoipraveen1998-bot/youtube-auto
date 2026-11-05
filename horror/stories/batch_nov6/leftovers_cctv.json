@@ -1,0 +1,160 @@
+{
+ "title": "Someone keeps eating my leftovers. So I set up a camera #shorts #horror",
+ "story_id": "leftovers-cctv",
+ "description": "I live alone. My leftovers do not. The camera caught the thief.",
+ "tags": [
+  "cctv horror",
+  "funny horror",
+  "kitchen"
+ ],
+ "hero": {
+  "look": "girl",
+  "outfit": "pj"
+ },
+ "villain": "neighbour",
+ "cast": [],
+ "beats": [
+  {
+   "line": "Someone keeps eating my leftovers.",
+   "scene": "kitchen",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "prop",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "expr2": null
+   },
+   "light": "dawn",
+   "react": "none",
+   "beat_word": "leftovers"
+  },
+  {
+   "line": "Only the good ones. Never the broccoli.",
+   "scene": "closeup",
+   "speaker": "narrator",
+   "cam": "close",
+   "hero": {
+    "pose": "stand",
+    "expr": "tired",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "broccoli"
+  },
+  {
+   "line": "So I hid a camera in the kitchen.",
+   "scene": "desk",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "camera"
+  },
+  {
+   "line": "At two, the fridge light came on.",
+   "scene": "cctv",
+   "speaker": "narrator",
+   "cam": "wide",
+   "room": "kitchen",
+   "react": "lights_on",
+   "beat_word": "fridge",
+   "text": {
+    "label": "KITCHEN",
+    "time": "TUE 02:00"
+   },
+   "jump": true
+  },
+  {
+   "line": "My neighbour was standing at the counter.",
+   "scene": "cctv",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "other",
+   "room": "kitchen",
+   "light": "on",
+   "other": {
+    "state": "back",
+    "where": null
+   },
+   "react": "appear",
+   "beat_word": "neighbour",
+   "text": {
+    "label": "KITCHEN",
+    "time": "TUE 02:01"
+   }
+  },
+  {
+   "line": "Eating my lasagne. With his hands.",
+   "scene": "cctv",
+   "speaker": "narrator",
+   "cam": "medium",
+   "focus": "other",
+   "room": "kitchen",
+   "light": "on",
+   "other": {
+    "state": "back",
+    "where": null
+   },
+   "react": "none",
+   "beat_word": "hands",
+   "text": {
+    "label": "KITCHEN",
+    "time": "TUE 02:01"
+   }
+  },
+  {
+   "line": "I marched next door to complain.",
+   "scene": "front_door",
+   "speaker": "narrator",
+   "cam": "medium",
+   "focus": "door",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "knock",
+   "beat_word": "marched"
+  },
+  {
+   "line": "His wife opened the door, crying.",
+   "scene": "front_door",
+   "speaker": "narrator",
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "expr2": "shock"
+   },
+   "react": "jolt",
+   "beat_word": "crying"
+  },
+  {
+   "line": "He went missing in my kitchen ten years ago.",
+   "scene": "cctv",
+   "speaker": "narrator",
+   "cam": "close",
+   "focus": "other",
+   "room": "kitchen",
+   "light": "on",
+   "other": {
+    "state": "back",
+    "where": null
+   },
+   "react": "turn",
+   "beat_word": "kitchen",
+   "twist": true,
+   "text": {
+    "label": "KITCHEN",
+    "time": "TUE 02:02"
+   }
+  }
+ ]
+}

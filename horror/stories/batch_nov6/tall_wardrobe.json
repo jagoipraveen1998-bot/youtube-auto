@@ -1,0 +1,174 @@
+{
+ "title": "There's a very tall man living in my wardrobe #shorts #horror",
+ "story_id": "tall-wardrobe",
+ "description": "My wardrobe is two metres tall. The man inside it is taller.",
+ "tags": [
+  "tall man",
+  "wardrobe horror",
+  "funny horror"
+ ],
+ "hero": {
+  "look": "girl",
+  "outfit": "hoodie"
+ },
+ "villain": "tall",
+ "cast": [
+  {
+   "role": "roommate"
+  }
+ ],
+ "beats": [
+  {
+   "line": "My clothes keep getting stretched.",
+   "scene": "wardrobe",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "prop",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "expr2": null
+   },
+   "prop": "none",
+   "react": "none",
+   "beat_word": "stretched"
+  },
+  {
+   "line": "My jumpers now reach my knees.",
+   "scene": "closeup",
+   "speaker": "narrator",
+   "cam": "close",
+   "hero": {
+    "pose": "stand",
+    "expr": "tired",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "knees"
+  },
+  {
+   "line": "My roommate said it was the wash.",
+   "scene": "kitchen",
+   "speaker": "narrator",
+   "cam": "medium",
+   "side": "roommate",
+   "sideExpr": "calm",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "wash"
+  },
+  {
+   "line": "Hot wash. Totally normal.",
+   "scene": "kitchen",
+   "speaker": "roommate",
+   "cam": "close",
+   "focus": "other",
+   "side": "roommate",
+   "sideExpr": "calm",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "normal"
+  },
+  {
+   "line": "It was not the wash.",
+   "scene": "wardrobe",
+   "speaker": "narrator",
+   "cam": "snap",
+   "focus": "gap",
+   "hero": {
+    "pose": "cheeks",
+    "expr": "shock",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "appear",
+   "beat_word": "not",
+   "jump": true
+  },
+  {
+   "line": "Two glowing eyes, very high up.",
+   "scene": "wardrobe",
+   "speaker": "narrator",
+   "cam": "close",
+   "focus": "gap",
+   "hero": {
+    "pose": "cheeks",
+    "expr": "shock",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "none",
+   "beat_word": "high"
+  },
+  {
+   "line": "Sorry. I'm just borrowing a jumper.",
+   "scene": "closeup",
+   "speaker": "villain",
+   "cam": "close",
+   "other": {
+    "state": "grin",
+    "where": null
+   },
+   "react": "none",
+   "beat_word": "borrowing"
+  },
+  {
+   "line": "You're nine feet tall!",
+   "scene": "closeup",
+   "speaker": "hero",
+   "cam": "snap",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "expr2": "scream"
+   },
+   "react": "jolt",
+   "beat_word": "nine"
+  },
+  {
+   "line": "He bowed through my bedroom door.",
+   "scene": "bedroom",
+   "speaker": "narrator",
+   "cam": "medium",
+   "focus": "door",
+   "hero": {
+    "pose": "sit",
+    "expr": "shock",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": "door"
+   },
+   "react": "none",
+   "beat_word": "bowed"
+  },
+  {
+   "line": "And said: your roommate lent me his.",
+   "scene": "closeup",
+   "speaker": "villain",
+   "cam": "close",
+   "other": {
+    "state": "grin",
+    "where": null
+   },
+   "react": "grin",
+   "beat_word": "roommate",
+   "twist": true
+  }
+ ]
+}

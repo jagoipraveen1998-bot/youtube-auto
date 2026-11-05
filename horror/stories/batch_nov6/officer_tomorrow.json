@@ -1,0 +1,146 @@
+{
+ "title": "The police came because I called them. Tomorrow #shorts #horror",
+ "story_id": "officer-tomorrow",
+ "description": "An officer knocked to check on my emergency call. I haven't made it yet.",
+ "tags": [
+  "police horror",
+  "time loop",
+  "double"
+ ],
+ "hero": {
+  "look": "girl",
+  "outfit": "hoodie"
+ },
+ "villain": "double",
+ "cast": [
+  {
+   "role": "officer"
+  }
+ ],
+ "beats": [
+  {
+   "line": "A police officer knocked on my door at noon.",
+   "scene": "front_door",
+   "speaker": "narrator",
+   "cam": "medium",
+   "focus": "door",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "expr2": null
+   },
+   "react": "knock",
+   "beat_word": "knocked"
+  },
+  {
+   "line": "We got your emergency call, miss.",
+   "scene": "closeup",
+   "speaker": "officer",
+   "cam": "close",
+   "side": "officer",
+   "sideExpr": "worried",
+   "react": "none",
+   "beat_word": "emergency"
+  },
+  {
+   "line": "What call? I've been eating crisps all day.",
+   "scene": "closeup",
+   "speaker": "hero",
+   "cam": "close",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "crisps"
+  },
+  {
+   "line": "He played me the recording.",
+   "scene": "phone",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "react": "none",
+   "beat_word": "recording",
+   "text": {
+    "from": "999 CALL",
+    "msg": "Please hurry. She's wearing my face.",
+    "time": "3:33"
+   }
+  },
+  {
+   "line": "It was my voice. Very scared.",
+   "scene": "closeup",
+   "speaker": "narrator",
+   "cam": "snap",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": "shock"
+   },
+   "react": "jolt",
+   "beat_word": "voice"
+  },
+  {
+   "line": "Please hurry. She's wearing my face.",
+   "scene": "closeup",
+   "speaker": "hero",
+   "cam": "close",
+   "hero": {
+    "pose": "stand",
+    "expr": "scream",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "face"
+  },
+  {
+   "line": "The call is timed three thirty three tonight.",
+   "scene": "calendar",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "react": "text_change",
+   "beat_word": "tonight",
+   "text": {
+    "top": "TODAY",
+    "big": "3:33",
+    "top2": "TONIGHT",
+    "big2": "3:33"
+   }
+  },
+  {
+   "line": "It's three thirty two now.",
+   "scene": "bedroom",
+   "speaker": "narrator",
+   "cam": "medium",
+   "focus": "door",
+   "hero": {
+    "pose": "sit",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "now",
+   "jump": true
+  },
+  {
+   "line": "And someone is smiling in my doorway, wearing my hoodie.",
+   "scene": "bedroom",
+   "speaker": "narrator",
+   "cam": "snap",
+   "focus": "door",
+   "hero": {
+    "pose": "sit",
+    "expr": "shock",
+    "expr2": null
+   },
+   "other": {
+    "state": "grin",
+    "where": "door"
+   },
+   "react": "grin",
+   "beat_word": "smiling",
+   "twist": true
+  }
+ ]
+}

@@ -60,6 +60,25 @@ def write(n: int, out: Path) -> None:
     log(f"Wrote {len(stories)} stories to {out}")
 
 
+def collect(folder: Path, n: int, out: Path) -> None:
+    """Use ready-written stories (no Gemini), ordered so the villain changes every hour."""
+    stories = [repair(json.loads(p.read_text(encoding="utf-8"))) for p in sorted(folder.glob("*.json"))]
+    used = {x.split(":")[0] for x in _hist()["stories"]}
+    stories = [s for s in stories if s["story_id"] not in used]
+    random.Random(7).shuffle(stories)
+    ordered = []
+    while stories and len(ordered) < n:
+        last = ordered[-1]["villain"] if ordered else None
+        pick = next((s for s in stories if s["villain"] != last), stories[0])
+        stories.remove(pick)
+        ordered.append(pick)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(ordered, indent=1, ensure_ascii=False), encoding="utf-8")
+    for i, s in enumerate(ordered):
+        log(f"{i + 1:2d}. [{s['villain']}] {s['title']}")
+    log(f"Collected {len(ordered)} ready-written stories from {folder}")
+
+
 def slot_time(start_ist: str, index: int, every_min: int) -> str:
     t = datetime.fromisoformat(start_ist).replace(tzinfo=IST) + timedelta(minutes=index * every_min)
     if t < datetime.now(IST) + timedelta(minutes=20):        # YouTube needs a future time
@@ -127,6 +146,8 @@ if __name__ == "__main__":
     cmd = sys.argv[1]
     if cmd == "write":
         write(int(sys.argv[2]), Path(sys.argv[3]))
+    elif cmd == "collect":
+        collect(Path(sys.argv[2]), int(sys.argv[3]), Path(sys.argv[4]))
     elif cmd == "make":
         make(Path(sys.argv[2]), int(sys.argv[3]), sys.argv[4], int(sys.argv[5]))
     elif cmd == "history":

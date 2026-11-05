@@ -1,0 +1,152 @@
+{
+ "title": "A parcel arrives every night. I never ordered anything #shorts #horror",
+ "story_id": "unordered-parcel",
+ "description": "Same delivery man, same smile, same parcel. It's addressed to me. From me.",
+ "tags": [
+  "delivery horror",
+  "creepy delivery",
+  "horror short"
+ ],
+ "hero": {
+  "look": "boy",
+  "outfit": "tee"
+ },
+ "villain": "delivery",
+ "cast": [],
+ "beats": [
+  {
+   "line": "Every night at midnight, someone knocks with a parcel.",
+   "scene": "front_door",
+   "speaker": "narrator",
+   "cam": "medium",
+   "focus": "door",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": "under_door"
+   },
+   "react": "knock",
+   "beat_word": "knocks"
+  },
+  {
+   "line": "I've never ordered anything in my life.",
+   "scene": "closeup",
+   "speaker": "narrator",
+   "cam": "close",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "never"
+  },
+  {
+   "line": "I don't even trust online shopping.",
+   "scene": "closeup",
+   "speaker": "narrator",
+   "cam": "medium",
+   "hero": {
+    "pose": "stand",
+    "expr": "tired",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "trust"
+  },
+  {
+   "line": "Tonight, I looked through the peephole.",
+   "scene": "front_door",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "peephole",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": "peephole"
+   },
+   "react": "none",
+   "beat_word": "peephole",
+   "jump": true
+  },
+  {
+   "line": "Delivery for you! Signed, sealed, forever.",
+   "scene": "closeup",
+   "speaker": "villain",
+   "cam": "close",
+   "other": {
+    "state": "grin",
+    "where": null
+   },
+   "react": "none",
+   "beat_word": "forever"
+  },
+  {
+   "line": "I don't want it!",
+   "scene": "closeup",
+   "speaker": "hero",
+   "cam": "snap",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "expr2": "scream"
+   },
+   "react": "jolt",
+   "beat_word": "want"
+  },
+  {
+   "line": "My phone buzzed with a tracking update.",
+   "scene": "phone",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "react": "ring",
+   "beat_word": "buzzed",
+   "text": {
+    "from": "Tracking",
+    "msg": "Your parcel is outside.",
+    "time": "0:01"
+   }
+  },
+  {
+   "line": "Then it updated again.",
+   "scene": "phone",
+   "speaker": "narrator",
+   "cam": "close",
+   "react": "text_change",
+   "beat_word": "updated",
+   "text": {
+    "from": "Tracking",
+    "msg": "Your parcel is outside.",
+    "msg2": "Your parcel is in your bedroom.",
+    "time": "0:02"
+   }
+  },
+  {
+   "line": "The parcel was me. Return to sender.",
+   "scene": "cctv",
+   "speaker": "narrator",
+   "cam": "close",
+   "focus": "other",
+   "room": "bedroom",
+   "other": {
+    "state": "grin",
+    "where": "beside"
+   },
+   "react": "grin",
+   "beat_word": "sender",
+   "twist": true,
+   "text": {
+    "label": "CAM 03",
+    "time": "FRI 00:03"
+   }
+  }
+ ]
+}

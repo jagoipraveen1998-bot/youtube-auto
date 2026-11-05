@@ -1,0 +1,143 @@
+{
+ "title": "There's a face at my window. I live on the tenth floor #shorts #horror",
+ "story_id": "tenth-floor",
+ "description": "Every night a face watches me through the window. It never blinks.",
+ "tags": [
+  "horror story",
+  "window horror",
+  "scary face"
+ ],
+ "hero": {
+  "look": "girl",
+  "outfit": "hoodie"
+ },
+ "villain": "shadow",
+ "beats": [
+  {
+   "line": "There's a face at my window every night.",
+   "scene": "window",
+   "cam": "push_in",
+   "focus": "other",
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "fx": [
+    "rain"
+   ],
+   "react": "none",
+   "beat_word": "face"
+  },
+  {
+   "line": "I live on the tenth floor.",
+   "scene": "closeup",
+   "cam": "snap",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": "shock"
+   },
+   "react": "jolt",
+   "beat_word": "tenth"
+  },
+  {
+   "line": "It just stares, and it never blinks.",
+   "scene": "window",
+   "cam": "close",
+   "focus": "other",
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "fx": [
+    "rain"
+   ],
+   "react": "none",
+   "beat_word": "blinks"
+  },
+  {
+   "line": "Last night, I shut the curtains.",
+   "scene": "bedroom",
+   "cam": "medium",
+   "focus": "window",
+   "hero": {
+    "pose": "sit",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "curtains",
+   "jump": true
+  },
+  {
+   "line": "Then I heard tapping.",
+   "scene": "bedroom",
+   "cam": "medium",
+   "focus": "hero",
+   "hero": {
+    "pose": "sit",
+    "expr": "worried",
+    "expr2": "shock"
+   },
+   "react": "jolt",
+   "beat_word": "tapping"
+  },
+  {
+   "line": "It wasn't coming from the window.",
+   "scene": "bedroom",
+   "cam": "snap",
+   "focus": "door",
+   "hero": {
+    "pose": "sit",
+    "expr": "shock",
+    "expr2": null
+   },
+   "other": {
+    "state": "lurk",
+    "where": "door"
+   },
+   "react": "appear",
+   "beat_word": "wasn't"
+  },
+  {
+   "line": "It was coming from the hallway.",
+   "scene": "hallway",
+   "cam": "push_in",
+   "focus": "door",
+   "hero": {
+    "pose": "peek",
+    "expr": "scream",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "knock",
+   "beat_word": "hallway"
+  },
+  {
+   "line": "The face was inside now.",
+   "scene": "closeup",
+   "cam": "snap",
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "appear",
+   "beat_word": "inside"
+  },
+  {
+   "line": "And for the first time, it blinked.",
+   "scene": "closeup",
+   "cam": "close",
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "grin",
+   "beat_word": "blinked",
+   "twist": true
+  }
+ ]
+}

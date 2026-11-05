@@ -1,0 +1,155 @@
+{
+ "title": "Something knocks on my door at 3AM every night #shorts #horror",
+ "story_id": "three-am-knock",
+ "description": "Every night at three, something knocks. I never answer. Last night I checked the camera.",
+ "tags": [
+  "horror story",
+  "3am horror",
+  "scary knock"
+ ],
+ "hero": {
+  "look": "boy",
+  "outfit": "tee"
+ },
+ "villain": "shadow",
+ "beats": [
+  {
+   "line": "Every night at three, something knocks on my front door.",
+   "scene": "front_door",
+   "cam": "medium",
+   "focus": "door",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": "under_door"
+   },
+   "react": "knock",
+   "beat_word": "knocks"
+  },
+  {
+   "line": "I never answer.",
+   "scene": "front_door",
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "answer"
+  },
+  {
+   "line": "Last night, the knocking stopped.",
+   "scene": "hallway",
+   "cam": "push_in",
+   "focus": "door",
+   "hero": {
+    "pose": "peek",
+    "expr": "curious",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "stopped",
+   "jump": true
+  },
+  {
+   "line": "Then something tapped inside my wardrobe.",
+   "scene": "wardrobe",
+   "cam": "push_in",
+   "focus": "gap",
+   "hero": {
+    "pose": "cheeks",
+    "expr": "shock",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "appear",
+   "beat_word": "tapped"
+  },
+  {
+   "line": "I hid at my desk and checked the camera.",
+   "scene": "desk",
+   "cam": "push_in",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "camera"
+  },
+  {
+   "line": "The footage showed me, asleep in bed.",
+   "scene": "cctv",
+   "cam": "wide",
+   "room": "bedroom",
+   "react": "none",
+   "beat_word": "asleep",
+   "text": {
+    "label": "CAM 02",
+    "time": "SUN 03:00"
+   }
+  },
+  {
+   "line": "And a dark shape standing right beside me.",
+   "scene": "cctv",
+   "cam": "push_in",
+   "focus": "other",
+   "room": "bedroom",
+   "other": {
+    "state": "back",
+    "where": "beside"
+   },
+   "react": "appear",
+   "beat_word": "shape",
+   "text": {
+    "label": "CAM 02",
+    "time": "SUN 03:00"
+   }
+  },
+  {
+   "line": "It turned to the camera.",
+   "scene": "cctv",
+   "cam": "medium",
+   "focus": "other",
+   "room": "bedroom",
+   "other": {
+    "state": "back",
+    "where": "beside"
+   },
+   "react": "turn",
+   "beat_word": "turned",
+   "text": {
+    "label": "CAM 02",
+    "time": "SUN 03:00"
+   }
+  },
+  {
+   "line": "And knocked three times on the lens.",
+   "scene": "cctv",
+   "cam": "snap",
+   "focus": "other",
+   "room": "bedroom",
+   "other": {
+    "state": "grin",
+    "where": "beside"
+   },
+   "react": "grin",
+   "beat_word": "lens",
+   "twist": true,
+   "text": {
+    "label": "CAM 02",
+    "time": "SUN 03:01"
+   }
+  }
+ ]
+}

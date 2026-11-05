@@ -1,0 +1,159 @@
+{
+ "title": "My reflection started giving me life advice #shorts #horror",
+ "story_id": "mirror-advice",
+ "description": "My reflection has opinions. About my hair, my job, and who should be living my life.",
+ "tags": [
+  "mirror horror",
+  "funny horror",
+  "reflection"
+ ],
+ "hero": {
+  "look": "boy",
+  "outfit": "shirt"
+ },
+ "villain": "double",
+ "cast": [],
+ "beats": [
+  {
+   "line": "My reflection talks to me while I brush my teeth.",
+   "scene": "bathroom",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "calm",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "talks"
+  },
+  {
+   "line": "Stand up straight. You look like a question mark.",
+   "scene": "bathroom",
+   "speaker": "villain",
+   "cam": "close",
+   "focus": "other",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "none",
+   "beat_word": "question"
+  },
+  {
+   "line": "Rude, but fair.",
+   "scene": "closeup",
+   "speaker": "narrator",
+   "cam": "close",
+   "hero": {
+    "pose": "stand",
+    "expr": "tired",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "fair"
+  },
+  {
+   "line": "Then the advice got weirder.",
+   "scene": "bathroom",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "other",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "none",
+   "beat_word": "weirder",
+   "jump": true
+  },
+  {
+   "line": "Swap places with me. Just for one day.",
+   "scene": "bathroom",
+   "speaker": "villain",
+   "cam": "close",
+   "focus": "other",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "other": {
+    "state": "grin",
+    "where": null
+   },
+   "react": "grin",
+   "beat_word": "swap"
+  },
+  {
+   "line": "Absolutely not!",
+   "scene": "closeup",
+   "speaker": "hero",
+   "cam": "snap",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "expr2": "scream"
+   },
+   "react": "jolt",
+   "beat_word": "not"
+  },
+  {
+   "line": "I covered the mirror with a towel.",
+   "scene": "bathroom",
+   "speaker": "narrator",
+   "cam": "medium",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "towel"
+  },
+  {
+   "line": "This morning, my boss texted me.",
+   "scene": "phone",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "react": "ring",
+   "beat_word": "texted",
+   "text": {
+    "from": "Boss",
+    "msg": "Great work today. You seem different.",
+    "time": "9:14"
+   }
+  },
+  {
+   "line": "I haven't left the bathroom in three days.",
+   "scene": "bathroom",
+   "speaker": "narrator",
+   "cam": "close",
+   "focus": "other",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "expr2": null
+   },
+   "other": {
+    "state": "grin",
+    "where": null
+   },
+   "react": "grin",
+   "beat_word": "three",
+   "twist": true
+  }
+ ]
+}

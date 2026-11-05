@@ -12,6 +12,9 @@ on:
       every:
         description: "Minutes between them"
         default: "60"
+      stories_dir:
+        description: "Optional: folder of ready-written stories (skips Gemini), e.g. horror/stories/batch_nov6"
+        default: ""
 
 permissions:
   contents: write
@@ -32,7 +35,12 @@ jobs:
       - name: Write the stories
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python run_horror_batch.py write "${{ inputs.count }}" batch/stories.json
+        run: |
+          if [ -n "${{ inputs.stories_dir }}" ]; then
+            python run_horror_batch.py collect "${{ inputs.stories_dir }}" "${{ inputs.count }}" batch/stories.json
+          else
+            python run_horror_batch.py write "${{ inputs.count }}" batch/stories.json
+          fi
       - id: idx
         run: echo "list=$(python -c "import json;print(json.dumps(list(range(len(json.load(open('batch/stories.json')))))))")" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v4

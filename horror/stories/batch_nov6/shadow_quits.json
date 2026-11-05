@@ -1,0 +1,152 @@
+{
+ "title": "My shadow quit its job today #shorts #horror",
+ "story_id": "shadow-quits",
+ "description": "My shadow stopped following me. Then it started following someone else.",
+ "tags": [
+  "shadow horror",
+  "funny horror",
+  "creepy shadow"
+ ],
+ "hero": {
+  "look": "girl",
+  "outfit": "tee"
+ },
+ "villain": "shadow",
+ "cast": [],
+ "beats": [
+  {
+   "line": "This morning, my shadow didn't follow me.",
+   "scene": "hallway",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "door",
+   "hero": {
+    "pose": "peek",
+    "expr": "curious",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "none",
+   "beat_word": "follow"
+  },
+  {
+   "line": "It stayed in the hallway, arms crossed.",
+   "scene": "hallway",
+   "speaker": "narrator",
+   "cam": "close",
+   "focus": "other",
+   "hero": {
+    "pose": "peek",
+    "expr": "worried",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "none",
+   "beat_word": "crossed"
+  },
+  {
+   "line": "I've followed you for twenty years. I'm done.",
+   "scene": "closeup",
+   "speaker": "villain",
+   "cam": "close",
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "none",
+   "beat_word": "done"
+  },
+  {
+   "line": "You can't quit! You're a shadow!",
+   "scene": "closeup",
+   "speaker": "hero",
+   "cam": "snap",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "expr2": "scream"
+   },
+   "react": "jolt",
+   "beat_word": "quit"
+  },
+  {
+   "line": "It slammed the front door behind it.",
+   "scene": "front_door",
+   "speaker": "narrator",
+   "cam": "medium",
+   "focus": "door",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "expr2": null
+   },
+   "react": "knock",
+   "beat_word": "slammed"
+  },
+  {
+   "line": "Without a shadow, I look like a sticker.",
+   "scene": "bathroom",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "tired",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "sticker",
+   "jump": true
+  },
+  {
+   "line": "Then my phone lit up.",
+   "scene": "phone",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "react": "ring",
+   "beat_word": "lit",
+   "text": {
+    "from": "Unknown",
+    "msg": "New job. Better hours.",
+    "time": "23:58"
+   }
+  },
+  {
+   "line": "A photo of my best friend, asleep.",
+   "scene": "phone",
+   "speaker": "narrator",
+   "cam": "close",
+   "react": "text_change",
+   "beat_word": "asleep",
+   "text": {
+    "from": "Unknown",
+    "msg": "New job. Better hours.",
+    "msg2": "Your friend has TWO shadows now.",
+    "time": "23:59"
+   }
+  },
+  {
+   "line": "She has two shadows now. And I have none.",
+   "scene": "window",
+   "speaker": "narrator",
+   "cam": "close",
+   "focus": "other",
+   "other": {
+    "state": "grin",
+    "where": null
+   },
+   "fx": [
+    "rain"
+   ],
+   "react": "grin",
+   "beat_word": "none",
+   "twist": true
+  }
+ ]
+}

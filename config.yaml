@@ -58,7 +58,10 @@ explainers:
   sections: 8                        # sections per video; about 4 minutes in all
   illustrate:                        # painted shots: a new picture every few seconds
     enabled: true
-    model: "gemini-3.1-flash-lite-image"   # about $0.034 an image at 1K
+    providers: ["cloudflare", "gemini"]   # tried in order; Cloudflare's daily allowance is free
+    cloudflare_model: "@cf/black-forest-labs/flux-1-schnell"   # Apache-2.0, fine for a monetised channel
+    cloudflare_steps: 6              # 4-8; ~80 images a day fit in the free allowance at 6
+    model: "gemini-3.1-flash-lite-image"   # paid fallback, only used if billing is on
     fallback_models: ["gemini-nano-banana-2.1", "gemini-3.1-flash-image"]
     image_size: "1K"
     seconds_per_shot: 8              # how long each picture stays before the next

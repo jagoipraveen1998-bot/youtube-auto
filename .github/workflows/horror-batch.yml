@@ -1,0 +1,121 @@
+name: Horror shorts batch (scheduled)
+
+on:
+  workflow_dispatch:
+    inputs:
+      count:
+        description: "How many Shorts (max 20)"
+        default: "20"
+      start:
+        description: "First one goes public at (India time, YYYY-MM-DDTHH:MM)"
+        default: "2026-11-06T09:00"
+      every:
+        description: "Minutes between them"
+        default: "60"
+
+permissions:
+  contents: write
+
+jobs:
+  write-stories:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    outputs:
+      indexes: ${{ steps.idx.outputs.list }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -q pyyaml google-genai requests numpy
+      - name: Write the stories
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python run_horror_batch.py write "${{ inputs.count }}" batch/stories.json
+      - id: idx
+        run: echo "list=$(python -c "import json;print(json.dumps(list(range(len(json.load(open('batch/stories.json')))))))")" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stories
+          path: batch/stories.json
+
+  make-short:
+    needs: write-stories
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        index: ${{ fromJSON(needs.write-stories.outputs.indexes) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - uses: actions/download-artifact@v4
+        with:
+          name: stories
+          path: batch
+      - name: Install ffmpeg and fonts
+        continue-on-error: true
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo rm -f /var/lib/man-db/auto-update
+          PKGS="ffmpeg fonts-dejavu-core espeak-ng"
+          sudo timeout 300 apt-get install -y -qq --no-install-recommends $PKGS || (sudo timeout 120 apt-get update -qq && sudo timeout 300 apt-get install -y -qq --no-install-recommends $PKGS)
+      - name: Install Python packages and the cartoon browser
+        run: |
+          pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -q -r requirements.txt
+          python -m playwright install --with-deps chromium
+      - name: Make and schedule Short #${{ matrix.index }}
+        env:
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_HORROR_REFRESH_TOKEN: ${{ secrets.YT_HORROR_REFRESH_TOKEN }}
+        run: python run_horror_batch.py make batch/stories.json ${{ matrix.index }} "${{ inputs.start }}" "${{ inputs.every }}"
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: result-${{ matrix.index }}
+          path: results/
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: failed-short-${{ matrix.index }}
+          path: output_horror/
+          retention-days: 3
+          if-no-files-found: ignore
+
+  record:
+    needs: make-short
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -q pyyaml numpy
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: result-*
+          path: results
+      - name: Record the schedule and pause the regular slots
+        run: python run_horror_batch.py history results
+      - name: Save
+        run: |
+          git config user.name "autotube-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/horror_history.json data/horror_pause_until.txt 2>/dev/null || true
+          git diff --cached --quiet && exit 0
+          git commit -m "Record scheduled horror batch (run ${GITHUB_RUN_NUMBER})"
+          for i in 1 2 3 4 5; do
+            if git pull -q --rebase && git push -q; then exit 0; fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((RANDOM % 10 + 3))
+          done

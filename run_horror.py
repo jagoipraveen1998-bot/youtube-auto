@@ -25,6 +25,13 @@ def main():
     ap.add_argument("--voice-file", help="use a recorded narration (testing)")
     args = ap.parse_args()
 
+    import os
+    pause = ROOT / "data" / "horror_pause_until.txt"
+    if os.environ.get("GITHUB_EVENT_NAME") == "schedule" and pause.exists():
+        until = datetime.fromisoformat(pause.read_text(encoding="utf-8").strip())
+        if datetime.now(timezone.utc) < until:
+            log(f"A scheduled batch is still going out (until {until.astimezone(IST):%d %b %H:%M} IST); skipping this slot")
+            return
     cfg = load_config()
     hcfg = cfg["horror"]
     out = ROOT / "output_horror"

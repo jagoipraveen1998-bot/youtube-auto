@@ -156,6 +156,7 @@ class Painter:
         if "cloudflare" in self.providers and not (self.cf_account and self.cf_token):
             self.providers.remove("cloudflare")
         self.cf_dead = False
+        self.cf_simple = False
         self.size = str(ic.get("image_size", "1K"))
         self.folder = Path(folder)
         self.folder.mkdir(parents=True, exist_ok=True)
@@ -180,9 +181,22 @@ class Painter:
                    if aspect == "9:16" else "any shape."))
         url = (f"https://api.cloudflare.com/client/v4/accounts/{self.cf_account}"
                f"/ai/run/{self.cf_model}")
-        r = requests.post(url, headers={"Authorization": f"Bearer {self.cf_token}"},
-                          json={"prompt": f"{prompt}\n{band}"[:2048], "steps": self.cf_steps,
-                                "seed": random.randint(1, 2**31 - 1)}, timeout=120)
+        headers = {"Authorization": f"Bearer {self.cf_token}"}
+        bodies = [{"prompt": f"{prompt}\n{band}"[:1900], "steps": self.cf_steps,
+                   "seed": random.randint(1, 999999)}]
+        if not self.cf_simple:
+            bodies.append({"prompt": f"{prompt}\n{band}"[:1500]})     # the bare minimum
+        else:
+            bodies = [{"prompt": f"{prompt}\n{band}"[:1500]}]
+        for body in bodies:
+            r = requests.post(url, headers=headers, json=body, timeout=120)
+            if r.status_code != 400:
+                break
+            log(f"Cloudflare 400 for {sorted(body)}: {r.text[:300]}")
+            if "steps" in body:
+                self.cf_simple = True          # remember: send the plain request next time
+        if r.status_code == 400:
+            raise PermissionError(f"Cloudflare rejected the request: {r.text[:300]}")
         if r.status_code in (401, 403):
             raise PermissionError(f"Cloudflare refused the token ({r.status_code}): {r.text[:200]}")
         if r.status_code == 429:

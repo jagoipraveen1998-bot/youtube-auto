@@ -5,7 +5,8 @@
     "how a fingerprint sensor reads a finger through glass",
     "how a smartphone knows which way up it is",
     "how a lithium battery stores and releases energy",
-    "how a quantum computer differs from the one on your desk"
+    "how a quantum computer differs from the one on your desk",
+    "how wifi carries data straight through a wall"
   ],
   "videos": [
     {
@@ -43,6 +44,12 @@
       "title": "How Quantum Computers Actually Work",
       "video_id": "5Ygqigtu_FA",
       "length": "04:14"
+    },
+    {
+      "date": "2026-11-05",
+      "title": "How Wi-Fi Actually Passes Through Solid Walls",
+      "video_id": "2amSXewxllw",
+      "length": "04:21"
     }
   ]
 }

@@ -6,7 +6,8 @@
     "how a smartphone knows which way up it is",
     "how a lithium battery stores and releases energy",
     "how a quantum computer differs from the one on your desk",
-    "how wifi carries data straight through a wall"
+    "how wifi carries data straight through a wall",
+    "how a microwave oven heats food from the inside out"
   ],
   "videos": [
     {
@@ -50,6 +51,12 @@
       "title": "How Wi-Fi Actually Passes Through Solid Walls",
       "video_id": "2amSXewxllw",
       "length": "04:21"
+    },
+    {
+      "date": "2026-11-05",
+      "title": "How a Microwave Oven Actually Heats Food",
+      "video_id": "teFBuwpBEVg",
+      "length": "03:34"
     }
   ]
 }

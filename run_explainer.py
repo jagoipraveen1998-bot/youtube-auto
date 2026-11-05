@@ -73,47 +73,94 @@ def main():
     parts, chapters, elapsed = [], [], 0.0
     recent: list[str] = []        # the last two 3D models, so sections do not repeat one
 
-    # 1. opening card, with the hook read over it
-    art.title_card(data["title"], channel).save(work / "title.png")
-    if data.get("hook"):
-        hook_clip, secs = ev.render_section(
-            {"heading": "", "narration": data["hook"],
-             "visual": {"type": "number", "value": "", "caption": ""}}, vcfg, work, "hook")
-        # the hook plays over the title card rather than a diagram
-        card, _ = ev.render_card(work / "title.png", secs, work, "title", work / "hook.mp3")
-        parts.append(card)
+    # Painted shots: a storyboard, then one picture every few seconds. Anything that
+    # fails here falls back to the drawn diagrams below, part by part.
+    painter = None
+    ic = xc.get("illustrate", {})
+    if ic.get("enabled"):
+        from autotube import illustrate
+        try:
+            if illustrate.storyboard(cfg, data):
+                painter = illustrate.Painter(cfg, work / "paint")
+        except Exception as exc:
+            log(f"Storyboard failed, using diagrams: {exc}")
+
+    def painted(shots, name):
+        if not painter or not shots:
+            return []
+        got = illustrate.paint_shots(painter, shots, name)
+        return got if len(got) == len(shots) or len(got) >= 2 else []
+
+    # 1. opening: the hook over painted shots with the title, or the title card
+    hook_shots = painted(data.get("hook_shots"), "hook") if data.get("hook") else []
+    if hook_shots:
+        clip, secs = ev.render_illustrated(data["hook"], hook_shots, vcfg, work, "hook",
+                                           title=data["title"])
+        parts.append(clip)
         elapsed += secs
     else:
-        card, secs = ev.render_card(work / "title.png", 3.0, work, "title")
+        art.title_card(data["title"], channel).save(work / "title.png")
+        if data.get("hook"):
+            hook_clip, secs = ev.render_section(
+                {"heading": "", "narration": data["hook"],
+                 "visual": {"type": "number", "value": "", "caption": ""}}, vcfg, work, "hook")
+            # the hook plays over the title card rather than a diagram
+            card, _ = ev.render_card(work / "title.png", secs, work, "title", work / "hook.mp3")
+        else:
+            card, secs = ev.render_card(work / "title.png", 3.0, work, "title")
         parts.append(card)
         elapsed += secs
     chapters.append((0.0, "Introduction"))
 
     # 2. the sections
+    painted_count = 0
     for i, section in enumerate(data["sections"], start=1):
         log(f"Section {i}/{len(data['sections'])}: {section['heading']}")
-        clip, secs = ev.render_section(
-            section, vcfg, work, f"s{i}", threed_cfg=xc.get("threed", {}),
-            context=" ".join([str(data.get("topic", "")), str(section.get("heading", "")),
-                              str(section.get("narration", ""))]),
-            avoid=tuple(recent[-2:]))
-        if section.get("_model"):
-            recent.append(section["_model"])
+        shots = painted(section.get("shots"), f"s{i}")
+        clip = None
+        if shots:
+            try:
+                clip, secs = ev.render_illustrated(section["narration"], shots, vcfg, work,
+                                                   f"s{i}", heading=section["heading"])
+                painted_count += 1
+            except Exception as exc:
+                log(f"Painted section {i} failed to render, using the diagram: {exc}")
+                clip = None
+        if clip is None:
+            clip, secs = ev.render_section(
+                section, vcfg, work, f"s{i}", threed_cfg=xc.get("threed", {}),
+                context=" ".join([str(data.get("topic", "")), str(section.get("heading", "")),
+                                  str(section.get("narration", ""))]),
+                avoid=tuple(recent[-2:]))
+            if section.get("_model"):
+                recent.append(section["_model"])
         chapters.append((elapsed, section["heading"] or f"Part {i}"))
         parts.append(clip)
         elapsed += secs
+    if painter:
+        log(f"Painted {painted_count}/{len(data['sections'])} sections with {painter.made} new images")
 
     # 3. closing line
     if data.get("takeaway"):
-        clip, secs = ev.render_section(
-            {"heading": "In short", "narration": data["takeaway"],
-             "visual": {"type": "number", "value": data["thumbnail_text"], "caption": ""}},
-            vcfg, work, "end", threed_cfg=xc.get("threed", {}), context=" ".join([str(data.get("topic", "")), str(data.get("takeaway", ""))]))
+        end_shots = painted(data.get("end_shots"), "end")
+        if end_shots:
+            clip, secs = ev.render_illustrated(data["takeaway"], end_shots, vcfg, work, "end",
+                                               heading="In short")
+        else:
+            clip, secs = ev.render_section(
+                {"heading": "In short", "narration": data["takeaway"],
+                 "visual": {"type": "number", "value": data["thumbnail_text"], "caption": ""}},
+                vcfg, work, "end", threed_cfg=xc.get("threed", {}), context=" ".join([str(data.get("topic", "")), str(data.get("takeaway", ""))]))
         parts.append(clip)
         elapsed += secs
 
+    thumb_image = None
+    if painter and data.get("thumb_prompt"):
+        thumb_image = painter.paint(data["thumb_prompt"], "thumb")
+
     video = ev.join(parts, out / "explainer.mp4")
-    thumb = ev.thumbnail(data.get("thumbnail_text") or data["title"], channel, out / "thumbnail.jpg")
+    thumb = ev.thumbnail(data.get("thumbnail_text") or data["title"], channel, out / "thumbnail.jpg",
+                         image=thumb_image)
     log(f"Explainer ready ({fmt(elapsed)})")
 
     description = "\n".join([

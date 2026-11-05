@@ -6,3 +6,4 @@ token*.json
 .env
 youtube_token.txt
 output_horror/
+output_long/

@@ -24,10 +24,15 @@ const ex = n => Object.assign({}, EXPR[n] || EXPR.calm);
 const bT = (f, sh, len = 8) => sh.beat == null ? 0 : clamp((f - sh.beat) / len);
 const after = (f, sh) => sh.beat != null && f >= sh.beat;
 
+const CAST = P.cast || {};          // side characters: { mum: {look...}, dad: {...} }
+const talking = (sh, f, who) => sh.talk === who && sh.ls != null && f >= sh.ls && f <= sh.le;
+const LOOK = l => ({ skin: l.skin, hair: l.hair, hairStyle: l.hairStyle, outfit: l.outfit, top: l.top, stripe: l.stripe, acc: l.acc });
+
 function heroObj(sh, f, base) {
   if (!sh.hero) return null;
   const h = sh.hero;
-  const o = Object.assign({ skin: HERO.skin, hair: HERO.hair, hairStyle: HERO.hairStyle, outfit: HERO.outfit, seed: 1 }, base, ex(h.expr || 'worried'));
+  const o = Object.assign({ seed: 1 }, LOOK(HERO), base, ex(h.expr || 'worried'));
+  o.talk = talking(sh, f, 'hero');
   if (h.look != null) o.look = h.look;
   if (h.pose === 'sleep') Object.assign(o, ex('asleep'), { tilt: 0.25 });
   if (sh.react === 'jolt' && after(f, sh)) {
@@ -44,10 +49,20 @@ function heroObj(sh, f, base) {
 }
 
 function otherObj(sh, f, base) {
+  if (sh.side && CAST[sh.side]) {   // a side character (mum, roommate...) stands where the villain would
+    const c = CAST[sh.side];
+    const o = Object.assign({ seed: 9 }, LOOK(c), base, ex(sh.sideExpr || 'calm'));
+    o.talk = talking(sh, f, 'side'); o.blink = blinkAt(f, 9); o.bob = Math.sin(f * 0.1) * 2;
+    if (sh.react === 'vanish') o.alpha = after(f, sh) ? 1 - ss(bT(f, sh, 5)) : 1;
+    return o;
+  }
   const st = (sh.other && sh.other.state) || 'hidden';
   if (st === 'hidden') return null;
-  const o = Object.assign({ kind: OTHER.kind, outfit: OTHER.kind === 'double' ? OTHER.outfit : undefined, skin: HERO.skin, hair: HERO.hair,
-    hairStyle: HERO.hairStyle, seed: 3 }, base);
+  const isDouble = OTHER.kind === 'double';
+  const o = Object.assign({ kind: OTHER.kind, seed: 3 }, isDouble ? Object.assign(LOOK(HERO), { outfit: OTHER.outfit, top: undefined }) : {},
+    OTHER.look ? LOOK(OTHER.look) : {}, base);
+  if (OTHER.glow) o.glow = OTHER.glow;
+  if (OTHER.kind === 'delivery') o.holdR = (hx, hy) => { sf(rr(hx - 90, hy - 160, 180, 150, 10), '#c9a46a', 6 / (base.s || 1)); line(hx - 90, hy - 110, hx + 90, hy - 110, '#8a6a3a', 4); };
   const map = { back: 'stare', front: 'stare', stare: 'stare', grin: 'grin', tired: 'tired', lurk: 'stare' };
   Object.assign(o, ex(map[st] || 'stare'));
   o.turn = st === 'back' ? 0 : 1;
@@ -59,8 +74,9 @@ function otherObj(sh, f, base) {
   if (r === 'vanish') o.alpha = after(f, sh) ? 1 - ss(bT(f, sh, 5)) : 1;
   if (st === 'lurk') o.alpha = Math.min(o.alpha ?? 1, 0.9);
   if (o.kind === 'ghost') o.alpha = (o.alpha ?? 1) * (0.78 + 0.08 * Math.sin(f * 0.2));
-  o.blink = o.kind === 'double' ? blinkAt(f, 5) : 0;
+  o.blink = o.kind === 'double' || o.kind === 'neighbour' || o.kind === 'delivery' ? blinkAt(f, 5) : 0;
   o.bob = Math.sin(f * 0.07) * 2;
+  o.talk = talking(sh, f, 'other');
   return o;
 }
 
@@ -252,7 +268,9 @@ function framesFor(S, sh, name) {
 }
 function camFor(S, sh, f) {
   const t = f - sh.a, dur = Math.max(1, sh.b - sh.a);
-  const wide = S.frames.wide, foc = framesFor(S, sh, sh.focus || (sh.hero ? 'hero' : 'other'));
+  const W0 = S.frames.wide;
+  const wide = FORMAT === 'landscape' ? [W0[0], W0[1], W0[2] * 0.86] : W0;   // wide shots breathe a little more in 16:9
+  const foc = framesFor(S, sh, sh.focus || (sh.hero ? 'hero' : 'other'));
   const mid = [lerp(wide[0], foc[0], 0.5), lerp(wide[1], foc[1], 0.5), lerp(wide[2], foc[2], 0.45)];
   const k = (fr, p, e) => [fr, p[0], p[1], p[2], 0, e];
   const br = sh.beat != null ? clamp(sh.beat - sh.a, 1, dur - 1) : Math.floor(dur * 0.6);
@@ -275,6 +293,17 @@ function camFor(S, sh, f) {
 }
 
 // ---------- frame ----------
+function dust(f, sh) {   // slow motes drifting in the light: something always moves
+  if (sh.scene === 'phone' || sh.scene === 'calendar') return;
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < 26; i++) {
+    const x = (rnd(i * 3.1) * W + f * (0.4 + rnd(i) * 0.8) + Math.sin(f * 0.02 + i) * 30) % W;
+    const y = (rnd(i * 7.7) * H - f * (0.25 + rnd(i + 5) * 0.5) + H * 4) % H;
+    ctx.globalAlpha = 0.08 + 0.12 * noise1(f * 0.05 + i);
+    ctx.fillStyle = '#fff4dc'; ctx.beginPath(); ctx.arc(x, y, 2 + rnd(i + 2) * 4, 0, 7); ctx.fill();
+  }
+  ctx.restore();
+}
 function cctvOverlay(f, sh) {
   const t = sh.text || {};
   const sw = sh.react === 'text_change' && after(f, sh);
@@ -282,13 +311,14 @@ function cctvOverlay(f, sh) {
   ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.fillStyle = 'rgba(235,255,238,0.92)'; ctx.font = 'bold 54px "DejaVu Sans Mono"'; ctx.textBaseline = 'top'; ctx.textAlign = 'left';
   ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 6;
-  ctx.fillText(t.label || 'CAM 01', 70, 150);
-  if (Math.floor(f / 15) % 2 === 0) { ctx.fillStyle = '#ff4a4a'; ctx.beginPath(); ctx.arc(820, 178, 18, 0, 7); ctx.fill(); }
-  ctx.fillStyle = 'rgba(235,255,238,0.92)'; ctx.fillText('REC', 850, 150);
+  const top = FORMAT === 'landscape' ? 60 : 150, bottom = H - (FORMAT === 'landscape' ? 120 : 220);
+  ctx.fillText(t.label || 'CAM 01', 70, top);
+  if (Math.floor(f / 15) % 2 === 0) { ctx.fillStyle = '#ff4a4a'; ctx.beginPath(); ctx.arc(W - 260, top + 28, 18, 0, 7); ctx.fill(); }
+  ctx.fillStyle = 'rgba(235,255,238,0.92)'; ctx.fillText('REC', W - 230, top);
   const sec = String(Math.floor((f - sh.a) / 30) % 60).padStart(2, '0');
   const time = (sw ? t.time2 : t.time) || '03:00';
   ctx.fillStyle = sw ? '#ff7a7a' : 'rgba(235,255,238,0.92)';
-  ctx.fillText(`${time}:${sec}`, 70 + (g ? (rnd(f) - 0.5) * 30 : 0), 1700);
+  ctx.fillText(`${time}:${sec}`, 70 + (g ? (rnd(f) - 0.5) * 30 : 0), bottom);
   ctx.restore();
   if (g) glitch(1.0);
 }
@@ -313,7 +343,7 @@ window.renderFrame = function (f) {
   if (as < 1 && sh.scene !== 'kitchen' && sh.scene !== 'cctv') flash(1 - as, '#05030c');
   if (S.glow) glowAdd(c, ...S.glow);
   if (sh.scene === 'cctv') { cctv(f); cctvOverlay(f, sh); }
-  else { grade(0.92, 1.08, 1.0); vignette(0.7, 0.35); }
+  else { dust(f, sh); grade(0.92, 1.08, 1.0); vignette(0.7, 0.35); }
   // transitions & accents
   if (sh.jump) flash(1 - seg(f, sh.a, sh.a + 7));
   if (sh === shots[0]) flash(1 - seg(f, 0, 6), '#000');

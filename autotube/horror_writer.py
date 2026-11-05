@@ -36,17 +36,28 @@ SCENES = {
     "closeup": "a close-up of the hero's face against a dark background, for big reactions. tint = a CSS colour for the rim light",
 }
 
-PROMPT = """You write ORIGINAL very short animated horror stories for the YouTube Shorts channel "CreepyCartoonTales".
-Style: creepy, never gory. A cartoon everyman narrates in the first person. A paradox hook, escalating unease,
-a pivot, and an ironic twist in the very last words. Spooky fun, safe for teenagers: no blood, no gore, no weapons,
+PROMPT = """You write ORIGINAL very short animated HORROR-COMEDY stories for the YouTube Shorts channel "CreepyCartoonTales".
+Style: creepy AND funny, never gory. A cartoon everyman narrates in the first person with dry, self-mocking humour
+(think: a hero who is scared but complains about the wrong things). A paradox hook, escalating unease with one or two
+genuinely funny beats (a silly reaction, a deadpan line, a misunderstanding), a pivot, and an ironic twist in the very
+last words that is both creepy and a little funny. Characters TALK: use 2 to 4 short dialogue lines (the hero, the
+villain, or a side character) between the narration. Spooky fun, safe for teenagers: no blood, no gore, no weapons,
 no self-harm, no real people, no real brands, nothing sexual, no animal harm.
 
 The story must be told with these animated sets only (the narration must fit what can be shown):
 {scenes}
 
 The villain ("other") is one of: double (the hero's exact double, wearing a different shirt), shadow (a pitch-black
-silhouette with glowing eyes), ghost (a pale see-through version of a person). other.state: hidden | back (seen from
-behind) | front | stare | grin | tired | lurk.
+silhouette with glowing eyes), ghost (a pale see-through person), doll (a cracked porcelain doll with button eyes and a
+bow), neighbour (an overly friendly bald neighbour with a moustache and glasses), tall (an unnaturally tall thin figure
+in a suit), delivery (a smiling delivery man holding a parcel). other.state: hidden | back (seen from behind) | front |
+stare | grin | tired | lurk.
+Side characters (optional, at most 2): mum | dad | grandma | grandpa | roommate | friend | sister | brother | officer.
+To show a side character in a shot set "side": "<role>" (only in kitchen, closeup or bedroom) and "sideExpr" (calm |
+worried | shock | relieved | curious).
+speaker = who says the line: narrator (the hero telling the story) | hero (the hero speaking out loud in the scene) |
+villain | one of the side roles. Dialogue lines are written as speech only, without "she said". When the hero or a side
+character speaks, show them in that shot; when the villain speaks, show the villain.
 hero.pose: sit | sleep | stand | walk | peek | cheeks (hands on cheeks) | reach. hero.expr and hero.expr2 (the face after
 the beat): calm | sleepy | curious | worried | shock | scream | relieved | tired | stare.
 cam: wide | medium | close | push_in | pull_out | pan | snap (cut in hard on the beat word). focus picks what the camera
@@ -55,8 +66,8 @@ lights_on | lights_off | flicker | appear (the other appears) | vanish | turn (t
 grin (the other grins) | droop (the other or hero looks exhausted) | text_change (the on-screen text changes).
 
 Rules:
-- 7 to 11 beats. Each beat is ONE spoken sentence of 3 to 14 words, plain spoken English, contractions, numbers in words.
-  Total 85 to 120 words.
+- 8 to 12 beats. Each beat is ONE spoken sentence of 2 to 14 words, plain spoken English, contractions, numbers in words.
+  Total 85 to 125 words. Use a different villain type and setting mix from the stories already told.
 - Sentence 1 is the hook: a creepy paradox stated as fact. The last sentence is the twist: short, ironic, surprising.
 - Every beat names its scene, and the narration must match what that scene can show. Use 4 to 7 different scenes.
 - beat_word is ONE word copied exactly from that beat's line where the react happens.
@@ -71,8 +82,9 @@ Return ONLY JSON:
   "description":"2 sentences that tease the story without spoiling the twist",
   "tags":["8 to 12 search tags"],
   "hero":{{"look":"boy|girl","outfit":"pj|hoodie|tee|nightie|shirt"}},
-  "villain":"double|shadow|ghost",
-  "beats":[{{"line":"...","scene":"...","cam":"...","focus":"...","hero":{{"pose":"...","expr":"...","expr2":"..."}} or null,
+  "villain":"double|shadow|ghost|doll|neighbour|tall|delivery",
+  "cast":[{{"role":"mum"}}],
+  "beats":[{{"line":"...","speaker":"narrator","side":null,"sideExpr":null,"scene":"...","cam":"...","focus":"...","hero":{{"pose":"...","expr":"...","expr2":"..."}} or null,
             "other":{{"state":"...","where":"..."}} or null,"react":"...","beat_word":"...","jump":false,"twist":false,
             "light":"dark|dawn|on|flicker","room":"kitchen|bedroom","prop":"shoes|shirt|none","fx":["rain"],
             "text":{{"top":"","big":"","label":"","time":"","time2":"","from":"","msg":"","msg2":""}}}}]}}
@@ -99,8 +111,20 @@ def _plain(s, n):
     return re.sub(r"[<>{}\\]", "", str(s or ""))[:n].strip()
 
 
+ROLES = {"mum", "dad", "grandma", "grandpa", "roommate", "friend", "sister", "brother", "officer", "daughter", "son", "landlord"}
+SIDE_SCENES = {"kitchen", "closeup", "bedroom"}
+VILLAINS = {"double", "shadow", "ghost", "doll", "neighbour", "tall", "delivery"}
+
+
 def repair(story: dict) -> dict:
     """Force every field into the player's vocabulary so the render can never break."""
+    cast = []
+    for c in story.get("cast") or []:
+        role = (c.get("role") if isinstance(c, dict) else str(c)).lower().strip()
+        if role in ROLES and role not in [x["role"] for x in cast]:
+            cast.append({"role": role})
+    story["cast"] = cast[:4]
+    roles = {c["role"] for c in story["cast"]}
     beats = []
     for b in story.get("beats", []):
         line = _plain(b.get("line"), 160)
@@ -116,7 +140,20 @@ def repair(story: dict) -> dict:
                "light": b.get("light") if b.get("light") in {"dark", "dawn", "on", "flicker"} else None,
                "room": "bedroom" if b.get("room") == "bedroom" else "kitchen",
                "prop": b.get("prop") if b.get("prop") in {"shoes", "shirt"} else None,
-               "fx": [x for x in (b.get("fx") or []) if x in {"rain", "steam"}]}
+               "fx": [x for x in (b.get("fx") or []) if x in {"rain", "steam"}],
+               "chapter": _plain(b.get("chapter"), 60) or None}
+        sp = str(b.get("speaker") or "narrator").lower().strip()
+        out["speaker"] = sp if sp in {"narrator", "hero", "villain"} | roles else "narrator"
+        side = str(b.get("side") or "").lower().strip()
+        if out["speaker"] in roles and not side:
+            side = out["speaker"]
+        if side in roles and scene in SIDE_SCENES:
+            out["side"] = side
+            out["sideExpr"] = b.get("sideExpr") if b.get("sideExpr") in EXPRS else "calm"
+        elif out["speaker"] in roles:   # a side character speaking somewhere they can't be drawn: talk in close-up
+            out["scene"] = scene = "closeup"; out["side"] = out["speaker"]; out["sideExpr"] = "calm"; out["cam"] = "close"
+        if out["speaker"] == "hero" and scene in NO_HERO:
+            out["scene"] = scene = "closeup"
         h = b.get("hero")
         if scene not in NO_HERO and isinstance(h, dict):
             allowed = SCENE_POSE.get(scene, {"stand"})
@@ -125,7 +162,8 @@ def repair(story: dict) -> dict:
                            "expr": h.get("expr") if h.get("expr") in EXPRS else "worried",
                            "expr2": h.get("expr2") if h.get("expr2") in EXPRS else None}
         elif (scene in {"bedroom", "hallway", "bathroom"} or (scene == "cctv" and out["room"] == "bedroom")
-              or (scene == "closeup" and not (isinstance(b.get("other"), dict) and b["other"].get("state") not in (None, "hidden")))):
+              or (scene == "closeup" and not out.get("side") and out["speaker"] != "villain"
+                  and not (isinstance(b.get("other"), dict) and b["other"].get("state") not in (None, "hidden")))):
             out["hero"] = {"pose": "sleep" if scene == "cctv" else ("peek" if scene == "hallway" else "sit" if scene == "bedroom" else "stand"),
                            "expr": "asleep" if scene == "cctv" else "worried", "expr2": None}
         else:
@@ -140,6 +178,10 @@ def repair(story: dict) -> dict:
             out["other"] = {"state": "back" if out["react"] == "turn" else "stare", "where": sorted(WHERE.get(scene, {"door"}))[0]}
         if scene in {"window"} and not out["other"]:
             out["other"] = {"state": "lurk", "where": None}
+        if out["speaker"] == "villain" and not out["other"] and not out.get("side"):
+            out["other"] = {"state": "stare", "where": sorted(WHERE.get(scene, {"door"}))[0]}
+        if out.get("side") and scene == "closeup":
+            out["hero"] = None
         t = b.get("text") or {}
         out["text"] = {"top": _caps(t.get("top"), 9) or "MONDAY", "big": _caps(t.get("big"), 3) or "13",
                        "top2": _caps(t.get("top2"), 9) or None, "big2": _caps(t.get("big2"), 3) or None,
@@ -153,9 +195,10 @@ def repair(story: dict) -> dict:
     if not any(b["twist"] for b in beats):
         beats[-2 if len(beats) > 4 else -1]["twist"] = True
     hero = story.get("hero") or {}
-    story["hero"] = {"look": "girl" if hero.get("look") == "girl" else "boy",
-                     "outfit": hero.get("outfit") if hero.get("outfit") in {"pj", "hoodie", "tee", "nightie", "shirt"} else "pj"}
-    story["villain"] = story.get("villain") if story.get("villain") in {"double", "shadow", "ghost"} else "shadow"
+    story["hero"] = {"look": hero.get("look") if hero.get("look") in {"boy", "girl", "man", "woman"} else "boy",
+                     "outfit": hero.get("outfit") if hero.get("outfit") in {"pj", "hoodie", "tee", "nightie", "shirt"} else None}
+    story["villain"] = story.get("villain") if story.get("villain") in VILLAINS else "shadow"
+    story["villain_look"] = story.get("villain_look") if story.get("villain_look") in {"boy", "girl", "man", "woman"} else None
     story["beats"] = beats
     story["title"] = _plain(story.get("title"), 95) or "I live alone... so who was that? #shorts #horror"
     story["description"] = _plain(story.get("description"), 400)

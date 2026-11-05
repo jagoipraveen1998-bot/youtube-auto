@@ -1,0 +1,104 @@
+name: Horror long video (your script)
+
+on:
+  workflow_dispatch:
+    inputs:
+      script:
+        description: "Script file name in the scripts/ folder (e.g. the_doll.txt)"
+        required: true
+      title:
+        description: "Optional: your own YouTube title"
+        required: false
+        default: ""
+      mode:
+        description: "Publish on CreepyCartoonTales, or make it only"
+        type: choice
+        default: full
+        options:
+          - full
+          - no-upload
+
+permissions:
+  contents: write
+
+concurrency:
+  group: horror-long
+  cancel-in-progress: false
+
+jobs:
+  make-long-video:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install ffmpeg and fonts
+        id: apt
+        continue-on-error: true
+        timeout-minutes: 8
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo rm -f /var/lib/man-db/auto-update
+          PKGS="ffmpeg fonts-dejavu-core espeak-ng"
+          sudo timeout 300 apt-get install -y -qq --no-install-recommends $PKGS || (sudo timeout 120 apt-get update -qq && sudo timeout 300 apt-get install -y -qq --no-install-recommends $PKGS)
+
+      - name: Install ffmpeg (backup download)
+        if: steps.apt.outcome != 'success'
+        uses: FedericoCarboni/setup-ffmpeg@v3
+        timeout-minutes: 5
+
+      - name: Install Python packages and the cartoon browser
+        timeout-minutes: 10
+        run: |
+          pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -q -r requirements.txt
+          python -m playwright install --with-deps chromium
+
+      - name: Make the long video
+        timeout-minutes: 300
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_HORROR_REFRESH_TOKEN: ${{ secrets.YT_HORROR_REFRESH_TOKEN }}
+          SCRIPT: ${{ inputs.script }}
+          TITLE: ${{ inputs.title }}
+          MODE: ${{ inputs.mode }}
+        run: |
+          ARGS=("$SCRIPT")
+          [ -n "$TITLE" ] && ARGS+=(--title "$TITLE")
+          [ "$MODE" = "no-upload" ] && ARGS+=(--no-upload)
+          python run_horror_long.py "${ARGS[@]}"
+
+      - name: Keep the video for 3 days
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: long-video-${{ github.run_number }}
+          path: |
+            output_long/video.mp4
+            output_long/cover.jpg
+            output_long/description.txt
+            output_long/story.json
+          retention-days: 3
+          if-no-files-found: ignore
+
+      - name: Save history
+        if: success() && inputs.mode == 'full'
+        run: |
+          git config user.name "autotube-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/horror_history.json 2>/dev/null || true
+          git diff --cached --quiet && exit 0
+          git commit -m "Save long video history for run ${GITHUB_RUN_NUMBER}"
+          for i in 1 2 3 4 5; do
+            if git pull -q --rebase && git push -q; then exit 0; fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((RANDOM % 10 + 3))
+          done

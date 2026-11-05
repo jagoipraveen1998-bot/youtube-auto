@@ -24,9 +24,9 @@ Return ONLY JSON:
 {{"title":"YouTube title under 70 characters, curiosity-driven, no hashtags",
   "description":"3 sentences that tease the story without spoiling the ending",
   "tags":["10 to 14 search tags"],
-  "hero":{{"look":"boy|girl","outfit":"pj|hoodie|tee|nightie|shirt"}},
+  "hero":{{"look":"boy|girl|man|woman","outfit":"pj|hoodie|tee|nightie|shirt|cardigan"}},
   "villain":"double|shadow|ghost|doll|neighbour|tall|delivery  (the closest match to the script's threat)",
-  "speakers":{{"<NAME exactly as written in the script>":"hero|villain|mum|dad|grandma|grandpa|roommate|friend|sister|brother|officer"}}}}
+  "speakers":{{"<NAME exactly as written in the script>":"hero|villain|mum|dad|grandma|grandpa|roommate|friend|sister|brother|officer|daughter|son|landlord"}}}}
 The hero is the person telling the story ("I"). Every NAME that speaks must be mapped.
 
 SCRIPT:
@@ -65,11 +65,27 @@ KEYWORDS = [  # fallback planner: first match wins
 DAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"]
 
 
+CAST_NOTE = re.compile(r"^\[\s*cast\s*:(.*)\]\s*$", re.I)
+
+
+def script_cast(text: str) -> dict:
+    """Optional '[cast: MUM=hero woman, ELLIE=daughter, THE GIRL=villain ghost girl]' note."""
+    out = {}
+    for raw in text.split("\n"):
+        m = CAST_NOTE.match(raw.strip())
+        if m:
+            for part in m.group(1).split(","):
+                if "=" in part:
+                    k, v = part.split("=", 1)
+                    out[k.strip().upper()] = v.strip().lower().split()
+    return out
+
+
 def parse_script(text: str) -> list[dict]:
-    """Script text -> lines [{line, speaker_name, chapter}]."""
+    """Script text -> lines [{line, speaker_name, chapter}]. [Bracketed notes] are never spoken."""
     out, chapter = [], None
     for raw in text.replace("\r", "").split("\n"):
-        s = raw.strip()
+        s = re.sub(r"\[[^\]]*\]", "", raw).strip()
         if not s:
             continue
         if s.startswith("#"):
@@ -124,7 +140,7 @@ def _speaker_role(name: str | None, mapping: dict, seen: list) -> str:
         return low
     if low in ("me", "i", "narrator"):
         return "hero"
-    if VILLAIN_WORDS.search(low):
+    if VILLAIN_WORDS.search(low) or low.startswith("the "):
         return "villain"
     if name not in seen:
         seen.append(name)
@@ -174,11 +190,25 @@ def plan_script(text: str, cfg: dict) -> dict:
         log(f"Casting by Gemini failed, using defaults: {exc}")
         meta = {}
     mapping = {k: (v if v in ROLES | {"hero", "villain"} else "friend") for k, v in (meta.get("speakers") or {}).items()}
+    hero_look, villain_kind, villain_look = None, None, None
+    for name, words in script_cast(text).items():      # the script's own cast note wins over Gemini
+        role = next((w for w in words if w in ROLES | {"hero", "villain"}), None)
+        if role:
+            mapping[name] = role
+            mapping[name.title()] = role
+        if role == "hero":
+            hero_look = next((w for w in words if w in ("boy", "girl", "man", "woman")), hero_look)
+        if role == "villain":
+            villain_kind = next((w for w in words if w in VILLAINS), villain_kind)
+            villain_look = next((w for w in words if w in ("boy", "girl", "man", "woman")), villain_look)
     seen: list = []
     for x in lines:
         x["speaker"] = _speaker_role(x["name"], mapping, seen)
-    roles = sorted({x["speaker"] for x in lines} & ROLES)[:3]
-    villain = meta.get("villain") if meta.get("villain") in VILLAINS else "shadow"
+    roles = sorted({x["speaker"] for x in lines} & ROLES)[:4]
+    villain = villain_kind or (meta.get("villain") if meta.get("villain") in VILLAINS else "shadow")
+    hero = dict(meta.get("hero") or {"look": "boy", "outfit": "hoodie"})
+    if hero_look:
+        hero["look"] = hero_look
 
     plans: dict[int, dict] = {}
     scenes = "\n".join(f"- {k}: {v}" for k, v in SCENES.items())
@@ -210,7 +240,7 @@ def plan_script(text: str, cfg: dict) -> dict:
     story = repair({
         "title": meta.get("title") or "A Creepy Cartoon Tale", "story_id": "long-" + re.sub(r"[^a-z0-9]+", "-", (meta.get("title") or "story").lower())[:30],
         "description": meta.get("description") or "", "tags": meta.get("tags") or [],
-        "hero": meta.get("hero") or {"look": "boy", "outfit": "hoodie"}, "villain": villain,
+        "hero": hero, "villain": villain, "villain_look": villain_look,
         "cast": [{"role": r} for r in roles], "beats": beats})
     if len(story["beats"]) != len(lines):
         log(f"Note: {len(lines) - len(story['beats'])} empty lines were dropped")

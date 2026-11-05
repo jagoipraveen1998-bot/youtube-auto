@@ -111,7 +111,7 @@ def _plain(s, n):
     return re.sub(r"[<>{}\\]", "", str(s or ""))[:n].strip()
 
 
-ROLES = {"mum", "dad", "grandma", "grandpa", "roommate", "friend", "sister", "brother", "officer"}
+ROLES = {"mum", "dad", "grandma", "grandpa", "roommate", "friend", "sister", "brother", "officer", "daughter", "son", "landlord"}
 SIDE_SCENES = {"kitchen", "closeup", "bedroom"}
 VILLAINS = {"double", "shadow", "ghost", "doll", "neighbour", "tall", "delivery"}
 
@@ -123,7 +123,7 @@ def repair(story: dict) -> dict:
         role = (c.get("role") if isinstance(c, dict) else str(c)).lower().strip()
         if role in ROLES and role not in [x["role"] for x in cast]:
             cast.append({"role": role})
-    story["cast"] = cast[:2]
+    story["cast"] = cast[:4]
     roles = {c["role"] for c in story["cast"]}
     beats = []
     for b in story.get("beats", []):
@@ -195,9 +195,10 @@ def repair(story: dict) -> dict:
     if not any(b["twist"] for b in beats):
         beats[-2 if len(beats) > 4 else -1]["twist"] = True
     hero = story.get("hero") or {}
-    story["hero"] = {"look": "girl" if hero.get("look") == "girl" else "boy",
+    story["hero"] = {"look": hero.get("look") if hero.get("look") in {"boy", "girl", "man", "woman"} else "boy",
                      "outfit": hero.get("outfit") if hero.get("outfit") in {"pj", "hoodie", "tee", "nightie", "shirt"} else None}
     story["villain"] = story.get("villain") if story.get("villain") in VILLAINS else "shadow"
+    story["villain_look"] = story.get("villain_look") if story.get("villain_look") in {"boy", "girl", "man", "woman"} else None
     story["beats"] = beats
     story["title"] = _plain(story.get("title"), 95) or "I live alone... so who was that? #shorts #horror"
     story["description"] = _plain(story.get("description"), 400)

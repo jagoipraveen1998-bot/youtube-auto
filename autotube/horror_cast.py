@@ -35,8 +35,10 @@ ROLES = {   # side characters: (gender, look defaults)
     "mum": ("f", {"adult": True, "outfit": "apron"}), "dad": ("m", {"adult": True, "outfit": "cardigan", "beard": 0.6}),
     "grandma": ("f", {"adult": True, "outfit": "cardigan", "hair": "#d8d4d0", "hairStyle": "bob", "glasses": 1.0}),
     "grandpa": ("m", {"adult": True, "outfit": "cardigan", "hair": "#d8d4d0", "hairStyle": "bald", "glasses": 0.8, "mustache": 0.7}),
-    "roommate": ("x", {}), "friend": ("x", {}), "sister": ("f", {}), "brother": ("m", {}),
+    "roommate": ("x", {}), "friend": ("x", {}), "sister": ("f", {"adult": True}), "brother": ("m", {"adult": True}),
     "neighbour": ("m", {"adult": True, "outfit": "cardigan"}), "officer": ("x", {"adult": True, "outfit": "uniform"}),
+    "daughter": ("f", {"outfit": "pj"}), "son": ("m", {"outfit": "pj"}),
+    "landlord": ("m", {"adult": True, "outfit": "cardigan", "mustache": 0.5, "glasses": 0.5}),
 }
 VILLAINS = {"double", "shadow", "ghost", "doll", "neighbour", "tall", "delivery"}
 VILLAIN_VOICE = {   # gender, speed, semitones, echo
@@ -66,13 +68,20 @@ def look(rnd: random.Random, gender: str, outfit: str | None = None, **over) -> 
 def cast_story(story: dict, seed: int) -> dict:
     """Looks for hero, villain and side characters, plus a voice for every speaker."""
     rnd = random.Random(seed)
-    hero_g = "f" if story["hero"].get("look") == "girl" else "m"
-    hero = look(rnd, hero_g, story["hero"].get("outfit"))
+    hl = story["hero"].get("look")
+    hero_g = "f" if hl in ("girl", "woman") else "m"
+    adult = {"adult": True, "outfit": story["hero"].get("outfit") or rnd.choice(["cardigan", "tee", "hoodie"])} if hl in ("man", "woman") else {}
+    hero = look(rnd, hero_g, **adult) if adult else look(rnd, hero_g, story["hero"].get("outfit"))
     kind = story.get("villain", "shadow")
     other = {"kind": kind, "outfit": {"pj": "shirt", "hoodie": "tee", "tee": "hoodie", "nightie": "shirt"}.get(hero["outfit"], "hoodie"),
              "glow": rnd.choice(["#ff3b3b", "#7dff6a", "#ffd23b", "#c46aff", "#6ad8ff"])}
+    vl = story.get("villain_look")
+    if vl and kind in ("ghost", "double"):
+        other["look"] = look(rnd, "f" if vl in ("girl", "woman") else "m", "nightie" if vl == "girl" else None)
+        if kind == "double":
+            other.pop("look")
     side = {}
-    for c in story.get("cast", [])[:3]:
+    for c in story.get("cast", [])[:4]:
         role = c.get("role")
         g, d = ROLES.get(role, ("x", {}))
         side[role] = look(rnd, g if g != "x" else rnd.choice("mf"), **dict(d))
@@ -87,8 +96,10 @@ def cast_story(story: dict, seed: int) -> dict:
     for role, lk in side.items():
         v = take(lk["gender"])
         voices[role] = {"kokoro_voice": v[0], "name": v[1], "speed": 0.95 + rnd.random() * 0.08,
-                        "semitones": -0.5 if role in ("grandpa", "dad") else (0.5 if role in ("sister",) else 0.0)}
+                        "semitones": -0.5 if role in ("grandpa", "dad", "landlord") else 2.0 if role in ("daughter", "son") else 0.0}
     vg, sp, semi, echo = VILLAIN_VOICE.get(kind, ("m", 0.88, -1.5, True))
+    if vl in ("girl", "boy") and vg != "same":
+        vg, semi = ("f" if vl == "girl" else "m"), 2.0
     if vg == "same":
         voices["villain"] = dict(voices["hero"], speed=sp, semitones=semi, echo=echo)
     else:

@@ -178,7 +178,7 @@ const SCENES = {
   },
   cctv: {
     frames: { wide: [560, 1180, 0.92], prop: [560, 1180, 0.92] },
-    otherFrame(sh) { return (sh.cam === 'close' || sh.cam === 'snap') ? [620, 1110, 3.2] : [620, 1150, 1.6]; },
+    otherFrame(sh) { const close = sh.cam === 'close' || sh.cam === 'snap'; if (sh.room === 'bedroom') return close ? [880, 1100, 2.6] : [820, 1150, 1.5]; return close ? [620, 1110, 3.2] : [620, 1150, 1.6]; },
     heroFrame() { return [600, 960, 2.0]; },
     ambient: '#2b3452', ambientOn: '#bdb29e',
     draw(f, sh) {
@@ -303,6 +303,7 @@ window.renderFrame = function (f) {
   const c = camFor(S, sh, f);
   withCam(c, () => S.draw(f, sh));
   let amb = S.ambient;
+  if (sh.scene === 'cctv' && sh.room === 'bedroom') amb = '#9aa2c4';   // night vision sees the bedroom
   if (S.ambientOn && (sh.scene === 'kitchen' || sh.scene === 'cctv') && (sh.room || 'kitchen') === 'kitchen') {
     const lit = kitchenLight(sh.scene === 'cctv' ? Object.assign({ light: 'dark' }, sh) : sh, f);
     if (lit > 0.5) amb = S.ambientOn;

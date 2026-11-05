@@ -38,7 +38,18 @@ def main():
     if args.story:
         story = repair(json.loads(Path(args.story).read_text(encoding="utf-8")))
     else:
-        story = write_story(cfg, hist["stories"])
+        try:
+            story = write_story(cfg, hist["stories"])
+        except Exception as exc:
+            # Gemini down: use an original backup story that has not been posted yet
+            used = {x.split(":")[0] for x in hist["stories"]}
+            bank = [p for p in sorted((ROOT / "horror" / "stories" / "bank").glob("*.json"))
+                    if json.loads(p.read_text(encoding="utf-8")).get("story_id") not in used]
+            if not bank:
+                raise
+            pick = random.choice(bank)
+            log(f"Gemini failed ({exc}); using backup story {pick.name}")
+            story = repair(json.loads(pick.read_text(encoding="utf-8")))
     (out / "story.json").write_text(json.dumps(story, indent=2, ensure_ascii=False), encoding="utf-8")
 
     seed = random.randint(0, 10_000)

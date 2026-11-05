@@ -57,7 +57,14 @@ def main():
         log(f"Upload skipped. Files are in {out.name}/ ({length:.0f}s)")
         return
 
-    from autotube.uploader import upload
+    from autotube.uploader import _client, upload
+    # safety: never post a horror Short to the wrong channel
+    me = _client("YT_HORROR_REFRESH_TOKEN").channels().list(part="snippet", mine=True).execute()
+    names = [c["snippet"]["title"] for c in me.get("items", [])]
+    want = hcfg.get("channel", "CreepyCartoonTales").lower().replace(" ", "")
+    if not any(want in n.lower().replace(" ", "").replace(".", "") for n in names):
+        raise SystemExit(f"YT_HORROR_REFRESH_TOKEN belongs to {names}, not {hcfg.get('channel')}. "
+                         "Re-run get_youtube_token.py and pick CreepyCartoonTales.")
     ycfg = {"youtube": hcfg["youtube"], "channel": {"language": "en"}}
     video_id = upload(video, thumb, title, description, tags, ycfg, token_env="YT_HORROR_REFRESH_TOKEN")
     today = datetime.now(IST).strftime("%Y-%m-%d %H:%M")

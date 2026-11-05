@@ -225,8 +225,11 @@ def write_explainer(cfg: dict, used: list[str], topic: str | None = None) -> dic
     client = genai.Client(api_key=env("GEMINI_API_KEY"))
     models = pick_models(client, cfg["ai"].get("gemini_model", "auto"))
     last = None
-    for attempt in range(5):
-        model = models[min(attempt, len(models) - 1)]
+    # Gemini is often overloaded for minutes at a time: go round every model
+    # (lighter ones included) and keep trying for about 15 minutes in all.
+    tries = min(14, max(10, len(models) * 2))
+    for attempt in range(tries):
+        model = models[attempt % len(models)]
         try:
             resp = client.models.generate_content(
                 model=model, contents=prompt,
@@ -238,7 +241,7 @@ def write_explainer(cfg: dict, used: list[str], topic: str | None = None) -> dic
             return data
         except Exception as exc:
             last = exc
-            log(f"Explainer attempt {attempt + 1} failed: {exc}")
-            if attempt < 4:
-                time.sleep(20 * (attempt + 1))
+            log(f"Explainer attempt {attempt + 1} ({model}) failed: {str(exc)[:160]}")
+            if attempt < tries - 1:
+                time.sleep(min(90, 15 * (attempt + 1)))
     raise RuntimeError(f"Could not write an explainer: {last}")

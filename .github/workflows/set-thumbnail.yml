@@ -1,0 +1,51 @@
+name: Set a video thumbnail
+
+on:
+  workflow_dispatch:
+    inputs:
+      video_id:
+        description: "YouTube video ID (e.g. VHmMDrPZ5Lc)"
+        required: true
+        default: "VHmMDrPZ5Lc"
+      run_id:
+        description: "GitHub run that made the video (its artifact holds cover.jpg)"
+        required: true
+        default: "42076836412"
+      artifact:
+        description: "Artifact name"
+        default: "long-video-1"
+      channel:
+        description: "Which channel's login to use"
+        type: choice
+        default: YT_HORROR_REFRESH_TOKEN
+        options:
+          - YT_HORROR_REFRESH_TOKEN
+          - YT_REFRESH_TOKEN
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  set-thumbnail:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -q pyyaml google-api-python-client google-auth google-auth-oauthlib
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact }}
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+          path: art
+      - name: Set the thumbnail
+        env:
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          YT_HORROR_REFRESH_TOKEN: ${{ secrets.YT_HORROR_REFRESH_TOKEN }}
+        run: python set_thumbnail.py "${{ inputs.video_id }}" "$(find art -name cover.jpg | head -1)" "${{ inputs.channel }}"

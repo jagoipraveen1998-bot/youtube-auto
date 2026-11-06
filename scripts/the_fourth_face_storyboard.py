@@ -121,6 +121,7 @@ add("HAA... HAAAA!", "villain", react="fake", beat_at=0.02, shake=70, light="fli
 story = {
   "title": "My Dad Found a Fourth Face in Our Car Selfie",
   "story_id": "the-fourth-face",
+  "cover_beat": 50, "cover_text": "THE FOURTH FACE",
   "description": "Four friends, one late drive home, one blurry selfie. Then Joe's dad calls in a panic, begging him to get out of the car right now. Something in the photo is sitting right behind him.",
   "tags": ["horror comedy", "animated horror story", "scary cartoon", "car selfie ghost", "skinwalker story", "creepy cartoon tales",
            "funny horror", "ghost in photo", "horror short film", "animated scary story", "gas station horror", "night drive horror"],

@@ -252,7 +252,7 @@ def chapters(plan: dict) -> list[str]:
     marks = [(sh["ls"] / 30.0, sh["chapter"]) for sh in plan["shots"] if sh.get("chapter")]
     if not marks:
         return []
-    if marks[0][0] > 1.0:
+    if marks[0][0] > 10.0:
         marks.insert(0, (0.0, "Intro"))
     marks[0] = (0.0, marks[0][1])
     good = [m for k, m in enumerate(marks) if k == 0 or m[0] - marks[k - 1][0] >= 10]

@@ -37,8 +37,6 @@ jobs:
       - name: Write the stories
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           COUNT: ${{ inputs.count || '12' }}
           DIR: ${{ github.event_name == 'schedule' && 'horror/stories/batch_nov6' || inputs.stories_dir }}
         run: |

@@ -66,13 +66,16 @@ def look(rnd: random.Random, gender: str, outfit: str | None = None, **over) -> 
 
 
 # The channel's main narrator for Shorts: a playful comedy voice, the same every time (brand recognition)
-FUNNY_NARRATOR = {"m": ("am_puck", "en-US-JasonNeural"), "f": ("af_bella", "en-US-JennyNeural")}
+FUNNY_NARRATOR = {"m": ("am_puck", "en-US-JasonNeural"), "f": ("am_puck", "en-US-JasonNeural")}
 
 
 def cast_story(story: dict, seed: int, funny: bool = False) -> dict:
     """Looks for hero, villain and side characters, plus a voice for every speaker."""
     rnd = random.Random(seed)
     hl = story["hero"].get("look")
+    if funny and hl in ("girl", "woman"):      # Puck is the one channel voice for Shorts, so the hero is a boy/man
+        hl = "man" if hl == "woman" else "boy"
+        story["hero"]["look"] = hl
     hero_g = "f" if hl in ("girl", "woman") else "m"
     adult = {"adult": True, "outfit": story["hero"].get("outfit") or rnd.choice(["cardigan", "tee", "hoodie"])} if hl in ("man", "woman") else {}
     hero = look(rnd, hero_g, **adult) if adult else look(rnd, hero_g, story["hero"].get("outfit"))

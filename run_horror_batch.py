@@ -39,7 +39,7 @@ def write(n: int, out: Path) -> None:
     rnd = random.Random()
     for i in range(n):
         hint = (f"use the villain '{VILLAINS[i % len(VILLAINS)]}', centre the story on {SETTINGS[(i * 3) % len(SETTINGS)]}, "
-                f"and give it a {rnd.choice(['boy', 'girl'])} hero")
+                "with the usual boy hero")
         try:
             s = write_story(cfg, used, hint)
         except Exception as exc:

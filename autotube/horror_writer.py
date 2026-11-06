@@ -78,12 +78,13 @@ Rules:
 - Keep text props short and in capitals for cctv/calendar.
 - These stories were already told, write something clearly different: {used}
 
+The hero (the narrator) is always a boy or a young man: the channel has one narrator voice.
 Return ONLY JSON:
 {{"title":"YouTube title under 70 characters, curiosity-driven, end with #shorts #horror",
   "story_id":"short-slug",
   "description":"2 sentences that tease the story without spoiling the twist",
   "tags":["8 to 12 search tags"],
-  "hero":{{"look":"boy|girl","outfit":"pj|hoodie|tee|nightie|shirt"}},
+  "hero":{{"look":"boy|man","outfit":"pj|hoodie|tee|shirt"}},
   "villain":"double|shadow|ghost|doll|neighbour|tall|delivery",
   "cast":[{{"role":"mum"}}],
   "beats":[{{"line":"...","speaker":"narrator","side":null,"sideExpr":null,"scene":"...","cam":"...","focus":"...","hero":{{"pose":"...","expr":"...","expr2":"..."}} or null,

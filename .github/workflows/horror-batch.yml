@@ -1,6 +1,8 @@
 name: Horror shorts batch (scheduled)
 
 on:
+  schedule:
+    - cron: "20 2 7 11 *"     # one-off: Sat 7 Nov 07:50 IST, the 12 Shorts YouTube's daily limit held back
   workflow_dispatch:
     inputs:
       count:
@@ -35,11 +37,15 @@ jobs:
       - name: Write the stories
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          COUNT: ${{ inputs.count || '12' }}
+          DIR: ${{ github.event_name == 'schedule' && 'horror/stories/batch_nov6' || inputs.stories_dir }}
         run: |
-          if [ -n "${{ inputs.stories_dir }}" ]; then
-            python run_horror_batch.py collect "${{ inputs.stories_dir }}" "${{ inputs.count }}" batch/stories.json
+          if [ -n "$DIR" ]; then
+            python run_horror_batch.py collect "$DIR" "$COUNT" batch/stories.json
           else
-            python run_horror_batch.py write "${{ inputs.count }}" batch/stories.json
+            python run_horror_batch.py write "$COUNT" batch/stories.json
           fi
       - id: idx
         run: echo "list=$(python -c "import json;print(json.dumps(list(range(len(json.load(open('batch/stories.json')))))))")" >> "$GITHUB_OUTPUT"
@@ -85,7 +91,7 @@ jobs:
           YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_HORROR_REFRESH_TOKEN: ${{ secrets.YT_HORROR_REFRESH_TOKEN }}
-        run: python run_horror_batch.py make batch/stories.json ${{ matrix.index }} "${{ inputs.start }}" "${{ inputs.every }}"
+        run: python run_horror_batch.py make batch/stories.json ${{ matrix.index }} "${{ inputs.start || '2026-11-07T09:00' }}" "${{ inputs.every || '60' }}"
       - uses: actions/upload-artifact@v4
         if: success()
         with:

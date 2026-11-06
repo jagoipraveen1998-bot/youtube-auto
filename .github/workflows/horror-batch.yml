@@ -83,7 +83,10 @@ jobs:
         run: |
           pip install -q torch --index-url https://download.pytorch.org/whl/cpu
           pip install -q -r requirements.txt
-          python -m playwright install --with-deps chromium
+          if ! timeout 420 python -m playwright install --with-deps chromium; then
+            echo "Browser install failed (GitHub's package mirror); using the runner's own Chrome"
+            echo "CHROME_PATH=$(command -v google-chrome || command -v google-chrome-stable || command -v chromium)" >> "$GITHUB_ENV"
+          fi
       - name: Make and schedule Short #${{ matrix.index }}
         env:
           YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}

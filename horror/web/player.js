@@ -26,6 +26,7 @@ const after = (f, sh) => sh.beat != null && f >= sh.beat;
 
 const CAST = P.cast || {};          // side characters: { mum: {look...}, dad: {...} }
 const talking = (sh, f, who) => sh.talk === who && sh.ls != null && f >= sh.ls && f <= sh.le;
+const mouthAt = (sh, f) => { if (!sh.env || sh.ls == null) return null; const i = f - sh.ls; return i < 0 || i >= sh.env.length ? 0 : sh.env[i]; };
 const LOOK = l => ({ skin: l.skin, hair: l.hair, hairStyle: l.hairStyle, outfit: l.outfit, top: l.top, stripe: l.stripe, acc: l.acc });
 
 function heroObj(sh, f, base) {
@@ -33,6 +34,7 @@ function heroObj(sh, f, base) {
   const h = sh.hero;
   const o = Object.assign({ seed: 1 }, LOOK(HERO), base, ex(h.expr || 'worried'));
   o.talk = talking(sh, f, 'hero');
+  if (o.talk) { o.mouthOpen = mouthAt(sh, f); o.bob = (o.bob || 0) - 7 * (o.mouthOpen || 0); }
   if (h.look != null) o.look = h.look;
   if (h.pose === 'sleep') Object.assign(o, ex('asleep'), { tilt: 0.25 });
   if (sh.react === 'jolt' && after(f, sh)) {
@@ -60,6 +62,7 @@ function otherObj(sh, f, base) {
     const c = CAST[sh.side];
     const o = Object.assign({ seed: 9 }, LOOK(c), base, ex(sh.sideExpr || 'calm'));
     o.talk = talking(sh, f, 'side'); o.blink = blinkAt(f, 9); o.bob = Math.sin(f * 0.1) * 2;
+    if (o.talk) o.mouthOpen = mouthAt(sh, f);
     if (sh.react === 'vanish') o.alpha = after(f, sh) ? 1 - ss(bT(f, sh, 5)) : 1;
     return o;
   }
@@ -88,6 +91,7 @@ function otherObj(sh, f, base) {
   o.blink = o.kind === 'double' || o.kind === 'neighbour' || o.kind === 'delivery' ? blinkAt(f, 5) : 0;
   o.bob = Math.sin(f * 0.07) * 2;
   o.talk = talking(sh, f, 'other');
+  if (o.talk) o.mouthOpen = mouthAt(sh, f);
   return o;
 }
 
@@ -302,6 +306,7 @@ function camFor(S, sh, f) {
   if (sh.beat != null && ['jolt', 'knock', 'appear', 'ring', 'lights_on', 'slam', 'buzz', 'door_open'].includes(sh.react)) c = kick(c, f, sh.beat, sh.react === 'buzz' ? 8 : 16, 7);
   if (sh.react === 'slam') { c = kick(c, f, sh.beat + 9, 14, 6); c = kick(c, f, sh.beat + 18, 14, 6); }
   if (sh.react === 'gag' && sh.beat != null && f >= sh.beat) { const t = seg(f, sh.beat, sh.beat + 8); c.z *= 1 + 0.18 * back(t) * (1 - seg(f, sh.beat + 20, sh.beat + 40)); c = kick(c, f, sh.beat, 10, 6); }
+  if (sh.shake && sh.env) { const v = mouthAt(sh, f) || 0; c.x += (rnd(f * 3.7) - 0.5) * sh.shake * v / c.z; c.y += (rnd(f * 5.1) - 0.5) * sh.shake * v / c.z; c.r += (rnd(f * 2.3) - 0.5) * 1.6 * v; c.z *= 1 + 0.03 * v; }
   if (sh.react === 'knock') { c = kick(c, f, sh.beat + 9, 12, 6); c = kick(c, f, sh.beat + 18, 12, 6); }
   return c;
 }

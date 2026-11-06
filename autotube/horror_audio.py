@@ -223,6 +223,12 @@ def sfx_track(syn: Synth, plan: dict) -> np.ndarray:
             _add(sfx, np.sin(2 * np.pi * np.cumsum(np.linspace(700, 1300, n)) / SR) * np.exp(-t * 25), tb, 0.6)
         elif react == "hangup":
             for k in range(3): _add(sfx, syn.beep(480, 0.12, square=False), tb + k * 0.2, 0.4)
+        elif react == "fake":              # bones clicking as the head tilts, then a low swell
+            for k, dt in enumerate((0.0, 0.17, 0.29, 0.52, 0.66)):
+                n = int(0.05 * SR); crack = hp(syn.noise(n), 1800) * np.exp(-np.arange(n) / SR * 120)
+                _add(sfx, crack, tb + dt, 0.9); _add(sfx, lp(syn.thud(120, 0.12), 1500), tb + dt, 0.5)
+        elif react == "sting":
+            _add(sfx, syn.reverb(syn.stab([233, 247, 349, 370], 1.6, 2.2), 1.6, 0.5), tb, 0.6); _add(sfx, syn.thud(40, 1.0), tb, 1.0)
         elif react == "breath":
             for k in range(3):
                 n = int(0.9 * SR); _add(sfx, lp(bp(syn.noise(n), 300, 2500), 1800) * np.sin(np.pi * np.arange(n) / n) ** 1.5, fr(a) + 0.2 + k * 1.15, 0.35)

@@ -110,8 +110,11 @@ function guy(o) {
   else if (o.kind === 'ghost') { SKIN = '#dfe8f2'; HAIR = o.hair || '#9aa6b8'; o = Object.assign({}, o, { outfit: 'ghost', eyeCol: '#1a1424', pupil: 0.1 }); }
   else { if (o.skin) SKIN = o.skin; if (o.hair) HAIR = o.hair; }
   if (o.talk && ['flat', 'smile', 'wobble', 'droop', 'none', undefined].includes(o.mouth) && o.kind !== 'shadow') {
-    const open = noise1(F * 0.9 + (o.seed || 0) * 7) ;
-    if (open > 0.45) { o = Object.assign({}, o, { mouth: 'o', mo: 0.35 + 0.5 * (open - 0.45) * 2 }); }
+    if (o.mouthOpen != null) { if (o.mouthOpen > 0.08) o = Object.assign({}, o, { mouth: 'o', mo: 0.28 + 0.9 * o.mouthOpen }); }
+    else {
+      const open = noise1(F * 0.9 + (o.seed || 0) * 7);
+      if (open > 0.45) { o = Object.assign({}, o, { mouth: 'o', mo: 0.35 + 0.5 * (open - 0.45) * 2 }); }
+    }
   }
   ctx.save();
   if (o.alpha != null) ctx.globalAlpha = clamp(o.alpha);
@@ -283,7 +286,7 @@ function face(o, lw, SF) {
     ctx.save(); ctx.clip(ep);
     const pr = o.pupil || 22;
     const jx = o.pupilShake ? (rnd(F * 3.1 + sd) - 0.5) * o.pupilShake : 0;
-    ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(ex + lk * 24 + jx, ey + 8 + lkY * 22, pr, 0, 7); ctx.fill();
+    ctx.fillStyle = o.pupilCol || INK; ctx.beginPath(); ctx.arc(ex + lk * 24 + jx, ey + 8 + lkY * 22, pr, 0, 7); ctx.fill();
     ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(ex + lk * 24 + jx - pr * 0.35, ey + 8 + lkY * 22 - pr * 0.4, pr * 0.28, 0, 7); ctx.fill();
     const lid = Math.max(o.lid || 0, o.blink || 0);
     if (lid > 0.01) {
@@ -327,7 +330,7 @@ function face(o, lw, SF) {
     const p = new Path2D(); p.moveTo(-w, my - up); p.quadraticCurveTo(0, my + 5, w, my - up);
     p.quadraticCurveTo(0, my + 20 + 120 * g * (0.6 + 0.4 * gw), -w, my - up);
     ctx.fillStyle = MOUTH; ctx.fill(p);
-    ctx.save(); ctx.clip(p); ctx.fillStyle = '#f7f3e6'; ctx.fillRect(-w, my - 30, 2 * w, 18 + 30 * g);
+    ctx.save(); ctx.clip(p); ctx.fillStyle = o.teethCol || '#f7f3e6'; ctx.fillRect(-w, my - 30, 2 * w, 18 + 30 * g);
     ctx.strokeStyle = '#b9ad98'; ctx.lineWidth = 4; for (let x = -w; x < w; x += 30) { ctx.beginPath(); ctx.moveTo(x, my - 30); ctx.lineTo(x, my - 12 + 30 * g); ctx.stroke(); }
     ctx.restore(); ctx.lineWidth = L(lw); ctx.strokeStyle = INK; ctx.stroke(p);
   } else if (m === 'droop') { ctx.beginPath(); ctx.moveTo(-48, my + 18); ctx.quadraticCurveTo(0, my - 14, 48, my + 18); ctx.stroke(); }

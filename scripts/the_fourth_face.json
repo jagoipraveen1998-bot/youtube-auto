@@ -813,9 +813,9 @@
   {
    "line": "",
    "speaker": "narrator",
-   "react": "face",
-   "silent": 2.07,
-   "beat_at": 0.5,
+   "react": "gag",
+   "silent": 2.18,
+   "beat_at": 0.45,
    "chapter": "The second photo",
    "scene": "station",
    "cam": "close",
@@ -824,7 +824,7 @@
    "hero": {
     "pose": "stand",
     "expr": "stare",
-    "expr2": "curious",
+    "expr2": "shock",
     "phone": "up",
     "x": 1560,
     "look": -1
@@ -1044,8 +1044,7 @@
    },
    "crew": {
     "malik": {
-     "expr": "calm",
-     "grin": 0.5,
+     "expr": "relieved",
      "x": 1490,
      "look": 1,
      "lean": 0.22
@@ -1070,8 +1069,7 @@
    },
    "crew": {
     "malik": {
-     "expr": "calm",
-     "grin": 0.7,
+     "expr": "relieved",
      "x": 1490,
      "look": 1,
      "lean": 0.22
@@ -1079,11 +1077,10 @@
    }
   },
   {
-   "line": "",
-   "speaker": "narrator",
+   "line": "Ha ha ha.",
+   "speaker": "hero",
    "react": "hangup",
-   "silent": 2.07,
-   "beat_at": 0.7,
+   "beat_at": 0.95,
    "dome": true,
    "scene": "station",
    "cam": "close",
@@ -1098,8 +1095,7 @@
    },
    "crew": {
     "malik": {
-     "expr": "calm",
-     "grin": 0.7,
+     "expr": "relieved",
      "x": 1490,
      "look": 1
     }
@@ -1143,8 +1139,7 @@
    },
    "crew": {
     "malik": {
-     "expr": "calm",
-     "grin": 0.45,
+     "expr": "relieved",
      "x": 1380,
      "look": 1
     }
@@ -1155,6 +1150,7 @@
    "speaker": "hero",
    "react": "none",
    "vspeed": 0.88,
+   "gain": 0.62,
    "dome": true,
    "scene": "station",
    "cam": "close",
@@ -1169,8 +1165,7 @@
    },
    "crew": {
     "malik": {
-     "expr": "calm",
-     "grin": 0.45,
+     "expr": "relieved",
      "x": 1380,
      "look": 1
     }
@@ -1197,8 +1192,7 @@
    },
    "crew": {
     "malik": {
-     "expr": "calm",
-     "grin": 0.45,
+     "expr": "relieved",
      "x": 1380,
      "look": 1
     }
@@ -1208,7 +1202,7 @@
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 1.84,
+   "silent": 2.07,
    "dome": true,
    "scene": "station",
    "cam": "close",
@@ -1219,12 +1213,12 @@
     "expr": "stare",
     "phone": "ear",
     "x": 1700,
-    "shake": 3
+    "shake": 3,
+    "lookTo": -1
    },
    "crew": {
     "malik": {
-     "expr": "calm",
-     "grin": 0.45,
+     "expr": "relieved",
      "x": 1380,
      "look": 1
     }
@@ -1260,17 +1254,89 @@
    }
   },
   {
-   "line": "Haa... haa... HAA... HAAAA!",
+   "line": "",
+   "speaker": "narrator",
+   "react": "sting",
+   "silent": 1.15,
+   "beat_at": 0.1,
+   "redOn": true,
+   "fakeGlow": true,
+   "dome": true,
+   "scene": "station",
+   "cam": "snap",
+   "focus": "hero",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "terror": true,
+    "phone": "ear",
+    "x": 1700,
+    "look": -1
+   },
+   "crew": {
+    "malik": {
+     "expr": "calm",
+     "fake": "full",
+     "x": 1380,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "Haa... haa...",
    "speaker": "villain",
    "react": "fake",
    "beat_at": 0.02,
-   "light": "flicker",
+   "shake": 30,
+   "gap": 0.15,
    "fakeGlow": true,
    "dome": true,
-   "blackout": 26,
+   "layer": {
+    "semitones": -7.0,
+    "speed": 0.72,
+    "gain": 0.5,
+    "echo": true
+   },
    "scene": "station",
    "cam": "close",
    "focus": "malik",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "stare",
+    "phone": "ear",
+    "x": 1700,
+    "turn": 0
+   },
+   "crew": {
+    "malik": {
+     "expr": "calm",
+     "fake": "full",
+     "x": 1380,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "HAA... HAAAA!",
+   "speaker": "villain",
+   "react": "fake",
+   "beat_at": 0.02,
+   "shake": 70,
+   "light": "flicker",
+   "fakeGlow": true,
+   "dome": true,
+   "blackout": 24,
+   "layer": {
+    "semitones": -9.0,
+    "speed": 0.7,
+    "gain": 0.65,
+    "echo": true
+   },
+   "scene": "station",
+   "cam": "close",
+   "focus": "malikClose",
    "door": "open",
    "hero": {
     "pose": "stand",

@@ -69,8 +69,8 @@ add(silent=2.4, **st(cam="pan", focus2="low", focus="malik", door="open", hero=H
 add("Why'd you guys get out? Are we getting snacks?", "malik", **st(cam="close", focus="malik", door="open",
     hero=HERO(expr="shock", phone="up", x=1560, look=-1), crew=dict(malik=C(expr="sleepy", x=1180, look=0.6))))
 # ---- The second photo
-add(silent=1.8, beat_at=0.5, react="face", chapter="The second photo", **st(cam="close", focus="hero", door="open",
-    hero=HERO(expr="stare", expr2="curious", phone="up", x=1560, look=-1), crew=dict(malik=C(expr="sleepy", x=1180, look=0.6))))
+add(silent=1.9, beat_at=0.45, react="gag", chapter="The second photo", **st(cam="close", focus="hero", door="open",
+    hero=HERO(expr="stare", expr2="shock", phone="up", x=1560, look=-1), crew=dict(malik=C(expr="sleepy", x=1180, look=0.6))))
 add("Dad. That's Malik. We picked him up after we left.", "hero", **st(cam="medium", focus="pair", door="open",
     hero=HERO(expr="tired", phone="up", x=1640, look=-0.6), crew=dict(malik=C(expr="sleepy", x=1360, look=0.8))))
 add("Then why did he look like that?", "dad", phone=True, **st(cam="medium", focus="pair", door="open",
@@ -88,27 +88,34 @@ add(silent=3.2, beat_at=0.75, react="shutter", scene="selfie", mode="four", cam=
 add(silent=2.6, beat_at=0.5, react="pop", scene="phone2", mode="reply", bg="station", cam="medium", focus="screen",
     text=dict(name="Dad", msg="Hi Malik. Sorry."))
 add("I forgive you.", "malik", dome=True, **st(cam="close", focus="malik", door="open", hero=HERO(expr="relieved", phone="up", x=1640),
-    crew=dict(malik=C(expr="calm", grin=0.5, x=1490, look=1, lean=0.22))))
+    crew=dict(malik=C(expr="relieved", x=1490, look=1, lean=0.22))))
 add("Don't do that.", "dad", phone=True, dome=True, **st(cam="medium", focus="pair", door="open",
-    hero=HERO(expr="relieved", phone="up", x=1640), crew=dict(malik=C(expr="calm", grin=0.7, x=1490, look=1, lean=0.22))))
-add(silent=1.8, beat_at=0.7, react="hangup", dome=True, **st(cam="close", focus="hero", door="open",
-    hero=HERO(expr="relieved", laugh=True, phone="up", x=1640), crew=dict(malik=C(expr="calm", grin=0.7, x=1490, look=1))))
+    hero=HERO(expr="relieved", phone="up", x=1640), crew=dict(malik=C(expr="relieved", x=1490, look=1, lean=0.22))))
+add("Ha ha ha.", "hero", beat_at=0.95, react="hangup", dome=True, **st(cam="close", focus="hero", door="open",
+    hero=HERO(expr="relieved", laugh=True, phone="up", x=1640), crew=dict(malik=C(expr="relieved", x=1490, look=1))))
 # ---- The call
 add(silent=2.6, beat_at=0.05, react="ring", chapter="The call", scene="phone2", mode="call", bg="station", cam="close", focus="screen",
     text=dict(name="MALIK", sub="incoming call"))
 add(silent=2.4, beat_at=0.15, react="face", dome=True, **st(cam="medium", focus="pair", door="open",
-    hero=HERO(expr="relieved", expr2="worried", phone="up", x=1700, glance=-1), crew=dict(malik=C(expr="calm", grin=0.45, x=1380, look=1))))
-add("Hello?", "hero", vspeed=0.88, dome=True, **st(cam="close", focus="hero", door="open",
-    hero=HERO(expr="worried", phone="ear", x=1700, shake=3), crew=dict(malik=C(expr="calm", grin=0.45, x=1380, look=1))))
+    hero=HERO(expr="relieved", expr2="worried", phone="up", x=1700, glance=-1), crew=dict(malik=C(expr="relieved", x=1380, look=1))))
+add("Hello?", "hero", vspeed=0.88, gain=0.62, dome=True, **st(cam="close", focus="hero", door="open",
+    hero=HERO(expr="worried", phone="ear", x=1700, shake=3), crew=dict(malik=C(expr="relieved", x=1380, look=1))))
 add("Sorry, Joe. I got sick, so I won't come.", "malik", phone=True, react="face", beat_word="sick", dome=True,
     **st(cam="push_in", focus="hero", door="open", hero=HERO(expr="worried", expr2="stare", phone="ear", x=1700, shake=2),
-         crew=dict(malik=C(expr="calm", grin=0.45, x=1380, look=1))))
-add(silent=1.6, dome=True, **st(cam="close", focus="hero", door="open", hero=HERO(expr="stare", phone="ear", x=1700, shake=3),
-    crew=dict(malik=C(expr="calm", grin=0.45, x=1380, look=1))))
+         crew=dict(malik=C(expr="relieved", x=1380, look=1))))
+add(silent=1.8, dome=True, **st(cam="close", focus="hero", door="open", hero=HERO(expr="stare", phone="ear", x=1700, shake=3, lookTo=-1),
+    crew=dict(malik=C(expr="relieved", x=1380, look=1))))
 add(silent=2.8, beat_at=0.3, react="fake", twist=True, fakeGlow=True, dome=True, **st(cam="push_in", focus="malik", door="open",
     hero=HERO(expr="stare", phone="ear", x=1700, turn=0), crew=dict(malik=C(expr="calm", fake=True, x=1380, look=1))))
-add("Haa... haa... HAA... HAAAA!", "villain", react="fake", beat_at=0.02, light="flicker", fakeGlow=True, dome=True, blackout=26,
+add(silent=1.0, beat_at=0.1, react="sting", redOn=True, fakeGlow=True, dome=True, **st(cam="snap", focus="hero", door="open",
+    hero=HERO(expr="shock", terror=True, phone="ear", x=1700, look=-1), crew=dict(malik=C(expr="calm", fake="full", x=1380, look=1))))
+add("Haa... haa...", "villain", react="fake", beat_at=0.02, shake=30, gap=0.15, fakeGlow=True, dome=True,
+    layer=dict(semitones=-7.0, speed=0.72, gain=0.5, echo=True),
     **st(cam="close", focus="malik", door="open", hero=HERO(expr="stare", phone="ear", x=1700, turn=0),
+         crew=dict(malik=C(expr="calm", fake="full", x=1380, look=1))))
+add("HAA... HAAAA!", "villain", react="fake", beat_at=0.02, shake=70, light="flicker", fakeGlow=True, dome=True, blackout=24,
+    layer=dict(semitones=-9.0, speed=0.7, gain=0.65, echo=True),
+    **st(cam="close", focus="malikClose", door="open", hero=HERO(expr="stare", phone="ear", x=1700, turn=0),
          crew=dict(malik=C(expr="calm", fake="full", x=1380, look=1))))
 
 story = {

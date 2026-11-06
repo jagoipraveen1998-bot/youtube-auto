@@ -8,6 +8,7 @@ function crewObj(role, sh, f, base) {
   const o = Object.assign({ seed }, LOOK(c), base, ex(sp.expr || 'calm'));
   if (sp.expr2 && after(f, sh)) Object.assign(o, ex(sp.expr2));
   o.talk = sh.speaker === role && !sh.phone && sh.ls != null && f >= sh.ls && f <= sh.le;
+  if (o.talk) { o.mouthOpen = mouthAt(sh, f); o.bob = (o.bob || 0) - 6 * (o.mouthOpen || 0); }
   o.blink = blinkAt(f, seed); o.bob = (o.bob || 0) + Math.sin(f * 0.1 + seed) * 2;
   if (sp.look != null) o.look = sp.look;
   if (sp.lookY != null) o.lookY = sp.lookY;
@@ -16,23 +17,29 @@ function crewObj(role, sh, f, base) {
   if (sp.lean != null) o.lean = sp.lean;
   if (sp.reach) o.armL = lerp(0.22, 1.35, ss(seg(f, sh.a + 4, sh.a + 26)));
   if (sp.grin != null) { o.mouth = 'grin'; o.grin = sp.grin; o.brow = 'flat'; }
-  if (sp.laugh) laughAnim(o, f, seed);
+  if (sp.laugh) laughAnim(o, f, seed, o.talk ? o.mouthOpen : null);
   if (sp.phone) holdPhone(o, sp.phone, f, sh);
-  if (sp.fake) fakeAnim(o, sh, f);
+  if (sp.fake) { fakeAnim(o, sh, f); FAKE = o; }
   if (sp.alpha != null) o.alpha = sp.alpha;
   return o;
 }
-function laughAnim(o, f, seed = 0) {
-  const k = Math.sin(f * 0.75 + seed);
-  o.tilt = (o.tilt || 0) + 0.07 * k; o.bob = (o.bob || 0) - Math.abs(k) * 14;
-  o.mouth = k > -0.2 ? 'o' : 'smile'; o.mo = 0.55 + 0.35 * Math.abs(k); o.lid = 0.35; o.brow = 'up'; o.talk = false;
+let FAKE = null;
+function laughAnim(o, f, seed = 0, open = null) {
+  const k = open != null ? open : Math.abs(Math.sin(f * 0.75 + seed));    // synced to the real laugh when there is one
+  o.tilt = (o.tilt || 0) + 0.08 * (open != null ? (open - 0.4) : Math.sin(f * 0.75 + seed)); o.bob = (o.bob || 0) - k * 16;
+  o.mouth = k > 0.15 ? 'o' : 'smile'; o.mo = 0.45 + 0.6 * k; o.lid = 0.4; o.brow = 'up'; o.talk = false;
 }
 function fakeAnim(o, sh, f) {      // the thing wearing Malik's face: head tilts, the selfie smile stretches too wide
   const t = (sh.crew.malik || {}).fake === 'full' ? 1 : after(f, sh) ? ss(bT(f, sh, 34)) : 0;
-  Object.assign(o, { mouth: 'grin', grin: 0.85 + 0.15 * t, grinW: 1 + 0.95 * t, pupil: lerp(15, 6, t), eyeW: 1 + 0.14 * t,
+  Object.assign(o, { mouth: t > 0.3 ? 'grin' : 'smile', grin: 0.5 + 0.5 * t, grinW: 1 + 0.95 * t, pupil: lerp(16, 9, t),
     brow: 'flat', lid: 0, blink: 0, tilt: 0.34 * t, talk: false, circles: 0.6 * t });
-  if (sh.speaker === 'villain' && sh.ls != null && f >= sh.ls && f <= sh.le + 20) {   // the laugh shakes it
-    const k = Math.sin(f * 0.9); o.bob = (o.bob || 0) - Math.abs(k) * 18; o.tilt += 0.05 * k; o.grinW = 1.95 + 0.08 * Math.abs(k);
+  // the skin drains to ash grey, the eyes go black with red pinpoints: it is plainly not Malik any more
+  const mixc = (a, b, k) => '#' + [0, 2, 4].map(i => Math.round(lerp(parseInt(a.substr(1 + i, 2), 16), parseInt(b.substr(1 + i, 2), 16), k)).toString(16).padStart(2, '0')).join('');
+  o.skin = mixc(o.skin || '#6e4630', '#8b8e95', Math.min(1, t * 2.4)); o.eyeW = 1; o.teethCol = mixc('#f2ecdc', '#c9bb8a', t);
+  if (t > 0.12) { o.eyeCol = '#120b14'; o.pupilCol = '#ff2a2a'; o.pupil = 9; o.circles = 0; }
+  if (sh.speaker === 'villain' && sh.ls != null && f >= sh.ls && f <= sh.le + 20) {   // the laugh shakes it, in time with the sound
+    const k = mouthAt(sh, f) || 0;
+    o.bob = (o.bob || 0) - k * 26; o.tilt += 0.07 * (k - 0.35); o.grinW = 1.9 + 0.22 * k; o.grin = 1;
   }
 }
 function holdPhone(o, how, f, sh) {
@@ -61,6 +68,8 @@ function heroIn(sh, f, base) {
     const g = after(f, sh) ? Math.sin(Math.PI * clamp((f - sh.beat) / 40)) : 0;
     o.look = lerp(o.look || 0, h.glance, g);
   }
+  if (h.lookTo != null) o.look = lerp(o.look || 0, h.lookTo, ss(seg(f, sh.a + 6, sh.a + 50)));
+  if (h.terror) Object.assign(o, { eyeW: 1.32, pupil: 6, pupilShake: 3, tremble: 6, sweat: true, mouth: 'wobble', brow: 'worry', hairUp: 0.6 });
   if (h.shake) o.tremble = Math.max(o.tremble || 0, h.shake);
   return o;
 }
@@ -150,7 +159,7 @@ function selfieComp(f, sh, mode, fr) {     // mode: 'three' (blurred 4th face) |
   if (four) {
     put(C('maya'), Object.assign({ x: 230, y: 470 + 775 * 0.62, s: 0.62, tilt: 0.12 }, ex('relieved')));
     put(C('ben'), Object.assign({ x: 560, y: 450 + 775 * 0.7, s: 0.7, tilt: -0.08 }, ex('relieved'), { mouth: 'smile' }));
-    put(C('malik'), Object.assign({ x: 1270, y: 440 + 775 * 0.72, s: 0.72, tilt: -0.1 }, ex('calm'), { mouth: 'grin', grin: 0.85, brow: 'up' }));
+    put(C('malik'), Object.assign({ x: 1270, y: 440 + 775 * 0.72, s: 0.72, tilt: -0.1 }, ex('relieved'), { brow: 'up' }));
     put(heroObj({ hero: { expr: 'relieved' } }, fr, { x: 920, y: 470 + 775 * 0.78, s: 0.78, noLegs: true, look: 0 }), { mouth: 'smile', tilt: 0.05 });
   } else {
     put(C('maya'), Object.assign({ x: 170, y: 430 + 775 * 0.45, s: 0.45, look: 1 }, ex('calm')));
@@ -330,13 +339,15 @@ function stationLights(c, f, sh) {
   light(c, -450, 700, 500, '#ff5050', 0.25);
   if (sh.dome && (!sh.domeAt || f >= sh.domeAt)) light(c, 1100, 1150, 500, '#ffd890', 0.7);
   if (sh.beam) { const bx = lerp(1000, 1400, ss(seg(f, sh.a + 6, sh.a + 56))); light(c, bx, 1160, 260, '#ffffff', 0.9); }
-  if (sh.fakeGlow && after(f, sh)) light(c, (sh.crew.malik.x || 1260), 1060, 300, '#ff3b3b', 0.35 * ss(bT(f, sh, 30)));
+  if (sh.fakeGlow && after(f, sh)) light(c, (sh.crew.malik.x || 1260), 1060, 340, '#ff3b3b', 0.45 * ss(bT(f, sh, 30)));
+  if (sh.redOn) light(c, ((sh.hero || {}).x || 1700) - 160, 1080, 520, '#ff3030', 0.55);
   if (sh.flicker && after(f, sh)) { /* handled by ambient */ }
 }
 
 // positions of people at the station (x along the ground)
 const ST_POS = { maya: 150, ben: 470, joe: 1660, malik: 1180 };
 function stationPeople(sh, f) {
+  FAKE = null;
   const s = 0.62, y = ST_GROUND + 60;
   const out = [];
   const crew = sh.crew || {};
@@ -367,7 +378,7 @@ Object.assign(SCENES, {
       const frozen = sh.beat != null && f >= sh.beat ? sh.beat : f;
       selfieComp(f, sh, sh.mode || 'three', frozen);
     },
-    lights(l, f, sh) { light(l, 800, 500, 1300, '#ffffff', 0.6); },
+    lights(l, f, sh) { light(l, 800, 500, 1300, '#ffffff', 0.6); light(l, 1280, 480, 520, '#fff4e0', 0.55); light(l, 250, 500, 480, '#fff4e0', 0.4); },
   },
   phone2: {
     frames: { wide: [540, 930, 0.92], prop: [540, 940, 1.05], screen: [540, 820, 1.5], photo: [540, 950, 1.5] },
@@ -389,6 +400,7 @@ Object.assign(SCENES, {
       if (name === 'maya' || name === 'ben' || name === 'malik') return [at(name), 1110, 2.3];
       if (name === 'pair') return [(hx + at('malik')) / 2, 1090, 1.65];
       if (name === 'group') return [1000, 1090, 1.45];
+      if (name === 'malikClose') return [at('malik'), 1075, 3.4];
       return null;
     },
     ambient: '#6a70a6',
@@ -399,6 +411,12 @@ Object.assign(SCENES, {
       sh.shiftAt = sh.react === 'shift' ? sh.beat : null;
       sh.domeAt = sh.react === 'dome' ? sh.beat : null;
       station(f, sh, stationPeople(sh, f), true);
+      if (FAKE && FAKE.pupilCol) {      // the eyes catch the light: two small red points
+        const o = FAKE, s = o.s, tl = o.tilt || 0, hy = o.y + s * (-775 + (o.bob || 0)), a = 1;
+        ctx.save(); ctx.globalCompositeOperation = 'lighter';
+        for (const sd of [-1, 1]) { const ex2 = sd * 84, ey = 14; light(ctx, o.x + s * (Math.cos(tl) * ex2 - Math.sin(tl) * ey), hy + s * (Math.sin(tl) * ex2 + Math.cos(tl) * ey), 70 * s, '#ff2a2a', 0.9 * a); }
+        ctx.restore();
+      }
     },
     lights(l, f, sh) { stationLights(l, f, sh); },
   },

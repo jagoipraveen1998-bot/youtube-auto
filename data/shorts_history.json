@@ -3,7 +3,8 @@
     "how face unlock tells you from a photograph",
     "how GPS works out where you are from space",
     "how a credit card payment clears in two seconds",
-    "how image generators turn noise into a picture"
+    "how image generators turn noise into a picture",
+    "how a microwave heats food but not the plate"
   ],
   "videos": [
     {
@@ -28,6 +29,12 @@
       "date": "2026-11-04",
       "title": "How AI Image Generators Really Work #Shorts",
       "video_id": "bs6B54Z6tw0",
+      "length": "39s"
+    },
+    {
+      "date": "2026-11-06",
+      "title": "How Microwaves Heat Food Not Plates #Shorts",
+      "video_id": "S-dHKJHTqhA",
       "length": "39s"
     }
   ]

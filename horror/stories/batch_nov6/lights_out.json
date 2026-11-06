@@ -1,0 +1,164 @@
+{
+ "title": "My sister dared me to play the lights out game #shorts #horror",
+ "story_id": "lights-out",
+ "description": "Turn off the lights. Count to ten. Turn them on. Count who's there.",
+ "tags": [
+  "lights out",
+  "ghost",
+  "dare"
+ ],
+ "hero": {
+  "look": "boy",
+  "outfit": "tee"
+ },
+ "villain": "ghost",
+ "villain_look": "girl",
+ "cast": [
+  {
+   "role": "sister"
+  }
+ ],
+ "beats": [
+  {
+   "line": "My sister dared me to play lights out.",
+   "scene": "kitchen",
+   "speaker": "narrator",
+   "cam": "medium",
+   "side": "sister",
+   "sideExpr": "calm",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "expr2": null
+   },
+   "light": "on",
+   "react": "none",
+   "beat_word": "dared"
+  },
+  {
+   "line": "Lights off. Count to ten. Lights on.",
+   "scene": "kitchen",
+   "speaker": "sister",
+   "cam": "close",
+   "focus": "other",
+   "side": "sister",
+   "sideExpr": "calm",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "light": "on",
+   "react": "lights_off",
+   "beat_word": "off"
+  },
+  {
+   "line": "One, two, three. I heard giggling.",
+   "scene": "closeup",
+   "speaker": "narrator",
+   "cam": "close",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "giggling"
+  },
+  {
+   "line": "Seven, eight, nine. Something touched my hair.",
+   "scene": "closeup",
+   "speaker": "narrator",
+   "cam": "snap",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": "scream"
+   },
+   "react": "jolt",
+   "beat_word": "touched"
+  },
+  {
+   "line": "Ten! I slapped the switch.",
+   "scene": "kitchen",
+   "speaker": "narrator",
+   "cam": "snap",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "light": "dark",
+   "react": "lights_on",
+   "beat_word": "switch"
+  },
+  {
+   "line": "A pale little girl stood by the fridge.",
+   "scene": "kitchen",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "other",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "light": "on",
+   "react": "none",
+   "beat_word": "girl"
+  },
+  {
+   "line": "Again! Again! Let's play again!",
+   "scene": "closeup",
+   "speaker": "villain",
+   "cam": "close",
+   "other": {
+    "state": "grin",
+    "where": null
+   },
+   "react": "grin",
+   "beat_word": "again"
+  },
+  {
+   "line": "I ran to tell my sister.",
+   "scene": "hallway",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "door",
+   "hero": {
+    "pose": "peek",
+    "expr": "scream",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "ran"
+  },
+  {
+   "line": "She was asleep upstairs. She'd been asleep all night.",
+   "scene": "cctv",
+   "speaker": "narrator",
+   "cam": "close",
+   "focus": "other",
+   "room": "bedroom",
+   "other": {
+    "state": "grin",
+    "where": "beside"
+   },
+   "react": "grin",
+   "beat_word": "night",
+   "twist": true,
+   "text": {
+    "label": "UPSTAIRS",
+    "time": "SUN 00:10"
+   }
+  }
+ ]
+}

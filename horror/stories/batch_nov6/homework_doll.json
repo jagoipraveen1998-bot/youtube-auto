@@ -1,0 +1,170 @@
+{
+ "title": "My doll does my homework. Badly. #shorts #horror",
+ "story_id": "homework-doll",
+ "description": "Someone finishes my homework every night. The handwriting looks a lot like stitches.",
+ "tags": [
+  "doll horror",
+  "funny horror",
+  "creepy doll"
+ ],
+ "hero": {
+  "look": "boy",
+  "outfit": "hoodie"
+ },
+ "villain": "doll",
+ "cast": [
+  {
+   "role": "mum"
+  }
+ ],
+ "beats": [
+  {
+   "line": "Every morning, my homework is already done.",
+   "scene": "desk",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "done"
+  },
+  {
+   "line": "Every answer is wrong, but it's done.",
+   "scene": "desk",
+   "speaker": "narrator",
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "tired",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "wrong"
+  },
+  {
+   "line": "Mum was not impressed.",
+   "scene": "kitchen",
+   "speaker": "narrator",
+   "cam": "medium",
+   "side": "mum",
+   "sideExpr": "worried",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "impressed"
+  },
+  {
+   "line": "Who writes two plus two equals help me?",
+   "scene": "kitchen",
+   "speaker": "mum",
+   "cam": "close",
+   "focus": "other",
+   "side": "mum",
+   "sideExpr": "shock",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "help"
+  },
+  {
+   "line": "That night, I hid behind the wardrobe door.",
+   "scene": "wardrobe",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "gap",
+   "hero": {
+    "pose": "cheeks",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "hid",
+   "jump": true
+  },
+  {
+   "line": "At midnight, my old doll climbed onto my desk.",
+   "scene": "desk",
+   "speaker": "narrator",
+   "cam": "pull_out",
+   "focus": "other",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "appear",
+   "beat_word": "doll"
+  },
+  {
+   "line": "Wrong again. Tiny human is hopeless.",
+   "scene": "closeup",
+   "speaker": "villain",
+   "cam": "close",
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "none",
+   "beat_word": "hopeless"
+  },
+  {
+   "line": "Hey! I am not hopeless!",
+   "scene": "closeup",
+   "speaker": "hero",
+   "cam": "snap",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "expr2": "scream"
+   },
+   "react": "jolt",
+   "beat_word": "hopeless"
+  },
+  {
+   "line": "The doll turned around very slowly.",
+   "scene": "bedroom",
+   "speaker": "narrator",
+   "cam": "snap",
+   "focus": "door",
+   "hero": {
+    "pose": "sit",
+    "expr": "shock",
+    "expr2": null
+   },
+   "other": {
+    "state": "back",
+    "where": "door"
+   },
+   "react": "turn",
+   "beat_word": "turned"
+  },
+  {
+   "line": "Fine. Tomorrow, I'll do your exams too.",
+   "scene": "closeup",
+   "speaker": "villain",
+   "cam": "close",
+   "other": {
+    "state": "grin",
+    "where": null
+   },
+   "react": "grin",
+   "beat_word": "exams",
+   "twist": true
+  }
+ ]
+}

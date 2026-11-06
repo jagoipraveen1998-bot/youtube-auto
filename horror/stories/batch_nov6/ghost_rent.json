@@ -1,0 +1,166 @@
+{
+ "title": "My ghost roommate pays half the rent #shorts #horror",
+ "story_id": "ghost-rent",
+ "description": "Cheapest flat in the city. One small catch: the other tenant died in 1952.",
+ "tags": [
+  "ghost roommate",
+  "funny ghost",
+  "horror comedy"
+ ],
+ "hero": {
+  "look": "boy",
+  "outfit": "pj"
+ },
+ "villain": "ghost",
+ "villain_look": "woman",
+ "cast": [],
+ "beats": [
+  {
+   "line": "My flat costs half price.",
+   "scene": "calendar",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "react": "none",
+   "beat_word": "half",
+   "text": {
+    "top": "RENT DUE",
+    "big": "1"
+   }
+  },
+  {
+   "line": "Because my roommate died in nineteen fifty two.",
+   "scene": "closeup",
+   "speaker": "narrator",
+   "cam": "snap",
+   "hero": {
+    "pose": "stand",
+    "expr": "calm",
+    "expr2": "shock"
+   },
+   "react": "jolt",
+   "beat_word": "died"
+  },
+  {
+   "line": "Honestly, she's the best roommate I've had.",
+   "scene": "kitchen",
+   "speaker": "narrator",
+   "cam": "medium",
+   "focus": "other",
+   "hero": {
+    "pose": "stand",
+    "expr": "relieved",
+    "expr2": null
+   },
+   "other": {
+    "state": "front",
+    "where": null
+   },
+   "light": "on",
+   "react": "none",
+   "beat_word": "best"
+  },
+  {
+   "line": "She never uses the shower.",
+   "scene": "bathroom",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "calm",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "shower"
+  },
+  {
+   "line": "She does make the lights flicker.",
+   "scene": "kitchen",
+   "speaker": "narrator",
+   "cam": "medium",
+   "hero": {
+    "pose": "stand",
+    "expr": "tired",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "light": "flicker",
+   "react": "flicker",
+   "beat_word": "flicker"
+  },
+  {
+   "line": "Do you mind? I'm haunting.",
+   "scene": "closeup",
+   "speaker": "villain",
+   "cam": "close",
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "none",
+   "beat_word": "haunting"
+  },
+  {
+   "line": "Last night, she looked worried.",
+   "scene": "closeup",
+   "speaker": "narrator",
+   "cam": "medium",
+   "other": {
+    "state": "tired",
+    "where": null
+   },
+   "react": "none",
+   "beat_word": "worried",
+   "jump": true
+  },
+  {
+   "line": "There's someone else living here.",
+   "scene": "closeup",
+   "speaker": "villain",
+   "cam": "close",
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "none",
+   "beat_word": "else"
+  },
+  {
+   "line": "I checked the camera.",
+   "scene": "desk",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "camera"
+  },
+  {
+   "line": "It was me. I've been dead since Tuesday.",
+   "scene": "cctv",
+   "speaker": "narrator",
+   "cam": "close",
+   "focus": "other",
+   "room": "kitchen",
+   "light": "on",
+   "other": {
+    "state": "grin",
+    "where": null
+   },
+   "react": "grin",
+   "beat_word": "dead",
+   "twist": true,
+   "text": {
+    "label": "CAM 01",
+    "time": "WED 02:00"
+   }
+  }
+ ]
+}

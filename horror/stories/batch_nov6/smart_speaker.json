@@ -1,0 +1,147 @@
+{
+ "title": "My smart speaker knows things it shouldn't #shorts #horror",
+ "story_id": "smart-speaker",
+ "description": "I asked my speaker for the weather. It told me who was standing behind me.",
+ "tags": [
+  "tech horror",
+  "creepy",
+  "horror short"
+ ],
+ "hero": {
+  "look": "boy",
+  "outfit": "hoodie"
+ },
+ "villain": "tall",
+ "cast": [],
+ "beats": [
+  {
+   "line": "I asked my laptop for the weather.",
+   "scene": "desk",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "calm",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "weather"
+  },
+  {
+   "line": "It said: cloudy, with a chance of him.",
+   "scene": "desk",
+   "speaker": "narrator",
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "expr2": "worried"
+   },
+   "react": "none",
+   "beat_word": "him"
+  },
+  {
+   "line": "Who is him?",
+   "scene": "closeup",
+   "speaker": "hero",
+   "cam": "close",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "him"
+  },
+  {
+   "line": "The screen flickered.",
+   "scene": "desk",
+   "speaker": "narrator",
+   "cam": "snap",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": "shock"
+   },
+   "light": "flicker",
+   "react": "flicker",
+   "beat_word": "flickered"
+  },
+  {
+   "line": "Then my phone got a message.",
+   "scene": "phone",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "react": "ring",
+   "beat_word": "message",
+   "text": {
+    "from": "Laptop",
+    "msg": "Don't turn around.",
+    "time": "1:13"
+   }
+  },
+  {
+   "line": "Obviously, I turned around.",
+   "scene": "closeup",
+   "speaker": "narrator",
+   "cam": "snap",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "expr2": "scream"
+   },
+   "react": "jolt",
+   "beat_word": "turned"
+  },
+  {
+   "line": "Nothing. Just my dark room.",
+   "scene": "bedroom",
+   "speaker": "narrator",
+   "cam": "medium",
+   "focus": "door",
+   "hero": {
+    "pose": "sit",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "nothing"
+  },
+  {
+   "line": "I laughed and sat back down.",
+   "scene": "desk",
+   "speaker": "narrator",
+   "cam": "medium",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "relieved",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "laughed"
+  },
+  {
+   "line": "Something very tall laughed with me.",
+   "scene": "desk",
+   "speaker": "narrator",
+   "cam": "pull_out",
+   "focus": "other",
+   "hero": {
+    "pose": "stand",
+    "expr": "relieved",
+    "expr2": "shock"
+   },
+   "other": {
+    "state": "grin",
+    "where": null
+   },
+   "react": "appear",
+   "beat_word": "tall",
+   "twist": true
+  }
+ ]
+}

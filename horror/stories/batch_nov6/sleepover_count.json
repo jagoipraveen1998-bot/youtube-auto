@@ -1,0 +1,162 @@
+{
+ "title": "We counted heads at the sleepover. There was one extra #shorts #horror",
+ "story_id": "sleepover-count",
+ "description": "Four kids went to sleep. Five woke up. Nobody knows which one is new.",
+ "tags": [
+  "sleepover horror",
+  "creepy doll",
+  "funny horror"
+ ],
+ "hero": {
+  "look": "girl",
+  "outfit": "nightie"
+ },
+ "villain": "doll",
+ "cast": [
+  {
+   "role": "friend"
+  }
+ ],
+ "beats": [
+  {
+   "line": "Four of us went to sleep at my sleepover.",
+   "scene": "bedroom",
+   "speaker": "narrator",
+   "cam": "medium",
+   "focus": "hero",
+   "hero": {
+    "pose": "sit",
+    "expr": "relieved",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "sleepover"
+  },
+  {
+   "line": "Five of us woke up.",
+   "scene": "bedroom",
+   "speaker": "narrator",
+   "cam": "snap",
+   "focus": "hero",
+   "hero": {
+    "pose": "sit",
+    "expr": "calm",
+    "expr2": "shock"
+   },
+   "react": "jolt",
+   "beat_word": "five"
+  },
+  {
+   "line": "My friend counted again. Slowly.",
+   "scene": "bedroom",
+   "speaker": "narrator",
+   "cam": "medium",
+   "side": "friend",
+   "sideExpr": "worried",
+   "hero": {
+    "pose": "sit",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "counted"
+  },
+  {
+   "line": "One, two, three, four, five. Yep.",
+   "scene": "bedroom",
+   "speaker": "friend",
+   "cam": "close",
+   "focus": "other",
+   "side": "friend",
+   "sideExpr": "shock",
+   "hero": {
+    "pose": "sit",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "five"
+  },
+  {
+   "line": "The new one had very shiny cheeks.",
+   "scene": "closeup",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "appear",
+   "beat_word": "shiny"
+  },
+  {
+   "line": "And button eyes.",
+   "scene": "closeup",
+   "speaker": "narrator",
+   "cam": "close",
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "none",
+   "beat_word": "button"
+  },
+  {
+   "line": "Hello. I'm a real girl. Totally real.",
+   "scene": "closeup",
+   "speaker": "villain",
+   "cam": "close",
+   "other": {
+    "state": "grin",
+    "where": null
+   },
+   "react": "grin",
+   "beat_word": "real"
+  },
+  {
+   "line": "We all screamed at once.",
+   "scene": "closeup",
+   "speaker": "narrator",
+   "cam": "snap",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "expr2": "scream"
+   },
+   "react": "jolt",
+   "beat_word": "screamed"
+  },
+  {
+   "line": "Mum came in and counted us.",
+   "scene": "calendar",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "react": "none",
+   "beat_word": "counted",
+   "text": {
+    "top": "SLEEPOVER",
+    "big": "4"
+   },
+   "jump": true
+  },
+  {
+   "line": "Four, she said. And the doll waved goodbye from my bed.",
+   "scene": "bedroom",
+   "speaker": "narrator",
+   "cam": "snap",
+   "focus": "door",
+   "hero": {
+    "pose": "sit",
+    "expr": "shock",
+    "expr2": null
+   },
+   "other": {
+    "state": "grin",
+    "where": "beside"
+   },
+   "react": "grin",
+   "beat_word": "waved",
+   "twist": true
+  }
+ ]
+}

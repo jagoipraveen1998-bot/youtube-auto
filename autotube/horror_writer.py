@@ -38,7 +38,8 @@ SCENES = {
 
 PROMPT = """You write ORIGINAL very short animated HORROR-COMEDY stories for the YouTube Shorts channel "CreepyCartoonTales".
 Style: creepy AND funny, never gory. A cartoon everyman narrates in the first person with dry, self-mocking humour
-(think: a hero who is scared but complains about the wrong things). A paradox hook, escalating unease with one or two
+(think: a hero who is scared but complains about the wrong things). Aim for at least two real laughs: an absurd
+detail, a deadpan line, or the villain being petty, polite or ridiculous. A paradox hook, escalating unease with one or two
 genuinely funny beats (a silly reaction, a deadpan line, a misunderstanding), a pivot, and an ironic twist in the very
 last words that is both creepy and a little funny. Characters TALK: use 2 to 4 short dialogue lines (the hero, the
 villain, or a side character) between the narration. Spooky fun, safe for teenagers: no blood, no gore, no weapons,
@@ -61,7 +62,8 @@ character speaks, show them in that shot; when the villain speaks, show the vill
 hero.pose: sit | sleep | stand | walk | peek | cheeks (hands on cheeks) | reach. hero.expr and hero.expr2 (the face after
 the beat): calm | sleepy | curious | worried | shock | scream | relieved | tired | stare.
 cam: wide | medium | close | push_in | pull_out | pan | snap (cut in hard on the beat word). focus picks what the camera
-moves to. react = what happens ON the beat word: none | jolt (hero jumps) | ring (a phone or alarm rings) | knock |
+moves to. react = what happens ON the beat word: none | gag (a big cartoon comedy take: eyes pop, hair flies, slide
+whistle and boing; use it 1 or 2 times on the funniest lines) | jolt (hero jumps) | ring (a phone or alarm rings) | knock |
 lights_on | lights_off | flicker | appear (the other appears) | vanish | turn (the other turns round to face us) |
 grin (the other grins) | droop (the other or hero looks exhausted) | text_change (the on-screen text changes).
 
@@ -94,7 +96,7 @@ POSES = {"sit", "sleep", "stand", "walk", "peek", "cheeks", "reach"}
 EXPRS = {"calm", "sleepy", "curious", "worried", "shock", "scream", "relieved", "tired", "stare", "grin"}
 STATES = {"hidden", "back", "front", "stare", "grin", "tired", "lurk"}
 CAMS = {"wide", "medium", "close", "push_in", "pull_out", "pan", "snap"}
-REACTS = {"none", "jolt", "ring", "knock", "lights_on", "lights_off", "flicker", "appear", "vanish", "turn", "grin",
+REACTS = {"none", "gag", "jolt", "ring", "knock", "lights_on", "lights_off", "flicker", "appear", "vanish", "turn", "grin",
           "droop", "text_change"}
 WHERE = {"bedroom": {"door", "window", "beside"}, "front_door": {"under_door", "peephole"}}
 SCENE_POSE = {"bedroom": {"sit", "sleep"}, "hallway": {"peek"}, "kitchen": {"stand", "walk", "reach", "cheeks"},

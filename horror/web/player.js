@@ -40,6 +40,13 @@ function heroObj(sh, f, base) {
     Object.assign(o, ex(h.expr2 || 'shock'));
     o.hairUp = (o.hairUp || 0) + 0.8 * back(t); o.eyeW = (o.eyeW || 1) * (1 + 0.1 * back(t)); o.tremble = Math.max(o.tremble || 0, 8);
     if (h.pose !== 'sleep' && !base.noLegs) { o.armL = lerp(0.22, 2.7, back(t)); o.armR = o.armL; }
+  } else if (sh.react === 'gag' && after(f, sh)) {
+    const t = bT(f, sh, 10), pop = back(t) * (1 - 0.6 * ss(seg(f, sh.beat + 14, sh.beat + 30)));
+    Object.assign(o, ex(h.expr2 || 'shock'));
+    o.eyeW = 1 + 0.55 * pop; o.pupil = 9; o.hairUp = 2.2 * pop; o.mouth = 'o'; o.mo = 1 + 0.8 * pop;
+    o.bob = (o.bob || 0) - 90 * Math.sin(Math.PI * clamp(t * 1.4));     // a little jump
+    o.lean = (o.lean || 0) + 0.12 * Math.sin(f * 1.3) * pop;
+    if (!base.noLegs) { o.armL = 2.9 * pop; o.armR = 2.9 * pop; o.armsFront = true; }
   } else if (h.expr2 && after(f, sh)) Object.assign(o, ex(h.expr2));
   if (h.pose === 'cheeks') { o.armL = 2.85; o.armR = 2.85; o.armsFront = true; }
   if (h.pose === 'reach') o.armR = lerp(0.22, 1.75, ss(seg(f, sh.a + 6, sh.a + 24)));
@@ -70,6 +77,10 @@ function otherObj(sh, f, base) {
   if (r === 'turn') { o.turn = ss(bT(f, sh, 12)); if (after(f, sh) && st !== 'tired') Object.assign(o, ex('grin'), { grin: ss(seg(f, sh.beat + 10, sh.beat + 22)) }); }
   if (r === 'grin') { Object.assign(o, ex('grin')); o.grin = ss(bT(f, sh, 12)); if (!after(f, sh)) Object.assign(o, ex('stare')); }
   if (r === 'droop') { const d = ss(bT(f, sh, 14)); o.lid = 0.5 * d; o.circles = d; o.brow = d > 0.4 ? 'tired' : o.brow; o.mouth = d > 0.4 ? 'droop' : o.mouth; o.tilt = 0.1 * back(bT(f, sh, 10)); }
+  if (r === 'gag' && after(f, sh) && (sh.focus === 'other' || !sh.hero)) {
+    const pop = back(bT(f, sh, 10)) * (1 - 0.5 * ss(seg(f, sh.beat + 14, sh.beat + 30)));
+    o.mouth = 'o'; o.mo = 1 + 0.9 * pop; o.eyeW = 1 + 0.45 * pop; o.tremble = 7; o.hairUp = 1.5 * pop; o.brow = 'up';
+  }
   if (r === 'appear') o.alpha = after(f, sh) ? ss(bT(f, sh, 6)) : 0;
   if (r === 'vanish') o.alpha = after(f, sh) ? 1 - ss(bT(f, sh, 5)) : 1;
   if (st === 'lurk') o.alpha = Math.min(o.alpha ?? 1, 0.9);
@@ -288,6 +299,7 @@ function camFor(S, sh, f) {
   c = creep(c, t, 0.8);
   if (sh.twist) c.r += 3 * ss(seg(t, 0, dur));
   if (sh.beat != null && ['jolt', 'knock', 'appear', 'ring', 'lights_on'].includes(sh.react)) c = kick(c, f, sh.beat, 16, 7);
+  if (sh.react === 'gag' && sh.beat != null && f >= sh.beat) { const t = seg(f, sh.beat, sh.beat + 8); c.z *= 1 + 0.18 * back(t) * (1 - seg(f, sh.beat + 20, sh.beat + 40)); c = kick(c, f, sh.beat, 10, 6); }
   if (sh.react === 'knock') { c = kick(c, f, sh.beat + 9, 12, 6); c = kick(c, f, sh.beat + 18, 12, 6); }
   return c;
 }

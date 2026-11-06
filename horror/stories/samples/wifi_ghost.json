@@ -1,0 +1,192 @@
+{
+ "title": "A ghost haunts my flat. It only wants my Wi-Fi password #shorts #horror",
+ "story_id": "wifi-ghost",
+ "description": "Not my soul. Not my life. My Wi-Fi. And the ghost has opinions about my password.",
+ "tags": [
+  "funny ghost",
+  "horror comedy",
+  "ghost story",
+  "funny horror short"
+ ],
+ "hero": {
+  "look": "girl",
+  "outfit": "hoodie"
+ },
+ "villain": "ghost",
+ "villain_look": "man",
+ "cast": [
+  {
+   "role": "roommate"
+  }
+ ],
+ "beats": [
+  {
+   "line": "A ghost haunts my flat, and it only wants one thing.",
+   "scene": "bedroom",
+   "speaker": "narrator",
+   "cam": "snap",
+   "focus": "door",
+   "hero": {
+    "pose": "sit",
+    "expr": "worried",
+    "expr2": "shock"
+   },
+   "other": {
+    "state": "stare",
+    "where": "door"
+   },
+   "react": "appear",
+   "beat_word": "ghost"
+  },
+  {
+   "line": "What... is your... Wi-Fi password?",
+   "scene": "closeup",
+   "speaker": "villain",
+   "cam": "close",
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "none",
+   "beat_word": "password"
+  },
+  {
+   "line": "Not my soul. My Wi-Fi.",
+   "scene": "closeup",
+   "speaker": "narrator",
+   "cam": "snap",
+   "hero": {
+    "pose": "stand",
+    "expr": "stare",
+    "expr2": "shock"
+   },
+   "react": "gag",
+   "beat_word": "wifi"
+  },
+  {
+   "line": "Absolutely not. Get your own internet!",
+   "scene": "closeup",
+   "speaker": "hero",
+   "cam": "close",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "internet"
+  },
+  {
+   "line": "So it started haunting harder.",
+   "scene": "kitchen",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": null
+   },
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "light": "flicker",
+   "react": "flicker",
+   "beat_word": "harder",
+   "jump": true
+  },
+  {
+   "line": "It moved my chairs and ate my yoghurt.",
+   "scene": "kitchen",
+   "speaker": "narrator",
+   "cam": "medium",
+   "focus": "other",
+   "hero": {
+    "pose": "cheeks",
+    "expr": "shock",
+    "expr2": null
+   },
+   "other": {
+    "state": "grin",
+    "where": null
+   },
+   "light": "dawn",
+   "react": "none",
+   "beat_word": "yoghurt"
+  },
+  {
+   "line": "Just give it the password! I'm begging you!",
+   "scene": "kitchen",
+   "speaker": "roommate",
+   "cam": "close",
+   "focus": "other",
+   "side": "roommate",
+   "sideExpr": "shock",
+   "hero": {
+    "pose": "stand",
+    "expr": "tired",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "begging"
+  },
+  {
+   "line": "Fine. I wrote it on the mirror.",
+   "scene": "bathroom",
+   "speaker": "narrator",
+   "cam": "push_in",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "tired",
+    "expr2": null
+   },
+   "react": "none",
+   "beat_word": "mirror"
+  },
+  {
+   "line": "The ghost read it... and screamed.",
+   "scene": "bathroom",
+   "speaker": "narrator",
+   "cam": "snap",
+   "focus": "other",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "expr2": "shock"
+   },
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "gag",
+   "beat_word": "screamed"
+  },
+  {
+   "line": "Password one two three? Seriously?",
+   "scene": "closeup",
+   "speaker": "villain",
+   "cam": "close",
+   "other": {
+    "state": "stare",
+    "where": null
+   },
+   "react": "none",
+   "beat_word": "seriously"
+  },
+  {
+   "line": "Now it haunts me for my own safety.",
+   "scene": "closeup",
+   "speaker": "narrator",
+   "cam": "close",
+   "other": {
+    "state": "grin",
+    "where": null
+   },
+   "react": "grin",
+   "beat_word": "safety",
+   "twist": true
+  }
+ ]
+}

@@ -186,6 +186,13 @@ def sfx_track(syn: Synth, plan: dict) -> np.ndarray:
             n = int(0.8 * SR); t = np.arange(n) / SR
             creak = bp(np.sin(2 * np.pi * (180 + 60 * np.sin(2 * np.pi * 3 * t)) * t) * (1 + syn.noise(n) * 0.3), 150, 1500) * np.sin(np.pi * t / t[-1])
             _add(sfx, creak, tb, 0.35)
+        elif react == "gag":
+            n = int(0.42 * SR); t = np.arange(n) / SR
+            whistle = np.sin(2 * np.pi * np.cumsum(np.linspace(380, 1500, n)) / SR) * np.sin(np.pi * t / t[-1]) ** 0.5
+            _add(sfx, whistle, tb - 0.38, 0.45)
+            n = int(0.7 * SR); t = np.arange(n) / SR
+            boing = np.sin(2 * np.pi * (170 + 90 * np.sin(2 * np.pi * 11 * t) * np.exp(-t * 4)) * t) * np.exp(-t * 4.5)
+            _add(sfx, boing, tb, 0.8)
         elif react == "droop":
             _add(sfx, syn.reverb(syn.thud(32, 2.0), 2.0, 0.3), tb, 1.1)
         elif react == "text_change":

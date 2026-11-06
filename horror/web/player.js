@@ -335,10 +335,66 @@ function cctvOverlay(f, sh) {
   if (g) glitch(1.0);
 }
 
+// ---------- brand: intro sting + signature outro ----------
+const INTRO = P.intro || 0, OUTRO = P.outro || 0, END = N - OUTRO;
+function brandTitle(cx, cy, scale, alpha, jitter) {
+  ctx.save(); ctx.translate(cx + jitter, cy); ctx.scale(scale, scale); ctx.globalAlpha = alpha;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+  ctx.font = '900 104px "DejaVu Sans"'; ctx.lineWidth = 22; ctx.strokeStyle = '#140a1c';
+  ctx.strokeText('CREEPY CARTOON', 0, -70);
+  ctx.fillStyle = '#e9f7ec'; ctx.shadowColor = 'rgba(120,255,160,0.6)'; ctx.shadowBlur = 36; ctx.fillText('CREEPY CARTOON', 0, -70);
+  ctx.shadowBlur = 0; ctx.font = '900 168px "DejaVu Sans"'; ctx.lineWidth = 28; ctx.strokeText('TALES', 0, 80);
+  ctx.fillStyle = '#ff5a5a'; ctx.shadowColor = 'rgba(255,60,60,0.7)'; ctx.shadowBlur = 50; ctx.fillText('TALES', 0, 80);
+  ctx.restore();
+}
+function brandFace(cx, cy, s, f, talk) {
+  CZ = 1;
+  const o = { x: cx, y: cy + 775 * s, s, kind: 'double', skin: '#c98d62', hair: '#1d1420', hairStyle: 'spiky', outfit: 'shirt',
+    mouth: 'grin', grin: 1, brow: 'sly', pupil: 16, circles: 0.55, lid: 0.12, seed: 4 };
+  if (talk) { o.grin = 0.75 + 0.25 * Math.abs(Math.sin(f * 0.9)); o.bob = Math.sin(f * 0.9) * 8; o.tilt = Math.sin(f * 0.45) * 0.05; }
+  guy(o);
+}
+function drawIntro(f) {
+  const t = f / Math.max(1, INTRO);
+  ctx.fillStyle = '#05030a'; ctx.fillRect(0, 0, W, H);
+  const on = f < 3 ? (f % 2 ? 1 : 0.15) : 1;                      // flicker on
+  brandTitle(W / 2, H / 2, (FORMAT === 'landscape' ? 1.25 : 1.0) * (1 + 0.06 * t), on * (1 - ss(seg(t, 0.82, 1))), f < 5 ? (rnd(f) - 0.5) * 40 : 0);
+  if (f < 6) glitch(0.9);
+  vignette(0.8, 0.3); grain(0.1);
+}
+function drawOutro(f) {
+  const t = f / Math.max(1, OUTRO);
+  ctx.fillStyle = '#05030a'; ctx.fillRect(0, 0, W, H);
+  const land = FORMAT === 'landscape';
+  const cx = land ? W * 0.25 : W / 2, cy = land ? H * 0.5 : H * 0.34, R = land ? 320 : 360;
+  const zoom = 1 + 0.08 * ss(t);
+  ctx.save();                                   // round logo: the grinning face in green night vision
+  ctx.beginPath(); ctx.arc(cx, cy, R * zoom, 0, 7); ctx.clip();
+  const g = ctx.createRadialGradient(cx, cy - 40, 40, cx, cy, R * 1.3); g.addColorStop(0, '#2f5a45'); g.addColorStop(1, '#0b1612');
+  ctx.fillStyle = g; ctx.fillRect(cx - R * 1.5, cy - R * 1.5, R * 3, R * 3);
+  brandFace(cx, cy + 30 * R / 360, 1.45 * (R / 360) * zoom, f, f > 6 && t < 0.85);
+  ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = '#9fe8b0'; ctx.fillRect(cx - R * 1.5, cy - R * 1.5, R * 3, R * 3);
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle = 'rgba(0,0,0,0.16)'; for (let y = cy - R * 1.5 + (f * 2) % 7; y < cy + R * 1.5; y += 7) ctx.fillRect(cx - R * 1.5, y, R * 3, 2);
+  ctx.restore();
+  ctx.save(); ctx.lineWidth = 10; ctx.strokeStyle = '#ff4a4a'; ctx.shadowColor = 'rgba(255,60,60,0.8)'; ctx.shadowBlur = 40;
+  ctx.globalAlpha = 0.7 + 0.3 * Math.sin(f * 0.4); ctx.beginPath(); ctx.arc(cx, cy, R * zoom + 6, 0, 7); ctx.stroke(); ctx.restore();
+  brandTitle(land ? W * 0.69 : W / 2, land ? H * 0.42 : H * 0.69, land ? 0.95 : 0.95, ss(seg(t, 0.05, 0.25)), 0);
+  ctx.save(); ctx.textAlign = 'center'; ctx.font = 'bold 46px "DejaVu Sans Mono"'; ctx.fillStyle = '#b9c9bf';
+  ctx.globalAlpha = ss(seg(t, 0.25, 0.45));
+  ctx.fillText('NEW HORROR EVERY DAY', land ? W * 0.69 : W / 2, land ? H * 0.68 : H * 0.81); ctx.restore();
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; light(ctx, cx, cy, 520, '#ff3b3b', 0.08 + 0.06 * Math.sin(f * 0.5)); ctx.restore();
+  if (f < 5) staticNoise(0.7 * (1 - f / 5));
+  if (t > 0.9) { glitch(1.2); staticNoise(seg(t, 0.9, 1)); }
+  vignette(0.85, 0.25); grain(0.1);
+}
+
 window.renderFrame = function (f) {
   F = f; ctx = MAIN;
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; ctx.filter = 'none';
   ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  if (f < INTRO) return drawIntro(f);
+  if (OUTRO && f >= END) return drawOutro(f - END);
   const shots = P.shots;
   const sh = shots.find(s => f >= s.a && f < s.b) || shots[shots.length - 1];
   const S = SCENES[sh.scene] || SCENES.closeup;
@@ -358,11 +414,11 @@ window.renderFrame = function (f) {
   else { dust(f, sh); grade(0.92, 1.08, 1.0); vignette(0.7, 0.35); }
   // transitions & accents
   if (sh.jump) flash(1 - seg(f, sh.a, sh.a + 7));
-  if (sh === shots[0]) flash(1 - seg(f, 0, 6), '#000');
+  if (sh === shots[0]) flash(1 - seg(f, INTRO, INTRO + 6), '#000');
   if (sh.react === 'appear' && sh.beat != null && f >= sh.beat && f < sh.beat + 5) glitch(0.8);
   if (sh.twist && sh.beat != null && f >= sh.beat && f < sh.beat + 6) { glitch(1.2); flash(0.25 * (1 - bT(f, sh, 6))); }
   if (sh.scene === 'cctv' && f < sh.a + 6 && sh.a > 0 && (shots[shots.indexOf(sh) - 1] || {}).scene !== 'cctv') staticNoise(0.8 * (1 - seg(f, sh.a, sh.a + 6)));
-  staticNoise(seg(f, N - 14, N - 1) * 0.9);
+  staticNoise(seg(f, END - 14, END - 1) * 0.9);
   grain(sh.scene === 'cctv' ? 0.05 : 0.08);
 };
 window.ready = true;

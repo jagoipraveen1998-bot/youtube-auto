@@ -103,11 +103,12 @@ def voice_from_file(story: dict, path: Path) -> tuple[np.ndarray, list[dict]]:
     return audio, timing
 
 
-def build_plan(story: dict, timing: list[dict], total: float, casting: dict, fmt: str = "vertical") -> dict:
+def build_plan(story: dict, timing: list[dict], total: float, casting: dict, fmt: str = "vertical",
+               intro_f: int = 0) -> dict:
     frames = int(round(total * FPS))
     shots = []
     for i, (b, tm) in enumerate(zip(story["beats"], timing)):
-        a = 0 if i == 0 else max(shots[-1]["a"] + 6, int(round(tm["start"] * FPS)) - 4)
+        a = intro_f if i == 0 else max(shots[-1]["a"] + 6, int(round(tm["start"] * FPS)) - 4)
         sh = {k: v for k, v in b.items() if k not in ("line", "beat_word")}
         sh["a"] = a
         sh["beat"] = int(round(tm["beat"] * FPS)) - 2 if b.get("react", "none") != "none" or b.get("twist") else None
@@ -200,6 +201,26 @@ def cover(frames_dir: Path, plan: dict, out: Path, title: str | None = None) -> 
     return out
 
 
+LAUGH_TEXT = "Heh heh heh... Ha ha ha ha haaa!"
+LAUGH_VOICE = {"engine": "kokoro", "kokoro_lang": "b", "kokoro_voice": "bm_george", "speed": 0.8, "semitones": -3.0,
+               "name": "en-GB-RyanNeural", "rate": "-20%", "pitch": "-12Hz"}
+
+
+def signature_laugh(work: Path) -> np.ndarray:
+    """The channel's signature: the same deep, echoing evil laugh at the end of every video."""
+    try:
+        from .voice import say
+        mp3 = work / "laugh.mp3"
+        say(LAUGH_TEXT, LAUGH_VOICE, mp3)
+        out = work / "laugh_fx.wav"
+        run(["ffmpeg", "-y", "-v", "error", "-i", str(mp3), "-af",
+             "aecho=0.8:0.72:110|240|400:0.5|0.32|0.2,lowpass=f=6500,volume=1.15", "-ar", str(ha.SR), "-ac", "1", str(out)])
+        return ha.load(out)
+    except Exception as exc:
+        log(f"Signature laugh skipped: {exc}")
+        return np.zeros(int(0.5 * ha.SR))
+
+
 def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_file: Path | None = None,
                title: str | None = None) -> tuple[Path, Path, dict]:
     work.mkdir(parents=True, exist_ok=True)
@@ -210,8 +231,22 @@ def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_
         voice, timing = voice_from_file(story, voice_file)
     else:
         voice, timing = voice_lines(story, casting["voices"], work)
-    total = max(len(voice) / ha.SR, timing[-1]["end"]) + TAIL
-    plan = build_plan(story, timing, total, casting, fmt)
+    # brand: a short logo sting before the story, the signature laugh after it
+    intro = 0.8 if fmt == "vertical" else 2.0
+    outro = 3.2
+    laugh = np.zeros(1) if voice_file else signature_laugh(work)
+    story_end = intro + max(len(voice) / ha.SR, timing[-1]["end"]) + TAIL
+    total = story_end + max(outro, len(laugh) / ha.SR + 0.6)
+    timing = [{k: v + intro for k, v in tm.items()} for tm in timing]
+    full = np.zeros(int(total * ha.SR) + ha.SR)
+    full[int(intro * ha.SR):int(intro * ha.SR) + len(voice)] = voice
+    i0 = int((story_end + 0.35) * ha.SR)
+    full[i0:i0 + len(laugh)] += laugh[: len(full) - i0]
+    voice = full[: int(total * ha.SR)]
+    plan = build_plan(story, timing, story_end, casting, fmt, intro_f=int(round(intro * FPS)))
+    plan["intro"] = int(round(intro * FPS))
+    plan["outro"] = int(round(total * FPS)) - plan["frames"]
+    plan["frames"] = int(round(total * FPS))
     (work / "plan.json").write_text(json.dumps(plan, indent=1), encoding="utf-8")
     log(f"Plan: {len(plan['shots'])} shots, {plan['frames']} frames ({total:.1f}s, {fmt})")
     master = ha.make_soundtrack(voice, plan, work, seed)

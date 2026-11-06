@@ -111,6 +111,8 @@ def cast_story(story: dict, seed: int, funny: bool = False) -> dict:
     vg, sp, semi, echo = VILLAIN_VOICE.get(kind, ("m", 0.88, -1.5, True))
     if vl in ("girl", "boy") and vg != "same":
         vg, semi = ("f" if vl == "girl" else "m"), 2.0
+    elif vl in ("man", "woman") and vg != "same":
+        vg = "m" if vl == "man" else "f"
     if vg == "same":
         voices["villain"] = dict(voices["hero"], speed=sp, semitones=semi, echo=echo)
     else:

@@ -1,0 +1,1358 @@
+{
+ "title": "My Dad Found a Fourth Face in Our Car Selfie",
+ "story_id": "the-fourth-face",
+ "description": "Four friends, one late drive home, one blurry selfie. Then Joe's dad calls in a panic, begging him to get out of the car right now. Something in the photo is sitting right behind him.",
+ "tags": [
+  "horror comedy",
+  "animated horror story",
+  "scary cartoon",
+  "car selfie ghost",
+  "skinwalker story",
+  "creepy cartoon tales",
+  "funny horror",
+  "ghost in photo",
+  "horror short film",
+  "animated scary story",
+  "gas station horror",
+  "night drive horror"
+ ],
+ "hero": {
+  "look": "man",
+  "outfit": "tee",
+  "voice": "am_puck",
+  "style": {
+   "skin": "#d9a07a",
+   "hair": "#3b2618",
+   "hairStyle": "spiky",
+   "outfit": "tee",
+   "top": "#3a8ab8",
+   "acc": {}
+  }
+ },
+ "villain": "double",
+ "cast": [
+  {
+   "role": "maya",
+   "gender": "f",
+   "voice": "af_heart",
+   "style": {
+    "skin": "#e0b48c",
+    "hair": "#1d1420",
+    "hairStyle": "ponytail",
+    "outfit": "cardigan",
+    "top": "#c84a4a",
+    "acc": {}
+   }
+  },
+  {
+   "role": "ben",
+   "gender": "m",
+   "voice": "bm_fable",
+   "style": {
+    "skin": "#f0c8a0",
+    "hair": "#c99a4a",
+    "hairStyle": "mop",
+    "outfit": "shirt",
+    "top": "#e8d49c",
+    "acc": {
+     "glasses": true,
+     "freckles": true
+    }
+   }
+  },
+  {
+   "role": "malik",
+   "gender": "m",
+   "voice": "am_michael",
+   "style": {
+    "skin": "#6e4630",
+    "hair": "#141018",
+    "hairStyle": "curly",
+    "outfit": "hoodie",
+    "top": "#24222c",
+    "acc": {
+     "earbud": true,
+     "crease": true
+    }
+   }
+  },
+  {
+   "role": "dad",
+   "gender": "m",
+   "voice": "am_fenrir",
+   "style": {}
+  }
+ ],
+ "voice_over": {
+  "villain": {
+   "like": "malik",
+   "semitones": -4.0,
+   "speed": 0.8,
+   "echo": true
+  }
+ },
+ "beats": [
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.68,
+   "chapter": "The photo",
+   "scene": "car",
+   "crew": {
+    "maya": {
+     "expr": "calm",
+     "look": 0.2
+    },
+    "ben": {
+     "expr": "calm",
+     "reach": true,
+     "look": -0.6
+    }
+   },
+   "cam": "pull_out",
+   "focus": "radio",
+   "radio": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "calm"
+   }
+  },
+  {
+   "line": "You know we've heard this song three times.",
+   "speaker": "ben",
+   "react": "none",
+   "scene": "car",
+   "crew": {
+    "maya": {
+     "expr": "calm",
+     "look": 0.2
+    },
+    "ben": {
+     "expr": "tired",
+     "reach": true,
+     "look": -0.6
+    }
+   },
+   "cam": "close",
+   "focus": "ben",
+   "radio": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "calm"
+   }
+  },
+  {
+   "line": "And you've skipped it before the good part three times.",
+   "speaker": "maya",
+   "react": "none",
+   "scene": "car",
+   "crew": {
+    "maya": {
+     "expr": "relieved",
+     "look": 0.5
+    },
+    "ben": {
+     "expr": "tired",
+     "look": -0.5
+    }
+   },
+   "cam": "close",
+   "focus": "maya",
+   "radio": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "relieved"
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "shutter",
+   "silent": 4.14,
+   "beat_at": 0.78,
+   "scene": "selfie",
+   "mode": "three",
+   "cam": "push_in",
+   "focus": "hero"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.76,
+   "scene": "phone2",
+   "mode": "photo",
+   "bg": "car",
+   "cam": "push_in",
+   "focus": "photo"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "send",
+   "silent": 2.76,
+   "beat_at": 0.45,
+   "scene": "phone2",
+   "mode": "chat",
+   "bg": "car",
+   "cam": "medium",
+   "focus": "screen",
+   "text": {
+    "name": "Dad",
+    "msg": "On our way home."
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "buzz",
+   "silent": 2.53,
+   "beat_at": 0.6,
+   "jump": true,
+   "scene": "car",
+   "crew": {
+    "maya": {
+     "expr": "calm",
+     "look": 0.2
+    },
+    "ben": {
+     "expr": "sleepy",
+     "look": -0.3
+    }
+   },
+   "cam": "wide",
+   "hero": {
+    "pose": "stand",
+    "expr": "calm",
+    "phone": "down"
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "ring",
+   "silent": 2.3,
+   "beat_at": 0.08,
+   "scene": "phone2",
+   "mode": "call",
+   "bg": "car",
+   "cam": "close",
+   "focus": "screen",
+   "text": {
+    "name": "DAD",
+    "sub": "calling..."
+   }
+  },
+  {
+   "line": "Hey, Dad. We're about—",
+   "speaker": "hero",
+   "react": "none",
+   "chapter": "Dad's warning",
+   "scene": "car",
+   "crew": {
+    "maya": {
+     "expr": "calm",
+     "look": 0.2
+    },
+    "ben": {
+     "expr": "calm",
+     "look": -0.2
+    }
+   },
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "relieved",
+    "phone": "ear"
+   }
+  },
+  {
+   "line": "Joe. Listen to me. I need you to get out of that car right now.",
+   "speaker": "dad",
+   "react": "face",
+   "phone": true,
+   "vspeed": 0.92,
+   "beat_word": "car",
+   "scene": "car",
+   "crew": {
+    "maya": {
+     "expr": "calm",
+     "look": 0.2
+    },
+    "ben": {
+     "expr": "calm",
+     "look": -0.2
+    }
+   },
+   "cam": "push_in",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "relieved",
+    "expr2": "worried",
+    "phone": "ear"
+   }
+  },
+  {
+   "line": "What happened? Why do you sound scared?",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "car",
+   "crew": {
+    "maya": {
+     "expr": "calm",
+     "look": 0.2
+    },
+    "ben": {
+     "expr": "calm",
+     "look": -0.2
+    }
+   },
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "phone": "ear"
+   }
+  },
+  {
+   "line": "I'll explain when you're out. Tell Maya to pull over somewhere safe.",
+   "speaker": "dad",
+   "react": "none",
+   "phone": true,
+   "vspeed": 0.92,
+   "scene": "car",
+   "crew": {
+    "maya": {
+     "expr": "calm",
+     "look": 0.2
+    },
+    "ben": {
+     "expr": "calm",
+     "look": -0.2
+    }
+   },
+   "cam": "pan",
+   "focus2": "hero",
+   "focus": "maya",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "phone": "ear"
+   }
+  },
+  {
+   "line": "Dad, you're freaking me out.",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "car",
+   "crew": {
+    "maya": {
+     "expr": "calm",
+     "look": 0.2
+    },
+    "ben": {
+     "expr": "calm",
+     "look": -0.2
+    }
+   },
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "phone": "ear",
+    "shake": 2
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "breath",
+   "silent": 2.76,
+   "beat_at": 0.05,
+   "scene": "car",
+   "crew": {
+    "maya": {
+     "expr": "calm",
+     "look": 0.2
+    },
+    "ben": {
+     "expr": "calm",
+     "look": -0.2
+    }
+   },
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "stare",
+    "phone": "ear"
+   }
+  },
+  {
+   "line": "Keep looking straight ahead, okay?",
+   "speaker": "dad",
+   "react": "face",
+   "phone": true,
+   "vspeed": 0.84,
+   "beat_word": "straight",
+   "scene": "car",
+   "crew": {
+    "maya": {
+     "expr": "calm",
+     "look": 0.2
+    },
+    "ben": {
+     "expr": "calm",
+     "look": -0.2
+    }
+   },
+   "cam": "push_in",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "stare",
+    "expr2": "shock",
+    "phone": "ear"
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.18,
+   "scene": "car",
+   "crew": {
+    "maya": {
+     "expr": "calm",
+     "look": 0.2
+    },
+    "ben": {
+     "expr": "calm",
+     "look": -0.2
+    }
+   },
+   "cam": "close",
+   "focus": "mirror",
+   "mirror": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "stare",
+    "phone": "ear"
+   }
+  },
+  {
+   "line": "Maya. The gas station up there. Pull in.",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "car",
+   "crew": {
+    "maya": {
+     "expr": "curious",
+     "look": 0.6
+    },
+    "ben": {
+     "expr": "curious",
+     "look": -0.6
+    }
+   },
+   "cam": "medium",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "phone": "ear"
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.91,
+   "scene": "station",
+   "cam": "wide",
+   "carIn": true,
+   "crew": {}
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "slam",
+   "silent": 2.64,
+   "beat_at": 0.15,
+   "scene": "station",
+   "cam": "pan",
+   "focus2": "wide",
+   "focus": "door",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "phone": "down"
+   },
+   "crew": {
+    "maya": {
+     "expr": "worried",
+     "look": 1
+    },
+    "ben": {
+     "expr": "worried",
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "What did he say?",
+   "speaker": "maya",
+   "react": "none",
+   "scene": "station",
+   "cam": "close",
+   "focus": "maya",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "phone": "down"
+   },
+   "crew": {
+    "maya": {
+     "expr": "worried",
+     "look": 1
+    },
+    "ben": {
+     "expr": "worried",
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "buzz",
+   "silent": 1.72,
+   "beat_at": 0.3,
+   "scene": "station",
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "phone": "up",
+    "lookY": 0.5
+   },
+   "crew": {
+    "maya": {
+     "expr": "worried",
+     "look": 1
+    },
+    "ben": {
+     "expr": "worried",
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "circle",
+   "silent": 2.53,
+   "beat_at": 0.2,
+   "chapter": "The fourth face",
+   "scene": "phone2",
+   "mode": "circle",
+   "bg": "station",
+   "cam": "close",
+   "focus": "photo",
+   "zoom": [
+    1,
+    1
+   ],
+   "text": {
+    "sub": "on speaker  1:12"
+   }
+  },
+  {
+   "line": "Right behind you. Do you see it?",
+   "speaker": "dad",
+   "react": "none",
+   "phone": true,
+   "vspeed": 0.92,
+   "scene": "phone2",
+   "mode": "circle",
+   "bg": "station",
+   "cam": "close",
+   "focus": "photo",
+   "zoom": [
+    1,
+    1.8
+   ],
+   "text": {
+    "sub": "on speaker  1:14"
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "zoom",
+   "silent": 2.53,
+   "scene": "phone2",
+   "mode": "circle",
+   "bg": "station",
+   "cam": "close",
+   "focus": "photo",
+   "zoom": [
+    1.8,
+    2.9
+   ],
+   "beat_at": 0.1,
+   "text": {
+    "sub": "on speaker  1:17"
+   }
+  },
+  {
+   "line": "Son, there's a ghost in that car.",
+   "speaker": "dad",
+   "react": "jolt",
+   "phone": true,
+   "vspeed": 0.9,
+   "beat_word": "ghost",
+   "scene": "station",
+   "cam": "snap",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": "shock",
+    "phone": "up"
+   },
+   "crew": {
+    "maya": {
+     "expr": "worried",
+     "look": 1
+    },
+    "ben": {
+     "expr": "worried",
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.53,
+   "scene": "station",
+   "cam": "pan",
+   "focus2": "hero",
+   "focus": "door",
+   "beam": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "phone": "up",
+    "x": 1520,
+    "look": -1
+   },
+   "crew": {
+    "maya": {
+     "expr": "worried",
+     "look": 1
+    },
+    "ben": {
+     "expr": "worried",
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "Joe. What are you doing?",
+   "speaker": "ben",
+   "react": "none",
+   "scene": "station",
+   "cam": "close",
+   "focus": "ben",
+   "beam": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "phone": "up",
+    "x": 1520,
+    "look": -1
+   },
+   "crew": {
+    "maya": {
+     "expr": "worried",
+     "look": 1
+    },
+    "ben": {
+     "expr": "worried",
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "shift",
+   "silent": 3.22,
+   "beat_at": 0.62,
+   "scene": "station",
+   "cam": "close",
+   "focus": "window",
+   "beam": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "phone": "up",
+    "x": 1520,
+    "look": -1
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "knock",
+   "silent": 3.22,
+   "beat_at": 0.2,
+   "scene": "station",
+   "cam": "close",
+   "focus": "window",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "phone": "up",
+    "x": 1520,
+    "look": -1
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "jolt",
+   "silent": 1.26,
+   "beat_at": 0.1,
+   "scene": "station",
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "phone": "up",
+    "x": 1520,
+    "look": -1
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "door_open",
+   "silent": 3.45,
+   "beat_at": 0.22,
+   "shoe": 40,
+   "scene": "station",
+   "cam": "close",
+   "focus": "low",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "phone": "up",
+    "x": 1520,
+    "look": -1
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.76,
+   "scene": "station",
+   "cam": "pan",
+   "focus2": "low",
+   "focus": "malik",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "phone": "up",
+    "x": 1560,
+    "look": -1
+   },
+   "crew": {
+    "malik": {
+     "expr": "sleepy",
+     "x": 1180,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "Why'd you guys get out? Are we getting snacks?",
+   "speaker": "malik",
+   "react": "none",
+   "scene": "station",
+   "cam": "close",
+   "focus": "malik",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "phone": "up",
+    "x": 1560,
+    "look": -1
+   },
+   "crew": {
+    "malik": {
+     "expr": "sleepy",
+     "x": 1180,
+     "look": 0.6
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "gag",
+   "silent": 2.18,
+   "beat_at": 0.45,
+   "chapter": "The second photo",
+   "scene": "station",
+   "cam": "close",
+   "focus": "hero",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "stare",
+    "expr2": "shock",
+    "phone": "up",
+    "x": 1560,
+    "look": -1
+   },
+   "crew": {
+    "malik": {
+     "expr": "sleepy",
+     "x": 1180,
+     "look": 0.6
+    }
+   }
+  },
+  {
+   "line": "Dad. That's Malik. We picked him up after we left.",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "station",
+   "cam": "medium",
+   "focus": "pair",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "tired",
+    "phone": "up",
+    "x": 1640,
+    "look": -0.6
+   },
+   "crew": {
+    "malik": {
+     "expr": "sleepy",
+     "x": 1360,
+     "look": 0.8
+    }
+   }
+  },
+  {
+   "line": "Then why did he look like that?",
+   "speaker": "dad",
+   "react": "none",
+   "phone": true,
+   "scene": "station",
+   "cam": "medium",
+   "focus": "pair",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "tired",
+    "phone": "up",
+    "x": 1640
+   },
+   "crew": {
+    "malik": {
+     "expr": "curious",
+     "x": 1470,
+     "look": 1,
+     "lean": 0.12
+    }
+   }
+  },
+  {
+   "line": "Because your son takes pictures like he's being chased.",
+   "speaker": "malik",
+   "react": "none",
+   "scene": "station",
+   "cam": "close",
+   "focus": "malik",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "tired",
+    "phone": "up",
+    "x": 1640
+   },
+   "crew": {
+    "malik": {
+     "expr": "tired",
+     "x": 1470,
+     "look": 1,
+     "lean": 0.12
+    }
+   }
+  },
+  {
+   "line": "Ha! Ha ha ha!",
+   "speaker": "ben",
+   "react": "none",
+   "scene": "station",
+   "cam": "close",
+   "focus": "ben",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "relieved",
+    "x": 1640
+   },
+   "crew": {
+    "maya": {
+     "expr": "relieved",
+     "look": 1
+    },
+    "ben": {
+     "expr": "relieved",
+     "laugh": true,
+     "look": 1
+    },
+    "malik": {
+     "expr": "tired",
+     "x": 1470,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "dome",
+   "silent": 1.84,
+   "beat_at": 0.4,
+   "dome": true,
+   "scene": "station",
+   "cam": "medium",
+   "focus": "group",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "relieved",
+    "x": 1640
+   },
+   "crew": {
+    "maya": {
+     "expr": "relieved",
+     "look": 1
+    },
+    "ben": {
+     "expr": "relieved",
+     "laugh": true,
+     "look": 1
+    },
+    "malik": {
+     "expr": "calm",
+     "x": 1470,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "Take another one before he calls a priest.",
+   "speaker": "maya",
+   "react": "none",
+   "dome": true,
+   "scene": "station",
+   "cam": "close",
+   "focus": "maya",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "relieved",
+    "x": 1640
+   },
+   "crew": {
+    "maya": {
+     "expr": "relieved",
+     "look": 1
+    },
+    "ben": {
+     "expr": "relieved",
+     "look": 1
+    },
+    "malik": {
+     "expr": "calm",
+     "x": 1470,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "shutter",
+   "silent": 3.68,
+   "beat_at": 0.75,
+   "scene": "selfie",
+   "mode": "four",
+   "cam": "push_in",
+   "focus": "hero"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "pop",
+   "silent": 2.99,
+   "beat_at": 0.5,
+   "scene": "phone2",
+   "mode": "reply",
+   "bg": "station",
+   "cam": "medium",
+   "focus": "screen",
+   "text": {
+    "name": "Dad",
+    "msg": "Hi Malik. Sorry."
+   }
+  },
+  {
+   "line": "I forgive you.",
+   "speaker": "malik",
+   "react": "none",
+   "dome": true,
+   "scene": "station",
+   "cam": "close",
+   "focus": "malik",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "relieved",
+    "phone": "up",
+    "x": 1640
+   },
+   "crew": {
+    "malik": {
+     "expr": "relieved",
+     "x": 1490,
+     "look": 1,
+     "lean": 0.22
+    }
+   }
+  },
+  {
+   "line": "Don't do that.",
+   "speaker": "dad",
+   "react": "none",
+   "phone": true,
+   "dome": true,
+   "scene": "station",
+   "cam": "medium",
+   "focus": "pair",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "relieved",
+    "phone": "up",
+    "x": 1640
+   },
+   "crew": {
+    "malik": {
+     "expr": "relieved",
+     "x": 1490,
+     "look": 1,
+     "lean": 0.22
+    }
+   }
+  },
+  {
+   "line": "Ha ha ha.",
+   "speaker": "hero",
+   "react": "hangup",
+   "beat_at": 0.95,
+   "dome": true,
+   "scene": "station",
+   "cam": "close",
+   "focus": "hero",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "relieved",
+    "laugh": true,
+    "phone": "up",
+    "x": 1640
+   },
+   "crew": {
+    "malik": {
+     "expr": "relieved",
+     "x": 1490,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "ring",
+   "silent": 2.99,
+   "beat_at": 0.05,
+   "chapter": "The call",
+   "scene": "phone2",
+   "mode": "call",
+   "bg": "station",
+   "cam": "close",
+   "focus": "screen",
+   "text": {
+    "name": "MALIK",
+    "sub": "incoming call"
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "face",
+   "silent": 2.76,
+   "beat_at": 0.15,
+   "dome": true,
+   "scene": "station",
+   "cam": "medium",
+   "focus": "pair",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "relieved",
+    "expr2": "worried",
+    "phone": "up",
+    "x": 1700,
+    "glance": -1
+   },
+   "crew": {
+    "malik": {
+     "expr": "relieved",
+     "x": 1380,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "Hello?",
+   "speaker": "hero",
+   "react": "none",
+   "vspeed": 0.88,
+   "gain": 0.62,
+   "dome": true,
+   "scene": "station",
+   "cam": "close",
+   "focus": "hero",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "phone": "ear",
+    "x": 1700,
+    "shake": 3
+   },
+   "crew": {
+    "malik": {
+     "expr": "relieved",
+     "x": 1380,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "Sorry, Joe. I got sick, so I won't come.",
+   "speaker": "malik",
+   "react": "face",
+   "phone": true,
+   "beat_word": "sick",
+   "dome": true,
+   "scene": "station",
+   "cam": "push_in",
+   "focus": "hero",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": "stare",
+    "phone": "ear",
+    "x": 1700,
+    "shake": 2
+   },
+   "crew": {
+    "malik": {
+     "expr": "relieved",
+     "x": 1380,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.07,
+   "dome": true,
+   "scene": "station",
+   "cam": "close",
+   "focus": "hero",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "stare",
+    "phone": "ear",
+    "x": 1700,
+    "shake": 3,
+    "lookTo": -1
+   },
+   "crew": {
+    "malik": {
+     "expr": "relieved",
+     "x": 1380,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "fake",
+   "silent": 3.22,
+   "beat_at": 0.3,
+   "twist": true,
+   "fakeGlow": true,
+   "dome": true,
+   "scene": "station",
+   "cam": "push_in",
+   "focus": "malik",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "stare",
+    "phone": "ear",
+    "x": 1700,
+    "turn": 0
+   },
+   "crew": {
+    "malik": {
+     "expr": "calm",
+     "fake": true,
+     "x": 1380,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "sting",
+   "silent": 1.15,
+   "beat_at": 0.1,
+   "redOn": true,
+   "fakeGlow": true,
+   "dome": true,
+   "scene": "station",
+   "cam": "snap",
+   "focus": "hero",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "terror": true,
+    "phone": "ear",
+    "x": 1700,
+    "look": -1
+   },
+   "crew": {
+    "malik": {
+     "expr": "calm",
+     "fake": "full",
+     "x": 1380,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "Haa... haa...",
+   "speaker": "villain",
+   "react": "fake",
+   "beat_at": 0.02,
+   "shake": 30,
+   "gap": 0.15,
+   "fakeGlow": true,
+   "dome": true,
+   "layer": {
+    "semitones": -7.0,
+    "speed": 0.72,
+    "gain": 0.5,
+    "echo": true
+   },
+   "scene": "station",
+   "cam": "close",
+   "focus": "malik",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "stare",
+    "phone": "ear",
+    "x": 1700,
+    "turn": 0
+   },
+   "crew": {
+    "malik": {
+     "expr": "calm",
+     "fake": "full",
+     "x": 1380,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "HAA... HAAAA!",
+   "speaker": "villain",
+   "react": "fake",
+   "beat_at": 0.02,
+   "shake": 70,
+   "light": "flicker",
+   "fakeGlow": true,
+   "dome": true,
+   "blackout": 24,
+   "layer": {
+    "semitones": -9.0,
+    "speed": 0.7,
+    "gain": 0.65,
+    "echo": true
+   },
+   "scene": "station",
+   "cam": "close",
+   "focus": "malikClose",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "stare",
+    "phone": "ear",
+    "x": 1700,
+    "turn": 0
+   },
+   "crew": {
+    "malik": {
+     "expr": "calm",
+     "fake": "full",
+     "x": 1380,
+     "look": 1
+    }
+   }
+  }
+ ]
+}

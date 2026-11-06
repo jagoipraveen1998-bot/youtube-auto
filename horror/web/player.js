@@ -26,6 +26,7 @@ const after = (f, sh) => sh.beat != null && f >= sh.beat;
 
 const CAST = P.cast || {};          // side characters: { mum: {look...}, dad: {...} }
 const talking = (sh, f, who) => sh.talk === who && sh.ls != null && f >= sh.ls && f <= sh.le;
+const mouthAt = (sh, f) => { if (!sh.env || sh.ls == null) return null; const i = f - sh.ls; return i < 0 || i >= sh.env.length ? 0 : sh.env[i]; };
 const LOOK = l => ({ skin: l.skin, hair: l.hair, hairStyle: l.hairStyle, outfit: l.outfit, top: l.top, stripe: l.stripe, acc: l.acc });
 
 function heroObj(sh, f, base) {
@@ -33,6 +34,7 @@ function heroObj(sh, f, base) {
   const h = sh.hero;
   const o = Object.assign({ seed: 1 }, LOOK(HERO), base, ex(h.expr || 'worried'));
   o.talk = talking(sh, f, 'hero');
+  if (o.talk) { o.mouthOpen = mouthAt(sh, f); o.bob = (o.bob || 0) - 7 * (o.mouthOpen || 0); }
   if (h.look != null) o.look = h.look;
   if (h.pose === 'sleep') Object.assign(o, ex('asleep'), { tilt: 0.25 });
   if (sh.react === 'jolt' && after(f, sh)) {
@@ -60,6 +62,7 @@ function otherObj(sh, f, base) {
     const c = CAST[sh.side];
     const o = Object.assign({ seed: 9 }, LOOK(c), base, ex(sh.sideExpr || 'calm'));
     o.talk = talking(sh, f, 'side'); o.blink = blinkAt(f, 9); o.bob = Math.sin(f * 0.1) * 2;
+    if (o.talk) o.mouthOpen = mouthAt(sh, f);
     if (sh.react === 'vanish') o.alpha = after(f, sh) ? 1 - ss(bT(f, sh, 5)) : 1;
     return o;
   }
@@ -88,6 +91,7 @@ function otherObj(sh, f, base) {
   o.blink = o.kind === 'double' || o.kind === 'neighbour' || o.kind === 'delivery' ? blinkAt(f, 5) : 0;
   o.bob = Math.sin(f * 0.07) * 2;
   o.talk = talking(sh, f, 'other');
+  if (o.talk) o.mouthOpen = mouthAt(sh, f);
   return o;
 }
 
@@ -273,6 +277,7 @@ const SCENES = {
 
 // ---------- camera ----------
 function framesFor(S, sh, name) {
+  if (S.frameFn) { const r = S.frameFn(sh, name); if (r) return r; }
   if (name === 'other' && S.otherFrame) return S.otherFrame(sh);
   if (name === 'hero' && S.heroFrame) return S.heroFrame(sh);
   return S.frames[name] || S.frames.hero || S.frames.wide;
@@ -298,15 +303,17 @@ function camFor(S, sh, f) {
   let c = keys(K, t);
   c = creep(c, t, 0.8);
   if (sh.twist) c.r += 3 * ss(seg(t, 0, dur));
-  if (sh.beat != null && ['jolt', 'knock', 'appear', 'ring', 'lights_on'].includes(sh.react)) c = kick(c, f, sh.beat, 16, 7);
+  if (sh.beat != null && ['jolt', 'knock', 'appear', 'ring', 'lights_on', 'slam', 'buzz', 'door_open'].includes(sh.react)) c = kick(c, f, sh.beat, sh.react === 'buzz' ? 8 : 16, 7);
+  if (sh.react === 'slam') { c = kick(c, f, sh.beat + 9, 14, 6); c = kick(c, f, sh.beat + 18, 14, 6); }
   if (sh.react === 'gag' && sh.beat != null && f >= sh.beat) { const t = seg(f, sh.beat, sh.beat + 8); c.z *= 1 + 0.18 * back(t) * (1 - seg(f, sh.beat + 20, sh.beat + 40)); c = kick(c, f, sh.beat, 10, 6); }
+  if (sh.shake && sh.env) { const v = mouthAt(sh, f) || 0; c.x += (rnd(f * 3.7) - 0.5) * sh.shake * v / c.z; c.y += (rnd(f * 5.1) - 0.5) * sh.shake * v / c.z; c.r += (rnd(f * 2.3) - 0.5) * 1.6 * v; c.z *= 1 + 0.03 * v; }
   if (sh.react === 'knock') { c = kick(c, f, sh.beat + 9, 12, 6); c = kick(c, f, sh.beat + 18, 12, 6); }
   return c;
 }
 
 // ---------- frame ----------
 function dust(f, sh) {   // slow motes drifting in the light: something always moves
-  if (sh.scene === 'phone' || sh.scene === 'calendar') return;
+  if (['phone', 'calendar', 'phone2', 'selfie'].includes(sh.scene)) return;
   ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = 'lighter';
   for (let i = 0; i < 26; i++) {
     const x = (rnd(i * 3.1) * W + f * (0.4 + rnd(i) * 0.8) + Math.sin(f * 0.02 + i) * 30) % W;
@@ -389,6 +396,23 @@ function drawOutro(f) {
   vignette(0.85, 0.25); grain(0.1);
 }
 
+function selfieUI(f, sh) {         // the phone's camera view around the selfie, gone once the photo is taken
+  const live = sh.beat == null || f < sh.beat;
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  if (live) {
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillRect(0, 0, W, 70); ctx.fillRect(0, H - 150, W, 150);
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(W / 2, H - 75, 48, 0, 7); ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(W / 2, H - 75, 38, 0, 7); ctx.fill();
+    ctx.font = 'bold 30px "DejaVu Sans"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#ffd34a'; ctx.fillText('PHOTO', W / 2 + 200, H - 75);
+    ctx.fillStyle = '#fff'; ctx.fillText('1x', W / 2 - 200, H - 75);
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.lineWidth = 2;
+    for (const k of [1, 2]) { ctx.beginPath(); ctx.moveTo(W * k / 3, 70); ctx.lineTo(W * k / 3, H - 150); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, 70 + (H - 220) * k / 3); ctx.lineTo(W, 70 + (H - 220) * k / 3); ctx.stroke(); }
+  } else {
+    ctx.strokeStyle = '#f4f1ea'; ctx.lineWidth = 26; ctx.strokeRect(13, 13, W - 26, H - 26);
+  }
+  ctx.restore();
+}
+
 window.renderFrame = function (f) {
   F = f; ctx = MAIN;
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; ctx.filter = 'none';
@@ -418,6 +442,9 @@ window.renderFrame = function (f) {
   if (sh.react === 'appear' && sh.beat != null && f >= sh.beat && f < sh.beat + 5) glitch(0.8);
   if (sh.twist && sh.beat != null && f >= sh.beat && f < sh.beat + 6) { glitch(1.2); flash(0.25 * (1 - bT(f, sh, 6))); }
   if (sh.scene === 'cctv' && f < sh.a + 6 && sh.a > 0 && (shots[shots.indexOf(sh) - 1] || {}).scene !== 'cctv') staticNoise(0.8 * (1 - seg(f, sh.a, sh.a + 6)));
+  if (sh.scene === 'selfie') selfieUI(f, sh);
+  if (sh.react === 'shutter' && sh.beat != null && f >= sh.beat && f < sh.beat + 8) flash(1 - (f - sh.beat) / 8);
+  if (sh.blackout && sh.le != null && f >= sh.le - sh.blackout) { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); ctx.restore(); return; }
   staticNoise(seg(f, END - 14, END - 1) * 0.9);
   grain(sh.scene === 'cctv' ? 0.05 : 0.08);
 };

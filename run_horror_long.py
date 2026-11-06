@@ -38,7 +38,11 @@ def main():
     work = out / "work"
     work.mkdir(parents=True)
 
-    story = plan_script(path.read_text(encoding="utf-8"), cfg)
+    if path.suffix == ".json":      # a fully storyboarded script: every shot already planned by hand
+        story = json.loads(path.read_text(encoding="utf-8"))
+        log(f"Storyboard: {len(story['beats'])} beats")
+    else:
+        story = plan_script(path.read_text(encoding="utf-8"), cfg)
     if args.title:
         story["title"] = args.title
     (out / "story.json").write_text(json.dumps(story, indent=2, ensure_ascii=False), encoding="utf-8")

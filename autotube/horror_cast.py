@@ -79,6 +79,7 @@ def cast_story(story: dict, seed: int, funny: bool = False) -> dict:
     hero_g = "f" if hl in ("girl", "woman") else "m"
     adult = {"adult": True, "outfit": story["hero"].get("outfit") or rnd.choice(["cardigan", "tee", "hoodie"])} if hl in ("man", "woman") else {}
     hero = look(rnd, hero_g, **adult) if adult else look(rnd, hero_g, story["hero"].get("outfit"))
+    hero.update(story["hero"].get("style") or {})          # a scripted story can fix the hero's look
     kind = story.get("villain", "shadow")
     other = {"kind": kind, "outfit": {"pj": "shirt", "hoodie": "tee", "tee": "hoodie", "nightie": "shirt"}.get(hero["outfit"], "hoodie"),
              "glow": rnd.choice(["#ff3b3b", "#7dff6a", "#ffd23b", "#c46aff", "#6ad8ff"])}
@@ -91,13 +92,24 @@ def cast_story(story: dict, seed: int, funny: bool = False) -> dict:
     for c in story.get("cast", [])[:4]:
         role = c.get("role")
         g, d = ROLES.get(role, ("x", {}))
+        g = c.get("gender") or g
         side[role] = look(rnd, g if g != "x" else rnd.choice("mf"), **dict(d))
+        side[role].update(c.get("style") or {})            # scripted stories: fixed colours, hair, accessories
 
     males, females = MALE[:], FEMALE[:]
     rnd.shuffle(males); rnd.shuffle(females)
     take = lambda g: (males if g == "m" else females).pop(0)
     voices = {}
-    if funny:
+    fixed = {c["role"]: c["voice"] for c in story.get("cast", []) if c.get("voice")}
+    if story["hero"].get("voice"):
+        fixed["hero"] = story["hero"]["voice"]
+    for vname in fixed.values():                          # keep fixed voices out of the random pools
+        for pool in (males, females):
+            pool[:] = [v for v in pool if v[0] != vname]
+    if fixed.get("hero"):
+        voices["hero"] = {"kokoro_voice": fixed["hero"], "name": "en-US-JasonNeural", "speed": 1.04, "semitones": 0.3,
+                          "rate": "+4%", "pitch": "+2Hz"}
+    elif funny:
         hv = FUNNY_NARRATOR[hero["gender"]]
         for pool in (males, females):
             if hv in pool:
@@ -108,7 +120,7 @@ def cast_story(story: dict, seed: int, funny: bool = False) -> dict:
         voices["hero"] = {"kokoro_voice": hv[0], "name": hv[1], "speed": 0.92 + rnd.random() * 0.06, "semitones": 0.0}
     voices["narrator"] = voices["hero"]
     for role, lk in side.items():
-        v = take(lk["gender"])
+        v = (fixed[role], "en-US-GuyNeural" if lk["gender"] == "m" else "en-US-AriaNeural") if role in fixed else take(lk["gender"])
         voices[role] = {"kokoro_voice": v[0], "name": v[1], "speed": 0.95 + rnd.random() * 0.08,
                         "semitones": -0.5 if role in ("grandpa", "dad", "landlord") else 2.0 if role in ("daughter", "son") else 0.0}
     vg, sp, semi, echo = VILLAIN_VOICE.get(kind, ("m", 0.88, -1.5, True))
@@ -121,6 +133,9 @@ def cast_story(story: dict, seed: int, funny: bool = False) -> dict:
     else:
         v = take(vg)
         voices["villain"] = {"kokoro_voice": v[0], "name": v[1], "speed": sp, "semitones": semi, "echo": echo}
+    for role, over in (story.get("voice_over") or {}).items():   # e.g. the villain speaks with a cast member's voice, lower
+        base = voices.get(over.get("like", role), voices.get(role, {}))
+        voices[role] = dict(base, **{k: v for k, v in over.items() if k != "like"})
     for k, v in voices.items():
         v.setdefault("engine", "kokoro")
         v["kokoro_lang"] = "b" if v["kokoro_voice"].startswith("b") else "a"

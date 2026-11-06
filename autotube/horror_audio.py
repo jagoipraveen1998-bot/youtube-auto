@@ -162,7 +162,7 @@ def sfx_track(syn: Synth, plan: dict) -> np.ndarray:
             _add(sfx, syn.thud(50, 0.6), tb, 0.9)
             _add(sfx, syn.reverb(syn.stab([622, 659, 932], 1.2, 3)), tb, 0.45)
         elif react == "ring":
-            if sh["scene"] == "phone":
+            if sh["scene"] in ("phone", "phone2"):
                 buzz = lp(np.sign(np.sin(2 * np.pi * 150 * np.arange(int(0.35 * SR)) / SR)), 600) * 0.6
                 for k in range(3): _add(sfx, buzz, tb + k * 0.55, 0.5)
             else:
@@ -195,6 +195,37 @@ def sfx_track(syn: Synth, plan: dict) -> np.ndarray:
             _add(sfx, boing, tb, 0.8)
         elif react == "droop":
             _add(sfx, syn.reverb(syn.thud(32, 2.0), 2.0, 0.3), tb, 1.1)
+        elif react == "shutter":
+            _add(sfx, syn.click(), tb, 1.0); _add(sfx, hp(syn.noise(int(0.09 * SR)), 2500) * np.exp(-np.arange(int(0.09 * SR)) / SR * 40), tb + 0.03, 0.8)
+        elif react == "send":
+            n = int(0.3 * SR); t = np.arange(n) / SR
+            _add(sfx, np.sin(2 * np.pi * np.cumsum(np.linspace(500, 1400, n)) / SR) * np.sin(np.pi * t / t[-1]) * 0.6, tb)
+        elif react == "buzz":
+            buzz = lp(np.sign(np.sin(2 * np.pi * 150 * np.arange(int(0.4 * SR)) / SR)), 600) * 0.6
+            for k in range(2): _add(sfx, buzz, tb + k * 0.6, 0.55)
+        elif react == "slam":
+            for k in (0, 0.3, 0.6): _add(sfx, lp(syn.thud(70, 0.45), 700), tb + k, 1.0); _add(sfx, syn.click(), tb + k, 0.5)
+        elif react == "door_open":
+            _add(sfx, syn.click(), tb - 0.1, 0.9)
+            n = int(1.4 * SR); t = np.arange(n) / SR
+            creak = bp(np.sin(2 * np.pi * (220 + 90 * np.sin(2 * np.pi * 2.2 * t)) * t) * (1 + syn.noise(n) * 0.4), 150, 2000) * np.sin(np.pi * t / t[-1])
+            _add(sfx, creak, tb, 0.5)
+            if sh.get("shoe") is not None:
+                _add(sfx, lp(syn.thud(80, 0.3), 900), fr(beat + sh["shoe"]) + 0.25, 0.9)
+        elif react == "shift":
+            n = int(0.7 * SR); _add(sfx, bp(syn.noise(n), 200, 1200) * np.sin(np.pi * np.arange(n) / n), tb, 0.5)
+        elif react == "dome":
+            _add(sfx, syn.click(), tb, 0.9)
+        elif react == "circle":
+            n = int(0.5 * SR); _add(sfx, bp(syn.noise(n), 1500, 4000) * np.sin(np.pi * np.arange(n) / n) ** 2, tb, 0.4)
+        elif react == "pop":
+            n = int(0.12 * SR); t = np.arange(n) / SR
+            _add(sfx, np.sin(2 * np.pi * np.cumsum(np.linspace(700, 1300, n)) / SR) * np.exp(-t * 25), tb, 0.6)
+        elif react == "hangup":
+            for k in range(3): _add(sfx, syn.beep(480, 0.12, square=False), tb + k * 0.2, 0.4)
+        elif react == "breath":
+            for k in range(3):
+                n = int(0.9 * SR); _add(sfx, lp(bp(syn.noise(n), 300, 2500), 1800) * np.sin(np.pi * np.arange(n) / n) ** 1.5, fr(a) + 0.2 + k * 1.15, 0.35)
         elif react == "text_change":
             for k in range(4): _add(sfx, hp(syn.noise(int(0.04 * SR)), 1000), tb - 0.05 + k * 0.05, 0.5)
         if sh.get("twist"):
@@ -226,6 +257,34 @@ def sfx_track(syn: Synth, plan: dict) -> np.ndarray:
     return sfx
 
 
+def ambience_track(syn: Synth, plan: dict) -> np.ndarray:
+    """Room tone for scripted sets: the car engine and road, the radio, the gas station's buzzing light."""
+    amb = np.zeros(syn.n)
+    rng = np.random.default_rng(7)
+    for sh in plan["shots"]:
+        a, b = sh["a"] / FPS, sh["b"] / FPS
+        n = int((b - a) * SR)
+        if n <= 0:
+            continue
+        t = np.arange(n) / SR
+        fade = np.minimum(1, np.minimum(t, (n / SR) - t) / 0.08)
+        if sh["scene"] in ("car", "selfie") and not sh.get("parked"):
+            road = lp(rng.standard_normal(n), 260) * 2.0 + np.sin(2 * np.pi * 42 * t) * 0.35
+            _add(amb, road * fade, a, 1.0)
+        if sh["scene"] == "station" or (sh["scene"] == "phone2" and sh.get("bg") == "station"):
+            hum = lp(np.sin(2 * np.pi * 120 * t) + 0.5 * np.sin(2 * np.pi * 240 * t) + 0.25 * np.sign(np.sin(2 * np.pi * 120 * t)), 900)
+            _add(amb, (hum * 0.35 + lp(rng.standard_normal(n), 500) * 0.4) * fade, a, 1.0)
+        if sh.get("radio"):
+            mel = [0, 4, 7, 9, 7, 4, 2, 4]
+            out = np.zeros(n)
+            for k in range(int((b - a) / 0.32)):
+                fr0 = 330 * 2 ** (mel[k % len(mel)] / 12); nn = int(0.3 * SR); tn = np.arange(nn) / SR
+                tone = np.sin(2 * np.pi * fr0 * tn) * np.exp(-tn * 6)
+                i = int(k * 0.32 * SR); out[i:i + nn] += tone[: max(0, n - i)]
+            _add(amb, bp(out, 400, 2500) * 0.8 * fade, a, 1.0)
+    return amb
+
+
 def _grms(x):
     w = int(0.05 * SR); n = len(x) // w
     if n == 0:
@@ -254,7 +313,10 @@ def make_soundtrack(voice: np.ndarray, plan: dict, work: Path, seed: int) -> Pat
     db = lambda x: 20 * np.log10(max(x, 1e-9))
     log(f"Mix: music {db(_grms(m)) - db(vr):+.1f} dB vs voice, sfx {db(_grms(s)) - db(vr):+.1f} dB, "
         f"sfx peak {np.abs(s).max() / vp:.2f}x voice peak")
-    mix = v + m + s
+    amb = pad(ambience_track(syn, plan))
+    if np.abs(amb).max() > 0:
+        amb *= (vr * 0.22) / max(_grms(amb), 1e-9)     # room tone sits well under the voices (about -13 dB)
+    mix = v + m + s + amb
     mix /= max(1.0, np.abs(mix).max())
     raw = work / "mix.wav"
     save(raw, mix)

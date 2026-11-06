@@ -239,6 +239,11 @@ function head(o, lw, SF) {
   else SF(hairPath(fy, (o.hairUp || 0) * 80), HAIR);
   if (acc.bow && t > 0.3) { SF(ell(-150, -210, 60, 36, -0.4), acc.bow); SF(ell(-60, -235, 60, 36, 0.4), acc.bow); SF(ell(-105, -222, 22, 22), acc.bow); }
   if (acc.cap && t > 0.3) { SF(rr(-225, -275, 450, 130, [120, 120, 10, 10]), acc.cap); SF(rr(-40, -160, 300, 34, 17), acc.cap); }
+  if (acc.earbud && t > 0.3) {     // white earbud in the right ear, cord running down to the chest
+    ctx.strokeStyle = INK; ctx.lineWidth = 11; ctx.beginPath(); ctx.moveTo(212, 62); ctx.quadraticCurveTo(230, 220, 160, 360); ctx.stroke();
+    ctx.strokeStyle = '#f2f2f0'; ctx.lineWidth = 6; ctx.stroke();
+    SF(ell(212, 40, 22, 26), '#f4f4f2');
+  }
   ctx.restore();
 }
 function curlyPath(fy) {
@@ -299,6 +304,7 @@ function face(o, lw, SF) {
   const acc = o.acc || {};
   if (acc.cheeks) for (const sd of [-1, 1]) { ctx.fillStyle = 'rgba(232,96,120,0.55)'; ctx.beginPath(); ctx.ellipse(sd * 120, 100, 44, 28, 0, 0, 7); ctx.fill(); }
   if (acc.freckles) { ctx.fillStyle = 'rgba(120,60,30,0.55)'; for (const sd of [-1, 1]) for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.arc(sd * (70 + (i % 3) * 24), 82 + Math.floor(i / 3) * 20 + (i % 2) * 6, 6, 0, 7); ctx.fill(); } }
+  if (acc.crease) { ctx.strokeStyle = 'rgba(90,40,40,0.55)'; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(-170, 40); ctx.quadraticCurveTo(-130, 70, -150, 120); ctx.moveTo(-140, 30); ctx.quadraticCurveTo(-105, 60, -118, 105); ctx.stroke(); }
   if (acc.cracks) { ctx.strokeStyle = 'rgba(60,40,50,0.7)'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(60, -240); ctx.lineTo(90, -150); ctx.lineTo(70, -110); ctx.lineTo(110, -40); ctx.moveTo(90, -150); ctx.lineTo(130, -130); ctx.stroke(); }
   if (acc.glasses) {
     ctx.strokeStyle = INK; ctx.lineWidth = 12;
@@ -317,9 +323,9 @@ function face(o, lw, SF) {
   else if (m === 'wobble') {
     ctx.beginPath(); ctx.moveTo(-55, my); for (let i = 1; i <= 6; i++) ctx.lineTo(-55 + i * 18.3, my + (i % 2 ? -10 : 8)); ctx.stroke();
   } else if (m === 'grin') {
-    const g = clamp(o.grin ?? 1), w = 50 + 110 * g;
-    const p = new Path2D(); p.moveTo(-w, my - 20 * g); p.quadraticCurveTo(0, my + 5, w, my - 20 * g);
-    p.quadraticCurveTo(0, my + 20 + 120 * g, -w, my - 20 * g);
+    const gw = o.grinW || 1, g = clamp(o.grin ?? 1), w = (50 + 110 * g) * gw, up = 20 * g * (gw > 1 ? gw * 2.2 : 1);
+    const p = new Path2D(); p.moveTo(-w, my - up); p.quadraticCurveTo(0, my + 5, w, my - up);
+    p.quadraticCurveTo(0, my + 20 + 120 * g * (0.6 + 0.4 * gw), -w, my - up);
     ctx.fillStyle = MOUTH; ctx.fill(p);
     ctx.save(); ctx.clip(p); ctx.fillStyle = '#f7f3e6'; ctx.fillRect(-w, my - 30, 2 * w, 18 + 30 * g);
     ctx.strokeStyle = '#b9ad98'; ctx.lineWidth = 4; for (let x = -w; x < w; x += 30) { ctx.beginPath(); ctx.moveTo(x, my - 30); ctx.lineTo(x, my - 12 + 30 * g); ctx.stroke(); }

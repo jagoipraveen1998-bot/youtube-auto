@@ -36,6 +36,15 @@ def _echo(path: Path) -> np.ndarray:
     return ha.load(out)
 
 
+def _phone(audio: np.ndarray, stem: Path) -> np.ndarray:
+    """A voice heard through a phone: narrow band, a little crunch, slightly quieter."""
+    src, out = stem.with_name(stem.name + "_raw.wav"), stem.with_name(stem.name + "_phone.wav")
+    ha.save(src, audio)
+    run(["ffmpeg", "-y", "-v", "error", "-i", str(src), "-af",
+         "highpass=f=320,lowpass=f=3300,acompressor=threshold=0.1:ratio=4,volume=0.9", "-ar", str(ha.SR), "-ac", "1", str(out)])
+    return ha.load(out)
+
+
 def voice_for_speaker(beat: dict, voices: dict) -> dict:
     sp = beat.get("speaker") or "narrator"
     return voices.get(sp) or voices.get("narrator")
@@ -49,22 +58,35 @@ def voice_lines(story: dict, voices: dict, work: Path) -> tuple[np.ndarray, list
     t = LEAD
     beats = story["beats"]
     for i, b in enumerate(beats):
-        mp3 = work / f"line{i:03d}.mp3"
-        vcfg = voice_for_speaker(b, voices)
-        dur, words = say(b["line"], vcfg, mp3)
-        audio = _echo(mp3) if vcfg.get("echo") else ha.load(mp3)
-        dur = len(audio) / ha.SR
-        bw = b.get("beat_word")
-        hit = next((w for w in words if bw and _norm(w["text"]) == _norm(bw)), None)
-        if hit is None and bw:
-            hit = next((w for w in words if _norm(bw) and _norm(bw) in _norm(w["text"])), None)
-        tword = hit["start"] if hit else dur * 0.6
+        if b.get("silent"):                       # an action beat with no words (a photo, a knock, a door)
+            dur = float(b["silent"])
+            audio = np.zeros(int(dur * ha.SR))
+            tword = dur * float(b.get("beat_at", 0.5))
+        else:
+            mp3 = work / f"line{i:03d}.mp3"
+            vcfg = dict(voice_for_speaker(b, voices))
+            if b.get("vspeed"):
+                vcfg["speed"] = vcfg.get("speed", 1.0) * float(b["vspeed"])
+            dur, words = say(b["line"], vcfg, mp3)
+            audio = _echo(mp3) if vcfg.get("echo") else ha.load(mp3)
+            if b.get("phone"):
+                audio = _phone(audio, work / f"line{i:03d}")
+            dur = len(audio) / ha.SR
+            bw = b.get("beat_word")
+            hit = next((w for w in words if bw and _norm(w["text"]) == _norm(bw)), None)
+            if hit is None and bw:
+                hit = next((w for w in words if _norm(bw) and _norm(bw) in _norm(w["text"])), None)
+            tword = hit["start"] if hit else dur * float(b.get("beat_at", 0.6))
         timing.append({"start": t, "end": t + dur, "beat": t + min(tword, dur)})
         parts.append(audio)
         t += dur
         nxt = beats[i + 1] if i + 1 < len(beats) else None
         if nxt:
             gap = CHAPTER_GAP if nxt.get("chapter") else LONG_GAP if (nxt.get("jump") or nxt.get("twist")) else GAP
+            if b.get("silent") or nxt.get("silent"):
+                gap = 0.12                        # action beats already carry their own timing
+            if "gap" in b:
+                gap = float(b["gap"])
             if (nxt.get("speaker") or "narrator") != (b.get("speaker") or "narrator"):
                 gap = max(gap, 0.4)
             if nxt.get("react") == "gag":

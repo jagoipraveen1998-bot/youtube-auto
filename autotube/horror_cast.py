@@ -65,7 +65,11 @@ def look(rnd: random.Random, gender: str, outfit: str | None = None, **over) -> 
     }
 
 
-def cast_story(story: dict, seed: int) -> dict:
+# The channel's main narrator for Shorts: a playful comedy voice, the same every time (brand recognition)
+FUNNY_NARRATOR = {"m": ("am_puck", "en-US-JasonNeural"), "f": ("af_bella", "en-US-JennyNeural")}
+
+
+def cast_story(story: dict, seed: int, funny: bool = False) -> dict:
     """Looks for hero, villain and side characters, plus a voice for every speaker."""
     rnd = random.Random(seed)
     hl = story["hero"].get("look")
@@ -90,8 +94,15 @@ def cast_story(story: dict, seed: int) -> dict:
     rnd.shuffle(males); rnd.shuffle(females)
     take = lambda g: (males if g == "m" else females).pop(0)
     voices = {}
-    hv = take(hero["gender"])
-    voices["hero"] = {"kokoro_voice": hv[0], "name": hv[1], "speed": 0.92 + rnd.random() * 0.06, "semitones": 0.0}
+    if funny:
+        hv = FUNNY_NARRATOR[hero["gender"]]
+        for pool in (males, females):
+            if hv in pool:
+                pool.remove(hv)
+        voices["hero"] = {"kokoro_voice": hv[0], "name": hv[1], "speed": 1.06, "semitones": 0.5, "rate": "+4%", "pitch": "+4Hz"}
+    else:
+        hv = take(hero["gender"])
+        voices["hero"] = {"kokoro_voice": hv[0], "name": hv[1], "speed": 0.92 + rnd.random() * 0.06, "semitones": 0.0}
     voices["narrator"] = voices["hero"]
     for role, lk in side.items():
         v = take(lk["gender"])

@@ -67,6 +67,8 @@ def voice_lines(story: dict, voices: dict, work: Path) -> tuple[np.ndarray, list
             gap = CHAPTER_GAP if nxt.get("chapter") else LONG_GAP if (nxt.get("jump") or nxt.get("twist")) else GAP
             if (nxt.get("speaker") or "narrator") != (b.get("speaker") or "narrator"):
                 gap = max(gap, 0.4)
+            if nxt.get("react") == "gag":
+                gap += 0.25          # comic timing: a beat before the punchline
             parts.append(np.zeros(int(gap * ha.SR)))
             t += gap
         if i and i % 25 == 0:
@@ -224,7 +226,7 @@ def signature_laugh(work: Path) -> np.ndarray:
 def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_file: Path | None = None,
                title: str | None = None) -> tuple[Path, Path, dict]:
     work.mkdir(parents=True, exist_ok=True)
-    casting = cast_story(story, seed)
+    casting = cast_story(story, seed, funny=(fmt == "vertical"))
     (work / "casting.json").write_text(json.dumps(casting, indent=1), encoding="utf-8")
     log("Cast: " + ", ".join(f"{k}={v['kokoro_voice']}" for k, v in casting["voices"].items() if k != "narrator"))
     if voice_file:

@@ -1,6 +1,80 @@
 {
-  "stories": [],
-  "videos": [],
+  "stories": [
+    "tall-wardrobe: My clothes keep getting stretched.",
+    "unordered-parcel: Every night at midnight, someone knocks with a parcel.",
+    "lost-tuesday: My calendar skipped a day.",
+    "goodnight-text: Every night at three oh seven, someone texts me goodnight.",
+    "smart-speaker: I asked my laptop for the weather.",
+    "leftovers-cctv: Someone keeps eating my leftovers.",
+    "slow-reflection: My reflection has always been a little slow.",
+    "ghost-rent: My flat costs half price.",
+    "sleepover-count: Four of us went to sleep at my sleepover."
+  ],
+  "videos": [
+    {
+      "date": "2026-11-06T04:30:00.000Z",
+      "title": "There's a very tall man living in my wardrobe #shorts #horror",
+      "video_id": "6eUgulBd5FQ",
+      "length": "32s",
+      "scheduled": true
+    },
+    {
+      "date": "2026-11-06T06:30:00.000Z",
+      "title": "A parcel arrives every night. I never ordered anything #shorts #horror",
+      "video_id": "KXVcR6-YCpI",
+      "length": "33s",
+      "scheduled": true
+    },
+    {
+      "date": "2026-11-06T07:30:00.000Z",
+      "title": "My calendar skipped a day. Nobody remembers my Tuesday #shorts #horror",
+      "video_id": "RD0CIFCWOSM",
+      "length": "30s",
+      "scheduled": true
+    },
+    {
+      "date": "2026-11-06T10:30:00.000Z",
+      "title": "Someone texts me goodnight every night at 3:07 #shorts #horror",
+      "video_id": "x7LLaq7y5A4",
+      "length": "31s",
+      "scheduled": true
+    },
+    {
+      "date": "2026-11-06T11:30:00.000Z",
+      "title": "My smart speaker knows things it shouldn't #shorts #horror",
+      "video_id": "pGlqm6vyZEs",
+      "length": "26s",
+      "scheduled": true
+    },
+    {
+      "date": "2026-11-06T14:30:00.000Z",
+      "title": "Someone keeps eating my leftovers. So I set up a camera #shorts #horror",
+      "video_id": "hb7VR0NCMfQ",
+      "length": "32s",
+      "scheduled": true
+    },
+    {
+      "date": "2026-11-06T17:30:00.000Z",
+      "title": "My reflection has always been a little slow... #shorts #horror",
+      "video_id": "t76bIggk1nw",
+      "length": "27s",
+      "scheduled": true
+    },
+    {
+      "date": "2026-11-06T18:30:00.000Z",
+      "title": "My ghost roommate pays half the rent #shorts #horror",
+      "video_id": "yIl98PbalRc",
+      "length": "31s",
+      "scheduled": true
+    },
+    {
+      "date": "2026-11-06T20:30:00.000Z",
+      "title": "We counted heads at the sleepover. There was one extra #shorts #horror",
+      "video_id": "vEY3d2GFjKU",
+      "length": "32s",
+      "scheduled": true
+    }
+  ],
   "long_videos": [
     {
       "date": "2026-11-05 23:53",

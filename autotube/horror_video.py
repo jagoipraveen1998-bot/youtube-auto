@@ -227,6 +227,9 @@ def cover(frames_dir: Path, plan: dict, out: Path, title: str | None = None) -> 
 
     tw = next((s for s in plan["shots"] if s.get("twist")), None)
     f = (tw.get("beat") or tw["a"]) + 6 if tw else int(plan["frames"] * 0.66)
+    if plan.get("cover_frame"):
+        f = plan["cover_frame"]
+    title = plan.get("cover_text") or title
     f = min(f, plan["frames"] - 1)
     img = Image.open(frames_dir / f"f{f:05d}.jpg").convert("RGB")
     if plan.get("format") == "landscape" and title:
@@ -290,7 +293,7 @@ def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_
     laugh = np.zeros(1) if voice_file else signature_laugh(work)
     story_end = intro + max(len(voice) / ha.SR, timing[-1]["end"]) + TAIL
     total = story_end + max(outro, len(laugh) / ha.SR + 0.6)
-    timing = [{k: v + intro for k, v in tm.items()} for tm in timing]
+    timing = [{k: (v + intro if isinstance(v, (int, float)) else v) for k, v in tm.items()} for tm in timing]
     full = np.zeros(int(total * ha.SR) + ha.SR)
     full[int(intro * ha.SR):int(intro * ha.SR) + len(voice)] = voice
     i0 = int((story_end + 0.35) * ha.SR)
@@ -298,6 +301,11 @@ def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_
     voice = full[: int(total * ha.SR)]
     plan = build_plan(story, timing, story_end, casting, fmt, intro_f=int(round(intro * FPS)))
     plan["intro"] = int(round(intro * FPS))
+    if story.get("cover_beat") is not None:      # a storyboard can pick its thumbnail shot
+        cs = plan["shots"][story["cover_beat"]]
+        plan["cover_frame"] = cs["b"] - 6
+    if story.get("cover_text"):
+        plan["cover_text"] = story["cover_text"]
     plan["outro"] = int(round(total * FPS)) - plan["frames"]
     plan["frames"] = int(round(total * FPS))
     (work / "plan.json").write_text(json.dumps(plan, indent=1), encoding="utf-8")

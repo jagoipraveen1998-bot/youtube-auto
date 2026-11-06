@@ -15,6 +15,9 @@ on:
         options:
           - no-upload
           - full
+      story:
+        description: "Optional: a story file to use instead of Gemini (e.g. horror/stories/samples/wifi_ghost.json)"
+        default: ""
 
 permissions:
   contents: write
@@ -67,12 +70,12 @@ jobs:
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_HORROR_REFRESH_TOKEN: ${{ secrets.YT_HORROR_REFRESH_TOKEN }}
           MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'full' }}
+          STORY: ${{ inputs.story }}
         run: |
-          if [ "$MODE" = "no-upload" ]; then
-            python run_horror.py --no-upload
-          else
-            python run_horror.py
-          fi
+          ARGS=()
+          [ -n "$STORY" ] && ARGS+=(--story "$STORY")
+          [ "$MODE" = "no-upload" ] && ARGS+=(--no-upload)
+          python run_horror.py "${ARGS[@]}"
 
       - name: Keep the video for 3 days
         if: always()

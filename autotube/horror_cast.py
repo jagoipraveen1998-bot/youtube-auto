@@ -65,10 +65,17 @@ def look(rnd: random.Random, gender: str, outfit: str | None = None, **over) -> 
     }
 
 
-def cast_story(story: dict, seed: int) -> dict:
+# The channel's main narrator for Shorts: a playful comedy voice, the same every time (brand recognition)
+FUNNY_NARRATOR = {"m": ("am_puck", "en-US-JasonNeural"), "f": ("am_puck", "en-US-JasonNeural")}
+
+
+def cast_story(story: dict, seed: int, funny: bool = False) -> dict:
     """Looks for hero, villain and side characters, plus a voice for every speaker."""
     rnd = random.Random(seed)
     hl = story["hero"].get("look")
+    if funny and hl in ("girl", "woman"):      # Puck is the one channel voice for Shorts, so the hero is a boy/man
+        hl = "man" if hl == "woman" else "boy"
+        story["hero"]["look"] = hl
     hero_g = "f" if hl in ("girl", "woman") else "m"
     adult = {"adult": True, "outfit": story["hero"].get("outfit") or rnd.choice(["cardigan", "tee", "hoodie"])} if hl in ("man", "woman") else {}
     hero = look(rnd, hero_g, **adult) if adult else look(rnd, hero_g, story["hero"].get("outfit"))
@@ -90,8 +97,15 @@ def cast_story(story: dict, seed: int) -> dict:
     rnd.shuffle(males); rnd.shuffle(females)
     take = lambda g: (males if g == "m" else females).pop(0)
     voices = {}
-    hv = take(hero["gender"])
-    voices["hero"] = {"kokoro_voice": hv[0], "name": hv[1], "speed": 0.92 + rnd.random() * 0.06, "semitones": 0.0}
+    if funny:
+        hv = FUNNY_NARRATOR[hero["gender"]]
+        for pool in (males, females):
+            if hv in pool:
+                pool.remove(hv)
+        voices["hero"] = {"kokoro_voice": hv[0], "name": hv[1], "speed": 1.06, "semitones": 0.5, "rate": "+4%", "pitch": "+4Hz"}
+    else:
+        hv = take(hero["gender"])
+        voices["hero"] = {"kokoro_voice": hv[0], "name": hv[1], "speed": 0.92 + rnd.random() * 0.06, "semitones": 0.0}
     voices["narrator"] = voices["hero"]
     for role, lk in side.items():
         v = take(lk["gender"])
@@ -100,6 +114,8 @@ def cast_story(story: dict, seed: int) -> dict:
     vg, sp, semi, echo = VILLAIN_VOICE.get(kind, ("m", 0.88, -1.5, True))
     if vl in ("girl", "boy") and vg != "same":
         vg, semi = ("f" if vl == "girl" else "m"), 2.0
+    elif vl in ("man", "woman") and vg != "same":
+        vg = "m" if vl == "man" else "f"
     if vg == "same":
         voices["villain"] = dict(voices["hero"], speed=sp, semitones=semi, echo=echo)
     else:

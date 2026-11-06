@@ -154,7 +154,7 @@ def sfx_track(syn: Synth, plan: dict) -> np.ndarray:
         if sh["scene"] == "cctv" and not seen_cctv:
             _add(sfx, hp(syn.noise(int(0.25 * SR)), 1500), fr(a), 0.45); seen_cctv = True
         if i == 0:
-            _add(sfx, syn.whoosh(1.0, 150, 1200), 0.0, 0.35)
+            _add(sfx, syn.whoosh(1.0, 150, 1200), fr(a), 0.35)
         if beat is None:
             continue
         tb = fr(beat)
@@ -186,6 +186,13 @@ def sfx_track(syn: Synth, plan: dict) -> np.ndarray:
             n = int(0.8 * SR); t = np.arange(n) / SR
             creak = bp(np.sin(2 * np.pi * (180 + 60 * np.sin(2 * np.pi * 3 * t)) * t) * (1 + syn.noise(n) * 0.3), 150, 1500) * np.sin(np.pi * t / t[-1])
             _add(sfx, creak, tb, 0.35)
+        elif react == "gag":
+            n = int(0.42 * SR); t = np.arange(n) / SR
+            whistle = np.sin(2 * np.pi * np.cumsum(np.linspace(380, 1500, n)) / SR) * np.sin(np.pi * t / t[-1]) ** 0.5
+            _add(sfx, whistle, tb - 0.38, 0.45)
+            n = int(0.7 * SR); t = np.arange(n) / SR
+            boing = np.sin(2 * np.pi * (170 + 90 * np.sin(2 * np.pi * 11 * t) * np.exp(-t * 4)) * t) * np.exp(-t * 4.5)
+            _add(sfx, boing, tb, 0.8)
         elif react == "droop":
             _add(sfx, syn.reverb(syn.thud(32, 2.0), 2.0, 0.3), tb, 1.1)
         elif react == "text_change":
@@ -205,8 +212,16 @@ def sfx_track(syn: Synth, plan: dict) -> np.ndarray:
     if last.get("beat") is not None and not last.get("twist"):
         _add(sfx, syn.reverb(syn.thud(32, 2.0), 2.0, 0.3), fr(last["beat"]), 1.0)
     end = plan["frames"] / FPS
+    story_end = (plan["frames"] - plan.get("outro", 0)) / FPS
     n = int(0.6 * SR)
-    _add(sfx, hp(syn.noise(n), 1500) * np.linspace(0, 1, n), end - 0.62, 0.4)
+    _add(sfx, hp(syn.noise(n), 1500) * np.linspace(0, 1, n), story_end - 0.62, 0.4)
+    if plan.get("intro"):        # logo sting: glitch burst + hit
+        for k in range(3): _add(sfx, hp(syn.noise(int(0.05 * SR)), 1200), 0.02 + k * 0.06, 0.6)
+        _add(sfx, syn.thud(48, 0.9), 0.1, 1.0)
+        _add(sfx, syn.reverb(syn.stab([311, 330, 466], 0.9, 3.5), 1.4, 0.4), 0.1, 0.4)
+    if plan.get("outro"):        # signature: low boom under the laugh, static cut at the very end
+        _add(sfx, syn.reverb(syn.thud(30, 2.2), 2.0, 0.35), story_end, 1.0)
+        _add(sfx, hp(syn.noise(int(0.3 * SR)), 1500), end - 0.32, 0.5)
     sfx[int((end - 0.02) * SR):] = 0
     return sfx
 

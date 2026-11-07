@@ -286,6 +286,48 @@ def creak(syn: Synth, rng, dur: float = 0.45) -> np.ndarray:
     return bp(tone * (1 + grit), 120, 2600) * np.sin(np.pi * t / t[-1]) ** 0.7
 
 
+def wood_step(syn: Synth, rng) -> np.ndarray:
+    n = int(0.22 * SR); t = np.arange(n) / SR
+    body = np.sin(2 * np.pi * rng.uniform(85, 110) * t) * np.exp(-t * 28)
+    knock = bp(syn.noise(n), 300, 1800) * np.exp(-t * 45) * 0.8
+    return lp(body + knock, 2200)
+
+
+def concrete_step(syn: Synth, rng) -> np.ndarray:
+    n = int(0.28 * SR); t = np.arange(n) / SR
+    scuff = bp(syn.noise(n), 900, 5000) * np.exp(-((t - 0.06) / 0.05) ** 2) * 0.7
+    heel = np.sin(2 * np.pi * 70 * t) * np.exp(-t * 35)
+    return scuff + heel
+
+
+def piano_note(freq: float, dur: float = 4.0) -> np.ndarray:
+    """A soft, slightly detuned piano-like note with a long cold decay."""
+    n = int(dur * SR); t = np.arange(n) / SR
+    tone = np.zeros(n)
+    for h, amp in ((1, 1.0), (2, 0.45), (3, 0.22), (4, 0.12), (5, 0.06)):
+        fh = freq * h * (1 + 0.0007 * h * h)                        # piano strings are a touch inharmonic
+        tone += amp * (np.sin(2 * np.pi * fh * t) + 0.6 * np.sin(2 * np.pi * fh * 1.0015 * t)) * np.exp(-t * (1.2 + 0.7 * h))
+    hammer = np.exp(-t * 400) * 0.3
+    return (tone + hammer) * np.minimum(1, t / 0.004)
+
+
+def piano_bed(syn: Synth, plan: dict, stop: float) -> np.ndarray:
+    """Sparse, cold piano: low notes a semitone apart, the odd high dissonant pair, long echoes; stops at the twist."""
+    out = np.zeros(syn.n)
+    rng = np.random.default_rng(31)
+    low = [55.0, 58.27, 55.0, 51.91]                              # A1, Bb1, A1, Ab1
+    high = [(659.3, 698.5), (622.3, 659.3), (880.0, 932.3)]        # E5/F5, Eb5/E5, A5/Bb5
+    tt, i = 1.0, 0
+    while tt < stop - 1.0:
+        _add(out, piano_note(low[i % len(low)], 5.0), tt, 0.9)
+        if i % 2 == 1:
+            a, b = high[(i // 2) % len(high)]
+            _add(out, piano_note(a, 3.5) + piano_note(b, 3.5), tt + rng.uniform(1.4, 2.0), 0.28)
+        tt += rng.uniform(3.4, 4.6); i += 1
+    _add(out, sum(piano_note(f, 6.0) for f in (27.5, 55.0, 58.27, 82.4)), stop, 1.2)   # low cluster on the reveal
+    return syn.reverb(out, 3.2, 0.5)
+
+
 def story_sfx(syn: Synth, plan: dict) -> np.ndarray:
     """Real sounds for storyboarded Shorts: a creak on every counted stair, heartbeats, breathing under the stairs."""
     out = np.zeros(syn.n)
@@ -300,7 +342,15 @@ def story_sfx(syn: Synth, plan: dict) -> np.ndarray:
                 k = abs(run[1] - run[0]) + 1
                 end = sh.get("beat") or sh["b"]
                 for j in range(k):
-                    _add(out, creak(syn, rng, 0.3), (sh["a"] + (end - sh["a"]) * j / k) / FPS, 0.7)
+                    tj = (sh["a"] + (end - sh["a"]) * j / k) / FPS
+                    _add(out, wood_step(syn, rng), tj, 1.0)                 # the foot lands on the tread...
+                    _add(out, creak(syn, rng, 0.3), tj + 0.05, 0.6)         # ...and the old wood complains
+        if (sh.get("hero") or {}).get("aisle"):                     # slow steps on concrete toward the case
+            end = sh.get("beat") or sh["b"]
+            tt = sh["a"] / FPS + 0.15
+            while tt < end / FPS - 0.1:
+                _add(out, concrete_step(syn, rng), tt, 0.9)
+                tt += 10.5 / FPS * 1.6
         if sh.get("heart"):
             t0, t1 = sh["a"] / FPS, sh["b"] / FPS
             tt = t0 + 0.1
@@ -449,6 +499,12 @@ def make_soundtrack(voice: np.ndarray, plan: dict, work: Path, seed: int) -> Pat
         m, amb, sc = m * duck, amb * duck, sc * duck
         s = s * duck_curve(v, 4.0)
         log("Scary mix: sub drone, whispers, riser; music/ambience ducked 8 dB and sfx 4 dB under dialogue")
+        if plan.get("piano"):
+            tw = next((x for x in plan["shots"] if x.get("twist") and x.get("beat") is not None), None)
+            pn = pad(piano_bed(syn, plan, (tw["beat"] / FPS) if tw else total - 4))
+            pn *= (vr * 0.3) / max(_grms(pn), 1e-9)
+            sc = sc + pn * duck_curve(v, 6.0)
+            log("Cold piano added over the drone")
         mix = v + m + s + amb + sc
     else:
         mix = v + m + s + amb

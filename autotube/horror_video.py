@@ -214,7 +214,7 @@ def build_plan(story: dict, timing: list[dict], total: float, casting: dict, fmt
             sh["beat"] = min(sh["beat"], sh["b"] - 3)
     return {"frames": frames, "format": fmt, "hero": casting["hero"], "other": casting["other"],
             "cast": casting["cast"], "shots": shots, "series": story.get("series"), "captions": bool(story.get("captions")),
-            "music": story.get("music"), "scary": bool(story.get("scary"))}
+            "music": story.get("music"), "scary": bool(story.get("scary")), "piano": bool(story.get("piano"))}
 
 
 def render(plan: dict, work: Path, frames_dir: Path, stills: list[int] | None = None) -> None:

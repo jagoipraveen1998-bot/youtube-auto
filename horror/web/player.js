@@ -309,6 +309,7 @@ function camFor(S, sh, f) {
   if (sh.beat != null && ['jolt', 'knock', 'appear', 'ring', 'lights_on', 'slam', 'buzz', 'door_open'].includes(sh.react)) c = kick(c, f, sh.beat, sh.react === 'buzz' ? 8 : 16, 7);
   if (sh.react === 'slam') { c = kick(c, f, sh.beat + 9, 14, 6); c = kick(c, f, sh.beat + 18, 14, 6); }
   if (sh.react === 'gag' && sh.beat != null && f >= sh.beat) { const t = seg(f, sh.beat, sh.beat + 8); c.z *= 1 + 0.18 * back(t) * (1 - seg(f, sh.beat + 20, sh.beat + 40)); c = kick(c, f, sh.beat, 10, 6); }
+  if (sh.roll) c.r += sh.roll * (sh.rollIn ? ss(seg(f, sh.a, sh.b)) : 1);    // dutch angle for unease
   if (sh.shake && sh.env) { const v = mouthAt(sh, f) || 0; c.x += (rnd(f * 3.7) - 0.5) * sh.shake * v / c.z; c.y += (rnd(f * 5.1) - 0.5) * sh.shake * v / c.z; c.r += (rnd(f * 2.3) - 0.5) * 1.6 * v; c.z *= 1 + 0.03 * v; }
   if (sh.react === 'knock') { c = kick(c, f, sh.beat + 9, 12, 6); c = kick(c, f, sh.beat + 18, 12, 6); }
   return c;
@@ -497,6 +498,12 @@ window.renderFrame = function (f) {
   if (sh.twist && sh.beat != null && f >= sh.beat && f < sh.beat + 6) { glitch(1.2); flash(0.25 * (1 - bT(f, sh, 6))); }
   if (sh.scene === 'cctv' && f < sh.a + 6 && sh.a > 0 && (shots[shots.indexOf(sh) - 1] || {}).scene !== 'cctv') staticNoise(0.8 * (1 - seg(f, sh.a, sh.a + 6)));
   if (sh.scene === 'selfie') selfieUI(f, sh);
+  if (sh.vig) {                      // heavy vignette closing in on dark shots
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    const g = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.25, W / 2, H / 2, Math.max(W, H) * 0.62);
+    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, `rgba(0,0,0,${sh.vig})`);
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); ctx.restore();
+  }
   if (P.series) seriesLabel(f, sh);
   if (P.captions) drawCaptions(f, sh);
   if (sh.onscreen) drawOnscreen(f, sh);

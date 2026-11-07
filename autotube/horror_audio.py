@@ -304,9 +304,12 @@ def story_sfx(syn: Synth, plan: dict) -> np.ndarray:
         if sh.get("heart"):
             t0, t1 = sh["a"] / FPS, sh["b"] / FPS
             tt = t0 + 0.1
+            accel = sh.get("heart") == "accel"           # the beat speeds up across the shot
             while tt < t1:
-                _add(out, lp(syn.thud(48, 0.18), 300), tt, 1.0); _add(out, lp(syn.thud(44, 0.16), 300), tt + 0.22, 0.7)
-                tt += 0.78
+                k = (tt - t0) / max(t1 - t0, 0.1)
+                gap = (0.85 - 0.45 * k) if accel else 0.78
+                _add(out, lp(syn.thud(48, 0.18), 300), tt, 0.8 + 0.4 * k * accel); _add(out, lp(syn.thud(44, 0.16), 300), tt + gap * 0.28, 0.7)
+                tt += gap
         if sh.get("breathe"):
             t0, t1 = sh["a"] / FPS, sh["b"] / FPS
             tt = t0 + 0.3
@@ -369,6 +372,53 @@ def _grms(x):
     return float(np.sqrt((g ** 2).mean()))
 
 
+def scare_bed(syn: Synth, plan: dict) -> np.ndarray:
+    """Deep sub drone that swells, whisper textures in the dark shots, and a rising metallic screech into the twist."""
+    n = syn.n
+    t = np.arange(n) / SR
+    rng = np.random.default_rng(23)
+    # sub drone: two low tones beating slowly, plus filtered rumble
+    bed = np.sin(2 * np.pi * 36 * t) + 0.7 * np.sin(2 * np.pi * 36.6 * t) + 0.35 * np.sin(2 * np.pi * 54.3 * t)
+    bed += lp(rng.standard_normal(n), 90) * 2.5
+    bed *= 0.55 + 0.45 * np.sin(2 * np.pi * t / 11.0) ** 2
+    out = bed * 0.6
+    for sh in plan["shots"]:
+        a, b = sh["a"] / FPS, sh["b"] / FPS
+        if sh.get("whispers"):                         # breathy, unintelligible whispers
+            tt = a + 0.4
+            while tt < b - 0.6:
+                m = int(rng.uniform(0.5, 1.1) * SR); env = np.sin(np.pi * np.arange(m) / m) ** 2
+                w = bp(rng.standard_normal(m), rng.uniform(900, 1600), rng.uniform(2800, 4200))
+                w *= 0.6 + 0.4 * np.sign(np.sin(2 * np.pi * rng.uniform(5, 9) * np.arange(m) / SR))   # syllable-like chopping
+                _add(out, w * env, tt, 0.9)
+                tt += rng.uniform(0.9, 1.8)
+    tw = next((s for s in plan["shots"] if s.get("twist") and s.get("beat") is not None), None)
+    if tw:                                             # metallic riser for 3 s into the reveal, then a sub hit
+        tb = tw["beat"] / FPS
+        m = int(3.0 * SR); tt = np.arange(m) / SR
+        f0 = 180 * (2 ** (tt / 3.0 * 2.2))
+        metal = sum(np.sin(2 * np.pi * np.cumsum(f0 * r) / SR) / (1 + i) for i, r in enumerate((1.0, 2.76, 5.4, 8.93)))
+        metal += bp(rng.standard_normal(m), 2000, 7000) * 0.4
+        metal *= (tt / 3.0) ** 2.2
+        _add(out, metal * 1.2, max(0.0, tb - 3.0), 1.0)
+        _add(out, lp(syn.thud(32, 1.6), 200) * 3, tb, 1.0)
+    return out
+
+
+def duck_curve(voice: np.ndarray, depth_db: float) -> np.ndarray:
+    """1.0 when nobody speaks, down to -depth_db while a line is spoken (fast attack, slow release)."""
+    hop = SR // 100
+    nfr = len(voice) // hop + 1
+    env = np.array([np.abs(voice[i * hop:(i + 1) * hop]).max() if i * hop < len(voice) else 0 for i in range(nfr)])
+    env = (env > np.abs(voice).max() * 0.05).astype(float)
+    sm, cur = np.zeros_like(env), 0.0
+    for i, x in enumerate(env):
+        cur = cur + (x - cur) * (0.5 if x > cur else 0.06)
+        sm[i] = cur
+    g = 10 ** (-depth_db * sm / 20)
+    return np.interp(np.arange(len(voice)), np.arange(nfr) * hop, g)
+
+
 def make_soundtrack(voice: np.ndarray, plan: dict, work: Path, seed: int) -> Path:
     """Voice untouched + music at -6 dB + SFX <= -6 dB, then -14 LUFS master. Returns master.wav."""
     total = plan["frames"] / FPS
@@ -392,7 +442,16 @@ def make_soundtrack(voice: np.ndarray, plan: dict, work: Path, seed: int) -> Pat
     amb = pad(ambience_track(syn, plan))
     if np.abs(amb).max() > 0:
         amb *= (vr * 0.22) / max(_grms(amb), 1e-9)     # room tone sits well under the voices (about -13 dB)
-    mix = v + m + s + amb
+    if plan.get("scary"):
+        sc = pad(scare_bed(syn, plan))
+        sc *= (vr * 0.4) / max(_grms(sc), 1e-9)
+        duck = duck_curve(v, 8.0)                  # background steps back about 8 dB under every line
+        m, amb, sc = m * duck, amb * duck, sc * duck
+        s = s * duck_curve(v, 4.0)
+        log("Scary mix: sub drone, whispers, riser; music/ambience ducked 8 dB and sfx 4 dB under dialogue")
+        mix = v + m + s + amb + sc
+    else:
+        mix = v + m + s + amb
     mix /= max(1.0, np.abs(mix).max())
     raw = work / "mix.wav"
     save(raw, mix)

@@ -87,9 +87,10 @@ function sarcophagus(f, sh) {
   sf(poly([[x - 120, top + 70], [x + 120, top + 70], [x + 135, top + 300], [x - 135, top + 300]]), '#2d4d7c', 5);
   for (let i = 0; i < 6; i++) fillR(x - 128 + i * 46, top + 110, 22, 190, '#c9a24a');
   sf(rr(x - 78, top + 80, 156, 210, [70, 70, 60, 60]), '#d8b25a', 5);
+  const follow = sh.eyesFollow && sh._hx != null ? clamp((sh._hx - x) / 700, -1, 1) * 9 : 0;
   for (const sd of [-1, 1]) {
     sf(ell(x + sd * 34, top + 165, 24, 11), '#f2ead6', 4);
-    ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(x + sd * 34, top + 165, 7, 0, 7); ctx.fill();
+    ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(x + sd * 34 + follow, top + 165 + Math.abs(follow) * 0.15, 7, 0, 7); ctx.fill();
     line(x + sd * 10, top + 165, x + sd * 70, top + 170, INK, 6);
   }
   line(x - 22, top + 245, x + 22, top + 245, '#7a3a2a', 7);
@@ -112,6 +113,11 @@ function basementSet(f, sh, people) {
   sf(rr(75 + 200 * p, 125, 200 * (1 - p) + 2, 400, 4), '#5d4129', 4);
   if (p < 0.5) sf(ell(255 - 180 * p, 340, 12, 12), '#d2b24c', 3);
   sf(rr(40, BS.y0, 270, 30, 4), '#4b3a2a');
+  if (sh.shadowPass) {                             // something tall slides along the back wall, behind the shelves
+    const t = seg(f, sh.a + 10, sh.b - 10), sx = lerp(1700, 1000, ss(t));
+    ctx.save(); ctx.globalAlpha = 0.5 * Math.sin(Math.PI * t); ctx.fillStyle = '#050307';
+    ctx.beginPath(); ctx.ellipse(sx, 690, 70, 85, 0, 0, 7); ctx.fill(); ctx.fillRect(sx - 85, 760, 170, 480); ctx.restore();
+  }
   // shelves with boxes, between the stairs and the case
   for (const sx of [1100, 1330]) {
     sf(rr(sx, 560, 22, BF - 560, 4), '#4d4033'); sf(rr(sx + 190, 560, 22, BF - 560, 4), '#4d4033');
@@ -124,13 +130,25 @@ function basementSet(f, sh, people) {
   line(BS.x0 - 20, BS.y0 - 230, BS.x0 + BS.n * BS.run, BF - 300, '#5a4230', 16);      // railing sits behind Jeff
   for (let k = 1; k <= BS.n; k += 2) { const [x, y] = bStep(k); line(x, y - 4, x, y - 236, '#4a3626', 8); }
   people.forEach(q => q && guy(q));
+  if (sh.lightOn !== false) {                      // dust drifting through the bulb light
+    ctx.save(); ctx.fillStyle = '#ffe9c0';
+    for (let i = 0; i < 40; i++) { const px = 950 + rnd(i) * 650 + Math.sin(f * 0.02 + i) * 30, py = 300 + ((rnd(i + 9) * 900 + f * (0.6 + rnd(i + 3))) % 900);
+      ctx.globalAlpha = 0.15 + 0.25 * rnd(i + 5); ctx.beginPath(); ctx.arc(px, py, 2 + rnd(i + 7) * 2.5, 0, 7); ctx.fill(); }
+    ctx.restore();
+  }
   // bare bulb (sways a little)
   const sw = Math.sin(f * 0.05) * 0.04 + (sh._tw || 0) * Math.sin(f * 0.9) * 0.05;
-  ctx.save(); ctx.translate(1250, -400); ctx.rotate(sw); line(0, 0, 0, 640, '#1a1a1a', 4); sf(ell(0, 665, 24, 30), sh.lightOn === false ? '#555' : '#fff3c4', 4); sf(rr(-14, 628, 28, 22, 4), '#777', 3); ctx.restore();
+  ctx.save(); ctx.translate(1250, -400); ctx.rotate(sw); line(0, 0, 0, 640, '#1a1a1a', 4); sf(ell(0, 665, 24, 30), bulbLevel(f, sh) > 0.5 ? '#fff3c4' : '#6a6455', 4); sf(rr(-14, 628, 28, 22, 4), '#777', 3); ctx.restore();
+}
+function bulbLevel(f, sh) {
+  if (sh.lightOn === false) return 0;
+  if (!sh.flickerBulb) return 1;
+  const n = noise1(f * 0.55 + 3);
+  return n > 0.78 ? 0.15 : n > 0.7 ? 0.55 : 1;
 }
 function basementLights(c, f, sh) {
-  const sw = Math.sin(f * 0.05) * 0.04;
-  if (sh.lightOn !== false) { light(c, 1250 + Math.sin(sw) * 640, 270, 1400, '#ffe0a8', 1.1); light(c, 1200, 900, 1200, '#ffd8a0', 0.45); }
+  const sw = Math.sin(f * 0.05) * 0.04, k = bulbLevel(f, sh);
+  if (k) { light(c, 1250 + Math.sin(sw) * 640, 270, 1400, '#ffe0a8', 1.1 * k); light(c, 1200, 900, 1200, '#ffd8a0', 0.45 * k); }
   light(c, 1530, 300, 520, '#6f8fd8', 0.35);
   if ((sh._door || 0) > 0.05) light(c, 180, 320, 520, '#ffd28c', 0.7 * sh._door);
 }
@@ -191,6 +209,7 @@ Object.assign(SCENES, {
       sh._tw = sh.react === 'chain' && after(f, sh) ? Math.max(0, 1 - (f - sh.beat) / 40) : 0;
       sh._lid = sh.lid === 'shift' && after(f, sh) ? Math.sin(Math.PI * clamp((f - sh.beat - 6) / 26)) : 0;
       const [x, y, walking] = placed(sh, f);
+      sh._hx = sh.hero ? x : null;
       const o = heroIn(sh, f, { x, y: y + 14, s: 0.48 });
       if (o) {
         if (walking) { o.walk = f * 0.3; o.walkAmt = 0.6; }

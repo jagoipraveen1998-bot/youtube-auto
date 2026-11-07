@@ -63,6 +63,7 @@
   }
  ],
  "music": "drone",
+ "scary": true,
  "beats": [
   {
    "line": "",
@@ -83,6 +84,7 @@
      "look": -1
     }
    },
+   "vig": 0.35,
    "cam": "push_in",
    "focus": "two",
    "hero": {
@@ -109,6 +111,7 @@
      "look": -1
     }
    },
+   "vig": 0.35,
    "cam": "close",
    "focus": "kim",
    "hero": {
@@ -135,6 +138,7 @@
      "look": -1
     }
    },
+   "vig": 0.35,
    "cam": "close",
    "focus": "hero",
    "hero": {
@@ -161,6 +165,7 @@
      "look": -1
     }
    },
+   "vig": 0.35,
    "cam": "close",
    "focus": "kim",
    "hero": {
@@ -187,6 +192,7 @@
      "look": -1
     }
    },
+   "vig": 0.35,
    "cam": "close",
    "focus": "hero",
    "hero": {
@@ -213,6 +219,7 @@
      "look": -1
     }
    },
+   "vig": 0.35,
    "cam": "medium",
    "focus": "two",
    "hero": {
@@ -239,6 +246,7 @@
      "look": -1
     }
    },
+   "vig": 0.35,
    "cam": "close",
    "focus": "hero",
    "hero": {
@@ -265,6 +273,7 @@
      "look": -1
     }
    },
+   "vig": 0.35,
    "cam": "close",
    "focus": "kim",
    "hero": {
@@ -296,6 +305,7 @@
      "reachDoor": true
     }
    },
+   "vig": 0.35,
    "cam": "medium",
    "focus": "door",
    "hero": {
@@ -309,13 +319,17 @@
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 2.6,
+   "silent": 3.0,
    "scene": "basement",
    "door": "open",
    "lightOn": true,
    "cam": "push_in",
    "focus": "case",
-   "hero": null
+   "hero": null,
+   "vig": 0.6,
+   "shadowPass": true,
+   "whispers": true,
+   "eyesFollow": true
   },
   {
    "line": "You're coming with me.",
@@ -334,6 +348,7 @@
      "look": -1
     }
    },
+   "vig": 0.35,
    "cam": "close",
    "focus": "hero",
    "door": "open",
@@ -362,6 +377,7 @@
      "look": -1
     }
    },
+   "vig": 0.35,
    "cam": "close",
    "focus": "kim",
    "door": "open",
@@ -388,6 +404,8 @@
     1,
     9
    ],
+   "vig": 0.55,
+   "whispers": true,
    "hero": {
     "pose": "stand",
     "expr": "worried",
@@ -408,6 +426,7 @@
    "lightOn": true,
    "cam": "close",
    "focus": "hero",
+   "vig": 0.55,
    "hero": {
     "pose": "stand",
     "expr": "worried",
@@ -427,6 +446,8 @@
    "lightOn": true,
    "cam": "snap",
    "focus": "door",
+   "vig": 0.6,
+   "flickerBulb": true,
    "hero": {
     "pose": "stand",
     "expr": "shock",
@@ -443,6 +464,8 @@
    "lightOn": true,
    "cam": "close",
    "focus": "hero",
+   "vig": 0.6,
+   "roll": -3,
    "hero": {
     "pose": "stand",
     "expr": "worried",
@@ -460,6 +483,7 @@
    "lightOn": true,
    "cam": "close",
    "focus": "door",
+   "vig": 0.6,
    "hero": {
     "pose": "stand",
     "expr": "worried",
@@ -476,6 +500,8 @@
    "lightOn": true,
    "cam": "close",
    "focus": "hero",
+   "vig": 0.6,
+   "roll": 3,
    "hero": {
     "pose": "stand",
     "expr": "scream",
@@ -493,6 +519,7 @@
    "lightOn": true,
    "cam": "close",
    "focus": "door",
+   "vig": 0.6,
    "hero": {
     "pose": "stand",
     "expr": "worried",
@@ -505,13 +532,19 @@
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 5.4,
+   "silent": 6.2,
    "beat_at": 0.95,
    "scene": "basement",
    "lightOn": true,
    "cam": "push_in",
    "focus": "finger",
-   "heart": true,
+   "heart": "accel",
+   "vig": 0.7,
+   "whispers": true,
+   "flickerBulb": true,
+   "eyesFollow": true,
+   "roll": 4,
+   "rollIn": true,
    "hero": {
     "pose": "stand",
     "expr": "dread",
@@ -535,6 +568,9 @@
    "lightOn": true,
    "cam": "snap",
    "focus": "chain",
+   "vig": 0.7,
+   "flickerBulb": true,
+   "eyesFollow": true,
    "hero": {
     "pose": "stand",
     "expr": "realize",
@@ -552,6 +588,8 @@
    "cam": "snap",
    "focus": "hero",
    "beat_at": 0.05,
+   "vig": 0.7,
+   "flickerBulb": true,
    "hero": {
     "pose": "stand",
     "expr": "scream",

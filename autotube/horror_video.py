@@ -81,6 +81,14 @@ def _phone(audio: np.ndarray, stem: Path) -> np.ndarray:
     return ha.load(out)
 
 
+def _muffle(audio: np.ndarray, stem: Path) -> np.ndarray:
+    src, out = stem.with_name(stem.name + "_rawm.wav"), stem.with_name(stem.name + "_muff.wav")
+    ha.save(src, audio)
+    run(["ffmpeg", "-y", "-v", "error", "-i", str(src), "-af", "lowpass=f=750,aecho=0.6:0.4:18:0.25,volume=0.8",
+         "-ar", str(ha.SR), "-ac", "1", str(out)])
+    return ha.load(out)
+
+
 def voice_for_speaker(beat: dict, voices: dict) -> dict:
     sp = beat.get("speaker") or "narrator"
     return voices.get(sp) or voices.get("narrator")
@@ -117,6 +125,8 @@ def voice_lines(story: dict, voices: dict, work: Path) -> tuple[np.ndarray, list
                 audio = mix / max(1.0, np.abs(mix).max() / 0.98)
             if b.get("phone"):
                 audio = _phone(audio, work / f"line{i:03d}")
+            if b.get("muffle"):                   # heard through a closed door
+                audio = _muffle(audio, work / f"line{i:03d}")
             if b.get("gain"):
                 audio = audio * float(b["gain"])
             dur = len(audio) / ha.SR

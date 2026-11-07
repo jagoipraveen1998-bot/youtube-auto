@@ -125,7 +125,7 @@ function guy(o) {
   if (o.stretch) ctx.scale(0.84, 1.3);
   const br = 1 + 0.012 * Math.sin(F * 0.13 + (o.seed || 0)) + (o.sq || 0);
   ctx.scale(1 / Math.sqrt(br), br);
-  const out = Object.assign({}, OUT[o.outfit || 'pj'] || OUT.pj, o.top ? { top: o.top } : {}, o.stripe ? { stripe: o.stripe } : {});
+  const out = Object.assign({}, OUT[o.outfit || 'pj'] || OUT.pj, o.top ? { top: o.top } : {}, o.stripe ? { stripe: o.stripe } : {}, o.pants ? { pants: o.pants } : {}, o.hood === false ? { hood: false } : {});
   const lw = 6.5 / s;
   const SF = (p, fill) => { ctx.fillStyle = fill; ctx.fill(p); ctx.lineWidth = L(lw); ctx.strokeStyle = INK; ctx.lineJoin = 'round'; ctx.stroke(p); };
   if (!o.noLegs) {
@@ -135,7 +135,7 @@ function guy(o) {
       const lift = Math.max(0, Math.sin(pp)) * 45 * (o.walkAmt ?? (o.walk ? 1 : 0));
       const lx = sd * 62 + Math.cos(pp) * 34 * (o.walkAmt ?? (o.walk ? 1 : 0));
       SF(rr(lx - 46, -215 - lift, 92, 205, 40), out.pants);
-      SF(ell(lx + sd * 12, -14 - lift, 74, 32), '#2c2232');
+      SF(ell(lx + sd * 12, -14 - lift, 74, 32), o.shoes || '#2c2232');
     }
   }
   const arms = () => {

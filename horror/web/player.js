@@ -30,7 +30,7 @@ const after = (f, sh) => sh.beat != null && f >= sh.beat;
 const CAST = P.cast || {};          // side characters: { mum: {look...}, dad: {...} }
 const talking = (sh, f, who) => sh.talk === who && sh.ls != null && f >= sh.ls && f <= sh.le;
 const mouthAt = (sh, f) => { if (!sh.env || sh.ls == null) return null; const i = f - sh.ls; return i < 0 || i >= sh.env.length ? 0 : sh.env[i]; };
-const LOOK = l => ({ skin: l.skin, hair: l.hair, hairStyle: l.hairStyle, outfit: l.outfit, top: l.top, stripe: l.stripe, acc: l.acc });
+const LOOK = l => ({ skin: l.skin, hair: l.hair, hairStyle: l.hairStyle, outfit: l.outfit, top: l.top, stripe: l.stripe, acc: l.acc, pants: l.pants, shoes: l.shoes, hood: l.hood });
 
 function heroObj(sh, f, base) {
   if (!sh.hero) return null;

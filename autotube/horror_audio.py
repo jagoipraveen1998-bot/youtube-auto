@@ -214,6 +214,18 @@ def sfx_track(syn: Synth, plan: dict) -> np.ndarray:
                 _add(sfx, lp(syn.thud(80, 0.3), 900), fr(beat + sh["shoe"]) + 0.25, 0.9)
         elif react == "shift":
             n = int(0.7 * SR); _add(sfx, bp(syn.noise(n), 200, 1200) * np.sin(np.pi * np.arange(n) / n), tb, 0.5)
+        elif react == "slam1":              # one door slam, then the key turning
+            _add(sfx, lp(syn.thud(60, 0.5), 600), tb, 1.0); _add(sfx, syn.click(), tb, 0.6)
+            for dt in (0.55, 0.68):
+                n = int(0.05 * SR); _add(sfx, bp(syn.noise(n), 1500, 6000) * np.exp(-np.arange(n) / SR * 80), tb + dt, 0.7)
+        elif react == "chain":              # a sharp clink, then the chain rattling
+            n = int(0.25 * SR); t = np.arange(n) / SR
+            clink = sum(np.sin(2 * np.pi * fq * t) for fq in (1870, 2650, 3420)) * np.exp(-t * 18) / 3
+            _add(sfx, clink, tb, 1.0)
+            for k in range(7):
+                m = int(0.08 * SR); tt = np.arange(m) / SR
+                _add(sfx, bp(syn.noise(m), 1800, 6000) * np.exp(-tt * 40), tb + 0.25 + k * 0.09 + 0.02 * np.sin(k), 0.55 * (1 - k / 8))
+            _add(sfx, lp(syn.thud(55, 0.4), 500), tb + 0.9, 0.6)
         elif react == "dome":
             _add(sfx, syn.click(), tb, 0.9)
         elif react == "circle":
@@ -328,6 +340,15 @@ def ambience_track(syn: Synth, plan: dict) -> np.ndarray:
                 i = int(k * SR); m = int(0.012 * SR)
                 if i + m < n: tick[i:i + m] += hp(rng.standard_normal(m), 3000) * 2.2
             _add(amb, (tone + tick) * fade, a, 1.0)
+        if sh["scene"] == "kitchenB":              # fridge hum and a quiet house
+            hum = lp(np.sin(2 * np.pi * 100 * t) + 0.4 * np.sin(2 * np.pi * 200 * t), 400) * 0.25 + lp(rng.standard_normal(n), 300) * 0.3
+            _add(amb, hum * fade, a, 1.0)
+        if sh["scene"] == "basement":              # damp concrete room tone, bulb buzz, the odd drip
+            tone = lp(rng.standard_normal(n), 150) * 0.9 + np.sin(2 * np.pi * 120 * t) * 0.04
+            for k in range(int((b - a) / 2.3)):
+                i = int((0.8 + k * 2.3) * SR); m = int(0.06 * SR)
+                if i + m < n: tone[i:i + m] += np.sin(2 * np.pi * 1400 * np.arange(m) / SR) * np.exp(-np.arange(m) / SR * 60) * 0.8
+            _add(amb, tone * fade, a, 1.0)
         if sh.get("radio"):
             mel = [0, 4, 7, 9, 7, 4, 2, 4]
             out = np.zeros(n)

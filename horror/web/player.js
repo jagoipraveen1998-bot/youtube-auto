@@ -410,6 +410,21 @@ function seriesLabel(f, sh) {       // small corner tag: ● THE 14TH STAIR · P
   if (sh.place) { ctx.font = `${24 * k}px "DejaVu Sans"`; ctx.fillStyle = '#aab0c4'; ctx.fillText(sh.place, 46 * k, 120 * k); }
   ctx.restore();
 }
+function drawOnscreen(f, sh) {     // the hook text for the first seconds: different words from the spoken line
+  const t = f - sh.a; if (t > 75) return;
+  const a = clamp(t / 4) * (1 - clamp((t - 66) / 9));
+  const vert = H > W, size = (vert ? 84 : 64) * (W / (vert ? 1080 : 1920));
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = a;
+  ctx.font = `900 ${size}px "DejaVu Sans"`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+  const words = sh.onscreen.split(' '), lines = []; let cur = '';
+  for (const w of words) { const tt = cur ? cur + ' ' + w : w; if (ctx.measureText(tt).width > W * 0.86) { lines.push(cur); cur = w; } else cur = tt; }
+  lines.push(cur);
+  const y0 = H * (vert ? 0.17 : 0.14), sc = 1 + 0.12 * (1 - clamp(t / 6));
+  ctx.translate(W / 2, y0); ctx.scale(sc, sc);
+  lines.forEach((l, i) => { const y = i * size * 1.12; ctx.lineWidth = size * 0.2; ctx.strokeStyle = '#0b0910'; ctx.strokeText(l, 0, y);
+    ctx.fillStyle = i === lines.length - 1 ? '#ffd53d' : '#ffffff'; ctx.fillText(l, 0, y); });
+  ctx.restore();
+}
 function drawCaptions(f, sh) {     // big word-by-word captions, key words in yellow
   const caps = sh.caps; if (!caps || !caps.length) return;
   const chunks = []; let cur = [];
@@ -484,6 +499,7 @@ window.renderFrame = function (f) {
   if (sh.scene === 'selfie') selfieUI(f, sh);
   if (P.series) seriesLabel(f, sh);
   if (P.captions) drawCaptions(f, sh);
+  if (sh.onscreen) drawOnscreen(f, sh);
   if (sh.react === 'shutter' && sh.beat != null && f >= sh.beat && f < sh.beat + 8) flash(1 - (f - sh.beat) / 8);
   if (sh.blackout && sh.le != null && f >= sh.le - sh.blackout) { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); ctx.restore(); return; }
   staticNoise(seg(f, END - 14, END - 1) * 0.9);

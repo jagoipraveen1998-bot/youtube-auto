@@ -1,4 +1,4 @@
-name: Upload a saved long video (retries until YouTube allows it)
+name: Upload saved videos (retries until YouTube allows it)
 
 on:
   schedule:
@@ -16,45 +16,35 @@ concurrency:
 jobs:
   upload:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
-      - id: pending
+      - id: q
         run: |
-          if [ -f data/pending_long_upload.json ]; then
-            python -c "import json;d=json.load(open('data/pending_long_upload.json'));print(f\"run_id={d['run_id']}\");print(f\"artifact={d['artifact']}\");print(f\"script={d['script']}\")" >> "$GITHUB_OUTPUT"
-            echo "todo=yes" >> "$GITHUB_OUTPUT"
-          else
-            echo "Nothing waiting to upload."
-          fi
-      - if: steps.pending.outputs.todo == 'yes'
+          n=$(python -c "import json,os;print(len(json.load(open('data/upload_queue.json'))) if os.path.exists('data/upload_queue.json') else 0)")
+          echo "count=$n" >> "$GITHUB_OUTPUT"; echo "$n video(s) waiting"
+      - if: steps.q.outputs.count != '0'
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - if: steps.pending.outputs.todo == 'yes'
+      - if: steps.q.outputs.count != '0'
         run: pip install -q pyyaml google-api-python-client google-auth google-auth-oauthlib
-      - if: steps.pending.outputs.todo == 'yes'
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ steps.pending.outputs.artifact }}
-          run-id: ${{ steps.pending.outputs.run_id }}
-          github-token: ${{ github.token }}
-          path: art
-      - if: steps.pending.outputs.todo == 'yes'
-        name: Upload to CreepyCartoonTales
+      - if: steps.q.outputs.count != '0'
+        name: Upload what YouTube allows
         env:
+          GH_TOKEN: ${{ github.token }}
           YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_HORROR_REFRESH_TOKEN: ${{ secrets.YT_HORROR_REFRESH_TOKEN }}
-        run: python upload_saved.py art "${{ steps.pending.outputs.script }}"
-      - if: steps.pending.outputs.todo == 'yes'
-        name: Save history and clear the pending upload
+        run: python upload_queue.py
+      - if: steps.q.outputs.count != '0'
+        name: Save the queue and history
         run: |
           git config user.name "autotube-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add -A data/
+          git add data/upload_queue.json data/horror_history.json
           git diff --cached --quiet && exit 0
-          git commit -m "Saved long video uploaded"
+          git commit -m "Upload queue: progress"
           for i in 1 2 3 4 5; do
             if git pull -q --rebase && git push -q; then exit 0; fi
             git rebase --abort 2>/dev/null || true

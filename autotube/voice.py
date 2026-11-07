@@ -91,6 +91,77 @@ def _kokoro(text: str, voice: str, lang_code: str, speed: float, semitones: floa
     return media_duration(out), words
 
 
+# ---------------------------------------------------------------- OmniVoice (designed voices)
+_OMNI = None
+_OMNI_OFF = False
+_OMNI_REFS: dict[str, tuple[str, str]] = {}
+REF_TEXT = "Some nights the house is quiet. Other nights, it listens back."
+TAG = re.compile(r"\[[a-z\-]+\]")
+
+
+def _omni_model():
+    global _OMNI
+    if _OMNI is None:
+        import torch
+        from omnivoice import OmniVoice
+        torch.set_num_threads(max(1, __import__("os").cpu_count() or 2))
+        _OMNI = OmniVoice.from_pretrained("k2-fsa/OmniVoice", device_map="cpu", dtype=torch.float32)
+        log("OmniVoice ready")
+    return _OMNI
+
+
+def _omni_ref(instruct: str, key: str, workdir: Path) -> tuple[str, str]:
+    """Design each character's voice once and reuse it, so every line sounds like the same person."""
+    import soundfile as sf
+    import torch
+    import zlib
+
+    ref_key = f"{key}|{instruct}"
+    if ref_key not in _OMNI_REFS:
+        torch.manual_seed(zlib.crc32(ref_key.encode()))     # same description -> same voice, every video
+        audio = _omni_model().generate(text=REF_TEXT, instruct=instruct, num_step=32)
+        path = workdir / f"ref_{zlib.crc32(ref_key.encode()):08x}.wav"
+        sf.write(path, audio[0], SR)
+        _OMNI_REFS[ref_key] = (str(path), REF_TEXT)
+        log(f"Designed voice for {key}: {instruct}")
+    return _OMNI_REFS[ref_key]
+
+
+def _estimate_words(text: str, audio) -> list[dict]:
+    """OmniVoice gives no word timings: place the words over the voiced parts of the audio, by length."""
+    import numpy as np
+
+    words = [w for w in TAG.sub(" ", text).split() if re.search(r"[A-Za-z0-9]", w)]
+    if not words:
+        return []
+    hop = int(SR * 0.01)
+    n = len(audio) // hop
+    e = np.sqrt((np.asarray(audio[: n * hop]).reshape(n, hop) ** 2).mean(1)) if n else np.zeros(1)
+    voiced = e > max(e.max() * 0.06, 1e-4)
+    idx = np.flatnonzero(voiced)
+    if not len(idx):
+        return []
+    times = idx * 0.01                                   # voiced moments in order
+    weights = np.array([len(re.sub(r"[^A-Za-z0-9]", "", w)) + 1.5 for w in words], float)
+    edges = np.concatenate([[0], np.cumsum(weights) / weights.sum()])
+    pick = lambda q: float(times[min(len(times) - 1, int(q * (len(times) - 1)))])
+    return [{"start": pick(edges[i]), "end": pick(edges[i + 1]), "text": w} for i, w in enumerate(words)]
+
+
+def _omnivoice(text: str, vcfg: dict, out: Path) -> tuple[float, list[dict]]:
+    import soundfile as sf
+
+    ref_audio, ref_text = _omni_ref(vcfg["omni"], vcfg.get("omni_key", "voice"), out.parent)
+    audio = _omni_model().generate(text=vcfg.get("omni_text") or text, ref_audio=ref_audio, ref_text=ref_text,
+                                   num_step=int(vcfg.get("omni_steps", 32)), speed=float(vcfg.get("omni_speed", vcfg.get("speed", 1.0))))
+    wav = out.with_name(out.stem + "_o.wav")
+    sf.write(wav, audio[0], SR)
+    words = _estimate_words(vcfg.get("omni_text") or text, audio[0])
+    _encode(wav, out, float(vcfg.get("omni_semitones", 0.0)))
+    wav.unlink(missing_ok=True)
+    return media_duration(out), words
+
+
 # ---------------------------------------------------------------- Edge (backup)
 async def _speak(text: str, voice: str, rate: str, out: Path, pitch: str = "+0Hz") -> list[dict]:
     import edge_tts
@@ -128,8 +199,19 @@ def speak_words(text: str, voice: str, rate: str, pitch: str, out: Path) -> tupl
 # ---------------------------------------------------------------- what callers use
 def say(text: str, vcfg: dict, out: Path) -> tuple[float, list[dict]]:
     """Speak "text" in this character's voice. Returns (duration_seconds, word timings)."""
-    global _KOKORO_OFF
+    global _KOKORO_OFF, _OMNI_OFF
     vcfg = vcfg or {}
+    if vcfg.get("omni") and not _OMNI_OFF:
+        for attempt in range(2):
+            try:
+                return _omnivoice(text, vcfg, out)
+            except Exception as exc:
+                log(f"OmniVoice attempt {attempt + 1} failed: {exc}")
+                if isinstance(exc, ImportError):
+                    break
+        _OMNI_OFF = True
+        log("OmniVoice unavailable; using Kokoro for the rest of this run.")
+    text = TAG.sub("", text).replace("  ", " ").strip()      # [laughter] etc. are OmniVoice-only
     if vcfg.get("engine", "kokoro") == "kokoro" and not _KOKORO_OFF:
         for attempt in range(2):
             try:

@@ -58,6 +58,8 @@ jobs:
         run: |
           pip install -q torch --index-url https://download.pytorch.org/whl/cpu
           pip install -q -r requirements.txt
+          pip install -q omnivoice soundfile || echo "OmniVoice could not be installed; Kokoro will speak"
+          python -c "import kokoro" || pip install -q -r requirements.txt
           if ! timeout 420 python -m playwright install --with-deps chromium; then
             echo "Browser install failed (GitHub's package mirror); using the runner's own Chrome"
             echo "CHROME_PATH=$(command -v google-chrome || command -v google-chrome-stable || command -v chromium)" >> "$GITHUB_ENV"

@@ -39,7 +39,7 @@ def _echo(path: Path) -> np.ndarray:
 def caption_words(line: str, words: list, dur: float) -> list:
     """[[start_s, end_s, WORD, highlighted]] relative to the line, for word-by-word captions."""
     hl = {_norm(w) for chunk in re.findall(r"\*(.+?)\*", line) for w in chunk.split()}
-    shown = [w for w in line.replace("*", "").split() if re.search(r"[A-Za-z0-9]", w)]
+    shown = [w for w in re.sub(r"\[[a-z\-]+\]", " ", line.replace("*", "")).split() if re.search(r"[A-Za-z0-9]", w)]
     spoken = [w for w in (words or []) if w.get("start") is not None and re.search(r"[A-Za-z0-9]", w.get("text", ""))]
     out = []
     if len(spoken) >= len(shown) * 0.8 and spoken:
@@ -285,6 +285,8 @@ def cover(frames_dir: Path, plan: dict, out: Path, title: str | None = None) -> 
 
 LAUGH_TEXT = "Heh heh heh... Ha ha ha ha haaa!"
 LAUGH_VOICE = {"engine": "kokoro", "kokoro_lang": "b", "kokoro_voice": "bm_george", "speed": 0.8, "semitones": -3.0,
+               "omni": "male, middle-aged, very low pitch", "omni_key": "signature-laugh", "omni_text": "Heh heh heh... [laughter]",
+               "omni_speed": 0.9,
                "name": "en-GB-RyanNeural", "rate": "-20%", "pitch": "-12Hz"}
 
 

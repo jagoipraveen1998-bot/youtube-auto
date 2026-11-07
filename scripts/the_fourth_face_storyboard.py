@@ -125,18 +125,18 @@ story = {
   "description": "Four friends, one late drive home, one blurry selfie. Then Joe's dad calls in a panic, begging him to get out of the car right now. Something in the photo is sitting right behind him.",
   "tags": ["horror comedy", "animated horror story", "scary cartoon", "car selfie ghost", "skinwalker story", "creepy cartoon tales",
            "funny horror", "ghost in photo", "horror short film", "animated scary story", "gas station horror", "night drive horror"],
-  "hero": {"look": "man", "outfit": "tee", "voice": "am_puck",
+  "hero": {"look": "man", "outfit": "tee", "voice": "am_puck", "omni": "male, young adult, high pitch, american accent",
            "style": {"skin": "#d9a07a", "hair": "#3b2618", "hairStyle": "spiky", "outfit": "tee", "top": "#3a8ab8", "acc": {}}},
   "villain": "double",
   "cast": [
     {"role": "maya", "gender": "f", "voice": "af_heart",
      "style": {"skin": "#e0b48c", "hair": "#1d1420", "hairStyle": "ponytail", "outfit": "cardigan", "top": "#c84a4a", "acc": {}}},
-    {"role": "ben", "gender": "m", "voice": "bm_fable",
+    {"role": "ben", "gender": "m", "voice": "bm_fable", "omni": "male, young adult, british accent",
      "style": {"skin": "#f0c8a0", "hair": "#c99a4a", "hairStyle": "mop", "outfit": "shirt", "top": "#e8d49c", "acc": {"glasses": True, "freckles": True}}},
-    {"role": "malik", "gender": "m", "voice": "am_michael",
+    {"role": "malik", "gender": "m", "voice": "am_michael", "omni": "male, young adult, low pitch, american accent",
      "style": {"skin": "#6e4630", "hair": "#141018", "hairStyle": "curly", "outfit": "hoodie", "top": "#24222c", "acc": {"earbud": True, "crease": True}}},
     {"role": "dad", "gender": "m", "voice": "am_fenrir", "style": {}}],
-  "voice_over": {"villain": {"like": "malik", "semitones": -4.0, "speed": 0.8, "echo": True}},
+  "voice_over": {"villain": {"like": "malik", "semitones": -4.0, "speed": 0.8, "echo": True, "omni_semitones": -4.0}},
   "beats": B,
 }
 import sys

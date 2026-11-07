@@ -38,8 +38,10 @@ story = {
              "style": {"skin": "#d9a07a", "hair": "#2b1d14", "hairStyle": "mop", "outfit": "hoodie", "top": "#3c4a63", "acc": {}}},
     "villain": "shadow",
     "cast": [],
-    "voice_over": {"narrator": {"speed": 0.9, "semitones": -1.5},
-                   "villain": {"like": "narrator", "speed": 0.72, "semitones": -6.0, "echo": True}},
+    "voice_over": {"narrator": {"speed": 0.9, "semitones": -1.5, "omni": "male, middle-aged, very low pitch, american accent",
+                                "omni_key": "calm-narrator", "omni_speed": 0.92},
+                   "villain": {"like": "narrator", "speed": 0.72, "semitones": -6.0, "echo": True,
+                               "omni": "male, elderly, low pitch, whisper", "omni_key": "stair-thing", "omni_speed": 0.8}},
     "beats": B,
 }
 out = Path(__file__).with_suffix(".json")

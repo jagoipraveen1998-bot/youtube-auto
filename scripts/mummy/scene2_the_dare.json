@@ -64,6 +64,7 @@
  ],
  "music": "drone",
  "scary": true,
+ "piano": true,
  "beats": [
   {
    "line": "",

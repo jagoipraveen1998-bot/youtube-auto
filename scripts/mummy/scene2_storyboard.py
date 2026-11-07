@@ -67,7 +67,7 @@ story = {
          "style": {"skin": "#e6b48f", "hair": "#5a4634", "hairStyle": "spiky", "outfit": "shirt", "top": "#dfe6ee",
                    "acc": {"glasses": True}}},
     ],
-    "music": "drone", "scary": True,
+    "music": "drone", "scary": True, "piano": True,
     "beats": B,
 }
 out = Path(__file__).with_name("scene2_the_dare.json")

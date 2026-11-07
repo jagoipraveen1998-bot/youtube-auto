@@ -1,8 +1,6 @@
 name: Horror shorts batch (scheduled)
 
 on:
-  schedule:
-    - cron: "20 2 7 11 *"     # one-off: Sat 7 Nov 07:50 IST, the 12 Shorts YouTube's daily limit held back
   workflow_dispatch:
     inputs:
       count:

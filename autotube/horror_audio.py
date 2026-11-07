@@ -113,7 +113,7 @@ def _add(buf, x, t, g=1.0):
     buf[i:i + len(x)] += g * x
 
 
-def music_bed(syn: Synth, total: float, stop: float, seed: int) -> np.ndarray:
+def music_bed(syn: Synth, total: float, stop: float, seed: int, box_on: bool = True) -> np.ndarray:
     n = syn.n
     t = np.arange(n) / SR
     rng = np.random.default_rng(seed)
@@ -127,7 +127,7 @@ def music_bed(syn: Synth, total: float, stop: float, seed: int) -> np.ndarray:
     step, k, tt = 0.62, 0, 0.4
     base_midi = 69 + [0, -2, 1, -1][seed % 4]
     rng.shuffle(scale)
-    while tt < stop - 0.3:
+    while box_on and tt < stop - 0.3:
         m = base_midi + scale[k % len(scale)] + (12 if (k // 12) % 2 else 0)
         f0 = 440 * 2 ** ((m - 69) / 12) * (1 + 0.004 * np.sin(k))
         nn = int(1.6 * SR); tn = np.arange(nn) / SR
@@ -263,6 +263,47 @@ def sfx_track(syn: Synth, plan: dict) -> np.ndarray:
     return sfx
 
 
+NUMBERS = {w: i for i, w in enumerate("zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen".split())}
+
+
+def creak(syn: Synth, rng, dur: float = 0.45) -> np.ndarray:
+    n = int(dur * SR); t = np.arange(n) / SR
+    f0 = rng.uniform(140, 260)
+    tone = np.sin(2 * np.pi * (f0 + 60 * np.sin(2 * np.pi * rng.uniform(3, 7) * t)) * t)
+    grit = bp(syn.noise(n), 300, 2400) * 0.6
+    return bp(tone * (1 + grit), 120, 2600) * np.sin(np.pi * t / t[-1]) ** 0.7
+
+
+def story_sfx(syn: Synth, plan: dict) -> np.ndarray:
+    """Real sounds for storyboarded Shorts: a creak on every counted stair, heartbeats, breathing under the stairs."""
+    out = np.zeros(syn.n)
+    rng = np.random.default_rng(11)
+    for sh in plan["shots"]:
+        if sh.get("creaks"):
+            for a, _, w, _ in sh.get("caps") or []:
+                if re.sub(r"[^a-z]", "", w.lower()) in NUMBERS:
+                    _add(out, creak(syn, rng), a / FPS, 0.9)
+            run = sh.get("countRun")
+            if run:
+                k = abs(run[1] - run[0]) + 1
+                end = sh.get("beat") or sh["b"]
+                for j in range(k):
+                    _add(out, creak(syn, rng, 0.3), (sh["a"] + (end - sh["a"]) * j / k) / FPS, 0.7)
+        if sh.get("heart"):
+            t0, t1 = sh["a"] / FPS, sh["b"] / FPS
+            tt = t0 + 0.1
+            while tt < t1:
+                _add(out, lp(syn.thud(48, 0.18), 300), tt, 1.0); _add(out, lp(syn.thud(44, 0.16), 300), tt + 0.22, 0.7)
+                tt += 0.78
+        if sh.get("breathe"):
+            t0, t1 = sh["a"] / FPS, sh["b"] / FPS
+            tt = t0 + 0.3
+            while tt < t1 - 0.5:
+                n = int(1.2 * SR); br = lp(bp(syn.noise(n), 150, 1200), 900) * np.sin(np.pi * np.arange(n) / n) ** 2
+                _add(out, br, tt, 0.8); tt += 1.9
+    return out
+
+
 def ambience_track(syn: Synth, plan: dict) -> np.ndarray:
     """Room tone for scripted sets: the car engine and road, the radio, the gas station's buzzing light."""
     amb = np.zeros(syn.n)
@@ -280,6 +321,13 @@ def ambience_track(syn: Synth, plan: dict) -> np.ndarray:
         if sh["scene"] == "station" or (sh["scene"] == "phone2" and sh.get("bg") == "station"):
             hum = lp(np.sin(2 * np.pi * 120 * t) + 0.5 * np.sin(2 * np.pi * 240 * t) + 0.25 * np.sign(np.sin(2 * np.pi * 120 * t)), 900)
             _add(amb, (hum * 0.35 + lp(rng.standard_normal(n), 500) * 0.4) * fade, a, 1.0)
+        if sh["scene"] == "stairs":                    # an old house at night: low room tone and a slow clock
+            tone = lp(rng.standard_normal(n), 180) * 0.8 + np.sin(2 * np.pi * 50 * t) * 0.05
+            tick = np.zeros(n)
+            for k in range(int((b - a) / 1.0) + 1):
+                i = int(k * SR); m = int(0.012 * SR)
+                if i + m < n: tick[i:i + m] += hp(rng.standard_normal(m), 3000) * 2.2
+            _add(amb, (tone + tick) * fade, a, 1.0)
         if sh.get("radio"):
             mel = [0, 4, 7, 9, 7, 4, 2, 4]
             out = np.zeros(n)
@@ -306,13 +354,14 @@ def make_soundtrack(voice: np.ndarray, plan: dict, work: Path, seed: int) -> Pat
     syn = Synth(total, seed)
     tw = next((s for s in plan["shots"] if s.get("twist")), None)
     stop = (tw["beat"] if tw and tw.get("beat") is not None else plan["frames"]) / FPS - 0.05
-    music = music_bed(syn, total, stop, seed)
-    sfx = sfx_track(syn, plan)
+    drone = plan.get("music") == "drone"          # "real" style: no music-box tune, just a low drone
+    music = music_bed(syn, total, stop, seed, box_on=not drone)
+    sfx = sfx_track(syn, plan) + story_sfx(syn, plan)
     n = int(total * SR)
     pad = lambda x: np.pad(x, (0, max(0, n - len(x))))[:n]
     v, m, s = pad(voice), pad(music), pad(sfx)
     vr, vp = _grms(v), np.abs(v).max()
-    m *= (vr * 0.5) / max(_grms(m), 1e-9)
+    m *= (vr * (0.32 if drone else 0.5)) / max(_grms(m), 1e-9)
     s *= (vr * 0.5) / max(_grms(s), 1e-9)
     if np.abs(s).max() > 0.7 * vp:
         s *= 0.7 * vp / np.abs(s).max()

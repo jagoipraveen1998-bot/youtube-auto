@@ -1,0 +1,264 @@
+{
+ "storyboard": true,
+ "captions": true,
+ "music": "drone",
+ "series": {
+  "name": "THE 14TH STAIR",
+  "part": 1
+ },
+ "story_id": "fourteenth-stair-1",
+ "title": "I counted my stairs every night. Tonight there were 14 😨 (The 14th Stair Part 1) #shorts #horror",
+ "description": "You've counted thirteen stairs every night for years. Tonight there's one more. Part 2 tomorrow.",
+ "tags": [
+  "horror shorts",
+  "scary story",
+  "animated horror",
+  "the 14th stair",
+  "creepy stairs",
+  "horror series",
+  "pov horror"
+ ],
+ "hero": {
+  "look": "man",
+  "outfit": "hoodie",
+  "voice": "am_fenrir",
+  "style": {
+   "skin": "#d9a07a",
+   "hair": "#2b1d14",
+   "hairStyle": "mop",
+   "outfit": "hoodie",
+   "top": "#3c4a63",
+   "acc": {}
+  }
+ },
+ "villain": "shadow",
+ "cast": [],
+ "voice_over": {
+  "narrator": {
+   "speed": 0.9,
+   "semitones": -1.5
+  },
+  "villain": {
+   "like": "narrator",
+   "speed": 0.72,
+   "semitones": -6.0,
+   "echo": true
+  }
+ },
+ "beats": [
+  {
+   "line": "Imagine you've counted the *stairs* in your house every night for years.",
+   "speaker": "narrator",
+   "react": "none",
+   "scene": "stairs",
+   "place": "YOUR STAIRS",
+   "cam": "push_in",
+   "focus": "body",
+   "hero": {
+    "pose": "stand",
+    "expr": "calm",
+    "step": 0,
+    "look": 0.6,
+    "lookY": -0.5
+   },
+   "numbers": false
+  },
+  {
+   "line": "*Thirteen.* Always thirteen.",
+   "speaker": "narrator",
+   "react": "none",
+   "scene": "stairs",
+   "place": "YOUR STAIRS",
+   "cam": "wide",
+   "focus": "wide",
+   "countRun": [
+    1,
+    13
+   ],
+   "creaks": true,
+   "beat_at": 0.95,
+   "hero": {
+    "pose": "stand",
+    "expr": "calm",
+    "step": 0,
+    "look": 0.6,
+    "lookY": -0.6
+   }
+  },
+  {
+   "line": "Tonight, you climb them half asleep.",
+   "speaker": "narrator",
+   "react": "none",
+   "scene": "stairs",
+   "place": "YOUR STAIRS",
+   "cam": "pan",
+   "focus": "body",
+   "focus2": "wide",
+   "hero": {
+    "pose": "stand",
+    "expr": "sleepy",
+    "step": [
+     0,
+     10
+    ]
+   },
+   "numbers": false
+  },
+  {
+   "line": "Eleven. Twelve. *Thirteen.*",
+   "speaker": "narrator",
+   "react": "none",
+   "scene": "stairs",
+   "place": "YOUR STAIRS",
+   "cam": "close",
+   "focus": "feet",
+   "creaks": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "sleepy",
+    "step": [
+     10,
+     13
+    ]
+   }
+  },
+  {
+   "line": "*Fourteen.*",
+   "speaker": "narrator",
+   "react": "face",
+   "scene": "stairs",
+   "place": "YOUR STAIRS",
+   "cam": "snap",
+   "focus": "face",
+   "extra": "top",
+   "beat_at": 0.1,
+   "heart": true,
+   "creaks": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "sleepy",
+    "step": 14,
+    "expr2": "realize"
+   }
+  },
+  {
+   "line": "You laugh it off. You probably *miscounted.*",
+   "speaker": "narrator",
+   "react": "none",
+   "scene": "stairs",
+   "place": "YOUR STAIRS",
+   "cam": "close",
+   "focus": "face",
+   "extra": "top",
+   "numbers": false,
+   "hero": {
+    "pose": "stand",
+    "expr": "doubt",
+    "step": 14,
+    "look": -0.5
+   }
+  },
+  {
+   "line": "So you walk back down. Slowly.",
+   "speaker": "narrator",
+   "react": "none",
+   "scene": "stairs",
+   "place": "YOUR STAIRS",
+   "cam": "medium",
+   "focus": "body",
+   "numbers": false,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "step": [
+     13,
+     1
+    ],
+    "dir": "down"
+   }
+  },
+  {
+   "line": "*Thirteen.* But your foot still hasn't touched the *floor.*",
+   "speaker": "narrator",
+   "react": "face",
+   "scene": "stairs",
+   "place": "YOUR STAIRS",
+   "cam": "close",
+   "focus": "feet",
+   "extra": "bottom",
+   "heart": true,
+   "beat_word": "floor",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "step": 1,
+    "dir": "down",
+    "expr2": "realize"
+   },
+   "numbers": false
+  },
+  {
+   "line": "There's one more step. And it's *soft.*",
+   "speaker": "narrator",
+   "react": "none",
+   "scene": "stairs",
+   "place": "YOUR STAIRS",
+   "cam": "pull_out",
+   "focus": "feet",
+   "extra": "bottom",
+   "soft": true,
+   "heart": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "dread",
+    "step": -1,
+    "dir": "down"
+   },
+   "numbers": false
+  },
+  {
+   "line": "Under the stairs, something *breathes* in.",
+   "speaker": "narrator",
+   "react": "face",
+   "scene": "stairs",
+   "place": "YOUR STAIRS",
+   "cam": "push_in",
+   "focus": "under",
+   "extra": "bottom",
+   "soft": true,
+   "breathe": true,
+   "eyesIn": true,
+   "beat_word": "breathes",
+   "hero": {
+    "pose": "stand",
+    "expr": "dread",
+    "step": -1,
+    "dir": "down",
+    "look": 0.8
+   },
+   "numbers": false
+  },
+  {
+   "line": "*Fourteen.*",
+   "speaker": "villain",
+   "react": "face",
+   "scene": "stairs",
+   "place": "YOUR STAIRS",
+   "cam": "push_in",
+   "focus": "under",
+   "extra": "bottom",
+   "soft": true,
+   "eyes": 1,
+   "twist": true,
+   "light": "flicker",
+   "beat_at": 0.1,
+   "hero": {
+    "pose": "stand",
+    "expr": "scream",
+    "step": -1,
+    "look": 0.8
+   },
+   "numbers": false
+  }
+ ]
+}

@@ -301,6 +301,7 @@ function face(o, lw, SF) {
     let y1 = -84, y2 = -84;
     if (b === 'worry') { y1 = -108; y2 = -74; } else if (b === 'up') { y1 = -122; y2 = -116; }
     else if (b === 'sly') { y1 = -70; y2 = -100; } else if (b === 'tired') { y1 = -90; y2 = -58; }
+    else if (b === 'raise') { if (sd > 0) { y1 = -128; y2 = -138; } else { y1 = -80; y2 = -76; } }
     ctx.lineWidth = 15; ctx.lineCap = 'round'; ctx.strokeStyle = INK;
     ctx.beginPath(); ctx.moveTo(sd * 40, y1 - (ew - 1) * 60); ctx.lineTo(sd * 124, y2 - (ew - 1) * 60); ctx.stroke();
   }

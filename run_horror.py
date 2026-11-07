@@ -43,7 +43,9 @@ def main():
     hist = json.loads(hist_path.read_text(encoding="utf-8")) if hist_path.exists() else {"stories": [], "videos": []}
 
     if args.story:
-        story = repair(json.loads(Path(args.story).read_text(encoding="utf-8")))
+        story = json.loads(Path(args.story).read_text(encoding="utf-8"))
+        if not story.get("storyboard"):        # hand-made storyboards are used exactly as written
+            story = repair(story)
     else:
         try:
             story = write_story(cfg, hist["stories"])

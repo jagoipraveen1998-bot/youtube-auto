@@ -19,6 +19,9 @@ const EXPR = {
   tired: { eyeW: 1, pupil: 18, brow: 'tired', mouth: 'droop', lid: 0.45, circles: 0.9 },
   grin: { eyeW: 1, pupil: 16, brow: 'sly', mouth: 'grin', grin: 1 },
   stare: { eyeW: 1.12, pupil: 11, brow: 'flat', mouth: 'flat' },
+  doubt: { eyeW: 0.95, pupil: 18, brow: 'raise', mouth: 'flat', lid: 0.2, look: 0.7 },
+  realize: { eyeW: 1.22, pupil: 8, brow: 'worry', mouth: 'flat', sweat: true, tremble: 2 },
+  dread: { eyeW: 1.18, pupil: 7, brow: 'worry', mouth: 'wobble', sweat: true, tremble: 5, pupilShake: 3, hairUp: 0.3 },
 };
 const ex = n => Object.assign({}, EXPR[n] || EXPR.calm);
 const bT = (f, sh, len = 8) => sh.beat == null ? 0 : clamp((f - sh.beat) / len);
@@ -396,6 +399,42 @@ function drawOutro(f) {
   vignette(0.85, 0.25); grain(0.1);
 }
 
+function seriesLabel(f, sh) {       // small corner tag: ● THE 14TH STAIR · PART 1 / YOUR STAIRS
+  const S = P.series, k = W / 1080;
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 0.92; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+  ctx.fillStyle = '#e5333b'; ctx.beginPath(); ctx.arc(46 * k, 82 * k, 9 * k, 0, 7); ctx.fill();
+  ctx.font = `bold ${30 * k}px "DejaVu Sans"`; ctx.fillStyle = '#e8e2d8';
+  ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 8 * k;
+  ctx.fillText(`${S.name}  ·  PART ${S.part}`, 66 * k, 82 * k);
+  if (sh.place) { ctx.font = `${24 * k}px "DejaVu Sans"`; ctx.fillStyle = '#aab0c4'; ctx.fillText(sh.place, 46 * k, 120 * k); }
+  ctx.restore();
+}
+function drawCaptions(f, sh) {     // big word-by-word captions, key words in yellow
+  const caps = sh.caps; if (!caps || !caps.length) return;
+  const chunks = []; let cur = [];
+  caps.forEach((w, i) => { cur.push(w); const end = /[.,!?…]$/.test(w[2]) || cur.length === 3 || i === caps.length - 1; if (end) { chunks.push(cur); cur = []; } });
+  const ch = chunks.find(c => f >= c[0][0] - 1 && f <= c[c.length - 1][1] + 6);
+  if (!ch) return;
+  const vert = H > W, size = (vert ? 92 : 70) * (W / (vert ? 1080 : 1920));
+  const pop = 1 + 0.14 * (1 - clamp((f - ch[0][0]) / 4));
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.font = `900 ${size}px "DejaVu Sans"`; ctx.textBaseline = 'middle'; ctx.textAlign = 'left'; ctx.lineJoin = 'round';
+  const words = ch.map(w => w[2].toUpperCase().replace(/^["“]|["”]$/g, ''));
+  const gap = size * 0.28, widths = words.map(t => ctx.measureText(t).width);
+  const total = widths.reduce((a, b) => a + b, 0) + gap * (words.length - 1);
+  const cy = H * (vert ? 0.7 : 0.84), fit = Math.min(1, W * 0.88 / total);
+  ctx.translate(W / 2, cy); ctx.scale(pop * fit, pop * fit);
+  let x = -total / 2;
+  ch.forEach((w, i) => {
+    ctx.globalAlpha = 1;
+    ctx.lineWidth = size * 0.2; ctx.strokeStyle = '#0b0910'; ctx.strokeText(words[i], x, 0);
+    ctx.fillStyle = w[3] ? '#ffd53d' : '#ffffff'; ctx.fillText(words[i], x, 0);
+    x += widths[i] + gap;
+  });
+  ctx.restore();
+}
+
 function selfieUI(f, sh) {         // the phone's camera view around the selfie, gone once the photo is taken
   const live = sh.beat == null || f < sh.beat;
   ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -443,6 +482,8 @@ window.renderFrame = function (f) {
   if (sh.twist && sh.beat != null && f >= sh.beat && f < sh.beat + 6) { glitch(1.2); flash(0.25 * (1 - bT(f, sh, 6))); }
   if (sh.scene === 'cctv' && f < sh.a + 6 && sh.a > 0 && (shots[shots.indexOf(sh) - 1] || {}).scene !== 'cctv') staticNoise(0.8 * (1 - seg(f, sh.a, sh.a + 6)));
   if (sh.scene === 'selfie') selfieUI(f, sh);
+  if (P.series) seriesLabel(f, sh);
+  if (P.captions) drawCaptions(f, sh);
   if (sh.react === 'shutter' && sh.beat != null && f >= sh.beat && f < sh.beat + 8) flash(1 - (f - sh.beat) / 8);
   if (sh.blackout && sh.le != null && f >= sh.le - sh.blackout) { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); ctx.restore(); return; }
   staticNoise(seg(f, END - 14, END - 1) * 0.9);

@@ -36,6 +36,26 @@ def _echo(path: Path) -> np.ndarray:
     return ha.load(out)
 
 
+def caption_words(line: str, words: list, dur: float) -> list:
+    """[[start_s, end_s, WORD, highlighted]] relative to the line, for word-by-word captions."""
+    hl = {_norm(w) for chunk in re.findall(r"\*(.+?)\*", line) for w in chunk.split()}
+    shown = [w for w in line.replace("*", "").split() if re.search(r"[A-Za-z0-9]", w)]
+    spoken = [w for w in (words or []) if w.get("start") is not None and re.search(r"[A-Za-z0-9]", w.get("text", ""))]
+    out = []
+    if len(spoken) >= len(shown) * 0.8 and spoken:
+        j = 0
+        for w in shown:                                   # follow the spoken timings in order
+            while j < len(spoken) - 1 and _norm(spoken[j]["text"]) not in _norm(w) and _norm(w) not in _norm(spoken[j]["text"]):
+                j += 1
+            sw = spoken[min(j, len(spoken) - 1)]
+            out.append([float(sw["start"]), float(sw.get("end") or sw["start"] + 0.3), w.strip(), _norm(w) in hl])
+            j += 1
+    else:                                                 # no timings: spread the words over the line
+        n = max(1, len(shown))
+        out = [[dur * i / n, dur * (i + 1) / n, w, _norm(w) in hl] for i, w in enumerate(shown)]
+    return out
+
+
 def mouth_env(audio: np.ndarray) -> list[float]:
     """How open the speaker's mouth is on each video frame, from the loudness of the line (lip sync)."""
     hop = ha.SR // FPS
@@ -83,7 +103,8 @@ def voice_lines(story: dict, voices: dict, work: Path) -> tuple[np.ndarray, list
             vcfg = dict(voice_for_speaker(b, voices))
             if b.get("vspeed"):
                 vcfg["speed"] = vcfg.get("speed", 1.0) * float(b["vspeed"])
-            dur, words = say(b["line"], vcfg, mp3)
+            text = b["line"].replace("*", "")            # *key words* are highlighted in captions, not spoken
+            dur, words = say(text, vcfg, mp3)
             audio = _echo(mp3) if vcfg.get("echo") else ha.load(mp3)
             if b.get("layer"):                    # a second, lower take under the first (the laugh grows)
                 lay = dict(vcfg, **{k: v for k, v in b["layer"].items() if k != "gain"})
@@ -104,7 +125,9 @@ def voice_lines(story: dict, voices: dict, work: Path) -> tuple[np.ndarray, list
             if hit is None and bw:
                 hit = next((w for w in words if _norm(bw) and _norm(bw) in _norm(w["text"])), None)
             tword = hit["start"] if hit else dur * float(b.get("beat_at", 0.6))
-        timing.append({"start": t, "end": t + dur, "beat": t + min(tword, dur), "env": None if b.get("silent") else mouth_env(audio)})
+        caps = None if b.get("silent") else caption_words(b["line"], words, dur)
+        timing.append({"start": t, "end": t + dur, "beat": t + min(tword, dur), "env": None if b.get("silent") else mouth_env(audio),
+                       "caps": caps})
         parts.append(audio)
         t += dur
         nxt = beats[i + 1] if i + 1 < len(beats) else None
@@ -172,13 +195,16 @@ def build_plan(story: dict, timing: list[dict], total: float, casting: dict, fmt
         sh["ls"], sh["le"] = int(round(tm["start"] * FPS)), int(round(tm["end"] * FPS))
         if tm.get("env"):
             sh["env"] = tm["env"]
+        if tm.get("caps"):
+            sh["caps"] = [[sh["ls"] + int(round(a * FPS)), sh["ls"] + int(round(b * FPS)), w, h] for a, b, w, h in tm["caps"]]
         shots.append(sh)
     for i, sh in enumerate(shots):
         sh["b"] = shots[i + 1]["a"] if i + 1 < len(shots) else frames
         if sh["beat"] is not None:
             sh["beat"] = min(sh["beat"], sh["b"] - 3)
     return {"frames": frames, "format": fmt, "hero": casting["hero"], "other": casting["other"],
-            "cast": casting["cast"], "shots": shots}
+            "cast": casting["cast"], "shots": shots, "series": story.get("series"), "captions": bool(story.get("captions")),
+            "music": story.get("music")}
 
 
 def render(plan: dict, work: Path, frames_dir: Path, stills: list[int] | None = None) -> None:

@@ -153,7 +153,7 @@ def _omnivoice(text: str, vcfg: dict, out: Path) -> tuple[float, list[dict]]:
 
     ref_audio, ref_text = _omni_ref(vcfg["omni"], vcfg.get("omni_key", "voice"), out.parent)
     audio = _omni_model().generate(text=vcfg.get("omni_text") or text, ref_audio=ref_audio, ref_text=ref_text,
-                                   num_step=int(vcfg.get("omni_steps", 32)), speed=float(vcfg.get("omni_speed", vcfg.get("speed", 1.0))))
+                                   num_step=int(vcfg.get("omni_steps", 16)), speed=float(vcfg.get("omni_speed", vcfg.get("speed", 1.0))))
     wav = out.with_name(out.stem + "_o.wav")
     sf.write(wav, audio[0], SR)
     words = _estimate_words(vcfg.get("omni_text") or text, audio[0])

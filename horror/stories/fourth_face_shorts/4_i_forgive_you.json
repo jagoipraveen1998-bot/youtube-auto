@@ -1,0 +1,392 @@
+{
+ "story_id": "fourth-face-4_i_forgive_you",
+ "tags": [
+  "horror comedy",
+  "animated horror story",
+  "scary cartoon",
+  "car selfie ghost",
+  "skinwalker story",
+  "creepy cartoon tales",
+  "funny horror",
+  "ghost in photo",
+  "horror short film",
+  "animated scary story",
+  "gas station horror",
+  "night drive horror"
+ ],
+ "hero": {
+  "look": "man",
+  "outfit": "tee",
+  "voice": "am_puck",
+  "omni": "male, young adult, high pitch, american accent",
+  "style": {
+   "skin": "#d9a07a",
+   "hair": "#3b2618",
+   "hairStyle": "spiky",
+   "outfit": "tee",
+   "top": "#3a8ab8",
+   "acc": {}
+  }
+ },
+ "villain": "double",
+ "cast": [
+  {
+   "role": "maya",
+   "gender": "f",
+   "voice": "af_heart",
+   "style": {
+    "skin": "#e0b48c",
+    "hair": "#1d1420",
+    "hairStyle": "ponytail",
+    "outfit": "cardigan",
+    "top": "#c84a4a",
+    "acc": {}
+   }
+  },
+  {
+   "role": "ben",
+   "gender": "m",
+   "voice": "bm_fable",
+   "omni": "male, young adult, british accent",
+   "style": {
+    "skin": "#f0c8a0",
+    "hair": "#c99a4a",
+    "hairStyle": "mop",
+    "outfit": "shirt",
+    "top": "#e8d49c",
+    "acc": {
+     "glasses": true,
+     "freckles": true
+    }
+   }
+  },
+  {
+   "role": "malik",
+   "gender": "m",
+   "voice": "am_michael",
+   "omni": "male, young adult, low pitch, american accent",
+   "style": {
+    "skin": "#6e4630",
+    "hair": "#141018",
+    "hairStyle": "curly",
+    "outfit": "hoodie",
+    "top": "#24222c",
+    "acc": {
+     "earbud": true,
+     "crease": true
+    }
+   }
+  },
+  {
+   "role": "dad",
+   "gender": "m",
+   "voice": "am_fenrir",
+   "style": {}
+  }
+ ],
+ "voice_over": {
+  "villain": {
+   "like": "malik",
+   "semitones": -4.0,
+   "speed": 0.8,
+   "echo": true,
+   "omni_semitones": -4.0
+  }
+ },
+ "storyboard": true,
+ "captions": true,
+ "title": "My dad thought my best friend was a ghost 💀 #shorts #horror #funny",
+ "description": "From our animated horror story The Fourth Face. Full video on the channel.",
+ "beats": [
+  {
+   "line": "My dad thought my best friend was a *ghost.* Then he had to *apologise.*",
+   "speaker": "narrator",
+   "react": "none",
+   "scene": "station",
+   "cam": "close",
+   "focus": "hero",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "stare",
+    "expr2": "shock",
+    "phone": "up",
+    "x": 1560,
+    "look": -1
+   },
+   "crew": {
+    "malik": {
+     "expr": "sleepy",
+     "x": 1180,
+     "look": 0.6
+    }
+   },
+   "onscreen": "BLURRY PHOTO. BIG MISTAKE."
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "gag",
+   "silent": 2.18,
+   "beat_at": 0.45,
+   "scene": "station",
+   "cam": "close",
+   "focus": "hero",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "stare",
+    "expr2": "shock",
+    "phone": "up",
+    "x": 1560,
+    "look": -1
+   },
+   "crew": {
+    "malik": {
+     "expr": "sleepy",
+     "x": 1180,
+     "look": 0.6
+    }
+   }
+  },
+  {
+   "line": "Dad. That's Malik. We picked him up after we left.",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "station",
+   "cam": "medium",
+   "focus": "pair",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "tired",
+    "phone": "up",
+    "x": 1680,
+    "look": -0.6
+   },
+   "crew": {
+    "malik": {
+     "expr": "sleepy",
+     "x": 1360,
+     "look": 0.8
+    }
+   }
+  },
+  {
+   "line": "Then why did he look like that?",
+   "speaker": "dad",
+   "react": "none",
+   "phone": true,
+   "scene": "station",
+   "cam": "medium",
+   "focus": "pair",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "tired",
+    "phone": "up",
+    "x": 1790
+   },
+   "crew": {
+    "malik": {
+     "expr": "curious",
+     "x": 1470,
+     "look": 1,
+     "lean": 0.12
+    }
+   }
+  },
+  {
+   "line": "Because your son takes pictures like he's being chased.",
+   "speaker": "malik",
+   "react": "none",
+   "scene": "station",
+   "cam": "close",
+   "focus": "malik",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "tired",
+    "phone": "up",
+    "x": 1790
+   },
+   "crew": {
+    "malik": {
+     "expr": "tired",
+     "x": 1470,
+     "look": 1,
+     "lean": 0.12
+    }
+   }
+  },
+  {
+   "line": "Ha! Ha ha ha!",
+   "speaker": "ben",
+   "react": "none",
+   "scene": "station",
+   "cam": "close",
+   "focus": "ben",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "relieved",
+    "x": 1790
+   },
+   "crew": {
+    "maya": {
+     "expr": "relieved",
+     "look": 1
+    },
+    "ben": {
+     "expr": "relieved",
+     "laugh": true,
+     "look": 1
+    },
+    "malik": {
+     "expr": "tired",
+     "x": 1470,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "dome",
+   "silent": 1.84,
+   "beat_at": 0.4,
+   "dome": true,
+   "scene": "station",
+   "cam": "medium",
+   "focus": "group",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "relieved",
+    "x": 1790
+   },
+   "crew": {
+    "maya": {
+     "expr": "relieved",
+     "look": 1
+    },
+    "ben": {
+     "expr": "relieved",
+     "laugh": true,
+     "look": 1
+    },
+    "malik": {
+     "expr": "calm",
+     "x": 1470,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "Take another one before he calls a priest.",
+   "speaker": "maya",
+   "react": "none",
+   "dome": true,
+   "scene": "station",
+   "cam": "close",
+   "focus": "maya",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "relieved",
+    "x": 1790
+   },
+   "crew": {
+    "maya": {
+     "expr": "relieved",
+     "look": 1
+    },
+    "ben": {
+     "expr": "relieved",
+     "look": 1
+    },
+    "malik": {
+     "expr": "calm",
+     "x": 1470,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "shutter",
+   "silent": 3.68,
+   "beat_at": 0.75,
+   "scene": "selfie",
+   "mode": "four",
+   "cam": "push_in",
+   "focus": "hero"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "pop",
+   "silent": 2.99,
+   "beat_at": 0.5,
+   "scene": "phone2",
+   "mode": "reply",
+   "bg": "station",
+   "cam": "medium",
+   "focus": "screen",
+   "text": {
+    "name": "Dad",
+    "msg": "Hi Malik. Sorry."
+   }
+  },
+  {
+   "line": "I forgive you.",
+   "speaker": "malik",
+   "react": "none",
+   "dome": true,
+   "scene": "station",
+   "cam": "close",
+   "focus": "malik",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "relieved",
+    "phone": "up",
+    "x": 1810
+   },
+   "crew": {
+    "malik": {
+     "expr": "relieved",
+     "x": 1490,
+     "look": 1,
+     "lean": 0.22
+    }
+   }
+  },
+  {
+   "line": "Don't do that.",
+   "speaker": "dad",
+   "react": "none",
+   "phone": true,
+   "dome": true,
+   "scene": "station",
+   "cam": "medium",
+   "focus": "pair",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "relieved",
+    "phone": "up",
+    "x": 1810
+   },
+   "crew": {
+    "malik": {
+     "expr": "relieved",
+     "x": 1490,
+     "look": 1,
+     "lean": 0.22
+    }
+   }
+  }
+ ]
+}

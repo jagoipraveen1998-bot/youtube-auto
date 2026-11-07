@@ -1,0 +1,369 @@
+{
+ "story_id": "fourth-face-1_the_call",
+ "tags": [
+  "horror comedy",
+  "animated horror story",
+  "scary cartoon",
+  "car selfie ghost",
+  "skinwalker story",
+  "creepy cartoon tales",
+  "funny horror",
+  "ghost in photo",
+  "horror short film",
+  "animated scary story",
+  "gas station horror",
+  "night drive horror"
+ ],
+ "hero": {
+  "look": "man",
+  "outfit": "tee",
+  "voice": "am_puck",
+  "omni": "male, young adult, high pitch, american accent",
+  "style": {
+   "skin": "#d9a07a",
+   "hair": "#3b2618",
+   "hairStyle": "spiky",
+   "outfit": "tee",
+   "top": "#3a8ab8",
+   "acc": {}
+  }
+ },
+ "villain": "double",
+ "cast": [
+  {
+   "role": "maya",
+   "gender": "f",
+   "voice": "af_heart",
+   "style": {
+    "skin": "#e0b48c",
+    "hair": "#1d1420",
+    "hairStyle": "ponytail",
+    "outfit": "cardigan",
+    "top": "#c84a4a",
+    "acc": {}
+   }
+  },
+  {
+   "role": "ben",
+   "gender": "m",
+   "voice": "bm_fable",
+   "omni": "male, young adult, british accent",
+   "style": {
+    "skin": "#f0c8a0",
+    "hair": "#c99a4a",
+    "hairStyle": "mop",
+    "outfit": "shirt",
+    "top": "#e8d49c",
+    "acc": {
+     "glasses": true,
+     "freckles": true
+    }
+   }
+  },
+  {
+   "role": "malik",
+   "gender": "m",
+   "voice": "am_michael",
+   "omni": "male, young adult, low pitch, american accent",
+   "style": {
+    "skin": "#6e4630",
+    "hair": "#141018",
+    "hairStyle": "curly",
+    "outfit": "hoodie",
+    "top": "#24222c",
+    "acc": {
+     "earbud": true,
+     "crease": true
+    }
+   }
+  },
+  {
+   "role": "dad",
+   "gender": "m",
+   "voice": "am_fenrir",
+   "style": {}
+  }
+ ],
+ "voice_over": {
+  "villain": {
+   "like": "malik",
+   "semitones": -4.0,
+   "speed": 0.8,
+   "echo": true,
+   "omni_semitones": -4.0
+  }
+ },
+ "storyboard": true,
+ "captions": true,
+ "title": "My friend called from home. So who's been standing next to me? #shorts #horror",
+ "description": "From our animated horror story The Fourth Face. Full video on the channel.",
+ "beats": [
+  {
+   "line": "My friend has been standing next to me all *night.* Then he called me… from *home.*",
+   "speaker": "narrator",
+   "react": "none",
+   "scene": "phone2",
+   "mode": "call",
+   "bg": "station",
+   "cam": "close",
+   "focus": "screen",
+   "text": {
+    "name": "MALIK",
+    "sub": "incoming call"
+   },
+   "onscreen": "HE'S SICK AT HOME."
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "ring",
+   "silent": 2.99,
+   "beat_at": 0.05,
+   "scene": "phone2",
+   "mode": "call",
+   "bg": "station",
+   "cam": "close",
+   "focus": "screen",
+   "text": {
+    "name": "MALIK",
+    "sub": "incoming call"
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "face",
+   "silent": 2.76,
+   "beat_at": 0.15,
+   "dome": true,
+   "scene": "station",
+   "cam": "medium",
+   "focus": "pair",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "relieved",
+    "expr2": "worried",
+    "phone": "up",
+    "x": 1700,
+    "glance": -1
+   },
+   "crew": {
+    "malik": {
+     "expr": "relieved",
+     "x": 1380,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "Hello?",
+   "speaker": "hero",
+   "react": "none",
+   "vspeed": 0.88,
+   "gain": 0.62,
+   "dome": true,
+   "scene": "station",
+   "cam": "close",
+   "focus": "hero",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "phone": "ear",
+    "x": 1700,
+    "shake": 3
+   },
+   "crew": {
+    "malik": {
+     "expr": "relieved",
+     "x": 1380,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "Sorry, Joe. I got sick, so I won't come.",
+   "speaker": "malik",
+   "react": "face",
+   "phone": true,
+   "beat_word": "sick",
+   "dome": true,
+   "scene": "station",
+   "cam": "push_in",
+   "focus": "hero",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "expr2": "stare",
+    "phone": "ear",
+    "x": 1700,
+    "shake": 2
+   },
+   "crew": {
+    "malik": {
+     "expr": "relieved",
+     "x": 1380,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.07,
+   "dome": true,
+   "scene": "station",
+   "cam": "close",
+   "focus": "hero",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "stare",
+    "phone": "ear",
+    "x": 1700,
+    "shake": 3,
+    "lookTo": -1
+   },
+   "crew": {
+    "malik": {
+     "expr": "relieved",
+     "x": 1380,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "fake",
+   "silent": 3.22,
+   "beat_at": 0.3,
+   "twist": true,
+   "fakeGlow": true,
+   "dome": true,
+   "scene": "station",
+   "cam": "push_in",
+   "focus": "malik",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "stare",
+    "phone": "ear",
+    "x": 1700,
+    "turn": 0
+   },
+   "crew": {
+    "malik": {
+     "expr": "calm",
+     "fake": true,
+     "x": 1380,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "sting",
+   "silent": 1.15,
+   "beat_at": 0.1,
+   "redOn": true,
+   "fakeGlow": true,
+   "dome": true,
+   "scene": "station",
+   "cam": "snap",
+   "focus": "hero",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "terror": true,
+    "phone": "ear",
+    "x": 1700,
+    "look": -1
+   },
+   "crew": {
+    "malik": {
+     "expr": "calm",
+     "fake": "full",
+     "x": 1380,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "Haa... haa...",
+   "speaker": "villain",
+   "react": "fake",
+   "beat_at": 0.02,
+   "shake": 30,
+   "gap": 0.15,
+   "fakeGlow": true,
+   "dome": true,
+   "layer": {
+    "semitones": -7.0,
+    "speed": 0.72,
+    "gain": 0.5,
+    "echo": true
+   },
+   "scene": "station",
+   "cam": "close",
+   "focus": "malik",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "stare",
+    "phone": "ear",
+    "x": 1700,
+    "turn": 0
+   },
+   "crew": {
+    "malik": {
+     "expr": "calm",
+     "fake": "full",
+     "x": 1380,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "HAA... HAAAA!",
+   "speaker": "villain",
+   "react": "fake",
+   "beat_at": 0.02,
+   "shake": 70,
+   "light": "flicker",
+   "fakeGlow": true,
+   "dome": true,
+   "blackout": 24,
+   "layer": {
+    "semitones": -9.0,
+    "speed": 0.7,
+    "gain": 0.65,
+    "echo": true
+   },
+   "scene": "station",
+   "cam": "close",
+   "focus": "malikClose",
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "stare",
+    "phone": "ear",
+    "x": 1700,
+    "turn": 0
+   },
+   "crew": {
+    "malik": {
+     "expr": "calm",
+     "fake": "full",
+     "x": 1380,
+     "look": 1
+    }
+   }
+  }
+ ]
+}

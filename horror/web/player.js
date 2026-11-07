@@ -306,7 +306,7 @@ function camFor(S, sh, f) {
   let c = keys(K, t);
   c = creep(c, t, 0.8);
   if (sh.twist) c.r += 3 * ss(seg(t, 0, dur));
-  if (sh.beat != null && ['jolt', 'knock', 'appear', 'ring', 'lights_on', 'slam', 'buzz', 'door_open'].includes(sh.react)) c = kick(c, f, sh.beat, sh.react === 'buzz' ? 8 : 16, 7);
+  if (sh.beat != null && ['jolt', 'knock', 'appear', 'ring', 'lights_on', 'slam', 'buzz', 'door_open', 'thump', 'crash', 'pound', 'slam1', 'lidfall'].includes(sh.react)) c = kick(c, f, sh.beat, sh.react === 'buzz' ? 8 : 16, 7);
   if (sh.react === 'slam') { c = kick(c, f, sh.beat + 9, 14, 6); c = kick(c, f, sh.beat + 18, 14, 6); }
   if (sh.react === 'gag' && sh.beat != null && f >= sh.beat) { const t = seg(f, sh.beat, sh.beat + 8); c.z *= 1 + 0.18 * back(t) * (1 - seg(f, sh.beat + 20, sh.beat + 40)); c = kick(c, f, sh.beat, 10, 6); }
   if (sh.roll) c.r += sh.roll * (sh.rollIn ? ss(seg(f, sh.a, sh.b)) : 1);    // dutch angle for unease
@@ -498,6 +498,13 @@ window.renderFrame = function (f) {
   if (sh.twist && sh.beat != null && f >= sh.beat && f < sh.beat + 6) { glitch(1.2); flash(0.25 * (1 - bT(f, sh, 6))); }
   if (sh.scene === 'cctv' && f < sh.a + 6 && sh.a > 0 && (shots[shots.indexOf(sh) - 1] || {}).scene !== 'cctv') staticNoise(0.8 * (1 - seg(f, sh.a, sh.a + 6)));
   if (sh.scene === 'selfie') selfieUI(f, sh);
+  if (sh.flashback) {                // flashback: drained, sepia, flickering like old film
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalCompositeOperation = 'saturation'; ctx.fillStyle = 'rgba(128,128,128,0.85)'; ctx.fillRect(0, 0, W, H);
+    ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = '#c8a878'; ctx.fillRect(0, 0, W, H);
+    ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = `rgba(255,240,210,${0.05 + 0.05 * rnd(f)})`; ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+  }
   if (sh.vig) {                      // heavy vignette closing in on dark shots
     ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
     const g = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.25, W / 2, H / 2, Math.max(W, H) * 0.62);

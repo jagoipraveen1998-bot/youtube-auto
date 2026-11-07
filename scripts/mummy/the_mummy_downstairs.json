@@ -1,0 +1,5125 @@
+{
+ "storyboard": true,
+ "captions": true,
+ "music": "drone",
+ "scary": true,
+ "piano": true,
+ "story_id": "the-mummy-downstairs",
+ "title": "The Mummy Downstairs | Animated Horror Story",
+ "description": "A museum sarcophagus is delivered to the wrong address: Jeff's house. It stays in the basement, chained shut, for one night. Then two. An original animated horror story.",
+ "tags": [
+  "animated horror story",
+  "mummy horror",
+  "creepy cartoon tales",
+  "horror cartoon",
+  "scary story",
+  "sarcophagus",
+  "basement horror"
+ ],
+ "cover_beat": 165,
+ "cover_text": "THE MUMMY DOWNSTAIRS",
+ "hero": {
+  "look": "boy",
+  "outfit": "hoodie",
+  "voice": "am_puck",
+  "omni": "male, child, american accent",
+  "style": {
+   "skin": "#e6b48f",
+   "hair": "#6b4423",
+   "hairStyle": "mop",
+   "outfit": "hoodie",
+   "top": "#d9a520",
+   "pants": "#25304f",
+   "shoes": "#f2f2ee",
+   "acc": {}
+  }
+ },
+ "villain": "shadow",
+ "cast": [
+  {
+   "role": "kim",
+   "gender": "f",
+   "voice": "af_bella",
+   "omni": "female, teenager, american accent",
+   "style": {
+    "skin": "#e6b48f",
+    "hair": "#3a2418",
+    "hairStyle": "ponytail",
+    "outfit": "tee",
+    "top": "#7a2335",
+    "pants": "#1d1c22",
+    "shoes": "#c8282e",
+    "hood": false,
+    "acc": {}
+   }
+  },
+  {
+   "role": "dad",
+   "gender": "m",
+   "voice": "am_michael",
+   "omni": "male, middle-aged, low pitch, american accent",
+   "style": {
+    "skin": "#e6b48f",
+    "hair": "#5a4634",
+    "hairStyle": "spiky",
+    "outfit": "shirt",
+    "top": "#dfe6ee",
+    "pants": "#3a3f50",
+    "acc": {
+     "glasses": true
+    }
+   }
+  },
+  {
+   "role": "mom",
+   "gender": "f",
+   "voice": "af_sarah",
+   "omni": "female, middle-aged, american accent",
+   "style": {
+    "skin": "#e6b48f",
+    "hair": "#6b4a30",
+    "hairStyle": "bob",
+    "outfit": "cardigan",
+    "top": "#c87a5a",
+    "pants": "#4a4060",
+    "acc": {}
+   }
+  },
+  {
+   "role": "owner",
+   "gender": "m",
+   "voice": "bm_george",
+   "omni": "male, elderly, low pitch, british accent",
+   "style": {
+    "skin": "#e0a882",
+    "hair": "#c8c8cc",
+    "hairStyle": "mop",
+    "outfit": "suit",
+    "top": "#3a2e2a",
+    "acc": {
+     "mustache": true
+    }
+   }
+  },
+  {
+   "role": "worker",
+   "gender": "m",
+   "voice": "am_eric",
+   "omni": "male, middle-aged, american accent",
+   "style": {
+    "skin": "#a8714f",
+    "hair": "#1d1420",
+    "hairStyle": "spiky",
+    "outfit": "uniform",
+    "top": "#5a6a7a",
+    "acc": {
+     "cap": "#3a4a5a"
+    }
+   }
+  },
+  {
+   "role": "worker2",
+   "gender": "m",
+   "voice": "am_adam",
+   "style": {
+    "skin": "#d9a07a",
+    "hair": "#3b2618",
+    "hairStyle": "bald",
+    "outfit": "uniform",
+    "top": "#5a6a7a",
+    "acc": {
+     "beard": true
+    }
+   }
+  }
+ ],
+ "beats": [
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "chain",
+   "silent": 3.2,
+   "chapter": "The Wrong Delivery",
+   "scene": "insert",
+   "insert": "chainface",
+   "beat_at": 0.5,
+   "cam": "push_in",
+   "focus": "wide"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "scrape",
+   "silent": 3.8,
+   "beat_at": 0.25,
+   "scene": "hallDay",
+   "caseLying": true,
+   "caseX": 1480,
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 460,
+    "look": 1
+   },
+   "crew": {
+    "mom": {
+     "x": 170,
+     "expr": "curious",
+     "look": 1
+    },
+    "kim": {
+     "x": 760,
+     "expr": "curious",
+     "look": 1
+    },
+    "dad": {
+     "x": 1060,
+     "expr": "calm",
+     "look": 1,
+     "armR": 1.1
+    },
+    "worker": {
+     "expr": "tired"
+    },
+    "worker2": {
+     "expr": "tired"
+    }
+   },
+   "caseCarried": true,
+   "carry": [
+    2150,
+    1480
+   ],
+   "cam": "pull_out",
+   "focus": "door"
+  },
+  {
+   "line": "Dad… why is there a coffin in our house?",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "hallDay",
+   "caseLying": true,
+   "caseX": 1480,
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "x": 460,
+    "look": 1
+   },
+   "crew": {
+    "mom": {
+     "x": 170,
+     "expr": "curious",
+     "look": 1
+    },
+    "kim": {
+     "x": 760,
+     "expr": "curious",
+     "look": 1
+    },
+    "dad": {
+     "x": 1060,
+     "expr": "calm",
+     "look": 1,
+     "armR": 1.1
+    },
+    "worker": {
+     "x": 1830,
+     "expr": "calm",
+     "look": -1
+    },
+    "worker2": {
+     "x": 2040,
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "hero"
+  },
+  {
+   "line": "A sarcophagus. And it's supposed to be at the museum.",
+   "speaker": "dad",
+   "react": "none",
+   "scene": "hallDay",
+   "caseLying": true,
+   "caseX": 1480,
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 460,
+    "look": 1
+   },
+   "crew": {
+    "mom": {
+     "x": 170,
+     "expr": "curious",
+     "look": 1
+    },
+    "kim": {
+     "x": 760,
+     "expr": "curious",
+     "look": 1
+    },
+    "dad": {
+     "x": 1060,
+     "expr": "calm",
+     "look": 1,
+     "armR": 1.1
+    },
+    "worker": {
+     "x": 1830,
+     "expr": "calm",
+     "look": -1
+    },
+    "worker2": {
+     "x": 2040,
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "dad"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.0,
+   "scene": "hallDay",
+   "caseLying": true,
+   "caseX": 1480,
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 460,
+    "look": 1
+   },
+   "crew": {
+    "mom": {
+     "x": 170,
+     "expr": "tired",
+     "look": 1
+    },
+    "kim": {
+     "x": 760,
+     "expr": "curious",
+     "look": 1
+    },
+    "dad": {
+     "x": 1060,
+     "expr": "curious",
+     "look": 0,
+     "lookY": 0.8,
+     "armR": 1.3
+    },
+    "worker": {
+     "x": 1830,
+     "expr": "calm",
+     "look": -1
+    },
+    "worker2": {
+     "x": 2040,
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "medium",
+   "focus": "family"
+  },
+  {
+   "line": "Please tell me this is going straight back on the truck.",
+   "speaker": "mom",
+   "react": "none",
+   "scene": "hallDay",
+   "caseLying": true,
+   "caseX": 1480,
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 460,
+    "look": 1
+   },
+   "crew": {
+    "mom": {
+     "x": 170,
+     "expr": "tired",
+     "look": 1
+    },
+    "kim": {
+     "x": 760,
+     "expr": "curious",
+     "look": 1
+    },
+    "dad": {
+     "x": 1060,
+     "expr": "calm",
+     "look": 1,
+     "armR": 1.1
+    },
+    "worker": {
+     "x": 1830,
+     "expr": "calm",
+     "look": -1
+    },
+    "worker2": {
+     "x": 2040,
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "mom"
+  },
+  {
+   "line": "They've used my home address instead of the museum's receiving entrance.",
+   "speaker": "dad",
+   "react": "none",
+   "scene": "hallDay",
+   "caseLying": true,
+   "caseX": 1480,
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 460,
+    "look": 1
+   },
+   "crew": {
+    "mom": {
+     "x": 170,
+     "expr": "curious",
+     "look": 1
+    },
+    "kim": {
+     "x": 760,
+     "expr": "curious",
+     "look": 1
+    },
+    "dad": {
+     "x": 1060,
+     "expr": "tired",
+     "look": -1,
+     "armR": 1.3
+    },
+    "worker": {
+     "x": 1830,
+     "expr": "calm",
+     "look": -1
+    },
+    "worker2": {
+     "x": 2040,
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "dad"
+  },
+  {
+   "line": "Dispatch says the collection team can return tomorrow afternoon.",
+   "speaker": "worker",
+   "react": "none",
+   "scene": "hallDay",
+   "caseLying": true,
+   "caseX": 1480,
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 460,
+    "look": 1
+   },
+   "crew": {
+    "mom": {
+     "x": 170,
+     "expr": "curious",
+     "look": 1
+    },
+    "kim": {
+     "x": 760,
+     "expr": "curious",
+     "look": 1
+    },
+    "dad": {
+     "x": 1060,
+     "expr": "calm",
+     "look": 1,
+     "armR": 1.1
+    },
+    "worker": {
+     "x": 1830,
+     "expr": "calm",
+     "look": -1
+    },
+    "worker2": {
+     "x": 2040,
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "worker"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.8,
+   "scene": "hallDay",
+   "caseLying": true,
+   "caseX": 1480,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 460,
+    "look": 1
+   },
+   "crew": {
+    "mom": {
+     "x": 170,
+     "expr": "curious",
+     "look": 1
+    },
+    "kim": {
+     "walk": [
+      760,
+      700
+     ],
+     "expr": "sly",
+     "look": 1
+    },
+    "dad": {
+     "x": 1060,
+     "expr": "calm",
+     "look": 1,
+     "armR": 1.1
+    },
+    "worker": {
+     "x": 1830,
+     "expr": "calm",
+     "look": -1
+    },
+    "worker2": {
+     "x": 2040,
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "medium",
+   "focus": "hero"
+  },
+  {
+   "line": "Maybe he wanted to meet the family.",
+   "speaker": "kim",
+   "react": "none",
+   "scene": "hallDay",
+   "caseLying": true,
+   "caseX": 1480,
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 460,
+    "look": 1
+   },
+   "crew": {
+    "mom": {
+     "x": 170,
+     "expr": "curious",
+     "look": 1
+    },
+    "kim": {
+     "x": 700,
+     "expr": "relieved",
+     "look": 1
+    },
+    "dad": {
+     "x": 1060,
+     "expr": "calm",
+     "look": 1,
+     "armR": 1.1
+    },
+    "worker": {
+     "x": 1830,
+     "expr": "calm",
+     "look": -1
+    },
+    "worker2": {
+     "x": 2040,
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "kim"
+  },
+  {
+   "line": "That's really funny.",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "hallDay",
+   "caseLying": true,
+   "caseX": 1480,
+   "hero": {
+    "pose": "stand",
+    "expr": "tired",
+    "x": 460,
+    "look": 1
+   },
+   "crew": {
+    "mom": {
+     "x": 170,
+     "expr": "curious",
+     "look": 1
+    },
+    "kim": {
+     "x": 700,
+     "expr": "relieved",
+     "look": -1
+    },
+    "dad": {
+     "x": 1060,
+     "expr": "calm",
+     "look": 1,
+     "armR": 1.1
+    },
+    "worker": {
+     "x": 1830,
+     "expr": "calm",
+     "look": -1
+    },
+    "worker2": {
+     "x": 2040,
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "hero"
+  },
+  {
+   "line": "You haven't even introduced yourself.",
+   "speaker": "kim",
+   "react": "none",
+   "scene": "hallDay",
+   "caseLying": true,
+   "caseX": 1480,
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 460,
+    "look": 1
+   },
+   "crew": {
+    "mom": {
+     "x": 170,
+     "expr": "curious",
+     "look": 1
+    },
+    "kim": {
+     "x": 700,
+     "expr": "doubt",
+     "look": -1
+    },
+    "dad": {
+     "x": 1060,
+     "expr": "calm",
+     "look": 1,
+     "armR": 1.1
+    },
+    "worker": {
+     "x": 1830,
+     "expr": "calm",
+     "look": -1
+    },
+    "worker2": {
+     "x": 2040,
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "kim"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "jolt",
+   "silent": 1.4,
+   "beat_at": 0.25,
+   "scene": "hallDay",
+   "caseLying": true,
+   "caseX": 1480,
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "x": 460,
+    "look": 1
+   },
+   "crew": {
+    "mom": {
+     "x": 170,
+     "expr": "curious",
+     "look": 1
+    },
+    "kim": {
+     "x": 680,
+     "expr": "relieved",
+     "look": -1,
+     "armL": 1.4
+    },
+    "dad": {
+     "x": 1060,
+     "expr": "calm",
+     "look": 1,
+     "armR": 1.1
+    },
+    "worker": {
+     "x": 1830,
+     "expr": "calm",
+     "look": -1
+    },
+    "worker2": {
+     "x": 2040,
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "medium",
+   "focus": "hero"
+  },
+  {
+   "line": "Kim. Enough.",
+   "speaker": "mom",
+   "react": "none",
+   "scene": "hallDay",
+   "caseLying": true,
+   "caseX": 1480,
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 460,
+    "look": 1
+   },
+   "crew": {
+    "mom": {
+     "x": 170,
+     "expr": "tired",
+     "look": 1
+    },
+    "kim": {
+     "x": 760,
+     "expr": "curious",
+     "look": 1
+    },
+    "dad": {
+     "x": 1060,
+     "expr": "calm",
+     "look": 1,
+     "armR": 1.1
+    },
+    "worker": {
+     "x": 1830,
+     "expr": "calm",
+     "look": -1
+    },
+    "worker2": {
+     "x": 2040,
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "mom"
+  },
+  {
+   "line": "We'll keep it downstairs until they collect it. Everyone leaves the case alone.",
+   "speaker": "dad",
+   "react": "none",
+   "scene": "hallDay",
+   "caseLying": true,
+   "caseX": 1480,
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 460,
+    "look": 1
+   },
+   "crew": {
+    "mom": {
+     "x": 170,
+     "expr": "curious",
+     "look": 1
+    },
+    "kim": {
+     "x": 760,
+     "expr": "curious",
+     "look": 1
+    },
+    "dad": {
+     "x": 1060,
+     "expr": "calm",
+     "look": -1
+    },
+    "worker": {
+     "x": 1830,
+     "expr": "calm",
+     "look": -1
+    },
+    "worker2": {
+     "x": 2040,
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "dad"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "chain",
+   "silent": 3.6,
+   "beat_at": 0.3,
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "push_in",
+   "focus": "face",
+   "vig": 0.55,
+   "eyesFollow": false,
+   "crew": {
+    "worker": {
+     "x": 1450,
+     "expr": "tired",
+     "look": 1
+    },
+    "worker2": {
+     "x": 2050,
+     "expr": "tired",
+     "look": -1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.4,
+   "chapter": "The Dare",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 900,
+     "expr": "curious",
+     "look": -1
+    }
+   },
+   "vig": 0.35,
+   "cam": "push_in",
+   "focus": "two",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 620,
+    "look": -1
+   }
+  },
+  {
+   "line": "You keep looking at it.",
+   "speaker": "kim",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 900,
+     "expr": "relieved",
+     "look": -1
+    }
+   },
+   "vig": 0.35,
+   "cam": "close",
+   "focus": "kim",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 620,
+    "look": -1
+   }
+  },
+  {
+   "line": "I'm looking at the kitchen.",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 900,
+     "expr": "relieved",
+     "look": -1
+    }
+   },
+   "vig": 0.35,
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "tired",
+    "x": 620,
+    "look": 1
+   }
+  },
+  {
+   "line": "Then go downstairs.",
+   "speaker": "kim",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 900,
+     "expr": "doubt",
+     "look": -1
+    }
+   },
+   "vig": 0.35,
+   "cam": "close",
+   "focus": "kim",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 620,
+    "look": 1
+   }
+  },
+  {
+   "line": "Why?",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 900,
+     "expr": "relieved",
+     "look": -1
+    }
+   },
+   "vig": 0.35,
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 620,
+    "look": 1
+   }
+  },
+  {
+   "line": "Touch the case. One finger. Then I'll stop teasing you about it.",
+   "speaker": "kim",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 900,
+     "expr": "relieved",
+     "look": -1
+    }
+   },
+   "vig": 0.35,
+   "cam": "medium",
+   "focus": "two",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 620,
+    "look": 1
+   }
+  },
+  {
+   "line": "Dad said to leave it alone.",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 900,
+     "expr": "relieved",
+     "look": -1
+    }
+   },
+   "vig": 0.35,
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 620,
+    "look": 1
+   }
+  },
+  {
+   "line": "He meant opening it. You can touch the outside.",
+   "speaker": "kim",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 900,
+     "expr": "doubt",
+     "look": -1
+    }
+   },
+   "vig": 0.35,
+   "cam": "close",
+   "focus": "kim",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 620,
+    "look": 1
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "dome",
+   "silent": 3.2,
+   "beat_at": 0.25,
+   "door": "opening",
+   "lightOn": true,
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 600,
+     "expr": "relieved",
+     "look": -1,
+     "reachDoor": true
+    }
+   },
+   "vig": 0.35,
+   "cam": "medium",
+   "focus": "door",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 820,
+    "look": -1
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.0,
+   "scene": "basement",
+   "door": "open",
+   "lightOn": true,
+   "cam": "push_in",
+   "focus": "case",
+   "hero": null,
+   "vig": 0.6,
+   "shadowPass": true,
+   "whispers": true,
+   "eyesFollow": true
+  },
+  {
+   "line": "You're coming with me.",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 760,
+     "expr": "relieved",
+     "look": -1
+    }
+   },
+   "vig": 0.35,
+   "cam": "close",
+   "focus": "hero",
+   "door": "open",
+   "lightOn": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 620,
+    "look": 1
+   }
+  },
+  {
+   "line": "I'll be right here.",
+   "speaker": "kim",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 760,
+     "expr": "relieved",
+     "look": -1
+    }
+   },
+   "vig": 0.35,
+   "cam": "close",
+   "focus": "kim",
+   "door": "open",
+   "lightOn": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 620,
+    "look": 1
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 5.0,
+   "scene": "basement",
+   "door": "open",
+   "lightOn": true,
+   "cam": "medium",
+   "focus": "stairs",
+   "creaks": true,
+   "countRun": [
+    1,
+    9
+   ],
+   "vig": 0.55,
+   "whispers": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "step": [
+     0,
+     9.6
+    ],
+    "look": 0.6,
+    "lookY": 0.4
+   }
+  },
+  {
+   "line": "If you turn the light off—",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "basement",
+   "door": "open",
+   "lightOn": true,
+   "cam": "close",
+   "focus": "hero",
+   "vig": 0.55,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "step": 9.6,
+    "look": -0.8,
+    "lookY": -0.7
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "slam1",
+   "silent": 1.6,
+   "beat_at": 0.2,
+   "scene": "basement",
+   "door": "slam",
+   "lightOn": true,
+   "cam": "snap",
+   "focus": "door",
+   "vig": 0.6,
+   "flickerBulb": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "step": 9.6,
+    "look": -0.8,
+    "lookY": -0.7
+   }
+  },
+  {
+   "line": "Kim?",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "close",
+   "focus": "hero",
+   "vig": 0.6,
+   "roll": -3,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "step": 9.6,
+    "look": -0.8,
+    "lookY": -0.7
+   }
+  },
+  {
+   "line": "Just touch it!",
+   "speaker": "kim",
+   "react": "none",
+   "muffle": true,
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "close",
+   "focus": "door",
+   "vig": 0.6,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "step": 9.6,
+    "look": -0.8,
+    "lookY": -0.7
+   }
+  },
+  {
+   "line": "Open the door!",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "close",
+   "focus": "hero",
+   "vig": 0.6,
+   "roll": 3,
+   "hero": {
+    "pose": "stand",
+    "expr": "scream",
+    "step": 9.6,
+    "look": -0.8,
+    "lookY": -0.7
+   }
+  },
+  {
+   "line": "You wanted me to stay here. I'm staying here.",
+   "speaker": "kim",
+   "react": "none",
+   "muffle": true,
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "close",
+   "focus": "door",
+   "vig": 0.6,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "step": 9.6,
+    "look": -0.8,
+    "lookY": -0.7
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 6.2,
+   "beat_at": 0.95,
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "push_in",
+   "focus": "finger",
+   "heart": "accel",
+   "vig": 0.7,
+   "whispers": true,
+   "flickerBulb": true,
+   "eyesFollow": true,
+   "roll": 4,
+   "rollIn": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "dread",
+    "aisle": [
+     1100,
+     1520
+    ],
+    "look": 1,
+    "point": true
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "chain",
+   "silent": 3.2,
+   "beat_at": 0.12,
+   "lid": "shift",
+   "twist": true,
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "snap",
+   "focus": "chain",
+   "vig": 0.7,
+   "flickerBulb": true,
+   "eyesFollow": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "realize",
+    "x": 1520,
+    "look": 1,
+    "point": true
+   }
+  },
+  {
+   "line": "KIM!",
+   "speaker": "hero",
+   "react": "jolt",
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "snap",
+   "focus": "hero",
+   "beat_at": 0.05,
+   "vig": 0.7,
+   "flickerBulb": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "scream",
+    "x": 1520,
+    "expr2": "scream",
+    "look": -1,
+    "lookY": -0.6
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.0,
+   "chapter": "Nothing Moved",
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "medium",
+   "focus": "stairs",
+   "vig": 0.55,
+   "creaks": true,
+   "countRun": [
+    1,
+    9
+   ],
+   "hero": {
+    "pose": "stand",
+    "expr": "scream",
+    "step": [
+     9.6,
+     0.3
+    ],
+    "look": -0.6,
+    "lookY": -0.6
+   }
+  },
+  {
+   "line": "Open it! Open it right now!",
+   "speaker": "hero",
+   "react": "pound",
+   "beat_at": 0.05,
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "close",
+   "focus": "door",
+   "vig": 0.55,
+   "hero": {
+    "pose": "stand",
+    "expr": "scream",
+    "step": 0.3,
+    "look": -1
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "unlock",
+   "silent": 1.8,
+   "beat_at": 0.1,
+   "door": "opening",
+   "lightOn": true,
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 470,
+     "expr": "relieved",
+     "look": -1
+    }
+   },
+   "vig": 0.3,
+   "cam": "medium",
+   "focus": "door",
+   "hero": {
+    "pose": "stand",
+    "expr": "scream",
+    "walk": [
+     380,
+     920
+    ],
+    "look": 1
+   }
+  },
+  {
+   "line": "You should've heard yourself!",
+   "speaker": "kim",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 470,
+     "expr": "relieved",
+     "laugh": true,
+     "look": 1
+    }
+   },
+   "vig": 0.3,
+   "cam": "close",
+   "focus": "kim",
+   "door": "open",
+   "lightOn": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 920,
+    "look": -1
+   }
+  },
+  {
+   "line": "The lid moved!",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 470,
+     "expr": "relieved",
+     "look": 1
+    }
+   },
+   "vig": 0.3,
+   "cam": "close",
+   "focus": "hero",
+   "door": "open",
+   "lightOn": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "x": 920,
+    "look": -1
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "face",
+   "silent": 1.2,
+   "beat_at": 0.5,
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 470,
+     "expr": "curious",
+     "expr2": "relieved",
+     "look": 1
+    }
+   },
+   "vig": 0.3,
+   "cam": "close",
+   "focus": "kim",
+   "door": "open",
+   "lightOn": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 920,
+    "look": -1
+   }
+  },
+  {
+   "line": "Sure it did.",
+   "speaker": "kim",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 470,
+     "expr": "doubt",
+     "look": 1
+    }
+   },
+   "vig": 0.3,
+   "cam": "close",
+   "focus": "kim",
+   "door": "open",
+   "lightOn": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 920,
+    "look": -1
+   }
+  },
+  {
+   "line": "The chains were shaking. I saw it.",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 470,
+     "expr": "calm",
+     "look": 1
+    }
+   },
+   "vig": 0.3,
+   "cam": "close",
+   "focus": "hero",
+   "door": "open",
+   "lightOn": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 920,
+    "look": -1
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.3,
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 470,
+     "expr": "curious",
+     "look": -1
+    }
+   },
+   "vig": 0.3,
+   "cam": "medium",
+   "focus": "two",
+   "door": "open",
+   "lightOn": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 920,
+    "look": -1
+   }
+  },
+  {
+   "line": "Come on. I'll show you.",
+   "speaker": "kim",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 470,
+     "expr": "relieved",
+     "look": 1
+    }
+   },
+   "vig": 0.3,
+   "cam": "close",
+   "focus": "kim",
+   "door": "open",
+   "lightOn": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 920,
+    "look": -1
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.6,
+   "scene": "basement",
+   "lightOn": true,
+   "door": "open",
+   "cam": "medium",
+   "focus": "stairs",
+   "vig": 0.5,
+   "creaks": true,
+   "countRun": [
+    1,
+    9
+   ],
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "step": [
+     0,
+     5
+    ],
+    "look": 0.6
+   },
+   "crew": {
+    "kim": {
+     "step": [
+      0.5,
+      9.8
+     ],
+     "expr": "relieved",
+     "look": 0.6
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.8,
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "push_in",
+   "focus": "case",
+   "vig": 0.55,
+   "eyesFollow": true,
+   "whispers": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1150,
+    "look": 1
+   },
+   "crew": {
+    "kim": {
+     "x": 1480,
+     "expr": "relieved",
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "Exactly where we left it.",
+   "speaker": "kim",
+   "react": "none",
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "close",
+   "focus": "kim",
+   "vig": 0.5,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1150,
+    "look": 1
+   },
+   "crew": {
+    "kim": {
+     "x": 1480,
+     "expr": "relieved",
+     "look": -1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "knock2",
+   "silent": 1.3,
+   "beat_at": 0.2,
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "medium",
+   "focus": "case",
+   "vig": 0.5,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1150,
+    "look": 1
+   },
+   "crew": {
+    "kim": {
+     "x": 1520,
+     "expr": "relieved",
+     "look": 1,
+     "armR": 1.5
+    }
+   }
+  },
+  {
+   "line": "Anybody home?",
+   "speaker": "kim",
+   "react": "none",
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "close",
+   "focus": "kim",
+   "vig": 0.5,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1150,
+    "look": 1
+   },
+   "crew": {
+    "kim": {
+     "x": 1520,
+     "expr": "doubt",
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "Stop doing that.",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "close",
+   "focus": "hero",
+   "vig": 0.5,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1150,
+    "look": 1
+   },
+   "crew": {
+    "kim": {
+     "x": 1520,
+     "expr": "relieved",
+     "look": -1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.2,
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "push_in",
+   "focus": "lid",
+   "vig": 0.6,
+   "eyesFollow": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "dread",
+    "aisle": [
+     1150,
+     1540
+    ],
+    "look": 1
+   },
+   "crew": {
+    "kim": {
+     "walk": [
+      1520,
+      900
+     ],
+     "expr": "relieved",
+     "look": -1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "shift",
+   "silent": 3.0,
+   "beat_at": 0.6,
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "push_in",
+   "focus": "face",
+   "vig": 0.7,
+   "eyesFollow": false,
+   "whispers": true
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 4.2,
+   "chapter": "Footsteps",
+   "scene": "bedroomNight",
+   "vig": 0.45,
+   "cam": "push_in",
+   "focus": "hero",
+   "hero": {
+    "pose": "lie",
+    "expr": "worried",
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a",
+    "look": 0.6
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "face",
+   "silent": 2.6,
+   "beat_at": 0.35,
+   "heavySteps": [
+    0.5,
+    1.7
+   ],
+   "scene": "bedroomNight",
+   "vig": 0.45,
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "lie",
+    "expr": "sleepy",
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a",
+    "expr2": "stare",
+    "turn": "wall"
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "face",
+   "silent": 2.8,
+   "beat_at": 0.2,
+   "gapShadow": true,
+   "heart": true,
+   "scene": "bedroomNight",
+   "vig": 0.45,
+   "cam": "push_in",
+   "focus": "gap",
+   "hero": {
+    "pose": "lie",
+    "expr": "stare",
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   }
+  },
+  {
+   "line": "Mom?",
+   "speaker": "hero",
+   "react": "none",
+   "vspeed": 0.88,
+   "gain": 0.6,
+   "scene": "bedroomNight",
+   "vig": 0.45,
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "lie",
+    "expr": "dread",
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a",
+    "look": 0.8
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "face",
+   "silent": 2.8,
+   "beat_at": 0.1,
+   "doorIn": 1,
+   "heart": "accel",
+   "scene": "bedroomNight",
+   "vig": 0.45,
+   "cam": "medium",
+   "focus": "door",
+   "hero": {
+    "pose": "lie",
+    "expr": "dread",
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a",
+    "look": 0.8
+   },
+   "crew": {
+    "mom": {
+     "silhouette": true,
+     "at": "door",
+     "expr": "calm",
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4"
+    }
+   }
+  },
+  {
+   "line": "Don't come any closer.",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "bedroomNight",
+   "vig": 0.45,
+   "doorOpen": 1,
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "lie",
+    "expr": "dread",
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a",
+    "look": 0.8
+   },
+   "crew": {
+    "mom": {
+     "silhouette": true,
+     "at": "door",
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4"
+    }
+   }
+  },
+  {
+   "line": "Jeff?",
+   "speaker": "mom",
+   "react": "none",
+   "scene": "bedroomNight",
+   "vig": 0.45,
+   "doorOpen": 1,
+   "cam": "close",
+   "focus": "door",
+   "hero": {
+    "pose": "lie",
+    "expr": "dread",
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a",
+    "look": 0.8
+   },
+   "crew": {
+    "mom": {
+     "silhouette": true,
+     "at": "door",
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4"
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "lamp",
+   "silent": 1.2,
+   "beat_at": 0.3,
+   "scene": "bedroomNight",
+   "vig": 0.45,
+   "doorOpen": 1,
+   "cam": "medium",
+   "focus": "wide",
+   "hero": {
+    "pose": "lie",
+    "expr": "relieved",
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a",
+    "look": 0.8
+   },
+   "crew": {
+    "mom": {
+     "at": "door",
+     "expr": "worried",
+     "look": -1,
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4"
+    }
+   }
+  },
+  {
+   "line": "What's wrong?",
+   "speaker": "mom",
+   "react": "none",
+   "lamp": true,
+   "scene": "bedroomNight",
+   "vig": 0.45,
+   "doorOpen": 1,
+   "cam": "close",
+   "focus": "door",
+   "hero": {
+    "pose": "lie",
+    "expr": "relieved",
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a",
+    "look": 0.8
+   },
+   "crew": {
+    "mom": {
+     "at": "door",
+     "expr": "worried",
+     "look": -1,
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4"
+    }
+   }
+  },
+  {
+   "line": "I thought it came upstairs.",
+   "speaker": "hero",
+   "react": "none",
+   "lamp": true,
+   "scene": "bedroomNight",
+   "vig": 0.45,
+   "doorOpen": 1,
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "lie",
+    "expr": "worried",
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a",
+    "look": 0.8
+   },
+   "crew": {
+    "mom": {
+     "at": "door",
+     "expr": "worried",
+     "look": -1,
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4"
+    }
+   }
+  },
+  {
+   "line": "The mummy?",
+   "speaker": "mom",
+   "react": "none",
+   "lamp": true,
+   "scene": "bedroomNight",
+   "vig": 0.45,
+   "doorOpen": 1,
+   "cam": "close",
+   "focus": "door",
+   "hero": {
+    "pose": "lie",
+    "expr": "worried",
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a",
+    "look": 0.8
+   },
+   "crew": {
+    "mom": {
+     "at": "door",
+     "expr": "curious",
+     "look": -1,
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4"
+    }
+   }
+  },
+  {
+   "line": "Something moved in that case. Kim keeps saying it didn't, but I saw it.",
+   "speaker": "hero",
+   "react": "none",
+   "lamp": true,
+   "scene": "bedroomNight",
+   "vig": 0.45,
+   "doorOpen": 1,
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "lie",
+    "expr": "worried",
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a",
+    "look": 0.8
+   },
+   "crew": {
+    "mom": {
+     "at": "door",
+     "expr": "worried",
+     "look": -1,
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4"
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.6,
+   "lamp": true,
+   "scene": "bedroomNight",
+   "vig": 0.45,
+   "doorOpen": 1,
+   "cam": "medium",
+   "focus": "beside",
+   "hero": {
+    "pose": "lie",
+    "expr": "worried",
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a",
+    "look": 0.8
+   },
+   "crew": {
+    "mom": {
+     "at": "beside",
+     "expr": "calm",
+     "look": -1,
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4"
+    }
+   }
+  },
+  {
+   "line": "You had a frightening evening. Sometimes every little noise sounds different after that.",
+   "speaker": "mom",
+   "react": "none",
+   "lamp": true,
+   "scene": "bedroomNight",
+   "vig": 0.45,
+   "doorOpen": 1,
+   "cam": "close",
+   "focus": "beside",
+   "hero": {
+    "pose": "lie",
+    "expr": "worried",
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a",
+    "look": 0.8
+   },
+   "crew": {
+    "mom": {
+     "at": "beside",
+     "expr": "calm",
+     "look": -1,
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4"
+    }
+   }
+  },
+  {
+   "line": "I wasn't asleep.",
+   "speaker": "hero",
+   "react": "none",
+   "lamp": true,
+   "scene": "bedroomNight",
+   "vig": 0.45,
+   "doorOpen": 1,
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "lie",
+    "expr": "stare",
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a",
+    "look": 0.8
+   },
+   "crew": {
+    "mom": {
+     "at": "beside",
+     "expr": "calm",
+     "look": -1,
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4"
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "face",
+   "silent": 1.3,
+   "lamp": true,
+   "beat_at": 0.3,
+   "scene": "bedroomNight",
+   "vig": 0.45,
+   "doorOpen": 1,
+   "cam": "close",
+   "focus": "beside",
+   "hero": {
+    "pose": "lie",
+    "expr": "worried",
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a",
+    "look": 0.8
+   },
+   "crew": {
+    "mom": {
+     "at": "beside",
+     "expr": "calm",
+     "expr2": "worried",
+     "look": -1,
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4"
+    }
+   }
+  },
+  {
+   "line": "I'll leave your door open. And the hallway light can stay on.",
+   "speaker": "mom",
+   "react": "none",
+   "lamp": true,
+   "scene": "bedroomNight",
+   "vig": 0.45,
+   "doorOpen": 1,
+   "cam": "close",
+   "focus": "beside",
+   "hero": {
+    "pose": "lie",
+    "expr": "worried",
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a",
+    "look": 0.8
+   },
+   "crew": {
+    "mom": {
+     "at": "beside",
+     "expr": "worried",
+     "look": -1,
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4"
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.0,
+   "lamp": true,
+   "scene": "bedroomNight",
+   "vig": 0.45,
+   "doorOpen": 1,
+   "cam": "medium",
+   "focus": "beside",
+   "hero": {
+    "pose": "lie",
+    "expr": "worried",
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a",
+    "look": 0.8
+   },
+   "crew": {
+    "mom": {
+     "at": "beside",
+     "expr": "calm",
+     "look": -1,
+     "armR": 1.2,
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4"
+    }
+   }
+  },
+  {
+   "line": "Try to rest.",
+   "speaker": "mom",
+   "react": "none",
+   "lamp": true,
+   "scene": "bedroomNight",
+   "vig": 0.45,
+   "doorOpen": 1,
+   "cam": "close",
+   "focus": "beside",
+   "hero": {
+    "pose": "lie",
+    "expr": "worried",
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a",
+    "look": 0.8
+   },
+   "crew": {
+    "mom": {
+     "at": "beside",
+     "expr": "relieved",
+     "look": -1,
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4"
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.6,
+   "scene": "bedroomNight",
+   "vig": 0.45,
+   "doorOpen": 1,
+   "cam": "push_in",
+   "focus": "hero",
+   "hero": {
+    "pose": "lie",
+    "expr": "stare",
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a",
+    "look": 1,
+    "lookY": -0.2
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.2,
+   "chapter": "Mummy Dust",
+   "scene": "insert",
+   "insert": "research",
+   "cam": "push_in",
+   "focus": "wide"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.8,
+   "scene": "insert",
+   "insert": "note",
+   "beat_at": 0.85,
+   "cam": "push_in",
+   "focus": "wide"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.6,
+   "scene": "shop",
+   "outside": true,
+   "cam": "pull_out",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 700,
+    "look": -1
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "bell",
+   "silent": 2.4,
+   "beat_at": 0.15,
+   "scene": "shop",
+   "cam": "medium",
+   "focus": "wide",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "walk": [
+     -150,
+     560
+    ],
+    "look": 1
+   },
+   "crew": {
+    "owner": {
+     "expr": "calm",
+     "look": 0.6,
+     "lookY": 0.6
+    }
+   }
+  },
+  {
+   "line": "Looking for a card trick?",
+   "speaker": "owner",
+   "react": "none",
+   "scene": "shop",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 560,
+    "look": 1
+   },
+   "crew": {
+    "owner": {
+     "expr": "calm",
+     "look": 0.4,
+     "lookY": 0.6
+    }
+   },
+   "cam": "close",
+   "focus": "owner"
+  },
+  {
+   "line": "Something a little stronger.",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "shop",
+   "hero": {
+    "pose": "stand",
+    "expr": "calm",
+    "x": 560,
+    "look": 1
+   },
+   "crew": {
+    "owner": {
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "hero"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.0,
+   "scene": "shop",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 560,
+    "look": 1
+   },
+   "crew": {
+    "owner": {
+     "expr": "curious",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "owner"
+  },
+  {
+   "line": "Do you have anything that could stop a mummy?",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "shop",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 560,
+    "look": 1
+   },
+   "crew": {
+    "owner": {
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "hero"
+  },
+  {
+   "line": "A costume mummy?",
+   "speaker": "owner",
+   "react": "none",
+   "scene": "shop",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 560,
+    "look": 1
+   },
+   "crew": {
+    "owner": {
+     "expr": "doubt",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "owner"
+  },
+  {
+   "line": "An actual one.",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "shop",
+   "hero": {
+    "pose": "stand",
+    "expr": "stare",
+    "x": 560,
+    "look": 1
+   },
+   "crew": {
+    "owner": {
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "hero"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.2,
+   "bag": true,
+   "scene": "shop",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 560,
+    "look": 1
+   },
+   "crew": {
+    "owner": {
+     "expr": "calm",
+     "look": -1,
+     "armR": 1.3
+    }
+   },
+   "cam": "medium",
+   "focus": "counter"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.2,
+   "scene": "insert",
+   "insert": "bag",
+   "cam": "push_in",
+   "focus": "wide"
+  },
+  {
+   "line": "There's a legend about this powder. Says a mummy loses its strength when it touches it.",
+   "speaker": "owner",
+   "react": "none",
+   "bag": true,
+   "scene": "shop",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 560,
+    "look": 1
+   },
+   "crew": {
+    "owner": {
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "owner"
+  },
+  {
+   "line": "Does it work?",
+   "speaker": "hero",
+   "react": "none",
+   "bag": true,
+   "scene": "shop",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 560,
+    "look": 1
+   },
+   "crew": {
+    "owner": {
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "hero"
+  },
+  {
+   "line": "That's what the legend says.",
+   "speaker": "owner",
+   "react": "none",
+   "bag": true,
+   "scene": "shop",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 560,
+    "look": 1
+   },
+   "crew": {
+    "owner": {
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "owner"
+  },
+  {
+   "line": "Have you tried it?",
+   "speaker": "hero",
+   "react": "none",
+   "bag": true,
+   "scene": "shop",
+   "hero": {
+    "pose": "stand",
+    "expr": "doubt",
+    "x": 560,
+    "look": 1
+   },
+   "crew": {
+    "owner": {
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "hero"
+  },
+  {
+   "line": "I've had very few mummies come through the door.",
+   "speaker": "owner",
+   "react": "none",
+   "bag": true,
+   "scene": "shop",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 560,
+    "look": 1
+   },
+   "crew": {
+    "owner": {
+     "expr": "relieved",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "owner"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.1,
+   "bag": true,
+   "scene": "shop",
+   "hero": {
+    "pose": "stand",
+    "expr": "relieved",
+    "x": 560,
+    "look": 1
+   },
+   "crew": {
+    "owner": {
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "hero"
+  },
+  {
+   "line": "How much?",
+   "speaker": "hero",
+   "react": "none",
+   "bag": true,
+   "scene": "shop",
+   "hero": {
+    "pose": "stand",
+    "expr": "calm",
+    "x": 560,
+    "look": 1
+   },
+   "crew": {
+    "owner": {
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "hero"
+  },
+  {
+   "line": "Twenty dollars.",
+   "speaker": "owner",
+   "react": "none",
+   "bag": true,
+   "scene": "shop",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 560,
+    "look": 1
+   },
+   "crew": {
+    "owner": {
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "owner"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "face",
+   "silent": 2.6,
+   "bag": true,
+   "beat_at": 0.6,
+   "money": true,
+   "scene": "shop",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 640,
+    "look": 1,
+    "lookY": 0.6,
+    "armR": 1.2
+   },
+   "crew": {
+    "owner": {
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "medium",
+   "focus": "counter"
+  },
+  {
+   "line": "Do I throw all of it?",
+   "speaker": "hero",
+   "react": "none",
+   "bag": true,
+   "money": true,
+   "scene": "shop",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 560,
+    "look": 1
+   },
+   "crew": {
+    "owner": {
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "hero"
+  },
+  {
+   "line": "A pinch should be enough, according to the booklet.",
+   "speaker": "owner",
+   "react": "none",
+   "bag": true,
+   "money": true,
+   "scene": "shop",
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 560,
+    "look": 1
+   },
+   "crew": {
+    "owner": {
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "owner"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.2,
+   "money": true,
+   "scene": "shop",
+   "hero": {
+    "pose": "stand",
+    "expr": "calm",
+    "x": 640,
+    "look": 0.4,
+    "lookY": 0.6,
+    "armR": 0.6
+   },
+   "crew": {
+    "owner": {
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "medium",
+   "focus": "hero"
+  },
+  {
+   "line": "The collection has been delayed until tomorrow morning.",
+   "speaker": "dad",
+   "react": "none",
+   "chapter": "Waiting in the Kitchen",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "x": 1250,
+     "stand": true,
+     "phone": "ear",
+     "expr": "tired",
+     "look": -1
+    },
+    "kim": {
+     "x": 1000,
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "vig": 0.3,
+   "cam": "close",
+   "focus": "dad",
+   "hero": {
+    "pose": "stand",
+    "expr": "calm",
+    "x": 700,
+    "look": 1
+   }
+  },
+  {
+   "line": "So it's staying another night?",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "x": 1250,
+     "stand": true,
+     "expr": "calm",
+     "look": -1
+    },
+    "kim": {
+     "x": 1000,
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "vig": 0.3,
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "x": 700,
+    "look": 1
+   }
+  },
+  {
+   "line": "One more. Then it's going straight into secure storage.",
+   "speaker": "dad",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "x": 1250,
+     "stand": true,
+     "expr": "calm",
+     "look": -1
+    },
+    "kim": {
+     "x": 1000,
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "vig": 0.3,
+   "cam": "close",
+   "focus": "dad",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 700,
+    "look": 1
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.8,
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "x": 1250,
+     "stand": true,
+     "expr": "calm",
+     "look": -1
+    },
+    "kim": {
+     "x": 1000,
+     "expr": "doubt",
+     "look": -1,
+     "lookY": 0.5
+    }
+   },
+   "vig": 0.3,
+   "cam": "close",
+   "focus": "kim",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 700,
+    "look": 1,
+    "armR": 0.6
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.2,
+   "jump": true,
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "medium",
+   "focus": "wide",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "walk": [
+     2350,
+     1950
+    ],
+    "look": -1,
+    "flashlight": true,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.2,
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "pull_out",
+   "focus": "table",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1950,
+    "sit": true,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   }
+  },
+  {
+   "line": "One pinch.",
+   "speaker": "hero",
+   "react": "none",
+   "vspeed": 0.9,
+   "gain": 0.75,
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1950,
+    "sit": true,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "scrape",
+   "silent": 3.6,
+   "beat_at": 0.7,
+   "heart": true,
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "push_in",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1950,
+    "sit": true,
+    "expr2": "stare",
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "face",
+   "silent": 2.8,
+   "beat_at": 0.25,
+   "door": "crack",
+   "heart": "accel",
+   "whispers": true,
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "push_in",
+   "focus": "door",
+   "hero": {
+    "pose": "stand",
+    "expr": "dread",
+    "x": 1950,
+    "sit": true,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "face",
+   "silent": 2.6,
+   "beat_at": 0.2,
+   "door": "crack",
+   "hand": true,
+   "twist": false,
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "close",
+   "focus": "door",
+   "hero": null
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "drag",
+   "silent": 3.6,
+   "chapter": "The Mummy",
+   "beat_at": 0.15,
+   "door": "open",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "medium",
+   "focus": "wide",
+   "hero": {
+    "pose": "stand",
+    "expr": "dread",
+    "x": 1950,
+    "sit": true,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "kim": {
+     "costume": "full",
+     "expr": "calm",
+     "look": 1,
+     "walk": [
+      380,
+      1000
+     ],
+     "shuffle": true
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "jolt",
+   "silent": 1.2,
+   "beat_at": 0.2,
+   "door": "open",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "x": 1700,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "kim": {
+     "costume": "full",
+     "expr": "calm",
+     "look": 1,
+     "x": 1000
+    }
+   }
+  },
+  {
+   "line": "Stay there.",
+   "speaker": "hero",
+   "react": "none",
+   "door": "open",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "dread",
+    "x": 1700,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "kim": {
+     "costume": "full",
+     "expr": "calm",
+     "look": 1,
+     "x": 1000
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.6,
+   "door": "open",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "medium",
+   "focus": "two",
+   "hero": {
+    "pose": "stand",
+    "expr": "dread",
+    "x": 1700,
+    "look": -1,
+    "armR": 1.1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "kim": {
+     "costume": "full",
+     "expr": "calm",
+     "look": 1,
+     "x": 1050,
+     "reachR": true
+    }
+   }
+  },
+  {
+   "line": "I know how to stop you.",
+   "speaker": "hero",
+   "react": "none",
+   "door": "open",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "dread",
+    "x": 1700,
+    "look": -1,
+    "armR": 1.1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "kim": {
+     "costume": "full",
+     "expr": "calm",
+     "look": 1,
+     "x": 1050,
+     "armR": 1.4
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.8,
+   "door": "open",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "medium",
+   "focus": "kim",
+   "hero": {
+    "pose": "stand",
+    "expr": "dread",
+    "x": 1700,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "kim": {
+     "costume": "full",
+     "expr": "calm",
+     "look": 1,
+     "walk": [
+      1050,
+      1250
+     ],
+     "shuffle": true,
+     "armR": 1.4
+    }
+   }
+  },
+  {
+   "line": "I said stay back!",
+   "speaker": "hero",
+   "react": "none",
+   "door": "open",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "scream",
+    "x": 1700,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "kim": {
+     "costume": "full",
+     "expr": "calm",
+     "look": 1,
+     "x": 1250,
+     "armR": 1.4
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "throw",
+   "silent": 2.4,
+   "beat_at": 0.12,
+   "coughs": true,
+   "powder": [
+    1640,
+    1260
+   ],
+   "door": "open",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "medium",
+   "focus": "two",
+   "hero": {
+    "pose": "stand",
+    "expr": "scream",
+    "x": 1700,
+    "look": -1,
+    "armR": 2.2,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "kim": {
+     "costume": "full",
+     "expr": "calm",
+     "look": 1,
+     "x": 1250,
+     "cough": true
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "crash",
+   "silent": 1.6,
+   "beat_at": 0.35,
+   "tray": "fall",
+   "door": "open",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "medium",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "walk": [
+     1700,
+     1780
+    ],
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "kim": {
+     "costume": "full",
+     "expr": "calm",
+     "look": 1,
+     "x": 1250,
+     "cough": true
+    }
+   }
+  },
+  {
+   "line": "Jeff?",
+   "speaker": "mom",
+   "react": "none",
+   "muffle": true,
+   "door": "open",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "close",
+   "focus": "kim",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "x": 1780,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "kim": {
+     "costume": "full",
+     "expr": "calm",
+     "look": 1,
+     "x": 1250
+    }
+   }
+  },
+  {
+   "line": "What happened?",
+   "speaker": "dad",
+   "react": "none",
+   "muffle": true,
+   "door": "open",
+   "heavySteps": [
+    0.6
+   ],
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "x": 1780,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "kim": {
+     "costume": "full",
+     "expr": "calm",
+     "look": -1,
+     "x": 1250
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.2,
+   "door": "open",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "medium",
+   "focus": "wide",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "x": 1780,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "kim": {
+     "costume": "full",
+     "expr": "calm",
+     "look": -1,
+     "walk": [
+      1250,
+      300
+     ]
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.4,
+   "lampOn": true,
+   "door": "open",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "medium",
+   "focus": "wide",
+   "hero": {
+    "pose": "stand",
+    "expr": "scream",
+    "x": 1780,
+    "look": -1,
+    "armR": 1.5,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "mom": {
+     "walk": [
+      2500,
+      2050
+     ],
+     "expr": "worried",
+     "look": -1,
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4"
+    },
+    "dad": {
+     "walk": [
+      2600,
+      1950
+     ],
+     "stand": true,
+     "expr": "worried",
+     "look": -1,
+     "outfit": "pj",
+     "top": "#5a6a8a"
+    }
+   }
+  },
+  {
+   "line": "It was here! You saw it!",
+   "speaker": "hero",
+   "react": "none",
+   "lampOn": true,
+   "door": "open",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "scream",
+    "x": 1780,
+    "look": -1,
+    "armR": 1.5,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "mom": {
+     "x": 2050,
+     "expr": "worried",
+     "look": -1,
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4"
+    },
+    "dad": {
+     "x": 1950,
+     "expr": "worried",
+     "look": -1,
+     "outfit": "pj",
+     "top": "#5a6a8a"
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "face",
+   "silent": 1.8,
+   "beat_at": 0.3,
+   "lampOn": true,
+   "door": "open",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "push_in",
+   "focus": "dad",
+   "hero": {
+    "pose": "stand",
+    "expr": "scream",
+    "x": 1780,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "mom": {
+     "x": 2050,
+     "expr": "worried",
+     "look": -1,
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4"
+    },
+    "dad": {
+     "x": 1950,
+     "expr": "calm",
+     "expr2": "stare",
+     "look": -1,
+     "outfit": "pj",
+     "top": "#5a6a8a"
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.4,
+   "chapter": "The Chains",
+   "lampOn": true,
+   "door": "open",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "medium",
+   "focus": "wide",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1780,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "dad": {
+     "expr": "worried",
+     "outfit": "pj",
+     "top": "#5a6a8a",
+     "walk": [
+      1950,
+      560
+     ],
+     "look": -1
+    },
+    "mom": {
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4",
+     "expr": "worried",
+     "x": 1700,
+     "look": -1,
+     "armL": 1.2
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.0,
+   "lampOn": true,
+   "door": "open",
+   "torch": [
+    330,
+    980
+   ],
+   "torchDown": true,
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "cam": "close",
+   "focus": "dad",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1780,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "dad": {
+     "expr": "worried",
+     "outfit": "pj",
+     "top": "#5a6a8a",
+     "x": 560,
+     "look": -1,
+     "lookY": 0.6,
+     "flashlight": true
+    },
+    "mom": {
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4",
+     "expr": "worried",
+     "x": 1700,
+     "look": -1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.4,
+   "scene": "insert",
+   "insert": "chainfloor",
+   "flashlight": true,
+   "cam": "push_in",
+   "focus": "wide"
+  },
+  {
+   "line": "Who took those off?",
+   "speaker": "dad",
+   "react": "none",
+   "vspeed": 0.9,
+   "gain": 0.8,
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "lampOn": true,
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1780,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "dad": {
+     "expr": "worried",
+     "outfit": "pj",
+     "top": "#5a6a8a",
+     "x": 560,
+     "look": -1,
+     "lookY": 0.6,
+     "flashlight": true
+    },
+    "mom": {
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4",
+     "expr": "worried",
+     "x": 1700,
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "dad"
+  },
+  {
+   "line": "What?",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "lampOn": true,
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1780,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "dad": {
+     "expr": "worried",
+     "outfit": "pj",
+     "top": "#5a6a8a",
+     "x": 560,
+     "look": 1
+    },
+    "mom": {
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4",
+     "expr": "worried",
+     "x": 1700,
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "hero"
+  },
+  {
+   "line": "The chains.",
+   "speaker": "dad",
+   "react": "none",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "lampOn": true,
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1780,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "dad": {
+     "expr": "stare",
+     "outfit": "pj",
+     "top": "#5a6a8a",
+     "x": 560,
+     "look": 1
+    },
+    "mom": {
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4",
+     "expr": "worried",
+     "x": 1700,
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "dad"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.0,
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "lampOn": true,
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1780,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "dad": {
+     "expr": "stare",
+     "outfit": "pj",
+     "top": "#5a6a8a",
+     "walk": [
+      560,
+      760
+     ],
+     "look": -1
+    },
+    "mom": {
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4",
+     "expr": "worried",
+     "x": 1700,
+     "look": -1
+    }
+   },
+   "cam": "medium",
+   "focus": "dad"
+  },
+  {
+   "line": "What happens if they come off?",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "lampOn": true,
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "dread",
+    "x": 1780,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "dad": {
+     "expr": "worried",
+     "outfit": "pj",
+     "top": "#5a6a8a",
+     "x": 760,
+     "look": 1
+    },
+    "mom": {
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4",
+     "expr": "worried",
+     "x": 1700,
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "hero"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.3,
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "lampOn": true,
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1780,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "dad": {
+     "expr": "tired",
+     "outfit": "pj",
+     "top": "#5a6a8a",
+     "x": 760,
+     "look": 0.2,
+     "lookY": 0.6
+    },
+    "mom": {
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4",
+     "expr": "worried",
+     "x": 1700,
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "dad"
+  },
+  {
+   "line": "There was a story in the records that came with the case. A warning that the mummy would wake if the chains were removed.",
+   "speaker": "dad",
+   "react": "none",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "lampOn": true,
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1780,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "dad": {
+     "expr": "worried",
+     "outfit": "pj",
+     "top": "#5a6a8a",
+     "x": 760,
+     "look": 1
+    },
+    "mom": {
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4",
+     "expr": "worried",
+     "x": 1700,
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "dad"
+  },
+  {
+   "line": "You brought that here?",
+   "speaker": "mom",
+   "react": "none",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "lampOn": true,
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1780,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "dad": {
+     "expr": "worried",
+     "outfit": "pj",
+     "top": "#5a6a8a",
+     "x": 760,
+     "look": 1
+    },
+    "mom": {
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4",
+     "expr": "shock",
+     "x": 1700,
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "mom"
+  },
+  {
+   "line": "I thought it was an old superstition.",
+   "speaker": "dad",
+   "react": "none",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "lampOn": true,
+   "door": "open",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1780,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "dad": {
+     "expr": "tired",
+     "outfit": "pj",
+     "top": "#5a6a8a",
+     "x": 760,
+     "look": 1
+    },
+    "mom": {
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4",
+     "expr": "worried",
+     "x": 1700,
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "dad"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "shift",
+   "silent": 1.6,
+   "beat_at": 0.2,
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "lampOn": true,
+   "door": "closing",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1780,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "dad": {
+     "expr": "shock",
+     "outfit": "pj",
+     "top": "#5a6a8a",
+     "x": 560,
+     "look": -1,
+     "armL": 1.4
+    },
+    "mom": {
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4",
+     "expr": "worried",
+     "x": 1700,
+     "look": -1
+    }
+   },
+   "cam": "medium",
+   "focus": "door"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "unlock",
+   "silent": 1.8,
+   "scene": "insert",
+   "insert": "key",
+   "beat_at": 0.3,
+   "cam": "push_in",
+   "focus": "wide"
+  },
+  {
+   "line": "Stay away from this door. I'm calling the museum.",
+   "speaker": "dad",
+   "react": "none",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "lampOn": true,
+   "door": null,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1780,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "dad": {
+     "expr": "worried",
+     "outfit": "pj",
+     "top": "#5a6a8a",
+     "x": 700,
+     "look": 1
+    },
+    "mom": {
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4",
+     "expr": "worried",
+     "x": 1700,
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "dad"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.2,
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "lampOn": true,
+   "door": null,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1780,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "dad": {
+     "expr": "worried",
+     "outfit": "pj",
+     "top": "#5a6a8a",
+     "walk": [
+      700,
+      1640
+     ],
+     "look": 1
+    },
+    "mom": {
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4",
+     "expr": "worried",
+     "x": 1700,
+     "look": -1
+    }
+   },
+   "cam": "medium",
+   "focus": "hero"
+  },
+  {
+   "line": "I'm sorry. I should have arranged somewhere else to keep it.",
+   "speaker": "dad",
+   "react": "none",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "lampOn": true,
+   "door": null,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1780,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "dad": {
+     "expr": "worried",
+     "outfit": "pj",
+     "top": "#5a6a8a",
+     "x": 1640,
+     "crouch": true,
+     "look": 1
+    },
+    "mom": {
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4",
+     "expr": "worried",
+     "x": 1700,
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "dad"
+  },
+  {
+   "line": "And I'm sorry I didn't listen to you last night.",
+   "speaker": "mom",
+   "react": "none",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "lampOn": true,
+   "door": null,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1780,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "dad": {
+     "expr": "worried",
+     "outfit": "pj",
+     "top": "#5a6a8a",
+     "x": 1640,
+     "crouch": true,
+     "look": 1
+    },
+    "mom": {
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4",
+     "expr": "worried",
+     "x": 1900,
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "mom"
+  },
+  {
+   "line": "What about Kim?",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "lampOn": true,
+   "door": null,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1780,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "dad": {
+     "expr": "worried",
+     "outfit": "pj",
+     "top": "#5a6a8a",
+     "x": 1640,
+     "crouch": true,
+     "look": 1
+    },
+    "mom": {
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4",
+     "expr": "worried",
+     "x": 1900,
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "hero"
+  },
+  {
+   "line": "I'll check her room.",
+   "speaker": "mom",
+   "react": "none",
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "lampOn": true,
+   "door": null,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 1780,
+    "look": -1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "dad": {
+     "expr": "worried",
+     "outfit": "pj",
+     "top": "#5a6a8a",
+     "x": 1640,
+     "crouch": true,
+     "look": 1
+    },
+    "mom": {
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4",
+     "expr": "calm",
+     "x": 1900,
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "mom"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.6,
+   "scene": "kitchenN",
+   "vig": 0.55,
+   "lampOn": true,
+   "cam": "push_in",
+   "focus": "door",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "walk": [
+     1780,
+     2500
+    ],
+    "walkDelay": 20,
+    "look": 1,
+    "outfit": "pj",
+    "top": "#3d5a8a",
+    "pants": "#34437a"
+   },
+   "crew": {
+    "dad": {
+     "expr": "worried",
+     "outfit": "pj",
+     "top": "#5a6a8a",
+     "walk": [
+      1640,
+      2600
+     ],
+     "phone": "ear",
+     "look": 1
+    },
+    "mom": {
+     "outfit": "nightie",
+     "top": "#a9c9a4",
+     "pants": "#a9c9a4",
+     "expr": "worried",
+     "walk": [
+      1900,
+      2600
+     ],
+     "walkDelay": 20,
+     "look": 1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.2,
+   "chapter": "The Prank",
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "push_in",
+   "focus": "top",
+   "whispers": true,
+   "crew": {
+    "kim": {
+     "step": 0.5,
+     "costume": "full",
+     "expr": "calm",
+     "look": -1,
+     "lookY": -0.5
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "face",
+   "silent": 1.8,
+   "beat_at": 0.4,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "crew": {
+    "kim": {
+     "step": 0.5,
+     "costume": "full",
+     "unmask": true,
+     "expr": "relieved",
+     "look": 1,
+     "armR": 2.4
+    }
+   }
+  },
+  {
+   "line": "Oh, Jeff.",
+   "speaker": "kim",
+   "react": "none",
+   "vspeed": 0.9,
+   "gain": 0.7,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "crew": {
+    "kim": {
+     "step": 0.5,
+     "costume": "faceoff",
+     "expr": "relieved",
+     "look": 0.5
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "face",
+   "silent": 1.4,
+   "coughs": true,
+   "beat_at": 0.3,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "crew": {
+    "kim": {
+     "step": 0.5,
+     "costume": "faceoff",
+     "expr": "relieved",
+     "cough": true
+    }
+   }
+  },
+  {
+   "line": "What did you throw at me?",
+   "speaker": "kim",
+   "react": "none",
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "crew": {
+    "kim": {
+     "step": 0.5,
+     "costume": "faceoff",
+     "expr": "doubt",
+     "look": 0.5
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.0,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "crew": {
+    "kim": {
+     "step": 0.5,
+     "costume": "faceoff",
+     "expr": "relieved",
+     "armL": 2.2
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.4,
+   "scene": "insert",
+   "insert": "thread",
+   "cam": "push_in",
+   "focus": "wide",
+   "flashback": true,
+   "gap": 0.05
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.3,
+   "scene": "basement",
+   "lightOn": true,
+   "thread": true,
+   "cam": "medium",
+   "focus": "wide",
+   "flashback": true,
+   "gap": 0.05
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "chain",
+   "silent": 1.3,
+   "scene": "insert",
+   "insert": "pull",
+   "beat_at": 0.3,
+   "cam": "close",
+   "focus": "wide",
+   "flashback": true,
+   "gap": 0.05
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.5,
+   "scene": "basement",
+   "lightOn": true,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "case",
+   "crew": {
+    "kim": {
+     "x": 1500,
+     "expr": "relieved",
+     "look": 1,
+     "armR": 1.4
+    }
+   },
+   "flashback": true,
+   "gap": 0.05
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.3,
+   "scene": "basement",
+   "lightOn": true,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "crew": {
+    "kim": {
+     "x": 1150,
+     "costume": "faceoff",
+     "expr": "relieved",
+     "look": 1,
+     "armL": 1.2
+    }
+   },
+   "flashback": true,
+   "gap": 0.05
+  },
+  {
+   "line": "Okay. That was worth it.",
+   "speaker": "kim",
+   "react": "none",
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "crew": {
+    "kim": {
+     "step": 0.5,
+     "costume": "faceoff",
+     "expr": "relieved",
+     "look": -1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "face",
+   "silent": 1.6,
+   "beat_at": 0.5,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "medium",
+   "focus": "top",
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "relieved",
+     "expr2": "worried",
+     "look": -1,
+     "armL": 1.4
+    }
+   }
+  },
+  {
+   "line": "Dad?",
+   "speaker": "kim",
+   "react": "none",
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "worried",
+     "look": -1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "pound",
+   "silent": 0.9,
+   "beat_at": 0.1,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "medium",
+   "focus": "top",
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "worried",
+     "look": -1,
+     "armL": 1.6
+    }
+   }
+  },
+  {
+   "line": "Dad, it's me. Open the door.",
+   "speaker": "kim",
+   "react": "none",
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "worried",
+     "look": -1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "knock",
+   "silent": 1.3,
+   "beat_at": 0.5,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "medium",
+   "focus": "top",
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "worried",
+     "look": -1,
+     "armL": 1.6
+    }
+   }
+  },
+  {
+   "line": "The mummy was me!",
+   "speaker": "kim",
+   "react": "none",
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "scream",
+     "look": -1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "scrape",
+   "silent": 2.8,
+   "chapter": "Something Else Downstairs",
+   "beat_at": 0.35,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "roll": -3,
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "worried",
+     "expr2": "stare",
+     "look": 1,
+     "lookY": 0.6
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "lidfall",
+   "silent": 3.6,
+   "beat_at": 0.05,
+   "lidOff": true,
+   "lidFloor": true,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.75,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "push_in",
+   "focus": "case",
+   "flickerBulb": true,
+   "eyesFollow": false,
+   "whispers": true
+  },
+  {
+   "line": "I didn't do that.",
+   "speaker": "kim",
+   "react": "none",
+   "vspeed": 0.88,
+   "gain": 0.55,
+   "lidOff": true,
+   "lidFloor": true,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "dread",
+     "look": 1,
+     "lookY": 0.6
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "pound",
+   "silent": 0.9,
+   "beat_at": 0.1,
+   "lidOff": true,
+   "lidFloor": true,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "medium",
+   "focus": "top",
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "dread",
+     "look": -1,
+     "armL": 1.6
+    }
+   }
+  },
+  {
+   "line": "Dad. Open the door.",
+   "speaker": "kim",
+   "react": "none",
+   "lidOff": true,
+   "lidFloor": true,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "dread",
+     "look": -1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "thump",
+   "silent": 1.6,
+   "beat_at": 0.3,
+   "heart": "accel",
+   "lidOff": true,
+   "lidFloor": true,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "dread",
+     "expr2": "stare",
+     "look": 1,
+     "lookY": 0.6
+    }
+   }
+  },
+  {
+   "line": "Jeff?",
+   "speaker": "kim",
+   "react": "none",
+   "vspeed": 0.9,
+   "gain": 0.7,
+   "lidOff": true,
+   "lidFloor": true,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "dread",
+     "look": 1,
+     "lookY": 0.6
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "thump",
+   "silent": 1.8,
+   "beat_at": 0.5,
+   "lidOff": true,
+   "lidFloor": true,
+   "heart": "accel",
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "roll": 3,
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "dread",
+     "look": 1,
+     "lookY": 0.6
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.6,
+   "lidOff": true,
+   "lidFloor": true,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "medium",
+   "focus": "top",
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "dread",
+     "look": -1,
+     "armL": 1.6,
+     "armR": 1.4
+    }
+   }
+  },
+  {
+   "line": "Jeff, if that's you, stop.",
+   "speaker": "kim",
+   "react": "none",
+   "lidOff": true,
+   "lidFloor": true,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "dread",
+     "look": 1,
+     "lookY": 0.6
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "thump",
+   "silent": 3.2,
+   "beat_at": 0.55,
+   "floorShadow": true,
+   "heavySteps": [
+    2.2
+   ],
+   "lidOff": true,
+   "lidFloor": true,
+   "flickerBulb": true,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.75,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "push_in",
+   "focus": "floor",
+   "crew": {}
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "thump",
+   "silent": 2.4,
+   "beat_at": 0.15,
+   "foot": true,
+   "lidOff": true,
+   "lidFloor": true,
+   "twist": true,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.8,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "push_in",
+   "focus": "bottom",
+   "flickerBulb": true,
+   "crew": {}
+  },
+  {
+   "line": "Dad!",
+   "speaker": "kim",
+   "react": "none",
+   "lidOff": true,
+   "lidFloor": true,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "scream",
+     "look": -1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "pound",
+   "silent": 1.2,
+   "beat_at": 0.05,
+   "lidOff": true,
+   "lidFloor": true,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "medium",
+   "focus": "top",
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "scream",
+     "look": -1,
+     "armL": 1.7,
+     "armR": 1.5
+    }
+   }
+  },
+  {
+   "line": "Please! Open it!",
+   "speaker": "kim",
+   "react": "none",
+   "lidOff": true,
+   "lidFloor": true,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "scream",
+     "look": -1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "face",
+   "silent": 1.6,
+   "beat_at": 0.5,
+   "heavySteps": [
+    0.4
+   ],
+   "lidOff": true,
+   "lidFloor": true,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "push_in",
+   "focus": "kim",
+   "roll": -4,
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "dread",
+     "expr2": "scream",
+     "look": 1,
+     "lookY": 0.8
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.2,
+   "scene": "black",
+   "heavySteps": [
+    0.6
+   ],
+   "gasp": 1.2,
+   "cam": "wide",
+   "focus": "wide"
+  }
+ ]
+}

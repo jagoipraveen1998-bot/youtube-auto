@@ -10,7 +10,7 @@ def add(line="", speaker="narrator", **k):
     B.append(dict(dict(line=line, speaker=speaker, react="none"), **k))
 def kit(**k):
     crew = k.pop("crew", {})
-    return dict(scene="kitchenB", crew=dict(dict(dad=DAD), **crew), **k)
+    return dict(dict(scene="kitchenB", crew=dict(dict(dad=DAD), **crew), vig=0.35), **k)
 
 # --- kitchen, early evening
 add(silent=3.4, chapter="The Dare", **kit(cam="push_in", focus="two", hero=J(x=620, expr="worried", look=-1),
@@ -26,28 +26,28 @@ add("He meant opening it. You can touch the outside.", "kim", **kit(cam="close",
 add(silent=3.2, beat_at=0.25, react="dome", door="opening", lightOn=True,
     **kit(cam="medium", focus="door", hero=J(x=820, expr="worried", look=-1), crew=dict(kim=C(x=600, expr="relieved", look=-1, reachDoor=True))))
 # --- the stairs
-add(silent=2.6, scene="basement", door="open", lightOn=True, cam="push_in", focus="case", hero=None)
+add(silent=3.0, scene="basement", door="open", lightOn=True, cam="push_in", focus="case", hero=None, vig=0.6, shadowPass=True, whispers=True, eyesFollow=True)
 add("You're coming with me.", "hero", **kit(cam="close", focus="hero", door="open", lightOn=True, hero=J(x=620, expr="worried", look=1),
     crew=dict(kim=C(x=760, expr="relieved", look=-1))))
 add("I'll be right here.", "kim", **kit(cam="close", focus="kim", door="open", lightOn=True, hero=J(x=620, look=1),
     crew=dict(kim=C(x=760, expr="relieved", look=-1))))
-add(silent=5.0, scene="basement", door="open", lightOn=True, cam="medium", focus="stairs", creaks=True, countRun=[1, 9],
+add(silent=5.0, scene="basement", door="open", lightOn=True, cam="medium", focus="stairs", creaks=True, countRun=[1, 9], vig=0.55, whispers=True,
     hero=J(step=[0, 9.6], expr="worried", look=0.6, lookY=0.4))
-add("If you turn the light off—", "hero", scene="basement", door="open", lightOn=True, cam="close", focus="hero",
+add("If you turn the light off—", "hero", scene="basement", door="open", lightOn=True, cam="close", focus="hero", vig=0.55,
     hero=J(step=9.6, expr="worried", look=-0.8, lookY=-0.7))
-add(silent=1.6, beat_at=0.2, react="slam1", scene="basement", door="slam", lightOn=True, cam="snap", focus="door",
+add(silent=1.6, beat_at=0.2, react="slam1", scene="basement", door="slam", lightOn=True, cam="snap", focus="door", vig=0.6, flickerBulb=True,
     hero=J(step=9.6, expr="shock", look=-0.8, lookY=-0.7))
-add("Kim?", "hero", scene="basement", lightOn=True, cam="close", focus="hero", hero=J(step=9.6, expr="worried", look=-0.8, lookY=-0.7))
-add("Just touch it!", "kim", muffle=True, scene="basement", lightOn=True, cam="close", focus="door", hero=J(step=9.6, look=-0.8, lookY=-0.7))
-add("Open the door!", "hero", scene="basement", lightOn=True, cam="close", focus="hero", hero=J(step=9.6, expr="scream", look=-0.8, lookY=-0.7))
-add("You wanted me to stay here. I'm staying here.", "kim", muffle=True, scene="basement", lightOn=True, cam="close", focus="door",
+add("Kim?", "hero", scene="basement", lightOn=True, cam="close", focus="hero", vig=0.6, roll=-3, hero=J(step=9.6, expr="worried", look=-0.8, lookY=-0.7))
+add("Just touch it!", "kim", muffle=True, scene="basement", lightOn=True, cam="close", focus="door", vig=0.6, hero=J(step=9.6, look=-0.8, lookY=-0.7))
+add("Open the door!", "hero", scene="basement", lightOn=True, cam="close", focus="hero", vig=0.6, roll=3, hero=J(step=9.6, expr="scream", look=-0.8, lookY=-0.7))
+add("You wanted me to stay here. I'm staying here.", "kim", muffle=True, scene="basement", lightOn=True, cam="close", focus="door", vig=0.6,
     hero=J(step=9.6, look=-0.8, lookY=-0.7))
 # --- the case
-add(silent=5.4, beat_at=0.95, scene="basement", lightOn=True, cam="push_in", focus="finger", heart=True,
+add(silent=6.2, beat_at=0.95, scene="basement", lightOn=True, cam="push_in", focus="finger", heart="accel", vig=0.7, whispers=True, flickerBulb=True, eyesFollow=True, roll=4, rollIn=True,
     hero=J(aisle=[1100, 1520], expr="dread", look=1, point=True))
-add(silent=3.2, beat_at=0.12, react="chain", lid="shift", twist=True, scene="basement", lightOn=True, cam="snap", focus="chain",
+add(silent=3.2, beat_at=0.12, react="chain", lid="shift", twist=True, scene="basement", lightOn=True, cam="snap", focus="chain", vig=0.7, flickerBulb=True, eyesFollow=True,
     hero=J(x=1520, expr="realize", look=1, point=True))
-add("KIM!", "hero", scene="basement", lightOn=True, cam="snap", focus="hero", react="jolt", beat_at=0.05,
+add("KIM!", "hero", scene="basement", lightOn=True, cam="snap", focus="hero", react="jolt", beat_at=0.05, vig=0.7, flickerBulb=True,
     hero=J(x=1520, expr="scream", expr2="scream", look=-1, lookY=-0.6))
 
 story = {
@@ -67,7 +67,7 @@ story = {
          "style": {"skin": "#e6b48f", "hair": "#5a4634", "hairStyle": "spiky", "outfit": "shirt", "top": "#dfe6ee",
                    "acc": {"glasses": True}}},
     ],
-    "music": "drone",
+    "music": "drone", "scary": True,
     "beats": B,
 }
 out = Path(__file__).with_name("scene2_the_dare.json")

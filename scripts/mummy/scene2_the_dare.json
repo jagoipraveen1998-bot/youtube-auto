@@ -1,0 +1,565 @@
+{
+ "storyboard": true,
+ "captions": true,
+ "story_id": "mummy-downstairs-scene2",
+ "title": "The Mummy Downstairs (Scene 2: The Dare) - sample",
+ "description": "Sample scene from The Mummy Downstairs, an original animated horror story.",
+ "tags": [
+  "animated horror",
+  "mummy",
+  "horror story",
+  "creepy cartoon tales"
+ ],
+ "hero": {
+  "look": "boy",
+  "outfit": "hoodie",
+  "voice": "am_puck",
+  "omni": "male, child, american accent",
+  "style": {
+   "skin": "#e6b48f",
+   "hair": "#6b4423",
+   "hairStyle": "mop",
+   "outfit": "hoodie",
+   "top": "#d9a520",
+   "pants": "#25304f",
+   "shoes": "#f2f2ee",
+   "acc": {}
+  }
+ },
+ "villain": "shadow",
+ "cast": [
+  {
+   "role": "kim",
+   "gender": "f",
+   "voice": "af_bella",
+   "omni": "female, teenager, american accent",
+   "style": {
+    "skin": "#e6b48f",
+    "hair": "#3a2418",
+    "hairStyle": "ponytail",
+    "outfit": "tee",
+    "top": "#7a2335",
+    "pants": "#1d1c22",
+    "shoes": "#c8282e",
+    "hood": false,
+    "acc": {}
+   }
+  },
+  {
+   "role": "dad",
+   "gender": "m",
+   "voice": "am_michael",
+   "omni": "male, middle-aged, low pitch, american accent",
+   "style": {
+    "skin": "#e6b48f",
+    "hair": "#5a4634",
+    "hairStyle": "spiky",
+    "outfit": "shirt",
+    "top": "#dfe6ee",
+    "acc": {
+     "glasses": true
+    }
+   }
+  }
+ ],
+ "music": "drone",
+ "beats": [
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.4,
+   "chapter": "The Dare",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 900,
+     "expr": "curious",
+     "look": -1
+    }
+   },
+   "cam": "push_in",
+   "focus": "two",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 620,
+    "look": -1
+   }
+  },
+  {
+   "line": "You keep looking at it.",
+   "speaker": "kim",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 900,
+     "expr": "relieved",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "kim",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 620,
+    "look": -1
+   }
+  },
+  {
+   "line": "I'm looking at the kitchen.",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 900,
+     "expr": "relieved",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "tired",
+    "x": 620,
+    "look": 1
+   }
+  },
+  {
+   "line": "Then go downstairs.",
+   "speaker": "kim",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 900,
+     "expr": "doubt",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "kim",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 620,
+    "look": 1
+   }
+  },
+  {
+   "line": "Why?",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 900,
+     "expr": "relieved",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 620,
+    "look": 1
+   }
+  },
+  {
+   "line": "Touch the case. One finger. Then I'll stop teasing you about it.",
+   "speaker": "kim",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 900,
+     "expr": "relieved",
+     "look": -1
+    }
+   },
+   "cam": "medium",
+   "focus": "two",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 620,
+    "look": 1
+   }
+  },
+  {
+   "line": "Dad said to leave it alone.",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 900,
+     "expr": "relieved",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 620,
+    "look": 1
+   }
+  },
+  {
+   "line": "He meant opening it. You can touch the outside.",
+   "speaker": "kim",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 900,
+     "expr": "doubt",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "kim",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 620,
+    "look": 1
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "dome",
+   "silent": 3.2,
+   "beat_at": 0.25,
+   "door": "opening",
+   "lightOn": true,
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 600,
+     "expr": "relieved",
+     "look": -1,
+     "reachDoor": true
+    }
+   },
+   "cam": "medium",
+   "focus": "door",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 820,
+    "look": -1
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.6,
+   "scene": "basement",
+   "door": "open",
+   "lightOn": true,
+   "cam": "push_in",
+   "focus": "case",
+   "hero": null
+  },
+  {
+   "line": "You're coming with me.",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 760,
+     "expr": "relieved",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "hero",
+   "door": "open",
+   "lightOn": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 620,
+    "look": 1
+   }
+  },
+  {
+   "line": "I'll be right here.",
+   "speaker": "kim",
+   "react": "none",
+   "scene": "kitchenB",
+   "crew": {
+    "dad": {
+     "expr": "calm",
+     "look": -0.4,
+     "lookY": 0.5
+    },
+    "kim": {
+     "x": 760,
+     "expr": "relieved",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "kim",
+   "door": "open",
+   "lightOn": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "x": 620,
+    "look": 1
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 5.0,
+   "scene": "basement",
+   "door": "open",
+   "lightOn": true,
+   "cam": "medium",
+   "focus": "stairs",
+   "creaks": true,
+   "countRun": [
+    1,
+    9
+   ],
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "step": [
+     0,
+     9.6
+    ],
+    "look": 0.6,
+    "lookY": 0.4
+   }
+  },
+  {
+   "line": "If you turn the light off—",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "basement",
+   "door": "open",
+   "lightOn": true,
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "step": 9.6,
+    "look": -0.8,
+    "lookY": -0.7
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "slam1",
+   "silent": 1.6,
+   "beat_at": 0.2,
+   "scene": "basement",
+   "door": "slam",
+   "lightOn": true,
+   "cam": "snap",
+   "focus": "door",
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "step": 9.6,
+    "look": -0.8,
+    "lookY": -0.7
+   }
+  },
+  {
+   "line": "Kim?",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "step": 9.6,
+    "look": -0.8,
+    "lookY": -0.7
+   }
+  },
+  {
+   "line": "Just touch it!",
+   "speaker": "kim",
+   "react": "none",
+   "muffle": true,
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "close",
+   "focus": "door",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "step": 9.6,
+    "look": -0.8,
+    "lookY": -0.7
+   }
+  },
+  {
+   "line": "Open the door!",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "close",
+   "focus": "hero",
+   "hero": {
+    "pose": "stand",
+    "expr": "scream",
+    "step": 9.6,
+    "look": -0.8,
+    "lookY": -0.7
+   }
+  },
+  {
+   "line": "You wanted me to stay here. I'm staying here.",
+   "speaker": "kim",
+   "react": "none",
+   "muffle": true,
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "close",
+   "focus": "door",
+   "hero": {
+    "pose": "stand",
+    "expr": "worried",
+    "step": 9.6,
+    "look": -0.8,
+    "lookY": -0.7
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 5.4,
+   "beat_at": 0.95,
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "push_in",
+   "focus": "finger",
+   "heart": true,
+   "hero": {
+    "pose": "stand",
+    "expr": "dread",
+    "aisle": [
+     1100,
+     1520
+    ],
+    "look": 1,
+    "point": true
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "chain",
+   "silent": 3.2,
+   "beat_at": 0.12,
+   "lid": "shift",
+   "twist": true,
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "snap",
+   "focus": "chain",
+   "hero": {
+    "pose": "stand",
+    "expr": "realize",
+    "x": 1520,
+    "look": 1,
+    "point": true
+   }
+  },
+  {
+   "line": "KIM!",
+   "speaker": "hero",
+   "react": "jolt",
+   "scene": "basement",
+   "lightOn": true,
+   "cam": "snap",
+   "focus": "hero",
+   "beat_at": 0.05,
+   "hero": {
+    "pose": "stand",
+    "expr": "scream",
+    "x": 1520,
+    "expr2": "scream",
+    "look": -1,
+    "lookY": -0.6
+   }
+  }
+ ]
+}

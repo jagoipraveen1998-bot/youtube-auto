@@ -9,7 +9,8 @@
     "how wifi carries data straight through a wall",
     "how a microwave oven heats food from the inside out",
     "how a rocket steers when there is nothing to push against",
-    "how a search engine finds a page in a fraction of a second"
+    "how a search engine finds a page in a fraction of a second",
+    "how face unlock tells you from a photograph of you"
   ],
   "videos": [
     {
@@ -71,6 +72,12 @@
       "title": "How a Search Engine Finds Results in Milliseconds",
       "video_id": "FUgZmPOLr_I",
       "length": "04:19"
+    },
+    {
+      "date": "2026-11-08",
+      "title": "How Face Unlock Tells You From a Photograph of You",
+      "video_id": "iEKAMdBBCRg",
+      "length": "04:13"
     }
   ]
 }

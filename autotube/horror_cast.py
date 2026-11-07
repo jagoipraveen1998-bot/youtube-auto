@@ -100,7 +100,7 @@ def cast_story(story: dict, seed: int, funny: bool = False) -> dict:
         if kind == "double":
             other.pop("look")
     side = {}
-    for c in story.get("cast", [])[:4]:
+    for c in story.get("cast", [])[:8]:
         role = c.get("role")
         g, d = ROLES.get(role, ("x", {}))
         g = c.get("gender") or g
@@ -153,7 +153,7 @@ def cast_story(story: dict, seed: int, funny: bool = False) -> dict:
     if story["hero"].get("omni"):
         voices["hero"]["omni"] = story["hero"]["omni"]
     voices["hero"]["omni_key"] = "hero"
-    for c in story.get("cast", [])[:4]:
+    for c in story.get("cast", [])[:8]:
         role = c.get("role")
         if role in voices:
             voices[role]["omni"] = c.get("omni") or OMNI_ROLES.get(role) or (

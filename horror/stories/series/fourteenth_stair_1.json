@@ -36,13 +36,19 @@
  "voice_over": {
   "narrator": {
    "speed": 0.9,
-   "semitones": -1.5
+   "semitones": -1.5,
+   "omni": "male, middle-aged, very low pitch, american accent",
+   "omni_key": "calm-narrator",
+   "omni_speed": 0.92
   },
   "villain": {
    "like": "narrator",
    "speed": 0.72,
    "semitones": -6.0,
-   "echo": true
+   "echo": true,
+   "omni": "male, elderly, low pitch, whisper",
+   "omni_key": "stair-thing",
+   "omni_speed": 0.8
   }
  },
  "beats": [

@@ -69,6 +69,17 @@ def look(rnd: random.Random, gender: str, outfit: str | None = None, **over) -> 
 FUNNY_NARRATOR = {"m": ("am_puck", "en-US-JasonNeural"), "f": ("am_puck", "en-US-JasonNeural")}
 
 
+FUNNY_OMNI = "male, young adult, high pitch, american accent"      # OmniVoice version of the playful channel voice
+OMNI_ROLES = {
+    "mum": "female, middle-aged, american accent", "mom": "female, middle-aged, american accent",
+    "mother": "female, middle-aged, american accent", "dad": "male, middle-aged, low pitch, american accent",
+    "father": "male, middle-aged, low pitch, american accent", "grandma": "female, elderly, american accent",
+    "grandpa": "male, elderly, low pitch, american accent", "daughter": "female, child, american accent",
+    "son": "male, child, american accent", "sister": "female, teenager, american accent",
+    "brother": "male, teenager, american accent", "landlord": "male, middle-aged, british accent",
+}
+
+
 def cast_story(story: dict, seed: int, funny: bool = False) -> dict:
     """Looks for hero, villain and side characters, plus a voice for every speaker."""
     rnd = random.Random(seed)
@@ -133,6 +144,27 @@ def cast_story(story: dict, seed: int, funny: bool = False) -> dict:
     else:
         v = take(vg)
         voices["villain"] = {"kokoro_voice": v[0], "name": v[1], "speed": sp, "semitones": semi, "echo": echo}
+    # OmniVoice: every speaker gets a designed voice (Kokoro settings above stay as the automatic backup)
+    hv_age = "young adult" if hl in ("man", "woman") else "teenager"
+    if funny:
+        voices["hero"]["omni"] = FUNNY_OMNI
+    else:
+        voices["hero"]["omni"] = f"{'female' if hero_g == 'f' else 'male'}, {hv_age}, american accent"
+    if story["hero"].get("omni"):
+        voices["hero"]["omni"] = story["hero"]["omni"]
+    voices["hero"]["omni_key"] = "hero"
+    for c in story.get("cast", [])[:4]:
+        role = c.get("role")
+        if role in voices:
+            voices[role]["omni"] = c.get("omni") or OMNI_ROLES.get(role) or (
+                f"{'female' if side[role]['gender'] == 'f' else 'male'}, young adult, american accent")
+            voices[role]["omni_key"] = role
+    if kind == "double":
+        voices["villain"]["omni"] = voices["hero"]["omni"] + ", whisper"
+    else:
+        child = vl in ("girl", "boy")
+        voices["villain"]["omni"] = f"{'female' if vg == 'f' else 'male'}, {'child' if child else 'elderly'}, low pitch, whisper"
+    voices["villain"]["omni_key"] = "villain"
     for role, over in (story.get("voice_over") or {}).items():   # e.g. the villain speaks with a cast member's voice, lower
         base = voices.get(over.get("like", role), voices.get(role, {}))
         voices[role] = dict(base, **{k: v for k, v in over.items() if k != "like"})

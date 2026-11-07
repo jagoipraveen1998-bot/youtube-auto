@@ -8,7 +8,17 @@
     "leftovers-cctv: Someone keeps eating my leftovers.",
     "slow-reflection: My reflection has always been a little slow.",
     "ghost-rent: My flat costs half price.",
-    "sleepover-count: Four of us went to sleep at my sleepover."
+    "sleepover-count: Four of us went to sleep at my sleepover.",
+    "shadow-quits: This morning, my shadow didn't follow me.",
+    "lights-out: My sister dared me to play lights out.",
+    "tenth-floor: There's a face at my window every night.",
+    "midnight-tea: My kitchen light turns on by itself at midnight.",
+    "three-am-knock: Every night at three, something knocks on my front door.",
+    "attic-grandma: Grandma calls me every night at ten.",
+    "dad-snoring: Dad snores like a broken motorbike.",
+    "officer-tomorrow: A police officer knocked on my door at noon.",
+    "homework-doll: Every morning, my homework is already done.",
+    "mirror-advice: My reflection talks to me while I brush my teeth."
   ],
   "videos": [
     {
@@ -71,6 +81,76 @@
       "date": "2026-11-06T20:30:00.000Z",
       "title": "We counted heads at the sleepover. There was one extra #shorts #horror",
       "video_id": "vEY3d2GFjKU",
+      "length": "32s",
+      "scheduled": true
+    },
+    {
+      "date": "2026-11-07T04:30:00.000Z",
+      "title": "My shadow quit its job today #shorts #horror",
+      "video_id": "dWelgHigTh4",
+      "length": "32s",
+      "scheduled": true
+    },
+    {
+      "date": "2026-11-07T07:30:00.000Z",
+      "title": "My sister dared me to play the lights out game #shorts #horror",
+      "video_id": "QMTTGidHcKs",
+      "length": "33s",
+      "scheduled": true
+    },
+    {
+      "date": "2026-11-07T08:30:00.000Z",
+      "title": "There's a face at my window. I live on the tenth floor #shorts #horror",
+      "video_id": "W1EBdE038AM",
+      "length": "29s",
+      "scheduled": true
+    },
+    {
+      "date": "2026-11-07T09:30:00.000Z",
+      "title": "My kitchen light turns on by itself at midnight #shorts #horror",
+      "video_id": "9C5fyPsxRTc",
+      "length": "31s",
+      "scheduled": true
+    },
+    {
+      "date": "2026-11-07T10:30:00.000Z",
+      "title": "Something knocks on my door at 3AM every night #shorts #horror",
+      "video_id": "cVH3M6CN0nw",
+      "length": "31s",
+      "scheduled": true
+    },
+    {
+      "date": "2026-11-07T11:30:00.000Z",
+      "title": "Grandma calls me from the attic. We don't have an attic #shorts #horror",
+      "video_id": "pYn1qGEYh2k",
+      "length": "36s",
+      "scheduled": true
+    },
+    {
+      "date": "2026-11-07T12:30:00.000Z",
+      "title": "I could hear Dad snoring. But Dad was downstairs #shorts #horror",
+      "video_id": "vw_fcDqM_Tw",
+      "length": "31s",
+      "scheduled": true
+    },
+    {
+      "date": "2026-11-07T13:30:00.000Z",
+      "title": "The police came because I called them. Tomorrow #shorts #horror",
+      "video_id": "hxutOyOUu5o",
+      "length": "32s",
+      "scheduled": true
+    },
+    {
+      "date": "2026-11-07T14:30:00.000Z",
+      "title": "My doll does my homework. Badly. #shorts #horror",
+      "video_id": "THCpEwKXdyY",
+      "length": "37s",
+      "scheduled": true
+    },
+    {
+      "date": "2026-11-07T15:30:00.000Z",
+      "title": "My reflection started giving me life advice #shorts #horror",
+      "video_id": "-OQLAfAk-AY",
       "length": "32s",
       "scheduled": true
     }

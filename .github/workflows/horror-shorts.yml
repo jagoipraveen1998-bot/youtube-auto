@@ -58,10 +58,11 @@ jobs:
       - name: Install Python packages and the cartoon browser
         timeout-minutes: 20
         run: |
-          pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           pip install -q -r requirements.txt
           pip install -q omnivoice soundfile || echo "OmniVoice could not be installed; Kokoro will speak"
-          python -c "import kokoro" || pip install -q -r requirements.txt
+          python -c "import torchaudio, kokoro" || pip install -q --force-reinstall --no-deps torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          python -c "import torchaudio, kokoro; print('voice libraries OK')"
           if ! timeout 420 python -m playwright install --with-deps chromium; then
             echo "Browser install failed (GitHub's package mirror); using the runner's own Chrome"
             echo "CHROME_PATH=$(command -v google-chrome || command -v google-chrome-stable || command -v chromium)" >> "$GITHUB_ENV"

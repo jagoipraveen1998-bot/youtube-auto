@@ -214,7 +214,8 @@ def build_plan(story: dict, timing: list[dict], total: float, casting: dict, fmt
             sh["beat"] = min(sh["beat"], sh["b"] - 3)
     return {"frames": frames, "format": fmt, "hero": casting["hero"], "other": casting["other"],
             "cast": casting["cast"], "shots": shots, "series": story.get("series"), "captions": bool(story.get("captions")),
-            "music": story.get("music"), "scary": bool(story.get("scary")), "piano": bool(story.get("piano"))}
+            "music": story.get("music"), "scary": bool(story.get("scary")), "piano": bool(story.get("piano")),
+            "film": bool(story.get("film")), "strings": bool(story.get("strings"))}
 
 
 def render(plan: dict, work: Path, frames_dir: Path, stills: list[int] | None = None) -> None:
@@ -328,7 +329,7 @@ def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_
     # brand: a short logo sting before the story, the signature laugh after it
     intro = 0.8 if fmt == "vertical" else 2.0
     outro = 3.2
-    laugh = np.zeros(1) if voice_file else signature_laugh(work)
+    laugh = np.zeros(1) if voice_file or story.get("outro_laugh") is False else signature_laugh(work)
     story_end = intro + max(len(voice) / ha.SR, timing[-1]["end"]) + TAIL
     total = story_end + max(outro, len(laugh) / ha.SR + 0.6)
     timing = [{k: (v + intro if isinstance(v, (int, float)) else v) for k, v in tm.items()} for tm in timing]

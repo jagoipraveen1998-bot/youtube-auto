@@ -1,0 +1,1728 @@
+{
+ "storyboard": true,
+ "film": true,
+ "music": "drone",
+ "scary": true,
+ "piano": true,
+ "outro_laugh": false,
+ "story_id": "the-girl-on-his-shoulder",
+ "title": "The Girl on His Shoulder | Animated Horror Short Film",
+ "description": "Arjun moves into a rented house and sleeps straight through his first night. Since then, his right shoulder feels heavy, as if somebody is leaning on him. Then his friend Rohan looks closely at the office Diwali photo. An original animated horror short film.",
+ "tags": [
+  "animated horror short film",
+  "horror short film",
+  "ghost story",
+  "indian ghost story",
+  "creepy cartoon tales",
+  "scary animation",
+  "diwali horror",
+  "haunted house",
+  "horror animation",
+  "short film"
+ ],
+ "cover_text": "THE GIRL ON HIS SHOULDER",
+ "hero": {
+  "look": "man",
+  "outfit": "shirt",
+  "voice": "am_michael",
+  "style": {}
+ },
+ "villain": "ghost",
+ "cast": [
+  {
+   "role": "arjun",
+   "gender": "m",
+   "voice": "am_michael",
+   "omni": "male, young adult, low pitch, indian accent",
+   "style": {
+    "skin": "#b98059",
+    "hair": "#120e14",
+    "hairStyle": "mop",
+    "outfit": "shirt",
+    "top": "#a9bdd2",
+    "pants": "#3a3f4e",
+    "shoes": "#2a2220",
+    "acc": {
+     "heavyBrows": true,
+     "longFace": true
+    }
+   }
+  },
+  {
+   "role": "rohan",
+   "gender": "m",
+   "voice": "am_liam",
+   "omni": "male, young adult, indian accent",
+   "style": {
+    "skin": "#c8915f",
+    "hair": "#18121a",
+    "hairStyle": "spiky",
+    "outfit": "tee",
+    "top": "#4f6f8f",
+    "pants": "#2e3442",
+    "acc": {
+     "rectGlasses": true,
+     "mole": true
+    }
+   }
+  },
+  {
+   "role": "rao",
+   "gender": "f",
+   "voice": "bf_emma",
+   "omni": "female, middle-aged, indian accent",
+   "style": {
+    "skin": "#a8714f",
+    "hair": "#1b1418",
+    "hairStyle": "bun",
+    "outfit": "shirt",
+    "top": "#f2f4f6",
+    "pants": "#4a5060",
+    "acc": {
+     "rectGlasses": true,
+     "glassesCol": "#8a96a4"
+    }
+   }
+  },
+  {
+   "role": "mira",
+   "gender": "f",
+   "voice": "af_sky",
+   "omni": "female, child, whisper"
+  },
+  {
+   "role": "nav",
+   "gender": "f",
+   "voice": "af_nova",
+   "omni": "female, young adult, british accent"
+  },
+  {
+   "role": "cw1",
+   "gender": "f",
+   "style": {
+    "skin": "#c8915f",
+    "hair": "#20161a",
+    "hairStyle": "ponytail",
+    "outfit": "tee",
+    "top": "#c8507a",
+    "pants": "#2a2a3a",
+    "acc": {}
+   }
+  },
+  {
+   "role": "cw2",
+   "gender": "m",
+   "style": {
+    "skin": "#a8714f",
+    "hair": "#1a1418",
+    "hairStyle": "spiky",
+    "outfit": "shirt",
+    "top": "#e8d49c",
+    "pants": "#3a3a4a",
+    "acc": {
+     "beard": true
+    }
+   }
+  },
+  {
+   "role": "cw3",
+   "gender": "f",
+   "style": {
+    "skin": "#d9a07a",
+    "hair": "#2a1a14",
+    "hairStyle": "braids",
+    "outfit": "cardigan",
+    "top": "#6a8a5a",
+    "pants": "#3a3040",
+    "acc": {}
+   }
+  }
+ ],
+ "voice_over": {
+  "mira": {
+   "omni_text": "[laughter]",
+   "echo": true,
+   "speed": 0.9,
+   "semitones": 2.0
+  }
+ },
+ "beats": [
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 4.6,
+   "scene": "black",
+   "titleCard": {
+    "text": "THE GIRL ON HIS SHOULDER"
+   },
+   "strings": 0.35,
+   "cam": "wide",
+   "focus": "wide"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 5.2,
+   "scene": "gStairs",
+   "cam": "pan",
+   "focus": "arjun",
+   "focus2": "wide",
+   "steps": "wood",
+   "stepsEnd": null,
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": 0.6,
+     "step": [
+      0,
+      4.4,
+      4
+     ],
+     "box": true
+    }
+   },
+   "fadeIn": 12
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "grab",
+   "silent": 3.0,
+   "scene": "gStairs",
+   "cam": "close",
+   "focus": "gap",
+   "beat_at": 0.5,
+   "strings": 0.45,
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": -0.6,
+     "step": 4.6,
+     "box": true,
+     "reach": "gap",
+     "lookY": 0.4,
+     "expr2": "shock"
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 4.0,
+   "scene": "gStairs",
+   "cam": "medium",
+   "focus": "arjun",
+   "steps": "wood",
+   "crew": {
+    "arjun": {
+     "expr": "worried",
+     "look": 0.6,
+     "step": [
+      4.7,
+      9.5,
+      14
+     ],
+     "box": true,
+     "lean": [
+      0.06,
+      0.0
+     ]
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "keys",
+   "silent": 4.4,
+   "scene": "gBedTop",
+   "cam": "push_in",
+   "focus": "hero",
+   "fan": true,
+   "beat_at": 0.06,
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": 0,
+     "lid": [
+      0.5,
+      1.0,
+      20,
+      90
+     ]
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.6,
+   "scene": "gBedTop",
+   "cam": "close",
+   "focus": "face",
+   "fan": false,
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": 0,
+     "sleep": true
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "dip",
+   "silent": 5.4,
+   "scene": "gBedTop",
+   "cam": "push_in",
+   "focus": "dip",
+   "fan": true,
+   "beat_at": 0.3,
+   "strings": 0.55,
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": 0,
+     "sleep": true,
+     "headRoll": [
+      0,
+      0.18,
+      60,
+      110
+     ]
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.6,
+   "scene": "black",
+   "cam": "wide",
+   "focus": "wide"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "face",
+   "silent": 6.0,
+   "scene": "gBedSide",
+   "cam": "medium",
+   "focus": "hero",
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": -0.4,
+     "rise": {
+      "again": 92
+     },
+     "rub": [
+      40,
+      88
+     ],
+     "expr2": "worried"
+    }
+   },
+   "beat_at": 0.4
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 4.4,
+   "scene": "gStairs",
+   "day": true,
+   "cam": "medium",
+   "focus": "arjun",
+   "fixed": true,
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": -0.4,
+     "step": [
+      9,
+      4
+     ],
+     "stepHold": true,
+     "tiltR": 0.55,
+     "lookY": 0.5
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "catch",
+   "silent": 2.6,
+   "scene": "gOffice",
+   "mode": "day",
+   "cam": "medium",
+   "focus": "two",
+   "beat_at": 0.45,
+   "cupFx": true,
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": 1,
+     "x": 820,
+     "tiltR": 0.5,
+     "armR": 0.9
+    },
+    "rohan": {
+     "expr": "curious",
+     "look": -1,
+     "x": 1160,
+     "catchArm": true,
+     "expr2": "shock"
+    }
+   }
+  },
+  {
+   "line": "First night in the new place that bad?",
+   "speaker": "rohan",
+   "react": "none",
+   "scene": "gOffice",
+   "mode": "day",
+   "cam": "close",
+   "focus": "rohan",
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": 1,
+     "x": 820,
+     "tiltR": 0.5
+    },
+    "rohan": {
+     "expr": "relieved",
+     "look": -1,
+     "x": 1160,
+     "cupHold": true
+    }
+   }
+  },
+  {
+   "line": "That's the thing. I slept straight through.",
+   "speaker": "arjun",
+   "react": "none",
+   "scene": "gOffice",
+   "mode": "day",
+   "cam": "close",
+   "focus": "arjun",
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": 1,
+     "x": 820,
+     "tiltR": 0.5
+    },
+    "rohan": {
+     "expr": "curious",
+     "look": -1,
+     "x": 1160,
+     "cupHold": true
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.2,
+   "scene": "gOffice",
+   "mode": "day",
+   "cam": "medium",
+   "focus": "two",
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": 1,
+     "x": 820,
+     "tiltR": 0.5,
+     "cup": "both"
+    },
+    "rohan": {
+     "expr": "worried",
+     "look": -1,
+     "x": 1160
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 4.4,
+   "scene": "gOffice",
+   "mode": "meeting",
+   "cam": "push_in",
+   "focus": "arjun",
+   "piano_hint": true,
+   "crew": {
+    "cw1": {
+     "x": 420,
+     "noLegs": true,
+     "y": 860,
+     "s": 0.5,
+     "expr": "calm",
+     "look": 1
+    },
+    "arjun": {
+     "expr": "tired",
+     "look": 0,
+     "x": 900,
+     "noLegs": true,
+     "y": 860,
+     "s": 0.5,
+     "nod": true,
+     "tiltR": 0.6
+    },
+    "cw2": {
+     "x": 1360,
+     "noLegs": true,
+     "y": 860,
+     "s": 0.5,
+     "expr": "calm",
+     "look": -1
+    },
+    "cw3": {
+     "x": 1740,
+     "expr": "calm",
+     "look": -1,
+     "armL": 1.6
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 4.0,
+   "scene": "gStairs",
+   "office": true,
+   "cam": "wide",
+   "focus": "wide",
+   "steps": "concrete",
+   "stepsEnd": null,
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": 0.4,
+     "step": [
+      0,
+      5.5
+     ],
+     "stepEnd": 55,
+     "tiltR": 0.7,
+     "lookY": -0.4
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "boxdown",
+   "silent": 4.0,
+   "scene": "gOffice",
+   "mode": "day",
+   "cam": "medium",
+   "focus": "arjun",
+   "beat_at": 0.5,
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": -0.6,
+     "x": 900,
+     "bag": "off",
+     "tiltR": 0.8,
+     "lookY": 0.6
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.0,
+   "strings": 0.4,
+   "scene": "gOffice",
+   "mode": "day",
+   "cam": "close",
+   "focus": "arjun",
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": 0,
+     "x": 900,
+     "bag": "floor",
+     "tiltR": 0.8
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "arm",
+   "silent": 4.2,
+   "beat_at": 0.72,
+   "scene": "gExam",
+   "cam": "medium",
+   "focus": "wide",
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": 0,
+     "x": 930,
+     "noLegs": true,
+     "y": 951,
+     "s": 0.52,
+     "raise": true
+    },
+    "rao": {
+     "x": 1330,
+     "expr": "calm",
+     "look": -1
+    }
+   }
+  },
+  {
+   "line": "Does it hurt when you lift it?",
+   "speaker": "rao",
+   "react": "none",
+   "scene": "gExam",
+   "cam": "close",
+   "focus": "rao",
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": 0,
+     "x": 930,
+     "noLegs": true,
+     "y": 951,
+     "s": 0.52,
+     "tiltR": 0.6
+    },
+    "rao": {
+     "x": 1330,
+     "expr": "calm",
+     "look": -1
+    }
+   }
+  },
+  {
+   "line": "It doesn't hurt. It feels like somebody's leaning on me.",
+   "speaker": "arjun",
+   "react": "none",
+   "strings": 0.3,
+   "scene": "gExam",
+   "cam": "close",
+   "focus": "arjun",
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": 0.8,
+     "x": 930,
+     "noLegs": true,
+     "y": 951,
+     "s": 0.52,
+     "tiltR": 0.8
+    },
+    "rao": {
+     "x": 1330,
+     "expr": "curious",
+     "look": -1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.8,
+   "scene": "gExam",
+   "cam": "medium",
+   "focus": "rao",
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": 0.8,
+     "x": 930,
+     "noLegs": true,
+     "y": 951,
+     "s": 0.52,
+     "tiltR": 0.8
+    },
+    "rao": {
+     "x": 1330,
+     "expr": "calm",
+     "look": -1,
+     "lookY": 0.6
+    }
+   }
+  },
+  {
+   "line": "Your blood tests and the checks we did today look normal. Come back if the heaviness gets worse. I want to follow up either way.",
+   "speaker": "rao",
+   "react": "none",
+   "scene": "gExam",
+   "cam": "close",
+   "focus": "rao",
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": 0.8,
+     "x": 930,
+     "noLegs": true,
+     "y": 951,
+     "s": 0.52,
+     "tiltR": 0.8
+    },
+    "rao": {
+     "x": 1330,
+     "expr": "calm",
+     "look": -1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.6,
+   "scene": "gExam",
+   "cam": "close",
+   "focus": "arjun",
+   "crew": {
+    "arjun": {
+     "expr": "relieved",
+     "look": 0.8,
+     "x": 930,
+     "noLegs": true,
+     "y": 951,
+     "s": 0.52,
+     "tiltR": 0.7
+    },
+    "rao": {
+     "x": 1330,
+     "expr": "calm",
+     "look": -1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "chair",
+   "silent": 2.6,
+   "beat_at": 0.3,
+   "scrape": true,
+   "scene": "gExam",
+   "cam": "medium",
+   "focus": "wide",
+   "crew": {
+    "arjun": {
+     "expr": "worried",
+     "look": 0,
+     "x": 930,
+     "s": 0.52,
+     "tiltR": 0.9,
+     "armL": [
+      0.22,
+      1.2,
+      0,
+      14
+     ],
+     "lean": [
+      -0.1,
+      -0.03
+     ]
+    },
+    "rao": {
+     "x": 1330,
+     "expr": "calm",
+     "look": -1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "face",
+   "silent": 1.8,
+   "beat_at": 0.2,
+   "strings": 0.5,
+   "scene": "gExam",
+   "cam": "close",
+   "focus": "rao",
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": 0,
+     "x": 930,
+     "s": 0.52,
+     "tiltR": 0.9
+    },
+    "rao": {
+     "x": 1330,
+     "expr": "calm",
+     "expr2": "worried",
+     "look": -1,
+     "lookY": -0.2
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.6,
+   "scene": "gOffice",
+   "mode": "diwali",
+   "cam": "pan",
+   "focus": "cw2",
+   "focus2": "wide",
+   "timer": true,
+   "crew": {
+    "cw2": {
+     "x": 360,
+     "expr": "relieved",
+     "look": -1,
+     "armL": 1.6
+    },
+    "cw1": {
+     "x": 700,
+     "expr": "relieved",
+     "look": -1
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.8,
+   "scene": "gOffice",
+   "mode": "diwali",
+   "cam": "medium",
+   "focus": "two",
+   "steps": "concrete",
+   "crew": {
+    "rohan": {
+     "expr": "relieved",
+     "look": 1,
+     "x": 980,
+     "wave": true
+    },
+    "arjun": {
+     "expr": "tired",
+     "look": -1,
+     "walk": [
+      1720,
+      1200
+     ],
+     "tiltR": 0.8
+    },
+    "cw1": {
+     "x": 520,
+     "expr": "relieved"
+    },
+    "cw3": {
+     "x": 1460,
+     "expr": "relieved"
+    }
+   }
+  },
+  {
+   "line": "One photo, then you can go home.",
+   "speaker": "rohan",
+   "react": "none",
+   "scene": "gOffice",
+   "mode": "diwali",
+   "cam": "close",
+   "focus": "rohan",
+   "crew": {
+    "rohan": {
+     "expr": "relieved",
+     "look": 1,
+     "x": 980
+    },
+    "arjun": {
+     "expr": "tired",
+     "look": -1,
+     "x": 1200,
+     "tiltR": 0.8
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "timer",
+   "silent": 4.0,
+   "beat_at": 0.88,
+   "scene": "gOffice",
+   "mode": "diwali",
+   "cam": "wide",
+   "focus": "wide",
+   "crew": {
+    "cw1": {
+     "x": 470,
+     "expr": "relieved"
+    },
+    "cw2": {
+     "x": 720,
+     "expr": "relieved",
+     "armR": 0.5
+    },
+    "rohan": {
+     "expr": "relieved",
+     "look": 0,
+     "x": 960,
+     "armR": 0.4
+    },
+    "arjun": {
+     "expr": "tired",
+     "look": 0,
+     "x": 1200,
+     "tiltR": 0.8,
+     "smileAt": 72
+    },
+    "cw3": {
+     "x": 1440,
+     "expr": "relieved"
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.4,
+   "scene": "black",
+   "cam": "wide",
+   "focus": "wide",
+   "titleCard": {
+    "text": "LATER"
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.8,
+   "strings": 0.35,
+   "scene": "gPhoto",
+   "cam": "wide",
+   "focus": "wide",
+   "photoFrame": 90,
+   "zoom": [
+    1.0,
+    1.25
+   ],
+   "zc": [
+    [
+     960,
+     1050
+    ],
+    [
+     560,
+     600
+    ]
+   ]
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "zoom",
+   "silent": 3.4,
+   "beat_at": 0.1,
+   "strings": 0.55,
+   "scene": "gPhoto",
+   "cam": "wide",
+   "focus": "wide",
+   "photoFrame": 90,
+   "zoom": [
+    1.25,
+    3.0
+   ],
+   "zc": [
+    [
+     1050,
+     1150
+    ],
+    [
+     600,
+     700
+    ]
+   ]
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "reveal",
+   "silent": 5.2,
+   "beat_at": 0.2,
+   "twist": true,
+   "strings": 0.9,
+   "whispers": true,
+   "scene": "gPhoto",
+   "cam": "wide",
+   "focus": "wide",
+   "photoFrame": 90,
+   "zoom": [
+    3.0,
+    4.4,
+    0,
+    120
+   ],
+   "zc": [
+    [
+     1150,
+     1060
+    ],
+    [
+     700,
+     640,
+     0,
+     120
+    ]
+   ]
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "face",
+   "silent": 2.4,
+   "beat_at": 0.3,
+   "strings": 0.7,
+   "heart": true,
+   "scene": "gOffice",
+   "mode": "night",
+   "cam": "close",
+   "focus": "rohan",
+   "crew": {
+    "rohan": {
+     "expr": "realize",
+     "look": 0,
+     "x": 960,
+     "pushGlasses": true,
+     "lookY": 0.4,
+     "freeze": true
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 4.2,
+   "strings": 0.6,
+   "scene": "gPhoto",
+   "cam": "wide",
+   "focus": "wide",
+   "photoFrame": 90,
+   "zoom": [
+    4.4,
+    1.7
+   ],
+   "zc": [
+    [
+     1060,
+     1230
+    ],
+    [
+     640,
+     470
+    ]
+   ]
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.8,
+   "heart": "accel",
+   "scene": "gOffice",
+   "mode": "night",
+   "cam": "close",
+   "focus": "rohan",
+   "crew": {
+    "rohan": {
+     "expr": "dread",
+     "look": 0.3,
+     "x": 960,
+     "lookY": 0.4
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.0,
+   "scene": "gScreen",
+   "page": "listing",
+   "cam": "push_in",
+   "focus": "wide",
+   "typing": true
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.2,
+   "scene": "gScreen",
+   "page": "search",
+   "cam": "medium",
+   "focus": "wide",
+   "typing": true
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "boom",
+   "silent": 3.6,
+   "scene": "gScreen",
+   "page": "news",
+   "cam": "push_in",
+   "focus": "headline",
+   "beat_at": 0.15,
+   "strings": 0.7
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "sting",
+   "silent": 4.4,
+   "scene": "gScreen",
+   "page": "news",
+   "cam": "push_in",
+   "focus": "portrait",
+   "beat_at": 0.35,
+   "whispers": true,
+   "strings": 0.7
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "ringback",
+   "silent": 3.4,
+   "scene": "gCall",
+   "call": "ringing",
+   "cam": "push_in",
+   "focus": "screen",
+   "beat_at": 0.05
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.2,
+   "scene": "gBedTop",
+   "phoneGlow": "blink",
+   "dip": true,
+   "fan": false,
+   "cam": "medium",
+   "focus": "phone",
+   "strings": 0.6,
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": 0,
+     "sleep": true,
+     "headRoll": 0.18
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "vm",
+   "silent": 1.8,
+   "scene": "gCall",
+   "call": "voicemail",
+   "cam": "close",
+   "focus": "screen",
+   "beat_at": 0.3
+  },
+  {
+   "line": "Arjun, call me back. I found something in the photo. It's from the house.",
+   "speaker": "rohan",
+   "react": "none",
+   "strings": 0.5,
+   "scene": "gOffice",
+   "mode": "night",
+   "cam": "close",
+   "focus": "rohan",
+   "crew": {
+    "rohan": {
+     "expr": "dread",
+     "look": 0.3,
+     "x": 960,
+     "phone": "ear"
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "keys",
+   "silent": 1.6,
+   "beat_at": 0.4,
+   "scene": "gOffice",
+   "mode": "night",
+   "cam": "medium",
+   "focus": "rohan",
+   "crew": {
+    "rohan": {
+     "expr": "worried",
+     "look": 1,
+     "walk": [
+      960,
+      1500
+     ]
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 4.0,
+   "strings": 0.45,
+   "scene": "gDrive",
+   "cam": "medium",
+   "focus": "hero",
+   "crew": {
+    "rohan": {
+     "expr": "worried",
+     "look": 0,
+     "lookY": 0.1,
+     "armL": 0.55,
+     "armR": 0.55
+    }
+   }
+  },
+  {
+   "line": "Turn left at the next junction.",
+   "speaker": "nav",
+   "react": "none",
+   "phone": true,
+   "scene": "gNav",
+   "cam": "push_in",
+   "focus": "banner",
+   "subItalic": true
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.2,
+   "indicator": true,
+   "scene": "gDrive",
+   "cam": "medium",
+   "focus": "hero",
+   "crew": {
+    "rohan": {
+     "expr": "worried",
+     "look": -0.3,
+     "armL": 0.55,
+     "armR": 0.55
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.0,
+   "scene": "gSign",
+   "cam": "wide",
+   "focus": "wide",
+   "indicator": true
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.0,
+   "indicator": true,
+   "grip": [
+    0,
+    1
+   ],
+   "scene": "gDrive",
+   "cam": "medium",
+   "focus": "hero",
+   "crew": {
+    "rohan": {
+     "expr": "calm",
+     "look": 0,
+     "armL": 0.55,
+     "armR": 0.55
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "horn",
+   "silent": 2.8,
+   "headlights": true,
+   "whiteout": true,
+   "beat_at": 0.7,
+   "scene": "gDrive",
+   "cam": "close",
+   "focus": "hero",
+   "crew": {
+    "rohan": {
+     "expr": "calm",
+     "look": 0,
+     "expr2": "shock",
+     "lookTo": 1,
+     "lookAt": 18,
+     "armL": 0.55,
+     "armR": 0.55,
+     "headGlare": true
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 4.4,
+   "scene": "black",
+   "cam": "wide",
+   "focus": "wide",
+   "mute": true,
+   "tinnitus": true,
+   "monitor": "fadein",
+   "bpm": 88
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.8,
+   "steps": "concrete",
+   "scene": "gHospBed",
+   "monitor": true,
+   "bpm": 92,
+   "cam": "push_in",
+   "focus": "face",
+   "crew": {
+    "rohan": {
+     "expr": "stare",
+     "look": 0,
+     "neckBrace": true,
+     "noGlasses": true,
+     "freeze": true,
+     "dart": [
+      [
+       0,
+       -0.2
+      ],
+      [
+       0.9,
+       0.3
+      ],
+      [
+       0.9,
+       0.3
+      ],
+      [
+       0.7,
+       0.1
+      ]
+     ]
+    }
+   },
+   "fadeIn": 20
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 4.4,
+   "steps": "concrete",
+   "scene": "gHospPov",
+   "monitor": true,
+   "bpm": 92,
+   "cam": "wide",
+   "focus": "wide",
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": -0.2,
+     "walk": [
+      1580,
+      980
+     ],
+     "glassesBag": true,
+     "tiltR": 0.8,
+     "lookY": 0.4
+    }
+   }
+  },
+  {
+   "line": "They called me this morning. I saw your missed calls on the way here.",
+   "speaker": "arjun",
+   "react": "none",
+   "scene": "gHospPov",
+   "monitor": true,
+   "bpm": 92,
+   "cam": "medium",
+   "focus": "face",
+   "crew": {
+    "arjun": {
+     "expr": "worried",
+     "look": 0,
+     "x": 960,
+     "y": 1290,
+     "s": 1.05,
+     "glassesBag": true,
+     "tiltR": 0.6,
+     "lookY": 0.5
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "chair",
+   "silent": 1.8,
+   "beat_at": 0.25,
+   "scene": "gHospPov",
+   "monitor": true,
+   "bpm": 92,
+   "cam": "medium",
+   "focus": "face",
+   "crew": {
+    "arjun": {
+     "expr": "worried",
+     "look": 0,
+     "x": 960,
+     "y": 1290,
+     "s": 1.05,
+     "tiltR": [
+      0.5,
+      0.95
+     ],
+     "lookY": 0.5
+    }
+   }
+  },
+  {
+   "line": "What did you need to tell me?",
+   "speaker": "arjun",
+   "react": "none",
+   "scene": "gHospPov",
+   "monitor": true,
+   "bpm": 92,
+   "cam": "close",
+   "focus": "face",
+   "crew": {
+    "arjun": {
+     "expr": "worried",
+     "look": 0,
+     "x": 960,
+     "y": 1290,
+     "s": 1.05,
+     "tiltR": 0.95,
+     "lookY": 0.5
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "reveal",
+   "silent": 3.2,
+   "beat_at": 0.62,
+   "strings": 1.0,
+   "scene": "gHospPov",
+   "monitor": true,
+   "bpm": 92,
+   "cam": "pan",
+   "focus": "mira",
+   "focus2": "face",
+   "crew": {
+    "arjun": {
+     "expr": "worried",
+     "look": 0,
+     "x": 960,
+     "y": 1290,
+     "s": 1.05,
+     "tiltR": 0.95,
+     "lookY": 0.5,
+     "mira": {
+      "look": 0,
+      "lookY": 0.3
+     }
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.6,
+   "whispers": true,
+   "strings": 0.9,
+   "scene": "gHospPov",
+   "monitor": true,
+   "bpm": 92,
+   "cam": "push_in",
+   "focus": "both",
+   "crew": {
+    "arjun": {
+     "expr": "worried",
+     "look": 0,
+     "x": 960,
+     "y": 1290,
+     "s": 1.05,
+     "tiltR": 0.95,
+     "lookY": 0.5,
+     "mira": {
+      "look": 0,
+      "lookY": 0.3
+     }
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.2,
+   "heart": "accel",
+   "strings": 0.8,
+   "scene": "gHospBed",
+   "monitor": true,
+   "bpm": 92,
+   "cam": "close",
+   "focus": "face",
+   "crew": {
+    "rohan": {
+     "expr": "dread",
+     "look": 0,
+     "neckBrace": true,
+     "noGlasses": true,
+     "freeze": true,
+     "mouthO": 0.45,
+     "dart": [
+      [
+       -0.8,
+       -0.5
+      ],
+      [
+       -0.8,
+       -0.5
+      ],
+      [
+       0.2,
+       -0.3
+      ],
+      [
+       0.2,
+       -0.3
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 1.4,
+   "scene": "gHospPov",
+   "monitor": true,
+   "bpm": 92,
+   "cam": "push_in",
+   "focus": "face",
+   "crew": {
+    "arjun": {
+     "expr": "worried",
+     "look": 0,
+     "x": 960,
+     "y": 1290,
+     "s": 1.05,
+     "tiltR": 0.95,
+     "lookY": 0.5,
+     "lean": [
+      0,
+      0.04
+     ],
+     "mira": {
+      "look": 0,
+      "lookY": 0.3
+     }
+    }
+   }
+  },
+  {
+   "line": "I'm here. Take your time.",
+   "speaker": "arjun",
+   "react": "none",
+   "strings": 0.5,
+   "scene": "gHospPov",
+   "monitor": true,
+   "bpm": 92,
+   "cam": "medium",
+   "focus": "both",
+   "crew": {
+    "arjun": {
+     "expr": "calm",
+     "look": 0,
+     "x": 960,
+     "y": 1290,
+     "s": 1.05,
+     "tiltR": 0.95,
+     "lookY": 0.5,
+     "mira": {
+      "look": 0,
+      "lookY": 0.3
+     }
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 3.8,
+   "scene": "gHospPov",
+   "monitor": true,
+   "bpm": 92,
+   "cam": "close",
+   "focus": "mira",
+   "crew": {
+    "arjun": {
+     "expr": "worried",
+     "look": 0,
+     "x": 960,
+     "y": 1290,
+     "s": 1.05,
+     "tiltR": 0.95,
+     "lookY": 0.5,
+     "mira": {
+      "look": 0,
+      "lookY": 0.3,
+      "creaseAt": 14
+     }
+    }
+   }
+  },
+  {
+   "line": "Heh... heh heh.",
+   "speaker": "mira",
+   "react": "none",
+   "nosubs": true,
+   "gain": 0.75,
+   "scene": "gHospPov",
+   "monitor": true,
+   "bpm": 92,
+   "cam": "close",
+   "focus": "mira",
+   "crew": {
+    "arjun": {
+     "expr": "worried",
+     "look": 0,
+     "x": 960,
+     "y": 1290,
+     "s": 1.05,
+     "tiltR": 0.95,
+     "lookY": 0.5,
+     "mira": {
+      "look": 0,
+      "lookY": 0.3,
+      "laugh": true
+     }
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "face",
+   "silent": 1.0,
+   "beat_at": 0.1,
+   "scene": "gHospBed",
+   "monitor": true,
+   "bpm": 92,
+   "cam": "close",
+   "focus": "face",
+   "crew": {
+    "rohan": {
+     "expr": "dread",
+     "look": -0.6,
+     "neckBrace": true,
+     "noGlasses": true,
+     "freeze": true,
+     "flinch": true,
+     "lookY": -0.4
+    }
+   }
+  },
+  {
+   "line": "Heh heh heh heh!",
+   "speaker": "mira",
+   "react": "none",
+   "nosubs": true,
+   "layer": {
+    "semitones": -1.0,
+    "gain": 0.5
+   },
+   "scene": "gHospPov",
+   "monitor": true,
+   "bpm": 92,
+   "cam": "medium",
+   "focus": "both",
+   "crew": {
+    "arjun": {
+     "expr": "worried",
+     "look": 0,
+     "x": 960,
+     "y": 1290,
+     "s": 1.05,
+     "tiltR": 0.95,
+     "lookY": 0.5,
+     "mira": {
+      "look": 0,
+      "lookY": 0.3,
+      "laugh": "hard"
+     }
+    }
+   }
+  },
+  {
+   "line": "Heh heh...",
+   "speaker": "mira",
+   "react": "none",
+   "nosubs": true,
+   "gain": 0.5,
+   "scene": "black",
+   "cam": "wide",
+   "focus": "wide",
+   "mute": true
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.2,
+   "scene": "black",
+   "cam": "wide",
+   "focus": "wide",
+   "mute": true
+  }
+ ],
+ "cover_beat": 33
+}

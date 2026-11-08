@@ -178,28 +178,32 @@ def _trim(a, thr=0.012, pad=0.04):
 
 def _gemini_tts(text: str, vcfg: dict, out: Path) -> tuple[float, list[dict]]:
     """An acted line: Gemini TTS performs the words with the character's voice and this line's emotion."""
+    global _GEMINI_OFF
+    import base64
     import os
     import time
     import numpy as np
+    import requests
     import soundfile as sf
-    from google import genai
-    from google.genai import types
 
-    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
     who = vcfg.get("persona", "a young man")
     style = vcfg.get("style") or "natural, conversational"
     prompt = (f"Voice: {who}. Delivery: {style}. Perform it like a real person reacting in the moment, "
               f"not like a narrator. Speak exactly these words and nothing else:\n{text}")
+    body = {"contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": {"responseModalities": ["AUDIO"], "speechConfig": {"voiceConfig": {
+                "prebuiltVoiceConfig": {"voiceName": vcfg.get("gemini_voice", "Charon")}}}}}
     last = None
-    for attempt in range(8):
+    for attempt in range(6):
         model = GEMINI_TTS_MODELS[attempt % len(GEMINI_TTS_MODELS)]
         try:
-            r = client.models.generate_content(model=model, contents=prompt, config=types.GenerateContentConfig(
-                response_modalities=["AUDIO"],
-                speech_config=types.SpeechConfig(voice_config=types.VoiceConfig(
-                    prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name=vcfg.get("gemini_voice", "Charon"))))))
-            data = r.candidates[0].content.parts[0].inline_data.data
-            a = np.frombuffer(data, dtype="<i2").astype(np.float32) / 32768.0
+            r = requests.post(f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+                              headers={"x-goog-api-key": os.environ["GEMINI_API_KEY"]}, json=body, timeout=120)
+            if r.status_code in (400, 403) and "not found" not in r.text.lower() and "not supported" not in r.text.lower():
+                raise ValueError(f"{r.status_code} {r.text[:200]}")
+            r.raise_for_status()
+            part = r.json()["candidates"][0]["content"]["parts"][0]
+            a = np.frombuffer(base64.b64decode(part["inlineData"]["data"]), dtype="<i2").astype(np.float32) / 32768.0
             a = _trim(a)
             if len(a) < SR * 0.2:
                 raise RuntimeError("Gemini returned almost no audio")
@@ -208,11 +212,15 @@ def _gemini_tts(text: str, vcfg: dict, out: Path) -> tuple[float, list[dict]]:
             words = _estimate_words(text, a)
             _encode(wav, out, float(vcfg.get("gemini_semitones", 0.0)))
             wav.unlink(missing_ok=True)
+            log(f"Acted line ({model}, {vcfg.get('gemini_voice')}): {text[:50]}")
             return media_duration(out), words
+        except ValueError as exc:                 # the request itself is refused: retrying will not help
+            _GEMINI_OFF = True
+            raise RuntimeError(f"Gemini TTS refused the request: {exc}")
         except Exception as exc:
             last = exc
             log(f"Gemini TTS ({model}) attempt {attempt + 1} failed: {str(exc)[:160]}")
-            time.sleep(min(60, 6 * (attempt + 1)))
+            time.sleep(min(45, 8 * (attempt + 1)))
     raise RuntimeError(f"Gemini TTS failed: {last}")
 
 

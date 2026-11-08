@@ -76,6 +76,7 @@ jobs:
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_HORROR_REFRESH_TOKEN: ${{ secrets.YT_HORROR_REFRESH_TOKEN }}
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
           MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'full' }}
           STORY: ${{ inputs.story }}
         run: |

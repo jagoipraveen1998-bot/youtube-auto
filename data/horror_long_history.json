@@ -1,0 +1,25 @@
+{
+  "stories": [
+    "the_room_we_never_had: The Bedroom That Shouldn't Exist",
+    "the_fourth_face: The Fourth Face",
+    "the_mummy_downstairs: The Mummy Downstairs (a museum coffin delivered to the wrong house)"
+  ],
+  "videos": [
+    {
+      "date": "2026-11-05 23:53",
+      "title": "The Bedroom That Shouldn't Exist",
+      "video_id": "VHmMDrPZ5Lc",
+      "script": "the_room_we_never_had.txt",
+      "length": "9.6 min"
+    },
+    {
+      "title": "The Fourth Face",
+      "video_id": "hfRCTrSDdco"
+    },
+    {
+      "date": "2026-11-08",
+      "title": "The Mummy Downstairs | Animated Horror Story",
+      "video_id": "mEjTashl90c"
+    }
+  ]
+}

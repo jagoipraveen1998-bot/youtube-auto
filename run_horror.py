@@ -64,7 +64,7 @@ def main():
     seed = random.randint(0, 10_000)
     video, thumb, plan = hv.make_short(story, hcfg["voice"], work, seed,
                                        Path(args.voice_file) if args.voice_file else None)
-    length = check_playable(video, 15, 59)
+    length = check_playable(video, 15, 175)   # Shorts may run up to 3 minutes
 
     description = "\n".join([story["description"], "",
                              "A Creepy Cartoon Tale: an original animated horror short. New horror Shorts every day.",

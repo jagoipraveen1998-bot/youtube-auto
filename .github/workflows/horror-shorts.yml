@@ -29,7 +29,7 @@ concurrency:
 jobs:
   make-horror-short:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 100
     steps:
       - uses: actions/checkout@v4
 
@@ -69,7 +69,7 @@ jobs:
           fi
 
       - name: Make the horror Short
-        timeout-minutes: 40
+        timeout-minutes: 75
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}

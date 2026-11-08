@@ -1,0 +1,42 @@
+name: Instagram repost (a Short from an earlier run)
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "Run id of a Horror shorts run (its short.mp4 is posted as a Reel)"
+        required: true
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  repost:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -q requests pyyaml
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+          path: art
+      - name: Post the Reel
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: |
+          python - <<'PY'
+          import json, glob
+          from pathlib import Path
+          from autotube.instagram import ig_caption, publish_reel
+          from autotube.util import load_config
+          vid = Path(glob.glob("art/**/short.mp4", recursive=True)[0])
+          st = json.loads(Path(glob.glob("art/**/story.json", recursive=True)[0]).read_text())
+          tags = load_config()["horror"].get("instagram_hashtags", ["#horror", "#reels"])
+          if not publish_reel(vid, ig_caption(st["title"], st.get("description", ""), tags)):
+              raise SystemExit("Instagram did not accept the Reel")
+          PY

@@ -40,10 +40,16 @@ def publish_reel(video: Path, caption: str, cover_offset_ms: int = 2500) -> str 
             "share_to_feed": "true", "thumb_offset": str(cover_offset_ms), "access_token": token})
         r.raise_for_status()
         cid = r.json()["id"]
-        size = video.stat().st_size
-        with open(video, "rb") as fh:
-            up = requests.post(f"{RUPLOAD}/{cid}", data=fh, timeout=600, headers={
-                "Authorization": f"OAuth {token}", "offset": "0", "file_size": str(size)})
+        blob = video.read_bytes()
+        up = None
+        for attempt in range(3):                   # the upload host sometimes fails; give it three goes
+            up = requests.post(f"{RUPLOAD}/{cid}", data=blob, timeout=900, headers={
+                "Authorization": f"OAuth {token}", "offset": "0", "file_size": str(len(blob)),
+                "Content-Type": "application/octet-stream", "Content-Length": str(len(blob))})
+            if up.ok:
+                break
+            log(f"Instagram upload attempt {attempt + 1}: {up.status_code} {up.text[:200]}")
+            time.sleep(15)
         up.raise_for_status()
         for _ in range(60):          # Instagram processes the video: wait up to ~10 minutes
             st = requests.get(f"{GRAPH}/{cid}", timeout=30,

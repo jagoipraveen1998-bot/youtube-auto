@@ -309,11 +309,21 @@ def sfx_track(syn: Synth, plan: dict) -> np.ndarray:
                 m = int(2.6 * SR); tt = np.arange(m) / SR
                 screech = sum(np.sin(2 * np.pi * (fq + 18 * np.sin(2 * np.pi * 6.5 * tt)) * tt) for fq in (1975, 2093, 2217)) / 3
                 _add(sfx, syn.reverb(screech * np.exp(-tt * 1.3) * np.minimum(1, tt / 0.04), 2.4, 0.5), tb, 0.35)
-        elif react == "horn":               # one hard blast of a horn, cut short by the impact
+        elif react == "horn":               # tyres screaming, one hard horn blast, then the impact
+            m = int(1.1 * SR); tt = np.arange(m) / SR
+            sq = np.sin(2 * np.pi * np.cumsum(1700 + 500 * np.sin(2 * np.pi * 3.1 * tt) + 300 * tt) / SR)
+            screech = bp(sq * (0.6 + 0.4 * syn.noise(m) * 0.3) + bp(syn.noise(m), 1500, 4500) * 0.6, 900, 5000) * np.minimum(1, tt / 0.08)
+            _add(sfx, screech, tb - 0.35, 0.8)
             m = int(0.9 * SR); tt = np.arange(m) / SR
-            horn = sum(np.sign(np.sin(2 * np.pi * fq * tt)) for fq in (415, 523)) * 0.5
-            _add(sfx, bp(horn, 300, 3500) * np.minimum(1, tt / 0.02), tb, 1.0)
+            dop = 1 + 0.06 * tt                               # the truck is coming closer: pitch and level rise
+            horn = sum(np.tanh(3 * np.sin(2 * np.pi * np.cumsum(fq * dop) / SR)) + 0.3 * np.sin(4 * np.pi * np.cumsum(fq * dop) / SR) for fq in (311, 392))
+            _add(sfx, bp(horn, 250, 4000) * np.minimum(1, tt / 0.015) * (0.6 + 0.6 * tt), tb, 1.0)
             ti = tb + 0.82
+            for k, fq in enumerate((310, 470, 640, 890, 1210)):      # metal panels ringing as they crumple
+                mm = int(0.9 * SR); t2 = np.arange(mm) / SR
+                _add(sfx, np.sin(2 * np.pi * fq * t2 * (1 - 0.05 * t2)) * np.exp(-t2 * (6 + k)) * 0.5, ti + 0.01 * k, 0.8)
+            for k in range(14):                                       # debris and glass settling after the hit
+                n2 = int(0.04 * SR); _add(sfx, bp(syn.noise(n2), 2500, 9000) * np.exp(-np.arange(n2) / SR * 70), ti + 0.6 + k * 0.11 + 0.05 * np.sin(k * 3), 0.35 * (1 - k / 16))
             _add(sfx, lp(syn.thud(38, 1.4), 300) * 2.5, ti, 1.3); _add(sfx, syn.thud(70, 0.6), ti, 1.0)
             m = int(1.2 * SR); tt = np.arange(m) / SR
             _add(sfx, bp(syn.noise(m), 150, 2500) * np.exp(-tt * 4) * 1.4, ti, 1.0)            # metal crunch
@@ -580,6 +590,99 @@ def ambience_track(syn: Synth, plan: dict) -> np.ndarray:
     return amb
 
 
+# ---------------------------------------------------------------- film score: music that follows the story, cue by cue
+NOTE = lambda m: 440.0 * 2 ** ((m - 69) / 12)
+
+
+def _saw(f, t, partials=9):
+    return sum(np.sin(2 * np.pi * f * h * t) / h for h in range(1, partials + 1))
+
+
+def _pad(freqs, n, cutoff=900, detune=0.006, lfo=0.09):
+    t = np.arange(n) / SR
+    out = sum(_saw(f, t) + _saw(f * (1 + detune), t) for f in freqs) / (2 * len(freqs))
+    out = lp(out, cutoff) * (0.75 + 0.25 * np.sin(2 * np.pi * lfo * t))
+    return out
+
+
+def _box(freq, dur=1.8, wob=0.0):
+    n = int(dur * SR); t = np.arange(n) / SR
+    f = freq * (1 + wob * np.sin(2 * np.pi * 0.7 * t))
+    ph = 2 * np.pi * np.cumsum(f) / SR
+    return (np.sin(ph) + 0.4 * np.sin(2.01 * ph) + 0.15 * np.sin(3.98 * ph) + 0.08 * np.sin(6.3 * ph)) * np.exp(-t * 2.6) * np.minimum(1, t / 0.003)
+
+
+def cue_audio(kind: str, dur: float, seed: int, t0: float) -> np.ndarray:
+    """One stretch of score. t0 keeps chord changes and melodies continuous from shot to shot."""
+    n = int(dur * SR); t = np.arange(n) / SR + t0
+    rng = np.random.default_rng(seed)
+    out = np.zeros(n)
+    def at(x, tt, g=1.0):
+        i = int((tt - t0) * SR)
+        if 0 <= i < n:
+            x = x[: n - i]; out[i:i + len(x)] += g * x
+    if kind == "calm":            # a tired, melancholic piano over a soft pad: Am F C E
+        prog = [[57, 60, 64], [53, 57, 60], [48, 55, 60], [52, 56, 59]]
+        for k in range(int(t0 // 4), int((t0 + dur) // 4) + 1):
+            ch = prog[k % 4]
+            seg = _pad([NOTE(m - 12) for m in ch], int(4.4 * SR), 700) * 0.5
+            seg *= np.minimum(1, np.arange(len(seg)) / (0.6 * SR)) * np.minimum(1, (len(seg) - np.arange(len(seg))) / (0.6 * SR))
+            at(seg, k * 4.0, 1.0)
+            for j, m in enumerate([ch[0], ch[1], ch[2], ch[1] + 12, ch[2], ch[1]]):
+                at(piano_note(NOTE(m), 3.0) * 0.35, k * 4.0 + j * 0.62 + 0.1, 1.0)
+    elif kind == "uneasy":        # the same key, now with a semitone rubbing against it and a slow low pulse
+        out += _pad([NOTE(45), NOTE(52), NOTE(57), NOTE(58)], n, 650, 0.009) * 0.55
+        for k in range(int(t0 // 1.6), int((t0 + dur) // 1.6) + 1):
+            at(lp(Synth.thud(48, 0.5), 220) * 0.9, k * 1.6)
+        for k in range(int(t0 // 5.0), int((t0 + dur) // 5.0) + 1):
+            at(piano_note(NOTE(81), 4.0) * 0.18 + piano_note(NOTE(82), 4.0) * 0.12, k * 5.0 + 2.2)
+    elif kind == "lullaby":       # Mira's theme: a detuned music box, a child's tune gone wrong
+        mel = [69, 72, 76, 74, 72, 71, 69, 64, 65, 69, 72, 71, 68, 64, 69, None]
+        step = 0.52
+        for k in range(int(t0 // step), int((t0 + dur) // step) + 1):
+            m = mel[k % len(mel)]
+            if m is not None:
+                at(_box(NOTE(m) * (1 - 0.012 * ((k // 16) % 3)), 2.2, 0.004) * 0.55, k * step)
+        out += _pad([NOTE(45), NOTE(52)], n, 400) * 0.25
+    elif kind == "tension":       # driving low ostinato, high tremolo cluster, swelling across the cue
+        step = 0.16
+        for k in range(int(t0 // step), int((t0 + dur) // step) + 1):
+            m = 45 if (k // 4) % 2 == 0 else 46
+            nn = int(0.15 * SR); tt = np.arange(nn) / SR
+            at(lp(_saw(NOTE(m - 12), tt), 600) * np.exp(-tt * 18) * 0.7, k * step)
+        hi = sum(np.sin(2 * np.pi * NOTE(m) * t) for m in (88, 89, 93)) * (0.55 + 0.45 * np.sin(2 * np.pi * 12 * t)) / 3
+        out += hi * 0.2 * np.minimum(1, (t - t0) / max(1.0, dur))
+        out += _pad([NOTE(33), NOTE(34)], n, 300) * 0.5
+    elif kind == "dread":         # a sub drone, a bowed cluster that never resolves
+        out += (np.sin(2 * np.pi * 36 * t) + 0.6 * np.sin(2 * np.pi * 36.7 * t)) * 0.5
+        out += bowed([NOTE(45), NOTE(46), NOTE(52), NOTE(53)], dur + 0.01, 0.012, 1.0)[:n] * 1.6
+    elif kind == "festive":       # the Diwali party: a warm drone and soft bells, slightly off
+        out += _pad([NOTE(50), NOTE(57), NOTE(62)], n, 1200) * 0.35
+        for k in range(int(t0 // 0.8), int((t0 + dur) // 0.8) + 1):
+            m = [74, 76, 78, 81, 78, 76][k % 6]
+            at(_box(NOTE(m), 1.4) * 0.25, k * 0.8 + 0.2)
+    return out
+
+
+def film_score(plan: dict, total: float) -> np.ndarray:
+    n = int(total * SR) + SR
+    out = np.zeros(n)
+    cue, starts = None, []
+    for sh in plan["shots"]:
+        c = sh.get("cue") or cue
+        if c != cue:
+            starts.append((sh["a"] / FPS, c)); cue = c
+    for i, (a, kind) in enumerate(starts):
+        b = starts[i + 1][0] if i + 1 < len(starts) else total
+        if not kind or kind == "silence":
+            continue
+        x = cue_audio(kind, b - a + 1.2, 31 + i, a)
+        m = len(x); tt = np.arange(m) / SR
+        x *= np.minimum(1, tt / 0.8) * np.minimum(1, (m / SR - tt) / 1.0)       # crossfades into the next cue
+        i0 = int(a * SR); out[i0:i0 + m] += x[: max(0, n - i0)]
+    return Synth(1, 1).reverb(out, 2.4, 0.3)
+
+
 def _grms(x):
     w = int(0.05 * SR); n = len(x) // w
     if n == 0:
@@ -655,13 +758,13 @@ def make_soundtrack(voice: np.ndarray, plan: dict, work: Path, seed: int) -> Pat
     tw = next((s for s in plan["shots"] if s.get("twist")), None)
     stop = (tw["beat"] if tw and tw.get("beat") is not None else plan["frames"]) / FPS - 0.05
     drone = plan.get("music") == "drone"          # "real" style: no music-box tune, just a low drone
-    music = music_bed(syn, total, stop, seed, box_on=not drone)
+    music = film_score(plan, total) if plan.get("score") else music_bed(syn, total, stop, seed, box_on=not drone)
     sfx = sfx_track(syn, plan) + story_sfx(syn, plan)
     n = int(total * SR)
     pad = lambda x: np.nan_to_num(np.pad(np.asarray(x, dtype=float), (0, max(0, n - len(x))))[:n], nan=0.0, posinf=0.0, neginf=0.0)
     v, m, s = pad(voice), pad(music), pad(sfx)
     vr, vp = _grms(v), np.abs(v).max()
-    m *= (vr * (0.32 if drone else 0.5)) / max(_grms(m), 1e-9)
+    m *= (vr * (0.55 if plan.get("score") else 0.32 if drone else 0.5)) / max(_grms(m), 1e-9)
     s *= (vr * 0.5) / max(_grms(s), 1e-9)
     if plan.get("film"):                         # films: soft-limit only the loud hits so quiet effects stay audible
         s = np.tanh(s / (0.7 * vp)) * 0.7 * vp
@@ -675,12 +778,12 @@ def make_soundtrack(voice: np.ndarray, plan: dict, work: Path, seed: int) -> Pat
         amb *= (vr * 0.22) / max(_grms(amb), 1e-9)     # room tone sits well under the voices (about -13 dB)
     if plan.get("scary"):
         sc = pad(scare_bed(syn, plan))
-        sc *= (vr * 0.4) / max(_grms(sc), 1e-9)
+        sc *= (vr * (0.25 if plan.get("score") else 0.4)) / max(_grms(sc), 1e-9)
         duck = duck_curve(v, 8.0)                  # background steps back about 8 dB under every line
         m, amb, sc = m * duck, amb * duck, sc * duck
         s = s * duck_curve(v, 4.0)
         log("Scary mix: sub drone, whispers, riser; music/ambience ducked 8 dB and sfx 4 dB under dialogue")
-        if plan.get("piano"):
+        if plan.get("piano") and not plan.get("score"):
             tw = next((x for x in plan["shots"] if x.get("twist") and x.get("beat") is not None), None)
             pn = pad(piano_bed(syn, plan, (tw["beat"] / FPS) if tw else total - 4))
             pn *= (vr * 0.3) / max(_grms(pn), 1e-9)

@@ -81,6 +81,14 @@ def _phone(audio: np.ndarray, stem: Path) -> np.ndarray:
     return ha.load(out)
 
 
+def _mind(audio: np.ndarray, stem: Path) -> np.ndarray:
+    src, out = stem.with_name(stem.name + "_rawt.wav"), stem.with_name(stem.name + "_mind.wav")
+    ha.save(src, audio)
+    run(["ffmpeg", "-y", "-v", "error", "-i", str(src), "-af",
+         "highpass=f=140,lowpass=f=6500,aecho=0.7:0.55:45|95:0.35|0.22,volume=0.9", "-ar", str(ha.SR), "-ac", "1", str(out)])
+    return ha.load(out)
+
+
 def _muffle(audio: np.ndarray, stem: Path) -> np.ndarray:
     src, out = stem.with_name(stem.name + "_rawm.wav"), stem.with_name(stem.name + "_muff.wav")
     ha.save(src, audio)
@@ -109,6 +117,8 @@ def voice_lines(story: dict, voices: dict, work: Path) -> tuple[np.ndarray, list
         else:
             mp3 = work / f"line{i:03d}.mp3"
             vcfg = dict(voice_for_speaker(b, voices))
+            if b.get("style"):                       # how this line is acted (Gemini TTS)
+                vcfg["style"] = b["style"]
             if b.get("vspeed"):
                 vcfg["speed"] = vcfg.get("speed", 1.0) * float(b["vspeed"])
             text = b["line"].replace("*", "")            # *key words* are highlighted in captions, not spoken
@@ -125,6 +135,8 @@ def voice_lines(story: dict, voices: dict, work: Path) -> tuple[np.ndarray, list
                 audio = mix / max(1.0, np.abs(mix).max() / 0.98)
             if b.get("phone"):
                 audio = _phone(audio, work / f"line{i:03d}")
+            if b.get("mind"):                     # a thought: close, intimate, a soft echo inside the head
+                audio = _mind(audio, work / f"line{i:03d}")
             if b.get("muffle"):                   # heard through a closed door
                 audio = _muffle(audio, work / f"line{i:03d}")
             if b.get("gain"):
@@ -215,7 +227,7 @@ def build_plan(story: dict, timing: list[dict], total: float, casting: dict, fmt
     return {"frames": frames, "format": fmt, "hero": casting["hero"], "other": casting["other"],
             "cast": casting["cast"], "shots": shots, "series": story.get("series"), "captions": bool(story.get("captions")),
             "music": story.get("music"), "scary": bool(story.get("scary")), "piano": bool(story.get("piano")),
-            "film": bool(story.get("film")), "strings": bool(story.get("strings"))}
+            "film": bool(story.get("film")), "strings": bool(story.get("strings")), "score": bool(story.get("score"))}
 
 
 def render(plan: dict, work: Path, frames_dir: Path, stills: list[int] | None = None) -> None:
@@ -348,6 +360,12 @@ def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_
     plan["outro"] = int(round(total * FPS)) - plan["frames"]
     plan["frames"] = int(round(total * FPS))
     (work / "plan.json").write_text(json.dumps(plan, indent=1), encoding="utf-8")
+    rows = []                                    # a timeline to check every line lands where it was asked for
+    for b, sh in zip(story["beats"], plan["shots"]):
+        mm, ss_ = divmod(sh["a"] / FPS, 60)
+        rows.append(f"{int(mm)}:{ss_:05.2f}  {sh['scene']:<10} {b.get('speaker', ''):<8} {b.get('line', '') or '(' + str(b.get('silent')) + 's)'}")
+    (work.parent / "timeline.txt").write_text("\n".join(rows), encoding="utf-8")
+    log("Timeline:\n" + "\n".join(rows))
     log(f"Plan: {len(plan['shots'])} shots, {plan['frames']} frames ({total:.1f}s, {fmt})")
     master = ha.make_soundtrack(voice, plan, work, seed)
     frames_dir = work / "frames"

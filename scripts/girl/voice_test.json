@@ -1,0 +1,330 @@
+{
+ "storyboard": true,
+ "film": true,
+ "music": "drone",
+ "scary": true,
+ "piano": true,
+ "score": true,
+ "outro_laugh": false,
+ "story_id": "the-girl-on-his-shoulder",
+ "title": "voice test",
+ "description": "Arjun moves into a rented house and sleeps straight through his first night. Since then, his right shoulder feels heavy, as if somebody is leaning on him. Then his friend Rohan looks closely at the office Diwali photo. An original animated horror short film.",
+ "tags": [
+  "animated horror short film",
+  "horror short film",
+  "ghost story",
+  "indian ghost story",
+  "creepy cartoon tales",
+  "scary animation",
+  "diwali horror",
+  "haunted house",
+  "horror animation",
+  "short film"
+ ],
+ "cover_text": "THE GIRL ON HIS SHOULDER",
+ "hero": {
+  "look": "man",
+  "outfit": "shirt",
+  "voice": "am_michael",
+  "style": {}
+ },
+ "villain": "ghost",
+ "cast": [
+  {
+   "role": "arjun",
+   "gender": "m",
+   "voice": "am_michael",
+   "gemini_voice": "Charon",
+   "persona": "Arjun, a 29-year-old Indian man, soft-spoken, natural Indian English accent",
+   "omni": "male, young adult, low pitch, indian accent",
+   "style": {
+    "skin": "#b98059",
+    "hair": "#120e14",
+    "hairStyle": "mop",
+    "outfit": "shirt",
+    "top": "#a9bdd2",
+    "pants": "#3a3f4e",
+    "shoes": "#2a2220",
+    "acc": {
+     "heavyBrows": true,
+     "longFace": true
+    }
+   }
+  },
+  {
+   "role": "rohan",
+   "gender": "m",
+   "voice": "am_liam",
+   "gemini_voice": "Fenrir",
+   "persona": "Rohan, a 28-year-old Indian man, warm, expressive and emotional, natural Indian English accent",
+   "omni": "male, young adult, indian accent",
+   "style": {
+    "skin": "#c8915f",
+    "hair": "#18121a",
+    "hairStyle": "spiky",
+    "outfit": "tee",
+    "top": "#4f6f8f",
+    "pants": "#2e3442",
+    "acc": {
+     "rectGlasses": true,
+     "mole": true
+    }
+   }
+  },
+  {
+   "role": "rao",
+   "gender": "f",
+   "voice": "bf_emma",
+   "gemini_voice": "Kore",
+   "persona": "Dr. Leena Rao, a calm Indian woman doctor in her forties, Indian English accent",
+   "omni": "female, middle-aged, indian accent",
+   "style": {
+    "skin": "#a8714f",
+    "hair": "#1b1418",
+    "hairStyle": "bun",
+    "outfit": "shirt",
+    "top": "#f2f4f6",
+    "pants": "#4a5060",
+    "acc": {
+     "rectGlasses": true,
+     "glassesCol": "#8a96a4"
+    }
+   }
+  },
+  {
+   "role": "mira",
+   "gender": "f",
+   "voice": "af_sky",
+   "omni": "female, child, whisper",
+   "gemini_voice": "Leda",
+   "persona": "Mira, the ghost of a 12-year-old Indian girl, tiny breathy voice"
+  },
+  {
+   "role": "nav",
+   "gender": "f",
+   "voice": "af_nova",
+   "omni": "female, young adult, british accent",
+   "gemini_voice": "Zephyr",
+   "persona": "a car navigation voice, clear and neutral"
+  },
+  {
+   "role": "cw1",
+   "gender": "f",
+   "voice": "af_nicole",
+   "gemini_voice": "Aoede",
+   "persona": "an Indian woman office colleague in her twenties, Indian English accent",
+   "style": {
+    "skin": "#c8915f",
+    "hair": "#20161a",
+    "hairStyle": "ponytail",
+    "outfit": "tee",
+    "top": "#c8507a",
+    "pants": "#2a2a3a",
+    "acc": {}
+   }
+  },
+  {
+   "role": "cw2",
+   "gender": "m",
+   "voice": "am_eric",
+   "gemini_voice": "Puck",
+   "persona": "a cheerful Indian man office colleague, Indian English accent",
+   "style": {
+    "skin": "#a8714f",
+    "hair": "#1a1418",
+    "hairStyle": "spiky",
+    "outfit": "shirt",
+    "top": "#e8d49c",
+    "pants": "#3a3a4a",
+    "acc": {
+     "beard": true
+    }
+   }
+  },
+  {
+   "role": "cw3",
+   "gender": "f",
+   "style": {
+    "skin": "#d9a07a",
+    "hair": "#2a1a14",
+    "hairStyle": "braids",
+    "outfit": "cardigan",
+    "top": "#6a8a5a",
+    "pants": "#3a3040",
+    "acc": {}
+   }
+  }
+ ],
+ "voice_over": {
+  "mira": {
+   "omni_text": "[laughter]",
+   "echo": true,
+   "speed": 0.9,
+   "semitones": 2.0
+  }
+ },
+ "beats": [
+  {
+   "line": "Carefully, buddy! What happened to you? You look so tired.",
+   "speaker": "rohan",
+   "react": "none",
+   "style": "a quick reflex 'carefully!', then genuinely concerned and caring, a friend checking on his buddy",
+   "scene": "gOffice",
+   "mode": "day",
+   "cam": "close",
+   "focus": "rohan",
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": 1,
+     "x": 820,
+     "tiltR": 0.5
+    },
+    "rohan": {
+     "expr": "worried",
+     "look": -1,
+     "x": 1160,
+     "cupHold": true
+    }
+   }
+  },
+  {
+   "line": "Something is sitting on Arjun's shoulder... Ohhh God. I have to inform him. He is in danger.",
+   "speaker": "rohan",
+   "react": "face",
+   "style": "terrified, breathless whisper, voice shaking, panicking more with every word",
+   "cue": "tension",
+   "heart": true,
+   "scene": "gOffice",
+   "mode": "night",
+   "cam": "close",
+   "focus": "rohan",
+   "crew": {
+    "rohan": {
+     "expr": "realize",
+     "look": 0,
+     "x": 960,
+     "expr2": "dread",
+     "pushGlasses": true,
+     "lookY": 0.4
+    }
+   },
+   "beat_word": "God"
+  },
+  {
+   "line": "Ahhh... today I feel very tired. What a stressful day.",
+   "speaker": "arjun",
+   "react": "none",
+   "style": "exhausted, heavy breath, low energy, a long tired sigh before speaking, talking to himself while carrying a heavy box up the stairs",
+   "gap": 1.4,
+   "scene": "gStairs",
+   "cam": "pan",
+   "focus": "arjun",
+   "focus2": "wide",
+   "steps": "wood",
+   "cue": "calm",
+   "nosubs": false,
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": 0.6,
+     "step": [
+      0,
+      4.4
+     ],
+     "box": true
+    }
+   },
+   "fadeIn": 12
+  },
+  {
+   "line": "Hehehe...",
+   "speaker": "mira",
+   "react": "none",
+   "nosubs": true,
+   "gain": 0.45,
+   "gap": 1.0,
+   "style": "a little girl's soft, breathy, creepy giggle, very quiet, close to the ear",
+   "scene": "gBedTop",
+   "cam": "close",
+   "focus": "dip",
+   "fan": true,
+   "dip": true,
+   "ghostSmile": true,
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": 0,
+     "sleep": true,
+     "headRoll": [
+      0,
+      0.18,
+      10,
+      50
+     ]
+    }
+   }
+  },
+  {
+   "line": "Smileeee!",
+   "speaker": "cw2",
+   "react": "none",
+   "style": "cheerful photographer, a long stretched playful 'smileee', loud",
+   "scene": "gOffice",
+   "mode": "diwali",
+   "cam": "wide",
+   "focus": "wide",
+   "crew": {
+    "cw1": {
+     "x": 470,
+     "expr": "relieved"
+    },
+    "cw2": {
+     "x": 720,
+     "expr": "relieved",
+     "armR": 0.5
+    },
+    "rohan": {
+     "expr": "relieved",
+     "look": 0,
+     "x": 960,
+     "armR": 0.4
+    },
+    "arjun": {
+     "expr": "tired",
+     "look": 0,
+     "x": 1200,
+     "tiltR": 0.8,
+     "smileAt": 40
+    },
+    "cw3": {
+     "x": 1440,
+     "expr": "relieved"
+    }
+   }
+  },
+  {
+   "line": "Save... yourself.",
+   "speaker": "rohan",
+   "react": "none",
+   "style": "barely able to speak, weak, hoarse, injured, a desperate faint whisper",
+   "gain": 0.8,
+   "gap": 0.8,
+   "scene": "gHospBed",
+   "monitor": true,
+   "bpm": 92,
+   "cam": "close",
+   "focus": "face",
+   "crew": {
+    "rohan": {
+     "expr": "dread",
+     "look": -0.6,
+     "neckBrace": true,
+     "noGlasses": true,
+     "freeze": true,
+     "lookY": -0.4
+    }
+   }
+  }
+ ]
+}

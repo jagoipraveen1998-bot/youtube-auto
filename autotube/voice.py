@@ -162,6 +162,60 @@ def _omnivoice(text: str, vcfg: dict, out: Path) -> tuple[float, list[dict]]:
     return media_duration(out), words
 
 
+# ---------------------------------------------------------------- Gemini TTS (acted, emotional delivery)
+_GEMINI_OFF = False
+GEMINI_TTS_MODELS = ["gemini-3.1-flash-tts-preview", "gemini-2.5-flash-preview-tts", "gemini-2.5-pro-preview-tts"]
+
+
+def _trim(a, thr=0.012, pad=0.04):
+    import numpy as np
+    idx = np.flatnonzero(np.abs(a) > thr)
+    if not len(idx):
+        return a
+    p = int(pad * SR)
+    return a[max(0, idx[0] - p): min(len(a), idx[-1] + p)]
+
+
+def _gemini_tts(text: str, vcfg: dict, out: Path) -> tuple[float, list[dict]]:
+    """An acted line: Gemini TTS performs the words with the character's voice and this line's emotion."""
+    import os
+    import time
+    import numpy as np
+    import soundfile as sf
+    from google import genai
+    from google.genai import types
+
+    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+    who = vcfg.get("persona", "a young man")
+    style = vcfg.get("style") or "natural, conversational"
+    prompt = (f"Voice: {who}. Delivery: {style}. Perform it like a real person reacting in the moment, "
+              f"not like a narrator. Speak exactly these words and nothing else:\n{text}")
+    last = None
+    for attempt in range(8):
+        model = GEMINI_TTS_MODELS[attempt % len(GEMINI_TTS_MODELS)]
+        try:
+            r = client.models.generate_content(model=model, contents=prompt, config=types.GenerateContentConfig(
+                response_modalities=["AUDIO"],
+                speech_config=types.SpeechConfig(voice_config=types.VoiceConfig(
+                    prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name=vcfg.get("gemini_voice", "Charon"))))))
+            data = r.candidates[0].content.parts[0].inline_data.data
+            a = np.frombuffer(data, dtype="<i2").astype(np.float32) / 32768.0
+            a = _trim(a)
+            if len(a) < SR * 0.2:
+                raise RuntimeError("Gemini returned almost no audio")
+            wav = out.with_name(out.stem + "_g.wav")
+            sf.write(wav, a, SR)
+            words = _estimate_words(text, a)
+            _encode(wav, out, float(vcfg.get("gemini_semitones", 0.0)))
+            wav.unlink(missing_ok=True)
+            return media_duration(out), words
+        except Exception as exc:
+            last = exc
+            log(f"Gemini TTS ({model}) attempt {attempt + 1} failed: {str(exc)[:160]}")
+            time.sleep(min(60, 6 * (attempt + 1)))
+    raise RuntimeError(f"Gemini TTS failed: {last}")
+
+
 # ---------------------------------------------------------------- Edge (backup)
 async def _speak(text: str, voice: str, rate: str, out: Path, pitch: str = "+0Hz") -> list[dict]:
     import edge_tts
@@ -199,8 +253,13 @@ def speak_words(text: str, voice: str, rate: str, pitch: str, out: Path) -> tupl
 # ---------------------------------------------------------------- what callers use
 def say(text: str, vcfg: dict, out: Path) -> tuple[float, list[dict]]:
     """Speak "text" in this character's voice. Returns (duration_seconds, word timings)."""
-    global _KOKORO_OFF, _OMNI_OFF
+    global _KOKORO_OFF, _OMNI_OFF, _GEMINI_OFF
     vcfg = vcfg or {}
+    if vcfg.get("gemini_voice") and not _GEMINI_OFF:
+        try:
+            return _gemini_tts(TAG.sub("", text).strip() if not vcfg.get("keep_tags") else text, vcfg, out)
+        except Exception as exc:
+            log(f"Gemini TTS unavailable ({exc}); this line uses the backup voice")
     if vcfg.get("omni") and not _OMNI_OFF:
         for attempt in range(2):
             try:

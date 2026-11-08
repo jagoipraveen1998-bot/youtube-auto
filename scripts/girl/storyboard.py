@@ -180,6 +180,20 @@ for b in B:
         if "raise_" in sp:
             sp["raise"] = sp.pop("raise_")
 
+# ============ Timing pass: every requested line starts at the second Praveen asked for.
+# Durations measured from the v2 render's timeline; "at" makes the renderer hold the previous shot if a line
+# arrives early, and log a warning if one is late. Indices are the beat numbers before the edits below.
+TIMING = {0: ('silent', 1.92), 1: ('gap', 0.66), 2: ('silent', 1.86), 3: ('gap', 1.97), 4: ('gap', 1.3), 5: ('silent', 2.5), 6: ('silent', 2.13), 7: ('gap', 0.5), 8: ('silent', 1.07), 9: ('gap', 0.4), 11: ('silent', 1.2), 15: ('silent', 1.0), 16: ('silent', 1.0), 18: ('silent', 4.04), 19: ('gap', 1.15), 20: ('silent', 3.83), 23: ('silent', 1.56), 25: ('silent', 1.38), 26: ('silent', 2.33), 27: ('silent', 1.78), 28: ('silent', 2.88), 32: ('silent', 1.2), 33: ('silent', 1.0), 34: ('silent', 1.0), 35: ('silent', 1.2), 36: ('silent', 2.6), 38: ('silent', 4.2), 40: ('silent', 2.98), 41: ('silent', 3.37), 42: ('silent', 3.97), 43: ('gap', 0.99), 44: ('silent', 2.95), 45: ('silent', 1.59), 48: ('silent', 2.82), 50: ('silent', 1.7), 51: ('silent', 1.7), 52: ('silent', 1.56), 54: ('gap', 0.45), 55: ('silent', 3.3), 56: ('silent', 2.13), 57: ('silent', 2.42), 60: ('silent', 1.39), 63: ('silent', 2.97), 64: ('silent', 3.09), 65: ('silent', 2.52)}
+for i, (k, v) in TIMING.items():
+    B[i][k] = v
+AT = {1: 6.3, 3: 14.0, 4: 20.0, 6: 29.0, 9: 35.0, 17: 58.0, 19: 66.0, 29: 102.0, 31: 109.0, 37: 117.0, 39: 136.0, 43: 151.0, 47: 166.0, 54: 180.0, 58: 190.0, 66: 211.0}
+for i, t in AT.items():
+    B[i]["at"] = t
+# Rohan alone in the dark office, staring at the photo on his phone, before he starts searching
+B.insert(39, dict(line="", speaker="narrator", react="none", silent=6.5, cue="tension", heart=True,
+                  **NIGHT(cam="medium", focus="rohan", crew=dict(rohan=RO(x=1180, expr="dread", phone="up", look=0.7, lookY=0.3)))))
+del B[10]                     # the stairs walk to work: cut so the office lines land on time
+
 story = {
     "storyboard": True, "film": True, "music": "drone", "scary": True, "piano": True, "score": True, "outro_laugh": False,
     "story_id": "the-girl-on-his-shoulder",

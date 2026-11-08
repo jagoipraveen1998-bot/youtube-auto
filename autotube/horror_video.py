@@ -102,14 +102,23 @@ def voice_for_speaker(beat: dict, voices: dict) -> dict:
     return voices.get(sp) or voices.get("narrator")
 
 
-def voice_lines(story: dict, voices: dict, work: Path) -> tuple[np.ndarray, list[dict]]:
+def voice_lines(story: dict, voices: dict, work: Path, intro: float = 0.0) -> tuple[np.ndarray, list[dict]]:
     """Speak each beat in its speaker's voice and join them with natural pauses."""
     from .voice import say
 
     parts, timing = [np.zeros(int(LEAD * ha.SR))], []
     t = LEAD
     beats = story["beats"]
+    late = []
     for i, b in enumerate(beats):
+        if b.get("at") is not None:               # the line must start at this time in the finished video
+            want = float(b["at"]) - intro
+            if want > t + 0.02:                   # early: hold the previous shot a little longer
+                pad = want - t
+                parts.append(np.zeros(int(pad * ha.SR)))   # shots run from start to start, so the last one holds
+                t = want
+            elif want < t - 0.5:
+                late.append(f"beat {i} '{(b.get('line') or '')[:30]}' {t - want:.1f}s late")
         if b.get("silent"):                       # an action beat with no words (a photo, a knock, a door)
             dur = float(b["silent"])
             audio = np.zeros(int(dur * ha.SR))
@@ -167,6 +176,8 @@ def voice_lines(story: dict, voices: dict, work: Path) -> tuple[np.ndarray, list
             t += gap
         if i and i % 25 == 0:
             log(f"Voiced {i}/{len(beats)} lines")
+    if late:
+        log("WARNING lines later than asked: " + "; ".join(late))
     return np.concatenate(parts), timing
 
 
@@ -334,12 +345,12 @@ def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_
     casting = cast_story(story, seed, funny=(fmt == "vertical"))
     (work / "casting.json").write_text(json.dumps(casting, indent=1), encoding="utf-8")
     log("Cast: " + ", ".join(f"{k}={v['kokoro_voice']}" for k, v in casting["voices"].items() if k != "narrator"))
+    # brand: a short logo sting before the story, the signature laugh after it
+    intro = 0.8 if fmt == "vertical" else 2.0
     if voice_file:
         voice, timing = voice_from_file(story, voice_file)
     else:
-        voice, timing = voice_lines(story, casting["voices"], work)
-    # brand: a short logo sting before the story, the signature laugh after it
-    intro = 0.8 if fmt == "vertical" else 2.0
+        voice, timing = voice_lines(story, casting["voices"], work, intro)
     outro = 3.2
     laugh = np.zeros(1) if voice_file or story.get("outro_laugh") is False else signature_laugh(work)
     story_end = intro + max(len(voice) / ha.SR, timing[-1]["end"]) + TAIL

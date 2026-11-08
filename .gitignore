@@ -7,3 +7,4 @@ token*.json
 youtube_token.txt
 output_horror/
 output_long/
+voice_cache/

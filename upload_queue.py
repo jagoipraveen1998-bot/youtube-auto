@@ -2,7 +2,8 @@
 
 data/upload_queue.json holds a list of items:
   {"run_id": "...", "artifact": "horror-short-11", "title": "...", "description": "...", "tags": [...],
-   "publish_at": "2026-11-08T18:00"   (India time; omit or past = publish straight away)}
+   "publish_at": "2026-11-08T18:00"   (India time; omit or past = publish straight away),
+   "privacy": "private"   (optional: upload private and leave it there)}
 Each run downloads and uploads items in order, stops quietly at YouTube's daily limit, and removes what went up.
 """
 import json
@@ -56,7 +57,8 @@ def main():
         desc = item.get("description") or next(art.rglob("description.txt")).read_text(encoding="utf-8")
         tags = list(dict.fromkeys(item.get("tags", []) + hcfg.get("extra_tags", [])))
         try:
-            vid = upload(video, cover, item["title"], desc, tags, ycfg, token_env="YT_HORROR_REFRESH_TOKEN",
+            icfg = dict(ycfg, youtube=dict(ycfg["youtube"], privacy=item["privacy"])) if item.get("privacy") else ycfg
+            vid = upload(video, cover, item["title"], desc, tags, icfg, token_env="YT_HORROR_REFRESH_TOKEN",
                          publish_at=publish_time(item.get("publish_at")))
         except Exception as e:  # noqa: BLE001
             if "uploadLimitExceeded" in str(e) or "exceeded the number of videos" in str(e):
@@ -64,7 +66,7 @@ def main():
                 left += queue[i:]
                 break
             raise
-        log(f"Uploaded {item['title'][:60]} -> https://youtu.be/{vid} (goes public {item.get('publish_at') or 'now'})")
+        log(f"Uploaded {item['title'][:60]} -> https://youtu.be/{vid} ({item.get('privacy') or 'goes public ' + (item.get('publish_at') or 'now')})")
         hist.setdefault("videos", []).append({"date": datetime.now(IST).strftime("%Y-%m-%d %H:%M"), "title": item["title"],
                                              "video_id": vid, "from_queue": True, "publish_at": item.get("publish_at")})
     QUEUE.write_text(json.dumps(left, indent=2, ensure_ascii=False), encoding="utf-8")

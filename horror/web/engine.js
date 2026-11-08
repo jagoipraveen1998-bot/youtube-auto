@@ -222,6 +222,8 @@ function head(o, lw, SF) {
   ctx.save();
   ctx.translate(0, -775 + (o.bob || 0));
   ctx.rotate(o.tilt || 0);
+  if ((o.acc || {}).longFace) ctx.scale(0.9, 1.1);
+  if ((o.hairStyle || '') === 'bun' && t > 0.3) SF(ell(-150, 175, 78, 70), HAIR);      // low bun behind the head
   if (t > 0.3) for (const sd of [-1, 1]) SF(ell(sd * 207 - (1 - t) * 120, 12, 38, 54), SKIN);
   if (t <= 0.3) for (const sd of [-1, 1]) SF(ell(sd * 207, 12, 38, 54), SKIN);
   const hp = ell(0, 0, 216, 248);
@@ -235,12 +237,18 @@ function head(o, lw, SF) {
   if (st === 'braids') for (const sd of [-1, 1]) { SF(ell(sd * 215, 150, 46, 120), HAIR); SF(ell(sd * 215, 290, 30, 22), acc.tie || '#d24a6a'); }
   if (st === 'ponytail' && t > 0.5) SF(ell(205, -160, 60, 130, -0.5), HAIR);
   if (st === 'bob') SF(bobPath(fy), HAIR);
+  else if (st === 'bun') SF(slickPath(fy), HAIR);
   else if (st === 'curly') SF(curlyPath(fy), HAIR);
   else if (st === 'mop') SF(mopPath(fy), HAIR);
   else if (st === 'bald') { if (t > 0.3) for (const sd of [-1, 1]) SF(ell(sd * 200, -60, 40, 70), HAIR); }
   else if (st === 'ponytail' || st === 'braids') SF(slickPath(fy), HAIR);
   else SF(hairPath(fy, (o.hairUp || 0) * 80), HAIR);
   if (acc.bow && t > 0.3) { SF(ell(-150, -210, 60, 36, -0.4), acc.bow); SF(ell(-60, -235, 60, 36, 0.4), acc.bow); SF(ell(-105, -222, 22, 22), acc.bow); }
+  if (acc.starClip && t > 0.3) {     // a yellow star hair clip above the left eyebrow
+    ctx.save(); ctx.translate(120, -150); ctx.rotate(0.25); const p = new Path2D();
+    for (let i = 0; i < 10; i++) { const r = i % 2 ? 22 : 54, a = -Math.PI / 2 + i * Math.PI / 5; i ? p.lineTo(r * Math.cos(a), r * Math.sin(a)) : p.moveTo(r * Math.cos(a), r * Math.sin(a)); }
+    p.closePath(); SF(p, acc.starClip === true ? '#f5c518' : acc.starClip); ctx.restore();
+  }
   if (acc.cap && t > 0.3) { SF(rr(-225, -275, 450, 130, [120, 120, 10, 10]), acc.cap); SF(rr(-40, -160, 300, 34, 17), acc.cap); }
   if (acc.earbud && t > 0.3) {     // white earbud in the right ear, cord running down to the chest
     ctx.strokeStyle = INK; ctx.lineWidth = 11; ctx.beginPath(); ctx.moveTo(212, 62); ctx.quadraticCurveTo(230, 220, 160, 360); ctx.stroke();
@@ -281,6 +289,9 @@ function face(o, lw, SF) {
       ctx.lineWidth = 10; ctx.beginPath(); ctx.ellipse(ex, ey + 58, 46, 34, 0, 0.2 * Math.PI, 0.8 * Math.PI); ctx.stroke();
       ctx.restore();
     }
+    if (Math.max(o.lid || 0, o.blink || 0) >= 0.97) {   // shut eyes: a soft curved line
+      ctx.lineWidth = L(lw) * 1.2; ctx.strokeStyle = INK; ctx.beginPath(); ctx.moveTo(ex - 44 * ew, ey + 6); ctx.quadraticCurveTo(ex, ey + 30, ex + 44 * ew, ey + 6); ctx.stroke();
+    } else {
     const ep = ell(ex, ey, 48 * ew, 60 * ew);
     ctx.fillStyle = o.eyeCol || '#fbf7ef'; ctx.fill(ep);
     ctx.save(); ctx.clip(ep);
@@ -296,20 +307,38 @@ function face(o, lw, SF) {
     }
     ctx.restore();
     ctx.lineWidth = L(lw); ctx.strokeStyle = INK; ctx.stroke(ep);
+    }
     // brows
     const b = o.brow || 'flat';
     let y1 = -84, y2 = -84;
     if (b === 'worry') { y1 = -108; y2 = -74; } else if (b === 'up') { y1 = -122; y2 = -116; }
     else if (b === 'sly') { y1 = -70; y2 = -100; } else if (b === 'tired') { y1 = -90; y2 = -58; }
     else if (b === 'raise') { if (sd > 0) { y1 = -128; y2 = -138; } else { y1 = -80; y2 = -76; } }
-    ctx.lineWidth = 15; ctx.lineCap = 'round'; ctx.strokeStyle = INK;
-    ctx.beginPath(); ctx.moveTo(sd * 40, y1 - (ew - 1) * 60); ctx.lineTo(sd * 124, y2 - (ew - 1) * 60); ctx.stroke();
+    const hb = (o.acc || {}).heavyBrows;
+    if (hb && b === 'flat') { y1 = -80; y2 = -80; }
+    ctx.lineWidth = hb ? 26 : 15; ctx.lineCap = hb ? 'butt' : 'round'; ctx.strokeStyle = INK;
+    ctx.beginPath(); ctx.moveTo(sd * (hb ? 30 : 40), y1 - (ew - 1) * 60); ctx.lineTo(sd * (hb ? 134 : 124), y2 - (ew - 1) * 60); ctx.stroke();
+    ctx.lineCap = 'round';
   }
   const acc = o.acc || {};
   if (acc.cheeks) for (const sd of [-1, 1]) { ctx.fillStyle = 'rgba(232,96,120,0.55)'; ctx.beginPath(); ctx.ellipse(sd * 120, 100, 44, 28, 0, 0, 7); ctx.fill(); }
   if (acc.freckles) { ctx.fillStyle = 'rgba(120,60,30,0.55)'; for (const sd of [-1, 1]) for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.arc(sd * (70 + (i % 3) * 24), 82 + Math.floor(i / 3) * 20 + (i % 2) * 6, 6, 0, 7); ctx.fill(); } }
   if (acc.crease) { ctx.strokeStyle = 'rgba(90,40,40,0.55)'; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(-170, 40); ctx.quadraticCurveTo(-130, 70, -150, 120); ctx.moveTo(-140, 30); ctx.quadraticCurveTo(-105, 60, -118, 105); ctx.stroke(); }
   if (acc.cracks) { ctx.strokeStyle = 'rgba(60,40,50,0.7)'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(60, -240); ctx.lineTo(90, -150); ctx.lineTo(70, -110); ctx.lineTo(110, -40); ctx.moveTo(90, -150); ctx.lineTo(130, -130); ctx.stroke(); }
+  if (acc.mole) { ctx.fillStyle = '#4a2a22'; ctx.beginPath(); ctx.arc(acc.mole === 'right' ? -96 : 96, 92, 11, 0, 7); ctx.fill(); }
+  if (acc.creaseL || acc.creaseR) {          // dimpled smile lines, one cheek at a time
+    ctx.strokeStyle = 'rgba(70,40,50,0.75)'; ctx.lineWidth = 8; ctx.lineCap = 'round';
+    for (const [sd, k] of [[-1, acc.creaseR || 0], [1, acc.creaseL || 0]]) { if (k <= 0.02) continue;
+      ctx.globalAlpha = clamp(k); ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(sd * 60, 128); ctx.quadraticCurveTo(sd * 72, 142, sd * 62, 156); ctx.stroke(); }
+    ctx.globalAlpha = 1;
+  }
+  if (acc.rectGlasses) {
+    ctx.strokeStyle = acc.glassesCol || INK; ctx.lineWidth = 12;
+    for (const sd of [-1, 1]) { ctx.beginPath(); ctx.roundRect(sd * 84 - 72, -44, 144, 104, 16); ctx.stroke(); }
+    ctx.beginPath(); ctx.moveTo(-12, -4); ctx.quadraticCurveTo(0, -14, 12, -4); ctx.stroke();
+    if (acc.glare) { ctx.save(); ctx.globalAlpha = clamp(acc.glare); ctx.fillStyle = '#fffbe8'; for (const sd of [-1, 1]) { ctx.beginPath(); ctx.roundRect(sd * 84 - 70, -42, 140, 100, 16); ctx.fill(); } ctx.restore(); }
+    if (acc.cracked) { ctx.strokeStyle = 'rgba(240,240,255,0.8)'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(40, -40); ctx.lineTo(80, 10); ctx.lineTo(70, 40); ctx.moveTo(80, 10); ctx.lineTo(130, 20); ctx.stroke(); }
+  }
   if (acc.glasses) {
     ctx.strokeStyle = INK; ctx.lineWidth = 12;
     for (const sd of [-1, 1]) { ctx.beginPath(); ctx.ellipse(sd * 84, 6, 70, 66, 0, 0, 7); ctx.stroke(); }

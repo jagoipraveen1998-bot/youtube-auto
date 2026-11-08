@@ -317,7 +317,7 @@ function camFor(S, sh, f) {
 
 // ---------- frame ----------
 function dust(f, sh) {   // slow motes drifting in the light: something always moves
-  if (['phone', 'calendar', 'phone2', 'selfie'].includes(sh.scene)) return;
+  if (['phone', 'calendar', 'phone2', 'selfie', 'black', 'gScreen', 'gCall', 'gPhoto'].includes(sh.scene) || sh.nodust) return;
   ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = 'lighter';
   for (let i = 0; i < 26; i++) {
     const x = (rnd(i * 3.1) * W + f * (0.4 + rnd(i) * 0.8) + Math.sin(f * 0.02 + i) * 30) % W;
@@ -468,6 +468,36 @@ function selfieUI(f, sh) {         // the phone's camera view around the selfie,
   ctx.restore();
 }
 
+// ---------- film mode: 2.39:1 letterbox, quiet subtitles in the bar, title cards ----------
+const BAR = P.film ? Math.round((H - W / 2.39) / 2) : 0;
+function filmSubs(f, sh) {
+  if (!sh.caps || !sh.caps.length || sh.nosubs) return;
+  const a = sh.caps[0][0] - 2, b = sh.caps[sh.caps.length - 1][1] + 8;
+  if (f < a || f > b) return;
+  const words = sh.caps.map(w => w[2]).join(' ');
+  const al = clamp((f - a) / 4) * (1 - clamp((f - b + 4) / 4));
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = al;
+  ctx.font = `${sh.subItalic ? 'italic ' : ''}38px "DejaVu Sans"`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = sh.subCol || '#ecebe6'; ctx.shadowColor = 'rgba(0,0,0,0.9)'; ctx.shadowBlur = 6;
+  const lines = []; let cur = '';
+  for (const w of words.split(' ')) { const t = cur ? cur + ' ' + w : w; if (ctx.measureText(t).width > W * 0.8) { lines.push(cur); cur = w; } else cur = t; }
+  lines.push(cur);
+  const y0 = H - BAR / 2 - (lines.length - 1) * 23;
+  lines.forEach((l, i) => ctx.fillText(l, W / 2, y0 + i * 46));
+  ctx.restore();
+}
+function titleCard(f, sh) {
+  const tc = sh.titleCard, t = (f - sh.a) / Math.max(1, sh.b - sh.a);
+  const al = ss(clamp(t / 0.25)) * (1 - ss(clamp((t - 0.75) / 0.25)));
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = al; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#e9e4da'; ctx.font = `${Math.round(W / 26)}px "DejaVu Serif"`;
+  const sp = tc.text.split('').join(String.fromCharCode(8202));
+  ctx.fillText(sp, W / 2 + (rnd(f) - 0.5) * 2 * (t < 0.3 ? 1 : 0), H / 2 - 10);
+  if (tc.sub) { ctx.font = `${Math.round(W / 70)}px "DejaVu Sans"`; ctx.fillStyle = '#9a958c'; ctx.fillText(tc.sub, W / 2, H / 2 + W / 30); }
+  ctx.restore();
+}
+function letterbox() { if (!BAR) return; ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, BAR); ctx.fillRect(0, H - BAR, W, BAR); ctx.restore(); }
+
 window.renderFrame = function (f) {
   F = f; ctx = MAIN;
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; ctx.filter = 'none';
@@ -511,6 +541,12 @@ window.renderFrame = function (f) {
     g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, `rgba(0,0,0,${sh.vig})`);
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); ctx.restore();
   }
+  if (sh.fadeIn) flash(1 - ss(seg(f, sh.a, sh.a + sh.fadeIn)), '#000');
+  if (sh.fadeOut) flash(ss(seg(f, sh.b - sh.fadeOut, sh.b)), '#000');
+  if (sh.titleCard) titleCard(f, sh);
+  if (P.film && ['shutter', 'timer'].includes(sh.react) && sh.beat != null && f >= sh.beat && f < sh.beat + 10) flash(1 - (f - sh.beat) / 10);
+  if (sh.whiteout && sh.beat != null && f >= sh.beat) flash(0.95 * ss(bT(f, sh, 24)), '#fffaf0');
+  if (P.film) { staticNoise(seg(f, END - 14, END - 1) * 0.9); grain(0.09); letterbox(); filmSubs(f, sh); return; }
   if (P.series) seriesLabel(f, sh);
   if (P.captions) drawCaptions(f, sh);
   if (sh.onscreen) drawOnscreen(f, sh);

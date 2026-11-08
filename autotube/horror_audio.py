@@ -273,6 +273,67 @@ def sfx_track(syn: Synth, plan: dict) -> np.ndarray:
         elif react == "breath":
             for k in range(3):
                 n = int(0.9 * SR); _add(sfx, lp(bp(syn.noise(n), 300, 2500), 1800) * np.clip(np.sin(np.pi * np.arange(n) / n), 0, None) ** 1.5, fr(a) + 0.2 + k * 1.15, 0.35)
+        elif react == "grab":               # a hand closing on nothing, a stumble, a shoulder hitting the wall
+            _add(sfx, syn.whoosh(0.35, 400, 3000), tb - 0.15, 0.5)
+            _add(sfx, lp(syn.thud(70, 0.35), 700), tb + 0.38, 0.9); _add(sfx, wood_creak_short(syn), tb + 0.42, 0.5)
+            m = int(0.45 * SR); tt = np.arange(m) / SR
+            _add(sfx, bp(syn.noise(m), 700, 3500) * np.clip(np.sin(np.pi * tt / tt[-1]), 0, None) ** 0.6 * np.exp(-tt * 3), tb + 0.05, 0.55)
+        elif react == "dip":                # mattress springs giving under a weight that isn't there
+            m = int(1.6 * SR); tt = np.arange(m) / SR
+            spring = np.sin(2 * np.pi * (95 - 30 * tt) * tt) * (1 + 0.4 * np.sin(2 * np.pi * 9 * tt)) * np.exp(-tt * 1.6)
+            _add(sfx, lp(spring + bp(syn.noise(m), 200, 1200) * 0.5 * np.exp(-tt * 2), 1400), tb, 1.0)
+            for k in range(3): _add(sfx, wood_creak_short(syn), tb + 0.2 + k * 0.33, 0.35)
+        elif react == "catch":              # the cup slipping, caught: a swish and a ceramic knock
+            _add(sfx, syn.whoosh(0.3, 600, 4000), tb, 0.6)
+            m = int(0.3 * SR); tt = np.arange(m) / SR
+            _add(sfx, sum(np.sin(2 * np.pi * fq * tt) for fq in (1460, 2930, 4100)) / 3 * np.exp(-tt * 30), tb + 0.24, 0.9)
+            _add(sfx, lp(syn.thud(140, 0.15), 1500), tb + 0.24, 0.5)
+        elif react == "timer":              # self-timer beeps, then the shutter and the flash
+            for k, dt in enumerate((-1.5, -1.0, -0.5, -0.25, -0.12)):
+                _add(sfx, syn.beep(2050 if k < 3 else 2400, 0.06, square=False), tb + dt, 0.45)
+            _add(sfx, syn.click(), tb, 1.0); _add(sfx, hp(syn.noise(int(0.09 * SR)), 2500) * np.exp(-np.arange(int(0.09 * SR)) / SR * 40), tb + 0.03, 0.8)
+            m = int(0.5 * SR); tt = np.arange(m) / SR
+            _add(sfx, np.sin(2 * np.pi * np.cumsum(np.linspace(900, 5200, m)) / SR) * np.exp(-tt * 9) * 0.25, tb - 0.4, 0.4)
+        elif react == "zoom":               # pinch-zoom: a soft digital tick and a low pull
+            _add(sfx, syn.beep(3200, 0.02, square=False), tb, 0.3)
+            m = int(1.2 * SR); tt = np.arange(m) / SR
+            _add(sfx, lp(syn.noise(m), 300) * (tt / tt[-1]) ** 2, tb, 0.6)
+        elif react in ("reveal", "boom"):   # reversed swell into a sub boom; reveal adds a dissonant string stab and a high screech
+            m = int(1.6 * SR); tt = np.arange(m) / SR
+            rev = syn.reverb(bp(syn.noise(m), 300, 6000), 1.4, 0.6)[::-1] * (tt / tt[-1]) ** 3
+            _add(sfx, rev, tb - 1.6, 0.8)
+            _add(sfx, lp(syn.thud(30, 2.6), 160) * 2.2, tb, 1.2)
+            _add(sfx, syn.reverb(lp(syn.thud(42, 1.6), 300), 2.6, 0.5), tb, 0.9)
+            if react == "reveal":
+                _add(sfx, syn.reverb(bowed([55.0, 58.27, 82.41, 87.31, 116.5], 3.5, 0.02), 3.0, 0.5), tb, 0.9)
+                m = int(2.6 * SR); tt = np.arange(m) / SR
+                screech = sum(np.sin(2 * np.pi * (fq + 18 * np.sin(2 * np.pi * 6.5 * tt)) * tt) for fq in (1975, 2093, 2217)) / 3
+                _add(sfx, syn.reverb(screech * np.exp(-tt * 1.3) * np.minimum(1, tt / 0.04), 2.4, 0.5), tb, 0.35)
+        elif react == "horn":               # one hard blast of a horn, cut short by the impact
+            m = int(0.9 * SR); tt = np.arange(m) / SR
+            horn = sum(np.sign(np.sin(2 * np.pi * fq * tt)) for fq in (415, 523)) * 0.5
+            _add(sfx, bp(horn, 300, 3500) * np.minimum(1, tt / 0.02), tb, 1.0)
+            ti = tb + 0.82
+            _add(sfx, lp(syn.thud(38, 1.4), 300) * 2.5, ti, 1.3); _add(sfx, syn.thud(70, 0.6), ti, 1.0)
+            m = int(1.2 * SR); tt = np.arange(m) / SR
+            _add(sfx, bp(syn.noise(m), 150, 2500) * np.exp(-tt * 4) * 1.4, ti, 1.0)            # metal crunch
+            for k in range(26):                                                                # glass
+                n2 = int(0.05 * SR); _add(sfx, bp(syn.noise(n2), 3000, 11000) * np.exp(-np.arange(n2) / SR * 60), ti + 0.05 + k * 0.035 + 0.02 * np.sin(k * 7), 0.7 * (1 - k / 30))
+        elif react == "chair":              # a chair scraping across a hard floor
+            m = int(0.45 * SR); tt = np.arange(m) / SR
+            sq = np.sin(2 * np.pi * (420 + 120 * np.sin(2 * np.pi * 14 * tt)) * tt) * 0.4 + bp(syn.noise(m), 800, 3000)
+            _add(sfx, bp(sq, 300, 4000) * np.clip(np.sin(np.pi * tt / tt[-1]), 0, None) ** 0.5, tb, 0.9)
+        elif react == "ringback":           # the line ringing on the other end
+            for k in range(3):
+                for dt in (0.0, 0.6):
+                    m = int(0.4 * SR); tt = np.arange(m) / SR
+                    _add(sfx, (np.sin(2 * np.pi * 400 * tt) + np.sin(2 * np.pi * 450 * tt)) * 0.3 * np.minimum(1, np.minimum(tt, tt[-1] - tt) / 0.01), tb + k * 3.0 + dt, 0.45)
+        elif react == "vm":                 # voicemail tone
+            _add(sfx, syn.beep(1000, 0.45, square=False), tb, 0.5)
+        elif react == "keys":
+            for k in range(6): n2 = int(0.06 * SR); _add(sfx, bp(syn.noise(n2), 3000, 9000) * np.exp(-np.arange(n2) / SR * 50), tb + k * 0.05, 0.5)
+        elif react == "boxdown":
+            _add(sfx, lp(syn.thud(85, 0.3), 900), tb, 0.9); _add(sfx, bp(syn.noise(int(0.2 * SR)), 300, 2000) * 0.4, tb, 0.6)
         elif react == "text_change":
             for k in range(4): _add(sfx, hp(syn.noise(int(0.04 * SR)), 1000), tb - 0.05 + k * 0.05, 0.5)
         if sh.get("twist"):
@@ -302,6 +363,23 @@ def sfx_track(syn: Synth, plan: dict) -> np.ndarray:
         _add(sfx, hp(syn.noise(int(0.3 * SR)), 1500), end - 0.32, 0.5)
     sfx[int((end - 0.02) * SR):] = 0
     return sfx
+
+
+def wood_creak_short(syn: Synth) -> np.ndarray:
+    n = int(0.3 * SR); t = np.arange(n) / SR
+    return bp(np.sin(2 * np.pi * (230 + 70 * np.sin(2 * np.pi * 5 * t)) * t) * (1 + syn.noise(n) * 0.3), 150, 2200) * np.sin(np.pi * t / t[-1])
+
+
+def bowed(freqs, dur=3.0, vib=0.01, attack=0.6):
+    """A bowed string section: rich harmonics, slow bow attack, a little vibrato, slightly detuned pairs."""
+    n = int(dur * SR); t = np.arange(n) / SR
+    out = np.zeros(n)
+    for f0 in freqs:
+        for det in (1.0, 1.004):
+            ph = 2 * np.pi * f0 * det * (t + vib / (2 * np.pi * 5.2) * np.sin(2 * np.pi * 5.2 * t))
+            out += sum(np.sin(h * ph) / h for h in range(1, 8))
+    out = lp(out / (2 * len(freqs)), 2400)
+    return out * np.minimum(1, t / attack) * np.minimum(1, (dur - t) / 0.8)
 
 
 NUMBERS = {w: i for i, w in enumerate("zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen".split())}
@@ -400,6 +478,35 @@ def story_sfx(syn: Synth, plan: dict) -> np.ndarray:
         if sh.get("gasp"):
             m = int(0.5 * SR); tt = np.arange(m) / SR
             _add(out, bp(syn.noise(m), 600, 4000) * np.clip(np.sin(np.pi * tt / tt[-1]), 0, None) ** 0.5 * np.exp(-tt * 2), sh["a"] / FPS + sh["gasp"], 1.0)
+        if sh.get("fan"):                               # a ceiling fan that clicks once every turn
+            tt = sh["a"] / FPS + 0.1
+            while tt < sh["b"] / FPS:
+                m = int(0.035 * SR); _add(out, bp(syn.noise(m), 1200, 5000) * np.exp(-np.arange(m) / SR * 120), tt, 0.5)
+                _add(out, lp(syn.thud(160, 0.06), 1400), tt, 0.25); tt += 0.62
+        if sh.get("monitor"):                           # hospital heart monitor
+            gap = 60.0 / float(sh.get("bpm", 74)); tt = sh["a"] / FPS + 0.2
+            fade_in = sh.get("monitor") == "fadein"
+            while tt < sh["b"] / FPS - 0.05:
+                k = min(1.0, (tt - sh["a"] / FPS) / 2.5) if fade_in else 1.0
+                _add(out, syn.beep(988, 0.11, square=False) * 0.6, tt, 0.7 * k); tt += gap
+        if sh.get("indicator"):                         # turn-signal ticking
+            tt = sh["a"] / FPS + 0.2
+            while tt < sh["b"] / FPS:
+                for dt, fq in ((0, 2600), (0.36, 1900)):
+                    m = int(0.02 * SR); _add(out, bp(syn.noise(m), fq - 600, fq + 600) * np.exp(-np.arange(m) / SR * 200), tt + dt, 0.5)
+                tt += 0.72
+        if sh.get("tinnitus"):                          # ears ringing after the crash
+            m = int((sh["b"] - sh["a"]) / FPS * SR); tt = np.arange(m) / SR
+            _add(out, np.sin(2 * np.pi * 4700 * tt) * 0.12 * np.exp(-tt / max(0.5, tt[-1] * 0.45)), sh["a"] / FPS, 1.0)
+        if sh.get("steps"):                             # footsteps across the shot
+            kind, gap = sh["steps"], 0.55
+            tt = sh["a"] / FPS + 0.2
+            while tt < (sh.get("stepsEnd") or sh["b"]) / FPS - 0.2:
+                _add(out, (wood_step if kind == "wood" else concrete_step)(syn, rng), tt, 0.7); tt += gap
+        if sh.get("typing"):
+            tt = sh["a"] / FPS + 0.3
+            while tt < sh["b"] / FPS - 0.3:
+                m = int(0.03 * SR); _add(out, bp(syn.noise(m), 1500, 6000) * np.exp(-np.arange(m) / SR * 150), tt, 0.4); tt += rng.uniform(0.08, 0.22)
         if sh.get("breathe"):
             t0, t1 = sh["a"] / FPS, sh["b"] / FPS
             tt = t0 + 0.3
@@ -442,6 +549,26 @@ def ambience_track(syn: Synth, plan: dict) -> np.ndarray:
                 i = int((0.8 + k * 2.3) * SR); m = int(0.06 * SR)
                 if i + m < n: tone[i:i + m] += np.sin(2 * np.pi * 1400 * np.arange(m) / SR) * np.exp(-np.arange(m) / SR * 60) * 0.8
             _add(amb, tone * fade, a, 1.0)
+        sc = sh["scene"]
+        if sc in ("gStairs", "gBedTop", "gBedSide") and not sh.get("office"):     # a rented house: low room tone, far traffic
+            tone = lp(rng.standard_normal(n), 160) * 0.8 + lp(rng.standard_normal(n), 600) * 0.12
+            _add(amb, tone * fade, a, 1.0)
+        if sc == "gOffice" or (sc == "gStairs" and sh.get("office")):            # air-conditioning; chatter by day; Diwali crackers far away
+            hum = lp(rng.standard_normal(n), 250) * 0.7 + lp(np.sin(2 * np.pi * 60 * t), 200) * 0.05
+            mode = sh.get("mode", "day")
+            if mode in ("day", "diwali", "meeting"):
+                hum += bp(rng.standard_normal(n), 300, 1800) * (0.5 + 0.5 * np.sin(2 * np.pi * 0.7 * t) * np.sin(2 * np.pi * 1.9 * t)) * (0.6 if mode == "diwali" else 0.3)
+            if mode == "diwali":
+                for k in range(int((b - a) / 1.7)):
+                    i = int((0.5 + k * 1.7 + rng.uniform(-0.4, 0.4)) * SR); m = int(0.25 * SR)
+                    if 0 <= i < n - m: hum[i:i + m] += lp(rng.standard_normal(m) * np.exp(-np.arange(m) / SR * 25), 1200) * 1.5
+            _add(amb, hum * fade, a, 1.0)
+        if sc in ("gExam", "gHospPov", "gHospBed"):                                 # hospital: ventilation, a far-off page
+            tone = lp(rng.standard_normal(n), 300) * 0.7 + np.sin(2 * np.pi * 50 * t) * 0.03
+            _add(amb, tone * fade, a, 1.0)
+        if sc in ("gDrive", "gSign"):                                               # the car on a night road
+            road = lp(rng.standard_normal(n), 220) * 2.0 + np.sin(2 * np.pi * 38 * t) * 0.3 + bp(rng.standard_normal(n), 900, 3000) * 0.1
+            _add(amb, road * fade, a, 1.0)
         if sh.get("radio"):
             mel = [0, 4, 7, 9, 7, 4, 2, 4]
             out = np.zeros(n)
@@ -482,6 +609,18 @@ def scare_bed(syn: Synth, plan: dict) -> np.ndarray:
                 w *= 0.6 + 0.4 * np.sign(np.sin(2 * np.pi * rng.uniform(5, 9) * np.arange(m) / SR))   # syllable-like chopping
                 _add(out, w * env, tt, 0.9)
                 tt += rng.uniform(0.9, 1.8)
+    for sh in plan["shots"]:                           # low bowed strings under the tense shots (and a high trembling line)
+        k = float(sh.get("strings") or 0)
+        if k <= 0:
+            continue
+        a, b = sh["a"] / FPS, sh["b"] / FPS
+        dur = b - a + 1.2
+        low = bowed([55.0, 58.27] if k < 0.7 else [55.0, 58.27, 61.74], dur, 0.012, 1.2)
+        _add(out, low * 2.2 * k, a, 1.0)
+        if k >= 0.6:
+            m = int(dur * SR); tt = np.arange(m) / SR
+            hi = sum(np.sin(2 * np.pi * fq * tt) for fq in (1661, 1760)) * (0.6 + 0.4 * np.sin(2 * np.pi * 11 * tt)) * np.minimum(1, tt / 1.5) * np.minimum(1, (dur - tt) / 0.6)
+            _add(out, hi * 0.25 * k, a, 1.0)
     tw = next((s for s in plan["shots"] if s.get("twist") and s.get("beat") is not None), None)
     if tw:                                             # metallic riser for 3 s into the reveal, then a sub hit
         tb = tw["beat"] / FPS
@@ -524,7 +663,9 @@ def make_soundtrack(voice: np.ndarray, plan: dict, work: Path, seed: int) -> Pat
     vr, vp = _grms(v), np.abs(v).max()
     m *= (vr * (0.32 if drone else 0.5)) / max(_grms(m), 1e-9)
     s *= (vr * 0.5) / max(_grms(s), 1e-9)
-    if np.abs(s).max() > 0.7 * vp:
+    if plan.get("film"):                         # films: soft-limit only the loud hits so quiet effects stay audible
+        s = np.tanh(s / (0.7 * vp)) * 0.7 * vp
+    elif np.abs(s).max() > 0.7 * vp:
         s *= 0.7 * vp / np.abs(s).max()
     db = lambda x: 20 * np.log10(max(x, 1e-9))
     log(f"Mix: music {db(_grms(m)) - db(vr):+.1f} dB vs voice, sfx {db(_grms(s)) - db(vr):+.1f} dB, "
@@ -545,7 +686,13 @@ def make_soundtrack(voice: np.ndarray, plan: dict, work: Path, seed: int) -> Pat
             pn *= (vr * 0.3) / max(_grms(pn), 1e-9)
             sc = sc + pn * duck_curve(v, 6.0)
             log("Cold piano added over the drone")
-        mix = v + m + s + amb + sc
+        mute = np.ones(n)
+        for x in plan["shots"]:                     # silence after the crash: everything but the cue drops out
+            if x.get("mute"):
+                i0, i1 = int(x["a"] / FPS * SR), min(n, int(x["b"] / FPS * SR))
+                mute[i0:i1] = 0
+        k = int(0.04 * SR); mute = np.convolve(mute, np.ones(k) / k, mode="same")
+        mix = v + (m + amb + sc) * mute + s
     else:
         mix = v + m + s + amb
     mix = np.nan_to_num(mix, nan=0.0, posinf=0.0, neginf=0.0)

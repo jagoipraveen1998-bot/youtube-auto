@@ -1,0 +1,21 @@
+name: Instagram token check
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the Instagram token (reads the account name only, posts nothing)
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: |
+          if [ -z "$IG_ACCESS_TOKEN" ]; then echo "IG_ACCESS_TOKEN secret is missing"; exit 1; fi
+          curl -sS -G "https://graph.facebook.com/v22.0/17841479893920110" \
+            --data-urlencode "fields=username,media_count" \
+            --data-urlencode "access_token=$IG_ACCESS_TOKEN" | tee out.json
+          grep -q '"username"' out.json
+          curl -sS -G "https://graph.facebook.com/v22.0/17841479893920110/content_publishing_limit" \
+            --data-urlencode "fields=quota_usage,config" \
+            --data-urlencode "access_token=$IG_ACCESS_TOKEN"

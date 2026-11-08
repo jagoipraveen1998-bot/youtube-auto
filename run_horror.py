@@ -95,6 +95,14 @@ def main():
     hist_path.write_text(json.dumps(hist, indent=2, ensure_ascii=False), encoding="utf-8")
     log(f"Horror Short uploaded: https://youtube.com/shorts/{video_id}")
 
+    # the same Short goes to Instagram as a Reel (skipped quietly if IG_ACCESS_TOKEN is not set)
+    from autotube.instagram import ig_caption, publish_reel
+    ig_id = publish_reel(video, ig_caption(title, story.get("description", ""),
+                                           hcfg.get("instagram_hashtags", ["#horror", "#reels"])))
+    if ig_id:
+        hist["videos"][-1]["instagram_id"] = ig_id
+        hist_path.write_text(json.dumps(hist, indent=2, ensure_ascii=False), encoding="utf-8")
+
 
 if __name__ == "__main__":
     main()

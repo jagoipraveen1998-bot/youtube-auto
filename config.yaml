@@ -181,4 +181,5 @@ horror:
     made_for_kids: false             # horror is not for kids
     contains_synthetic_media: false  # clearly animated, no realistic people
   hashtags: ["#shorts", "#horror", "#scary", "#animation", "#creepy"]
+  instagram_hashtags: ["#horrorstory", "#animatedhorror", "#scarystories", "#creepy", "#horror", "#animation", "#creepycartoontales", "#reels"]
   extra_tags: ["horror shorts", "animated horror", "scary stories", "creepy cartoon", "horror animation", "scary shorts"]

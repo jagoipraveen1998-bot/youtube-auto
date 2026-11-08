@@ -1,11 +1,14 @@
-name: Horror long video (your script)
+name: Horror long video (daily auto, or your script)
 
 on:
+  schedule:
+    - cron: "13 10 * * *"     # every day 15:43 IST: Gemini writes a new 4-5 minute story, published when ready (~17:30 IST)
   workflow_dispatch:
     inputs:
       script:
-        description: "Script file name in the scripts/ folder (e.g. the_doll.txt)"
-        required: true
+        description: "Script file name in the scripts/ folder (e.g. the_doll.txt). Leave empty to let Gemini write one"
+        required: false
+        default: ""
       title:
         description: "Optional: your own YouTube title"
         required: false
@@ -77,7 +80,7 @@ jobs:
           TITLE: ${{ inputs.title }}
           MODE: ${{ inputs.mode }}
         run: |
-          ARGS=("$SCRIPT")
+          if [ -n "$SCRIPT" ]; then ARGS=("$SCRIPT"); else ARGS=(--auto); fi
           [ -n "$TITLE" ] && ARGS+=(--title "$TITLE")
           [ "$MODE" = "no-upload" ] && ARGS+=(--no-upload)
           python run_horror_long.py "${ARGS[@]}"
@@ -92,15 +95,16 @@ jobs:
             output_long/cover.jpg
             output_long/description.txt
             output_long/story.json
+            output_long/*.txt
           retention-days: 3
           if-no-files-found: ignore
 
       - name: Save history
-        if: success() && inputs.mode == 'full'
+        if: success() && inputs.mode != 'no-upload'
         run: |
           git config user.name "autotube-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/horror_history.json 2>/dev/null || true
+          git add data/horror_long_history.json data/horror_history.json 2>/dev/null || true
           git diff --cached --quiet && exit 0
           git commit -m "Save long video history for run ${GITHUB_RUN_NUMBER}"
           for i in 1 2 3 4 5; do

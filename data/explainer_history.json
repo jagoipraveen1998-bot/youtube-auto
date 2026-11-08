@@ -10,7 +10,8 @@
     "how a microwave oven heats food from the inside out",
     "how a rocket steers when there is nothing to push against",
     "how a search engine finds a page in a fraction of a second",
-    "how face unlock tells you from a photograph of you"
+    "how face unlock tells you from a photograph of you",
+    "how barcodes and QR codes survive being damaged"
   ],
   "videos": [
     {
@@ -78,6 +79,12 @@
       "title": "How Face Unlock Tells You From a Photograph of You",
       "video_id": "iEKAMdBBCRg",
       "length": "04:13"
+    },
+    {
+      "date": "2026-11-09",
+      "title": "How Barcodes and QR Codes Survive Being Damaged",
+      "video_id": "t8YrM8uMR54",
+      "length": "04:22"
     }
   ]
 }

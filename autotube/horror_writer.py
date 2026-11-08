@@ -41,7 +41,7 @@ Style: creepy AND funny, never gory. A cartoon everyman narrates in the first pe
 (think: a hero who is scared but complains about the wrong things). Aim for at least two real laughs: an absurd
 detail, a deadpan line, or the villain being petty, polite or ridiculous. A paradox hook, escalating unease with one or two
 genuinely funny beats (a silly reaction, a deadpan line, a misunderstanding), a pivot, and an ironic twist in the very
-last words that is both creepy and a little funny. Characters TALK: use 2 to 4 short dialogue lines (the hero, the
+last words that is both creepy and a little funny. Characters TALK: use 4 to 7 short dialogue lines (the hero, the
 villain, or a side character) between the narration. Spooky fun, safe for teenagers: no blood, no gore, no weapons,
 no self-harm, no real people, no real brands, nothing sexual, no animal harm.
 
@@ -68,11 +68,12 @@ lights_on | lights_off | flicker | appear (the other appears) | vanish | turn (t
 grin (the other grins) | droop (the other or hero looks exhausted) | text_change (the on-screen text changes).
 
 Rules:
-- 16 to 22 beats. Each beat is ONE spoken sentence of 3 to 15 words, plain spoken English, contractions, numbers in words.
-  Total 170 to 215 words, so the Short runs about 70 to 90 seconds. Give the middle more escalation and a second
-  scare or laugh rather than padding. Use a different villain type and setting mix from the stories already told.
+- 22 to 28 beats. Each beat is ONE spoken sentence of 3 to 15 words, plain spoken English, contractions, numbers in words.
+  Total 255 to 300 words, so the Short runs about 95 to 115 seconds (never under 90). Build it in three acts: the hook
+  and setup, a middle with at least two escalating scares and two laughs (a false calm, a second encounter), then the
+  pivot and twist. Every beat must move the story; no padding or repeated ideas. Use a different villain type and setting mix from the stories already told.
 - Sentence 1 is the hook: a creepy paradox stated as fact. The last sentence is the twist: short, ironic, surprising.
-- Every beat names its scene, and the narration must match what that scene can show. Use 6 to 9 different scenes.
+- Every beat names its scene, and the narration must match what that scene can show. Use 7 to 10 different scenes.
 - beat_word is ONE word copied exactly from that beat's line where the react happens.
 - jump = true when the story jumps in time (a new day, later that night).
 - Exactly one beat has twist = true: the reveal, near the end.
@@ -232,7 +233,7 @@ def write_story(cfg: dict, used: list[str], hint: str | None = None) -> dict:
                 config=types.GenerateContentConfig(response_mime_type="application/json", temperature=1.0))
             story = repair(json.loads(resp.text))
             words = sum(len(b["line"].split()) for b in story["beats"])
-            if not 150 <= words <= 250:
+            if not 235 <= words <= 340:
                 raise ValueError(f"story is {words} words")
             log(f"Story written by {model}: '{story['title']}' ({len(story['beats'])} beats, {words} words)")
             return story

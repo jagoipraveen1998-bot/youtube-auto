@@ -1,0 +1,458 @@
+{
+ "storyboard": true,
+ "captions": true,
+ "music": "drone",
+ "scary": true,
+ "piano": true,
+ "story_id": "mummy-teaser",
+ "tags": [
+  "animated horror story",
+  "mummy horror",
+  "creepy cartoon tales",
+  "horror cartoon",
+  "scary story",
+  "sarcophagus",
+  "basement horror"
+ ],
+ "hero": {
+  "look": "boy",
+  "outfit": "hoodie",
+  "voice": "am_puck",
+  "omni": "male, child, american accent",
+  "style": {
+   "skin": "#e6b48f",
+   "hair": "#6b4423",
+   "hairStyle": "mop",
+   "outfit": "hoodie",
+   "top": "#d9a520",
+   "pants": "#25304f",
+   "shoes": "#f2f2ee",
+   "acc": {}
+  }
+ },
+ "villain": "shadow",
+ "cast": [
+  {
+   "role": "kim",
+   "gender": "f",
+   "voice": "af_bella",
+   "omni": "female, teenager, american accent",
+   "style": {
+    "skin": "#e6b48f",
+    "hair": "#3a2418",
+    "hairStyle": "ponytail",
+    "outfit": "tee",
+    "top": "#7a2335",
+    "pants": "#1d1c22",
+    "shoes": "#c8282e",
+    "hood": false,
+    "acc": {}
+   }
+  },
+  {
+   "role": "dad",
+   "gender": "m",
+   "voice": "am_michael",
+   "omni": "male, middle-aged, low pitch, american accent",
+   "style": {
+    "skin": "#e6b48f",
+    "hair": "#5a4634",
+    "hairStyle": "spiky",
+    "outfit": "shirt",
+    "top": "#dfe6ee",
+    "pants": "#3a3f50",
+    "acc": {
+     "glasses": true
+    }
+   }
+  },
+  {
+   "role": "mom",
+   "gender": "f",
+   "voice": "af_sarah",
+   "omni": "female, middle-aged, american accent",
+   "style": {
+    "skin": "#e6b48f",
+    "hair": "#6b4a30",
+    "hairStyle": "bob",
+    "outfit": "cardigan",
+    "top": "#c87a5a",
+    "pants": "#4a4060",
+    "acc": {}
+   }
+  },
+  {
+   "role": "owner",
+   "gender": "m",
+   "voice": "bm_george",
+   "omni": "male, elderly, low pitch, british accent",
+   "style": {
+    "skin": "#e0a882",
+    "hair": "#c8c8cc",
+    "hairStyle": "mop",
+    "outfit": "suit",
+    "top": "#3a2e2a",
+    "acc": {
+     "mustache": true
+    }
+   }
+  },
+  {
+   "role": "worker",
+   "gender": "m",
+   "voice": "am_eric",
+   "omni": "male, middle-aged, american accent",
+   "style": {
+    "skin": "#a8714f",
+    "hair": "#1d1420",
+    "hairStyle": "spiky",
+    "outfit": "uniform",
+    "top": "#5a6a7a",
+    "acc": {
+     "cap": "#3a4a5a"
+    }
+   }
+  },
+  {
+   "role": "worker2",
+   "gender": "m",
+   "voice": "am_adam",
+   "style": {
+    "skin": "#d9a07a",
+    "hair": "#3b2618",
+    "hairStyle": "bald",
+    "outfit": "uniform",
+    "top": "#5a6a7a",
+    "acc": {
+     "beard": true
+    }
+   }
+  }
+ ],
+ "title": "A coffin was delivered to our house by mistake 😨 #shorts #horror",
+ "description": "Teaser: The Mummy Downstairs. Full animated horror movie on the channel.",
+ "beats": [
+  {
+   "line": "A museum coffin was delivered to the wrong house. *Ours.*",
+   "speaker": "narrator",
+   "react": "chain",
+   "scene": "insert",
+   "insert": "chainface",
+   "beat_at": 0.5,
+   "cam": "push_in",
+   "focus": "wide",
+   "onscreen": "IT CAME IN CHAINS."
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "scrape",
+   "silent": 3.8,
+   "beat_at": 0.25,
+   "scene": "hallDay",
+   "caseLying": true,
+   "caseX": 1480,
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 460,
+    "look": 1
+   },
+   "crew": {
+    "mom": {
+     "x": 170,
+     "expr": "curious",
+     "look": 1
+    },
+    "kim": {
+     "x": 760,
+     "expr": "curious",
+     "look": 1
+    },
+    "dad": {
+     "x": 1060,
+     "expr": "calm",
+     "look": 1,
+     "armR": 1.1
+    },
+    "worker": {
+     "expr": "tired"
+    },
+    "worker2": {
+     "expr": "tired"
+    }
+   },
+   "caseCarried": true,
+   "carry": [
+    2150,
+    1480
+   ],
+   "cam": "pull_out",
+   "focus": "door"
+  },
+  {
+   "line": "Dad… why is there a coffin in our house?",
+   "speaker": "hero",
+   "react": "none",
+   "scene": "hallDay",
+   "caseLying": true,
+   "caseX": 1480,
+   "hero": {
+    "pose": "stand",
+    "expr": "shock",
+    "x": 460,
+    "look": 1
+   },
+   "crew": {
+    "mom": {
+     "x": 170,
+     "expr": "curious",
+     "look": 1
+    },
+    "kim": {
+     "x": 760,
+     "expr": "curious",
+     "look": 1
+    },
+    "dad": {
+     "x": 1060,
+     "expr": "calm",
+     "look": 1,
+     "armR": 1.1
+    },
+    "worker": {
+     "x": 1830,
+     "expr": "calm",
+     "look": -1
+    },
+    "worker2": {
+     "x": 2040,
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "hero"
+  },
+  {
+   "line": "A sarcophagus. And it's supposed to be at the museum.",
+   "speaker": "dad",
+   "react": "none",
+   "scene": "hallDay",
+   "caseLying": true,
+   "caseX": 1480,
+   "hero": {
+    "pose": "stand",
+    "expr": "curious",
+    "x": 460,
+    "look": 1
+   },
+   "crew": {
+    "mom": {
+     "x": 170,
+     "expr": "curious",
+     "look": 1
+    },
+    "kim": {
+     "x": 760,
+     "expr": "curious",
+     "look": 1
+    },
+    "dad": {
+     "x": 1060,
+     "expr": "calm",
+     "look": 1,
+     "armR": 1.1
+    },
+    "worker": {
+     "x": 1830,
+     "expr": "calm",
+     "look": -1
+    },
+    "worker2": {
+     "x": 2040,
+     "expr": "calm",
+     "look": -1
+    }
+   },
+   "cam": "close",
+   "focus": "dad"
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "scrape",
+   "silent": 2.8,
+   "beat_at": 0.35,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "roll": -3,
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "worried",
+     "expr2": "stare",
+     "look": 1,
+     "lookY": 0.6
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "lidfall",
+   "silent": 3.6,
+   "beat_at": 0.05,
+   "lidOff": true,
+   "lidFloor": true,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.75,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "face",
+   "flickerBulb": true,
+   "eyesFollow": false,
+   "whispers": true
+  },
+  {
+   "line": "I didn't do that.",
+   "speaker": "kim",
+   "react": "none",
+   "vspeed": 0.88,
+   "gain": 0.55,
+   "lidOff": true,
+   "lidFloor": true,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "dread",
+     "look": 1,
+     "lookY": 0.6
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "thump",
+   "silent": 1.6,
+   "beat_at": 0.3,
+   "heart": "accel",
+   "lidOff": true,
+   "lidFloor": true,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "dread",
+     "expr2": "stare",
+     "look": 1,
+     "lookY": 0.6
+    }
+   }
+  },
+  {
+   "line": "Jeff?",
+   "speaker": "kim",
+   "react": "none",
+   "vspeed": 0.9,
+   "gain": 0.7,
+   "lidOff": true,
+   "lidFloor": true,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.6,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "close",
+   "focus": "kim",
+   "crew": {
+    "kim": {
+     "step": 0.3,
+     "costume": "faceoff",
+     "expr": "dread",
+     "look": 1,
+     "lookY": 0.6
+    }
+   }
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "thump",
+   "silent": 3.2,
+   "beat_at": 0.55,
+   "floorShadow": true,
+   "heavySteps": [
+    2.2
+   ],
+   "lidOff": true,
+   "lidFloor": true,
+   "flickerBulb": true,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.75,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "push_in",
+   "focus": "floor",
+   "crew": {}
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "thump",
+   "silent": 2.4,
+   "beat_at": 0.15,
+   "foot": true,
+   "lidOff": true,
+   "lidFloor": true,
+   "twist": true,
+   "scene": "basement",
+   "lightOn": true,
+   "vig": 0.8,
+   "chainsOff": true,
+   "chainsFloor": true,
+   "cam": "push_in",
+   "focus": "bottom",
+   "flickerBulb": true,
+   "crew": {}
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "none",
+   "silent": 2.6,
+   "scene": "black",
+   "cam": "wide",
+   "focus": "wide",
+   "onscreen": "FULL MOVIE ON YOUTUBE",
+   "heavySteps": [
+    0.4
+   ]
+  }
+ ]
+}

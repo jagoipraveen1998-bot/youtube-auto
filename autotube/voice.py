@@ -255,7 +255,7 @@ def _gemini_tts(text: str, vcfg: dict, out: Path) -> tuple[float, list[dict]]:
                 wait, daily = _quota_info(r)
                 if daily:
                     _GEMINI_DEAD.add(model)
-                    log(f"Gemini TTS ({model}): daily quota used up; not asking it again this run")
+                    log(f"Gemini TTS ({model}): daily quota used up; not asking it again this run ({r.text[:300]})")
                 else:
                     _GEMINI_NEXT[model] = time.time() + max(21, wait + 1)
                     log(f"Gemini TTS ({model}): busy, waiting {max(21, wait + 1):.0f}s")
@@ -326,15 +326,20 @@ def speak_words(text: str, voice: str, rate: str, pitch: str, out: Path) -> tupl
 
 
 # ---------------------------------------------------------------- what callers use
+GEMINI_MISSED: list = []      # lines meant to be acted by Gemini that got the backup voice instead
+
+
 def say(text: str, vcfg: dict, out: Path) -> tuple[float, list[dict]]:
     """Speak "text" in this character's voice. Returns (duration_seconds, word timings)."""
     global _KOKORO_OFF, _OMNI_OFF, _GEMINI_OFF
     vcfg = vcfg or {}
-    if vcfg.get("gemini_voice") and not _GEMINI_OFF:
-        try:
-            return _gemini_tts(TAG.sub("", text).strip() if not vcfg.get("keep_tags") else text, vcfg, out)
-        except Exception as exc:
-            log(f"Gemini TTS unavailable ({exc}); this line uses the backup voice")
+    if vcfg.get("gemini_voice"):
+        if not _GEMINI_OFF:
+            try:
+                return _gemini_tts(TAG.sub("", text).strip() if not vcfg.get("keep_tags") else text, vcfg, out)
+            except Exception as exc:
+                log(f"Gemini TTS unavailable ({exc}); this line uses the backup voice")
+        GEMINI_MISSED.append(text)
     if vcfg.get("omni") and not _OMNI_OFF:
         for attempt in range(2):
             try:

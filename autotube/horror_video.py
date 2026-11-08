@@ -351,6 +351,11 @@ def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_
         voice, timing = voice_from_file(story, voice_file)
     else:
         voice, timing = voice_lines(story, casting["voices"], work, intro)
+        from . import voice as vmod
+        if story.get("film") and vmod.GEMINI_MISSED:   # a film never mixes acted and robotic voices
+            raise RuntimeError(f"{len(vmod.GEMINI_MISSED)} lines could not be acted by Gemini today (free daily limit); "
+                               "the acted lines are cached, so run again after the limit resets (08:00 UTC). Missing: "
+                               + " | ".join(t[:40] for t in vmod.GEMINI_MISSED))
     outro = 3.2
     laugh = np.zeros(1) if voice_file or story.get("outro_laugh") is False else signature_laugh(work)
     story_end = intro + max(len(voice) / ha.SR, timing[-1]["end"]) + TAIL

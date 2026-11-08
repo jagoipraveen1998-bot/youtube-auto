@@ -5,7 +5,8 @@
     "how a credit card payment clears in two seconds",
     "how image generators turn noise into a picture",
     "how a microwave heats food but not the plate",
-    "how noise cancelling erases sound with more sound"
+    "how noise cancelling erases sound with more sound",
+    "why wet roads look like mirrors at night"
   ],
   "videos": [
     {
@@ -43,6 +44,12 @@
       "title": "How Noise Cancelling Actually Works #Shorts",
       "video_id": "vxs1iZurzRc",
       "length": "41s"
+    },
+    {
+      "date": "2026-11-08",
+      "title": "Why Wet Roads Look Like Mirrors at Night #Shorts",
+      "video_id": "yQBhmINyGc0",
+      "length": "40s"
     }
   ]
 }

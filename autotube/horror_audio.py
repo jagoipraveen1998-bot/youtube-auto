@@ -79,7 +79,7 @@ class Synth:
 
     def whoosh(self, dur=0.7, lo=300, hi=3000):
         n = int(dur * SR)
-        return bp(self.noise(n), lo, hi) * np.sin(np.pi * np.arange(n) / n) ** 2
+        return bp(self.noise(n), lo, hi) * np.clip(np.sin(np.pi * np.arange(n) / n), 0, None) ** 2
 
     @staticmethod
     def thud(f0=55, dur=0.5):
@@ -109,7 +109,7 @@ def _add(buf, x, t, g=1.0):
     i = int(max(0.0, t) * SR)
     if i >= len(buf):
         return
-    x = np.asarray(x)[: len(buf) - i]
+    x = np.nan_to_num(np.asarray(x, dtype=float)[: len(buf) - i], nan=0.0, posinf=0.0, neginf=0.0)
     buf[i:i + len(x)] += g * x
 
 
@@ -188,7 +188,7 @@ def sfx_track(syn: Synth, plan: dict) -> np.ndarray:
             _add(sfx, creak, tb, 0.35)
         elif react == "gag":
             n = int(0.42 * SR); t = np.arange(n) / SR
-            whistle = np.sin(2 * np.pi * np.cumsum(np.linspace(380, 1500, n)) / SR) * np.sin(np.pi * t / t[-1]) ** 0.5
+            whistle = np.sin(2 * np.pi * np.cumsum(np.linspace(380, 1500, n)) / SR) * np.clip(np.sin(np.pi * t / t[-1]), 0, None) ** 0.5
             _add(sfx, whistle, tb - 0.38, 0.45)
             n = int(0.7 * SR); t = np.arange(n) / SR
             boing = np.sin(2 * np.pi * (170 + 90 * np.sin(2 * np.pi * 11 * t) * np.exp(-t * 4)) * t) * np.exp(-t * 4.5)
@@ -232,7 +232,7 @@ def sfx_track(syn: Synth, plan: dict) -> np.ndarray:
                 _add(sfx, sum(np.sin(2 * np.pi * fq * r * tt) / (1 + i) for i, r in enumerate((1, 2.4, 3.9))) * np.exp(-tt * 3), tb + k * 0.12, 0.45)
         elif react == "scrape":             # a heavy wooden case scraping
             m = int(1.6 * SR); tt = np.arange(m) / SR
-            _add(sfx, lp(bp(syn.noise(m), 80, 900) * (1 + 0.6 * np.sin(2 * np.pi * 7 * tt)), 1200) * np.sin(np.pi * tt / tt[-1]) ** 0.6, tb, 1.0)
+            _add(sfx, lp(bp(syn.noise(m), 80, 900) * (1 + 0.6 * np.sin(2 * np.pi * 7 * tt)), 1200) * np.clip(np.sin(np.pi * tt / tt[-1]), 0, None) ** 0.6, tb, 1.0)
         elif react == "thump":              # something heavy, one step
             _add(sfx, lp(syn.thud(38, 0.9), 260), tb, 1.0); _add(sfx, lp(syn.thud(60, 0.4), 500), tb + 0.02, 0.6)
         elif react == "crash":              # metal tray hits the floor
@@ -258,7 +258,7 @@ def sfx_track(syn: Synth, plan: dict) -> np.ndarray:
         elif react == "dome":
             _add(sfx, syn.click(), tb, 0.9)
         elif react == "circle":
-            n = int(0.5 * SR); _add(sfx, bp(syn.noise(n), 1500, 4000) * np.sin(np.pi * np.arange(n) / n) ** 2, tb, 0.4)
+            n = int(0.5 * SR); _add(sfx, bp(syn.noise(n), 1500, 4000) * np.clip(np.sin(np.pi * np.arange(n) / n), 0, None) ** 2, tb, 0.4)
         elif react == "pop":
             n = int(0.12 * SR); t = np.arange(n) / SR
             _add(sfx, np.sin(2 * np.pi * np.cumsum(np.linspace(700, 1300, n)) / SR) * np.exp(-t * 25), tb, 0.6)
@@ -272,7 +272,7 @@ def sfx_track(syn: Synth, plan: dict) -> np.ndarray:
             _add(sfx, syn.reverb(syn.stab([233, 247, 349, 370], 1.6, 2.2), 1.6, 0.5), tb, 0.6); _add(sfx, syn.thud(40, 1.0), tb, 1.0)
         elif react == "breath":
             for k in range(3):
-                n = int(0.9 * SR); _add(sfx, lp(bp(syn.noise(n), 300, 2500), 1800) * np.sin(np.pi * np.arange(n) / n) ** 1.5, fr(a) + 0.2 + k * 1.15, 0.35)
+                n = int(0.9 * SR); _add(sfx, lp(bp(syn.noise(n), 300, 2500), 1800) * np.clip(np.sin(np.pi * np.arange(n) / n), 0, None) ** 1.5, fr(a) + 0.2 + k * 1.15, 0.35)
         elif react == "text_change":
             for k in range(4): _add(sfx, hp(syn.noise(int(0.04 * SR)), 1000), tb - 0.05 + k * 0.05, 0.5)
         if sh.get("twist"):
@@ -312,7 +312,7 @@ def creak(syn: Synth, rng, dur: float = 0.45) -> np.ndarray:
     f0 = rng.uniform(140, 260)
     tone = np.sin(2 * np.pi * (f0 + 60 * np.sin(2 * np.pi * rng.uniform(3, 7) * t)) * t)
     grit = bp(syn.noise(n), 300, 2400) * 0.6
-    return bp(tone * (1 + grit), 120, 2600) * np.sin(np.pi * t / t[-1]) ** 0.7
+    return bp(tone * (1 + grit), 120, 2600) * np.clip(np.sin(np.pi * t / t[-1]), 0, None) ** 0.7
 
 
 def wood_step(syn: Synth, rng) -> np.ndarray:
@@ -396,15 +396,15 @@ def story_sfx(syn: Synth, plan: dict) -> np.ndarray:
         if sh.get("heavySteps"):
             for k, dt in enumerate(sh["heavySteps"]):
                 _add(out, lp(syn.thud(36, 0.9), 240), sh["a"] / FPS + dt, 1.0)
-                m = int(1.0 * SR); _add(out, bp(syn.noise(m), 300, 2000) * np.sin(np.pi * np.arange(m) / m) ** 2 * 0.5, sh["a"] / FPS + dt + 0.3, 0.7)
+                m = int(1.0 * SR); _add(out, bp(syn.noise(m), 300, 2000) * np.clip(np.sin(np.pi * np.arange(m) / m), 0, None) ** 2 * 0.5, sh["a"] / FPS + dt + 0.3, 0.7)
         if sh.get("gasp"):
             m = int(0.5 * SR); tt = np.arange(m) / SR
-            _add(out, bp(syn.noise(m), 600, 4000) * np.sin(np.pi * tt / tt[-1]) ** 0.5 * np.exp(-tt * 2), sh["a"] / FPS + sh["gasp"], 1.0)
+            _add(out, bp(syn.noise(m), 600, 4000) * np.clip(np.sin(np.pi * tt / tt[-1]), 0, None) ** 0.5 * np.exp(-tt * 2), sh["a"] / FPS + sh["gasp"], 1.0)
         if sh.get("breathe"):
             t0, t1 = sh["a"] / FPS, sh["b"] / FPS
             tt = t0 + 0.3
             while tt < t1 - 0.5:
-                n = int(1.2 * SR); br = lp(bp(syn.noise(n), 150, 1200), 900) * np.sin(np.pi * np.arange(n) / n) ** 2
+                n = int(1.2 * SR); br = lp(bp(syn.noise(n), 150, 1200), 900) * np.clip(np.sin(np.pi * np.arange(n) / n), 0, None) ** 2
                 _add(out, br, tt, 0.8); tt += 1.9
     return out
 
@@ -477,7 +477,7 @@ def scare_bed(syn: Synth, plan: dict) -> np.ndarray:
         if sh.get("whispers"):                         # breathy, unintelligible whispers
             tt = a + 0.4
             while tt < b - 0.6:
-                m = int(rng.uniform(0.5, 1.1) * SR); env = np.sin(np.pi * np.arange(m) / m) ** 2
+                m = int(rng.uniform(0.5, 1.1) * SR); env = np.clip(np.sin(np.pi * np.arange(m) / m), 0, None) ** 2
                 w = bp(rng.standard_normal(m), rng.uniform(900, 1600), rng.uniform(2800, 4200))
                 w *= 0.6 + 0.4 * np.sign(np.sin(2 * np.pi * rng.uniform(5, 9) * np.arange(m) / SR))   # syllable-like chopping
                 _add(out, w * env, tt, 0.9)
@@ -519,7 +519,7 @@ def make_soundtrack(voice: np.ndarray, plan: dict, work: Path, seed: int) -> Pat
     music = music_bed(syn, total, stop, seed, box_on=not drone)
     sfx = sfx_track(syn, plan) + story_sfx(syn, plan)
     n = int(total * SR)
-    pad = lambda x: np.pad(x, (0, max(0, n - len(x))))[:n]
+    pad = lambda x: np.nan_to_num(np.pad(np.asarray(x, dtype=float), (0, max(0, n - len(x))))[:n], nan=0.0, posinf=0.0, neginf=0.0)
     v, m, s = pad(voice), pad(music), pad(sfx)
     vr, vp = _grms(v), np.abs(v).max()
     m *= (vr * (0.32 if drone else 0.5)) / max(_grms(m), 1e-9)
@@ -548,6 +548,9 @@ def make_soundtrack(voice: np.ndarray, plan: dict, work: Path, seed: int) -> Pat
         mix = v + m + s + amb + sc
     else:
         mix = v + m + s + amb
+    mix = np.nan_to_num(mix, nan=0.0, posinf=0.0, neginf=0.0)
+    if np.abs(mix).max() < 1e-4:
+        raise RuntimeError('The soundtrack came out silent; stopping so a silent video is never made')
     mix /= max(1.0, np.abs(mix).max())
     raw = work / "mix.wav"
     save(raw, mix)

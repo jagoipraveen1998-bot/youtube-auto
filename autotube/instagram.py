@@ -9,6 +9,7 @@ import time
 from pathlib import Path
 
 import requests
+import subprocess
 
 from .util import log
 
@@ -27,6 +28,17 @@ def ig_caption(title: str, description: str, hashtags: list[str]) -> str:
     return "\n\n".join(p for p in parts if p)[:2150]
 
 
+def reel_copy(video: Path) -> Path:
+    """Instagram's API is strict: H.264 high@4.1, fixed bitrate, a keyframe every 2 s, AAC 44.1 kHz stereo, moov first."""
+    out = video.with_name(video.stem + "_ig.mp4")
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(video), "-c:v", "libx264", "-preset", "medium",
+                    "-profile:v", "high", "-level", "4.1", "-pix_fmt", "yuv420p", "-r", "30", "-g", "60", "-keyint_min", "60",
+                    "-sc_threshold", "0", "-b:v", "5M", "-maxrate", "6M", "-bufsize", "10M",
+                    "-vf", "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,setsar=1",
+                    "-c:a", "aac", "-b:a", "128k", "-ar", "44100", "-ac", "2", "-movflags", "+faststart", str(out)], check=True)
+    return out
+
+
 def publish_reel(video: Path, caption: str, cover_offset_ms: int = 2500) -> str | None:
     token = os.environ.get("IG_ACCESS_TOKEN", "").strip()
     if not token:
@@ -40,7 +52,7 @@ def publish_reel(video: Path, caption: str, cover_offset_ms: int = 2500) -> str 
             "share_to_feed": "true", "thumb_offset": str(cover_offset_ms), "access_token": token})
         r.raise_for_status()
         cid = r.json()["id"]
-        blob = video.read_bytes()
+        blob = reel_copy(video).read_bytes()
         up = None
         for attempt in range(3):                   # the upload host sometimes fails; give it three goes
             up = requests.post(f"{RUPLOAD}/{cid}", data=blob, timeout=900, headers={

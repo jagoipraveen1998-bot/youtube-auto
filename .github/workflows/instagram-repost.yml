@@ -20,6 +20,8 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -q requests pyyaml
+      - name: ffmpeg
+        run: command -v ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg)
       - uses: actions/download-artifact@v4
         with:
           run-id: ${{ inputs.run_id }}

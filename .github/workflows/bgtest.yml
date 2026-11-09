@@ -1,0 +1,23 @@
+name: bgtest
+on:
+  push:
+    branches: [bg-test]
+    paths: [scripts/bgtest/make.py]
+permissions:
+  contents: write
+jobs:
+  paint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install -q -r requirements.txt
+      - env:
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python scripts/bgtest/make.py
+      - run: |
+          git config user.name autotube-bot; git config user.email actions@users.noreply.github.com
+          git add horror/bgtest && git commit -m "bg test images" && git push

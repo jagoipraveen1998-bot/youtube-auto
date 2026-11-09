@@ -72,7 +72,12 @@ Rules:
   Total 255 to 300 words, so the Short runs about 95 to 115 seconds (never under 90). Build it in three acts: the hook
   and setup, a middle with at least two escalating scares and two laughs (a false calm, a second encounter), then the
   pivot and twist. Every beat must move the story; no padding or repeated ideas. Use a different villain type and setting mix from the stories already told.
-- Sentence 1 is the hook: a creepy paradox stated as fact. The last sentence is the twist: short, ironic, surprising.
+- Sentence 1 is the hook and must make the viewer need the answer: either a creepy paradox stated as fact, or a
+  "why / what happens if" question the story then answers (like "Why my grandma never answers the door after 3AM.").
+  The last sentence is the twist: short, ironic, surprising, and it pays off the hook.
+- Shoot it like a film: a wide establishing shot each time the scene changes, then close, snap and push_in on reactions.
+  Never use the same cam on two beats in a row. Keep most lines short (3 to 10 words) so a new shot comes every 2 to 3
+  seconds.
 - Every beat names its scene, and the narration must match what that scene can show. Use 7 to 10 different scenes.
 - beat_word is ONE word copied exactly from that beat's line where the react happens.
 - jump = true when the story jumps in time (a new day, later that night).
@@ -82,7 +87,7 @@ Rules:
 
 The hero (the narrator) is always a boy or a young man: the channel has one narrator voice.
 Return ONLY JSON:
-{{"title":"YouTube title under 70 characters, curiosity-driven, end with #shorts #horror",
+{{"title":"YouTube title under 70 characters that opens a question the viewer needs answered (a why / what-if or a paradox), end with #shorts #horror",
   "story_id":"short-slug",
   "description":"2 sentences that tease the story without spoiling the twist",
   "tags":["8 to 12 search tags"],

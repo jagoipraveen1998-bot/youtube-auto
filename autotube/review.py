@@ -69,7 +69,8 @@ def review(story: dict, plan: dict, video: Path, fmt: str) -> list[str]:
 
     # pacing
     if vert and shots:
-        avg = plan["frames"] / FPS / len(shots)
+        n = sum(2 if plan.get("cuts") and not s.get("twist") and s["b"] - s["a"] > 84 else 1 for s in shots)
+        avg = plan["frames"] / FPS / n
         if avg > 4.0:
             notes.append(f"P2 · whole Short · average shot {avg:.1f}s; Shorts read best at 2–4 s a shot")
 

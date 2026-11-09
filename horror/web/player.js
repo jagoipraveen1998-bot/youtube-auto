@@ -285,7 +285,14 @@ function framesFor(S, sh, name) {
   if (name === 'hero' && S.heroFrame) return S.heroFrame(sh);
   return S.frames[name] || S.frames.hero || S.frames.wide;
 }
+const ALT_CAM = { wide: 'medium', medium: 'wide', close: 'medium', push_in: 'medium', pull_out: 'medium', pan: 'medium', snap: 'wide' };
 function camFor(S, sh, f) {
+  // Shorts cut every 2-3 s: a long line gets a second framing halfway (a hard cut, not a move)
+  if (P.cuts && FORMAT !== 'landscape' && !sh._cut && !sh.twist && sh.b - sh.a > 84) {
+    const cut = sh.a + Math.round((sh.b - sh.a) * 0.5);
+    if (f >= cut && !(sh.beat != null && Math.abs(sh.beat - cut) < 10))
+      return camFor(S, Object.assign({}, sh, { a: cut, cam: ALT_CAM[sh.cam] || 'close', _cut: true }), f);
+  }
   const t = f - sh.a, dur = Math.max(1, sh.b - sh.a);
   const W0 = S.frames.wide;
   const wide = FORMAT === 'landscape' ? [W0[0], W0[1], W0[2] * 0.86] : W0;   // wide shots breathe a little more in 16:9
@@ -440,7 +447,7 @@ function drawCaptions(f, sh) {     // big word-by-word captions, key words in ye
   const gap = size * 0.28, widths = words.map(t => ctx.measureText(t).width);
   const total = widths.reduce((a, b) => a + b, 0) + gap * (words.length - 1);
   // vertical: inside the band phone apps leave clear (168-1330 px of 1920) and left of the like/share rail
-  const cy = H * (vert ? 0.62 : 0.84), fit = Math.min(1, W * (vert ? 0.8 : 0.88) / total);
+  const cy = H * (vert ? 0.66 : 0.84), fit = Math.min(1, W * (vert ? 0.8 : 0.88) / total);
   ctx.translate(vert ? W * 0.46 : W / 2, cy); ctx.scale(pop * fit, pop * fit);
   let x = -total / 2;
   ch.forEach((w, i) => {

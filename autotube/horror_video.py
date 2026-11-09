@@ -236,7 +236,8 @@ def build_plan(story: dict, timing: list[dict], total: float, casting: dict, fmt
         if sh["beat"] is not None:
             sh["beat"] = min(sh["beat"], sh["b"] - 3)
     return {"frames": frames, "format": fmt, "hero": casting["hero"], "other": casting["other"],
-            "cast": casting["cast"], "shots": shots, "series": story.get("series"), "captions": bool(story.get("captions")),
+            "cast": casting["cast"], "shots": shots, "series": story.get("series"), "captions": bool(story.get("captions", fmt == "vertical")),
+            "cuts": bool(story.get("cuts", fmt == "vertical" and not story.get("film"))),
             "music": story.get("music"), "scary": bool(story.get("scary")), "piano": bool(story.get("piano")),
             "film": bool(story.get("film")), "strings": bool(story.get("strings")), "score": bool(story.get("score"))}
 

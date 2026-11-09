@@ -160,6 +160,16 @@
    "h": 160,
    "kind": "object",
    "prompt": "A chipped ceramic garden gnome with a pointy red cap, a curly white beard, and an unsettlingly smug grin that seems to shift when nobody is looking."
+  },
+  "possum": {
+   "h": 140,
+   "kind": "animal",
+   "prompt": "A scruffy, round-eyed opossum frozen completely stiff in a comical, overly dramatic 'playing dead' pose."
+  },
+  "vending_machine": {
+   "h": 520,
+   "kind": "object",
+   "prompt": "A humming retro snack vending machine casting a sickly green fluorescent glow, filled with suspiciously mysterious glowing soda cans."
   }
  }
 }

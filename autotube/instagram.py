@@ -30,7 +30,7 @@ def ig_caption(title: str, description: str, hashtags: list[str]) -> str:
 
 def reel_copy(video: Path) -> Path:
     """Instagram's API is strict: H.264 high@4.1, fixed bitrate, a keyframe every 2 s, AAC 44.1 kHz stereo, moov first."""
-    out = video.with_name(video.stem + "_ig.mp4")
+    out = video.with_name("reel_ig.mp4")       # a plain name: Meta fails to fetch URLs with dotted names (error 2207077)
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(video), "-c:v", "libx264", "-preset", "medium",
                     "-profile:v", "high", "-level", "4.1", "-pix_fmt", "yuv420p", "-r", "30", "-g", "60", "-keyint_min", "60",
                     "-sc_threshold", "0", "-b:v", "5M", "-maxrate", "6M", "-bufsize", "10M",

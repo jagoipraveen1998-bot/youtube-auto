@@ -210,6 +210,42 @@ def voice_from_file(story: dict, path: Path) -> tuple[np.ndarray, list[dict]]:
     return audio, timing
 
 
+PLATE_DIR = Path(__file__).resolve().parent.parent / "horror" / "plates"
+PLATE_SCENES = {"hallway": "hallway_night", "kitchen": "kitchen_night", "front_door": "front_door_night",
+                "bedroom": "bedroom_night", "window": "street_night"}
+PLATE_REACTS = {"none", "gag", "jolt", "droop", "ring", "knock"}
+
+
+def apply_plates(story: dict) -> dict:
+    """Painted 3D-look backgrounds for the calm and reaction beats (our 2D hero stands in front of them).
+    Beats where the room itself acts (a ghost appears, a door, the lights, a prop, the twist) keep the drawn sets."""
+    have = {p.stem for p in PLATE_DIR.glob("*.jpg")}
+    used, last = {}, None
+    for b in story["beats"]:
+        scene = b.get("scene")
+        name = PLATE_SCENES.get(scene)
+        if scene == "kitchen" and b.get("light") == "dawn":
+            name = "kitchen_dawn"
+        if scene == "closeup" and last:
+            name = last                                      # a reaction close-up in the room we are already in
+        ok = (name in have and b.get("hero") and not b.get("twist") and not b.get("side")
+              and b.get("react", "none") in PLATE_REACTS
+              and (not b.get("other") or b["other"].get("state") in (None, "hidden"))
+              and (b.get("hero") or {}).get("pose") in ("stand", "walk", "cheeks", "reach", "sit", "peek", None)
+              and b.get("prop") in (None, "none"))
+        if ok:
+            b["plate"], b["scene"] = name, "plate"
+            if b["hero"].get("pose") in ("sit", "peek"):           # the plate actor stands in the room
+                b["hero"] = dict(b["hero"], pose="stand")
+            used[name] = used.get(name, 0) + 1
+        if name and scene != "closeup":
+            last = name
+    if used:
+        log("Painted backgrounds: " + ", ".join(f"{k} x{v}" for k, v in used.items()))
+    return {k: "data:image/jpeg;base64," + __import__("base64").b64encode((PLATE_DIR / f"{k}.jpg").read_bytes()).decode()
+            for k in used}
+
+
 def voice_from_take(story: dict, path: Path) -> tuple[np.ndarray, list[dict]]:
     """One acted take of the whole story: cut it into the story's lines at its pauses.
 
@@ -396,6 +432,7 @@ def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_
                take: Path | None = None,
                title: str | None = None) -> tuple[Path, Path, dict]:
     work.mkdir(parents=True, exist_ok=True)
+    plates = apply_plates(story) if fmt == "vertical" and story.get("plates", True) and not story.get("film") else {}
     casting = cast_story(story, seed, funny=(fmt == "vertical"))
     (work / "casting.json").write_text(json.dumps(casting, indent=1), encoding="utf-8")
     log("Cast: " + ", ".join(f"{k}={v['kokoro_voice']}" for k, v in casting["voices"].items() if k != "narrator"))
@@ -423,6 +460,8 @@ def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_
     full[i0:i0 + len(laugh)] += laugh[: len(full) - i0]
     voice = full[: int(total * ha.SR)]
     plan = build_plan(story, timing, story_end, casting, fmt, intro_f=int(round(intro * FPS)))
+    if plates:
+        plan["plates"] = plates
     plan["intro"] = int(round(intro * FPS))
     if story.get("cover_beat") is not None:      # a storyboard can pick its thumbnail shot
         cs = plan["shots"][story["cover_beat"]]

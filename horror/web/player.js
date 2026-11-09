@@ -114,7 +114,30 @@ function ambientScale(sh, f) {
   return 1;
 }
 
+const PLATES = {};              // painted 3D-look background plates (data URLs in the plan), drawn behind our 2D cast
+function drawPlate(name, f) {
+  const im = PLATES[name];
+  if (!im) { ctx.fillStyle = '#10121c'; ctx.fillRect(-200, -200, W + 400, H + 400); return; }
+  const k = Math.max((W + 120) / im.width, (H + 120) / im.height);      // cover the frame with a little room to drift
+  const dx = Math.sin(f / 90) * 18, dy = Math.cos(f / 110) * 10;        // the plate breathes slightly: never a frozen still
+  ctx.drawImage(im, W / 2 - im.width * k / 2 + dx, H / 2 - im.height * k / 2 + dy, im.width * k, im.height * k);
+}
 const SCENES = {
+  plate: {
+    frames: { wide: [540, 960, 1.0], hero: [540, 1380, 1.6], prop: [540, 900, 1.5] },
+    otherFrame() { return [540, 1000, 1.6]; },
+    ambient: '#8a90b4',
+    draw(f, sh) {
+      drawPlate(sh.plate, f);
+      const g = ctx.createLinearGradient(0, 1500, 0, 1920);           // ground the actor: a soft floor shadow
+      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.45)');
+      ctx.fillStyle = g; ctx.fillRect(-200, 1500, W + 400, 600);
+      const h = heroObj(sh, f, { x: 540, y: 1860, s: 0.8, look: 0, lookY: 0 });
+      if (h) { ctx.save(); ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.ellipse(540, 1852, 140, 26, 0, 0, 7); ctx.fill(); ctx.restore(); guy(h); }
+    },
+    lights(l, f) { light(l, 540, 1350, 760, '#fff4e6', 0.9); light(l, 540, 700, 900, '#dfe6ff', 0.5); },
+    glow: [540, 900, 300, '#ffd9a0', 0.12],
+  },
   bedroom: {
     frames: { wide: [555, 1005, 0.98], hero: [600, 950, 2.3], prop: [170, 1180, 2.1], window: [245, 560, 1.9], door: [1060, 1150, 1.8] },
     otherFrame(sh) { const w = (sh.other || {}).where || 'door'; return w === 'window' ? [245, 520, 2.2] : w === 'beside' ? [900, 1080, 1.7] : [1060, 1110, 2.2]; },
@@ -447,7 +470,7 @@ function drawCaptions(f, sh) {     // big word-by-word captions, key words in ye
   const gap = size * 0.28, widths = words.map(t => ctx.measureText(t).width);
   const total = widths.reduce((a, b) => a + b, 0) + gap * (words.length - 1);
   // vertical: inside the band phone apps leave clear (168-1330 px of 1920) and left of the like/share rail
-  const cy = H * (vert ? 0.66 : 0.84), fit = Math.min(1, W * (vert ? 0.8 : 0.88) / total);
+  const cy = H * (vert ? (sh.scene === 'plate' ? 0.32 : 0.66) : 0.84), fit = Math.min(1, W * (vert ? 0.8 : 0.88) / total);
   ctx.translate(vert ? W * 0.46 : W / 2, cy); ctx.scale(pop * fit, pop * fit);
   let x = -total / 2;
   ch.forEach((w, i) => {
@@ -563,4 +586,9 @@ window.renderFrame = function (f) {
   staticNoise(seg(f, END - 14, END - 1) * 0.9);
   grain(sh.scene === 'cctv' ? 0.05 : 0.08);
 };
-window.ready = true;
+(function () {                  // ready once every plate image has decoded
+  const list = Object.entries(P.plates || {});
+  if (!list.length) { window.ready = true; return; }
+  let left = list.length;
+  for (const [k, src] of list) { const im = new Image(); im.onload = im.onerror = () => { PLATES[k] = im.width ? im : null; if (--left === 0) window.ready = true; }; im.src = src; }
+})();

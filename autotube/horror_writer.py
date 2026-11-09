@@ -261,9 +261,13 @@ def write_story(cfg: dict, used: list[str], hint: str | None = None) -> dict:
     models = pick_models(client, cfg.get("ai", {}).get("gemini_model", "auto"))
     last = None
     models = models + [m for m in ("gemini-flash-lite-latest", "gemini-2.5-flash-lite", "gemini-2.5-flash") if m not in models]
-    for attempt in range(10):
-        # "503 high demand" is common: rotate through every model, waiting longer each time (~7 min in all)
-        model = models[attempt % len(models)]
+    dead = set()
+    for attempt in range(16):
+        # "503 high demand" is common: rotate through the models that can still answer, waiting longer each time
+        alive = [m for m in models if m not in dead]
+        if not alive:
+            break
+        model = alive[attempt % len(alive)]
         try:
             resp = client.models.generate_content(
                 model=model, contents=prompt,
@@ -276,6 +280,11 @@ def write_story(cfg: dict, used: list[str], hint: str | None = None) -> dict:
             return story
         except Exception as exc:
             last = exc
-            log(f"Gemini attempt {attempt + 1} failed: {exc}")
-            time.sleep(min(70, 8 * (attempt + 1)))
+            msg = str(exc)
+            if "404" in msg or "limit: 0" in msg or "PerDay" in msg:      # gone, or no quota today: stop asking it
+                dead.add(model)
+                log(f"Gemini {model} cannot answer today ({msg[:90]}); skipping it")
+                continue
+            log(f"Gemini attempt {attempt + 1} ({model}) failed: {msg[:200]}")
+            time.sleep(min(60, 10 * (attempt + 1)))
     raise RuntimeError(f"Could not get a story from Gemini: {last}")

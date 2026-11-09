@@ -95,7 +95,7 @@ grin (the other grins) | droop (the other or hero looks exhausted) | text_change
 
 Rules:
 - 22 to 28 beats. Each beat is ONE spoken sentence of 3 to 15 words, plain spoken English, contractions, numbers in words.
-  Total 255 to 300 words, so the Short runs about 95 to 115 seconds (never under 90). Build it in three acts: the hook
+  Total 290 to 330 words, so the Short runs about 95 to 115 seconds at a quick storytelling pace (never under 90). Build it in three acts: the hook
   and setup, a middle with at least two escalating scares and two laughs (a false calm, a second encounter), then the
   pivot and twist. Every beat must move the story; no padding or repeated ideas. Use a different villain type and setting mix from the stories already told.
 - Sentence 1 is the hook and must make the viewer need the answer: either a creepy paradox stated as fact, or a
@@ -293,7 +293,7 @@ def write_story(cfg: dict, used: list[str], hint: str | None = None, part_of: di
                 config=types.GenerateContentConfig(response_mime_type="application/json", temperature=1.0))
             story = repair(json.loads(resp.text))
             words = sum(len(b["line"].split()) for b in story["beats"])
-            if not 235 <= words <= 340:
+            if not 260 <= words <= 360:
                 raise ValueError(f"story is {words} words")
             log(f"Story written by {model}: '{story['title']}' ({len(story['beats'])} beats, {words} words)")
             return story

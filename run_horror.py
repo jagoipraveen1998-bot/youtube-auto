@@ -18,6 +18,19 @@ from autotube.util import ROOT, check_playable, load_config, log
 IST = timezone(timedelta(hours=5, minutes=30))
 
 
+def latest_long_video() -> dict | None:
+    """The newest public long video, so every Short sends viewers to it (long videos earn watch hours)."""
+    best = None
+    for f in ("horror_long_history.json", "horror_history.json"):
+        p = ROOT / "data" / f
+        if p.exists():
+            d = json.loads(p.read_text(encoding="utf-8"))
+            for v in d.get("videos" if f.startswith("horror_long") else "long_videos", []):
+                if v.get("video_id") and (best is None or str(v.get("date", "")) >= str(best.get("date", ""))):
+                    best = v
+    return best
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--no-upload", action="store_true")
@@ -66,7 +79,9 @@ def main():
                                        Path(args.voice_file) if args.voice_file else None)
     length = check_playable(video, 15, 175)   # Shorts may run up to 3 minutes
 
+    full = latest_long_video()
     description = "\n".join([story["description"], "",
+                             *([f"🎬 Full animated horror story: {full['title']} → https://youtu.be/{full['video_id']}", ""] if full else []),
                              "A Creepy Cartoon Tale: an original animated horror short. New horror Shorts every day.",
                              "", " ".join(hcfg.get("hashtags", ["#shorts", "#horror"]))])
     (out / "description.txt").write_text(description, encoding="utf-8")

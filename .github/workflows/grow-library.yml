@@ -29,7 +29,7 @@ jobs:
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python scripts/library/build.py 40 ${{ github.event_name != 'workflow_dispatch' && '--grow' || '' }}
+        run: python scripts/library/build.py 12 ${{ github.event_name == 'schedule' && '--grow' || '' }}
       - name: Keep them
         run: |
           git config user.name "autotube-bot"; git config user.email "actions@users.noreply.github.com"

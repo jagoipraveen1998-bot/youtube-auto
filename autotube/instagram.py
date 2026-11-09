@@ -46,23 +46,31 @@ def publish_reel(video: Path, caption: str, cover_offset_ms: int = 2500) -> str 
         return None
     user = os.environ.get("IG_USER_ID", "").strip() or DEFAULT_IG_USER
     video = Path(video)
+    tag = None
     try:
-        r = requests.post(f"{GRAPH}/{user}/media", timeout=60, data={
-            "media_type": "REELS", "upload_type": "resumable", "caption": caption,
-            "share_to_feed": "true", "thumb_offset": str(cover_offset_ms), "access_token": token})
-        r.raise_for_status()
-        cid = r.json()["id"]
-        blob = reel_copy(video).read_bytes()
-        up = None
-        for attempt in range(3):                   # the upload host sometimes fails; give it three goes
+        ig = reel_copy(video)
+        repo = os.environ.get("GITHUB_REPOSITORY")
+        if repo:                                  # Meta's direct upload is unreliable: host the file briefly, let Instagram fetch it
+            tag = f"ig-reel-{os.environ.get('GITHUB_RUN_ID', int(time.time()))}-{int(time.time())}"
+            subprocess.run(["gh", "release", "create", tag, str(ig), "--repo", repo, "--prerelease",
+                            "--title", "temporary Instagram upload", "--notes", "Deleted automatically after posting."], check=True)
+            url = f"https://github.com/{repo}/releases/download/{tag}/{ig.name}"
+            r = requests.post(f"{GRAPH}/{user}/media", timeout=60, data={
+                "media_type": "REELS", "video_url": url, "caption": caption,
+                "share_to_feed": "true", "thumb_offset": str(cover_offset_ms), "access_token": token})
+            r.raise_for_status()
+            cid = r.json()["id"]
+        else:
+            r = requests.post(f"{GRAPH}/{user}/media", timeout=60, data={
+                "media_type": "REELS", "upload_type": "resumable", "caption": caption,
+                "share_to_feed": "true", "thumb_offset": str(cover_offset_ms), "access_token": token})
+            r.raise_for_status()
+            cid = r.json()["id"]
+            blob = ig.read_bytes()
             up = requests.post(f"{RUPLOAD}/{cid}", data=blob, timeout=900, headers={
                 "Authorization": f"OAuth {token}", "offset": "0", "file_size": str(len(blob)),
-                "Content-Type": "application/octet-stream", "Content-Length": str(len(blob))})
-            if up.ok:
-                break
-            log(f"Instagram upload attempt {attempt + 1}: {up.status_code} {up.text[:200]}")
-            time.sleep(15)
-        up.raise_for_status()
+                "Content-Type": "application/octet-stream"})
+            up.raise_for_status()
         for _ in range(60):          # Instagram processes the video: wait up to ~10 minutes
             st = requests.get(f"{GRAPH}/{cid}", timeout=30,
                               params={"fields": "status_code,status", "access_token": token}).json()
@@ -84,3 +92,6 @@ def publish_reel(video: Path, caption: str, cover_offset_ms: int = 2500) -> str 
         body = getattr(getattr(exc, "response", None), "text", "")
         log(f"Instagram Reel failed (YouTube upload is unaffected): {exc} {body[:300]}")
         return None
+    finally:
+        if tag:
+            subprocess.run(["gh", "release", "delete", tag, "--repo", os.environ["GITHUB_REPOSITORY"], "--yes", "--cleanup-tag"])

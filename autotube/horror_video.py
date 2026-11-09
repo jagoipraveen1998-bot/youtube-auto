@@ -210,6 +210,58 @@ def voice_from_file(story: dict, path: Path) -> tuple[np.ndarray, list[dict]]:
     return audio, timing
 
 
+def voice_from_take(story: dict, path: Path) -> tuple[np.ndarray, list[dict]]:
+    """One acted take of the whole story: cut it into the story's lines at its pauses.
+
+    Each line boundary is expected where its share of the words says it should be; the nearest real pause wins
+    (within 1.5 s), otherwise the cut falls at the expected time."""
+    audio = ha.load(path)
+    beats = story["beats"]
+    words = [max(1, len(re.findall(r"[A-Za-z0-9']+", b["line"]))) for b in beats]
+    w = int(0.02 * ha.SR); n = len(audio) // w
+    rms = np.sqrt((audio[:n * w].reshape(n, w) ** 2).mean(1))
+    loud = rms > rms.max() * 10 ** (-34 / 20)
+    pauses, i = [], 0                                      # quiet runs of at least 0.12 s: (start, end) in seconds
+    while i < n:
+        if not loud[i]:
+            j = i
+            while j < n and not loud[j]:
+                j += 1
+            if (j - i) * 0.02 >= 0.12:
+                pauses.append((i * 0.02, j * 0.02))
+            i = j
+        else:
+            i += 1
+    total = n * 0.02
+    first = next((k * 0.02 for k in range(n) if loud[k]), 0.0)
+    last = next((k * 0.02 for k in range(n - 1, -1, -1) if loud[k]), total)
+    cum = np.cumsum(words) / sum(words)
+    cuts, prev = [], first
+    for c in cum[:-1]:
+        want = first + (last - first) * c
+        cand = [p for p in pauses if p[0] > prev + 0.3 and abs((p[0] + p[1]) / 2 - want) < 1.5]
+        if cand:
+            p = min(cand, key=lambda p: abs((p[0] + p[1]) / 2 - want) - 0.15 * (p[1] - p[0]))
+            cuts.append(p)
+            prev = p[1]
+        else:
+            cuts.append((max(want, prev + 0.3), max(want, prev + 0.3)))
+            prev = cuts[-1][1]
+    bounds = [first] + [x for p in cuts for x in p] + [last]
+    timing = []
+    for k, b in enumerate(beats):
+        st, en = bounds[2 * k], bounds[2 * k + 1]
+        seg = audio[int(st * ha.SR):int(en * ha.SR)]
+        dur = max(0.1, en - st)
+        ws = b["line"].split()
+        idx = next((i for i, x in enumerate(ws) if _norm(x) == _norm(b.get("beat_word", ""))), int(len(ws) * 0.6))
+        timing.append({"start": st, "end": en, "beat": st + dur * (idx + 0.3) / max(1, len(ws)),
+                       "env": mouth_env(seg), "caps": caption_words(b["line"], [], dur)})
+    snapped = sum(1 for p in cuts if p[1] > p[0])
+    log(f"Acted take: {len(beats)} lines cut at {snapped} real pauses, {len(cuts) - snapped} estimated")
+    return audio, timing
+
+
 def build_plan(story: dict, timing: list[dict], total: float, casting: dict, fmt: str = "vertical",
                intro_f: int = 0) -> dict:
     frames = int(round(total * FPS))
@@ -341,6 +393,7 @@ def signature_laugh(work: Path) -> np.ndarray:
 
 
 def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_file: Path | None = None,
+               take: Path | None = None,
                title: str | None = None) -> tuple[Path, Path, dict]:
     work.mkdir(parents=True, exist_ok=True)
     casting = cast_story(story, seed, funny=(fmt == "vertical"))
@@ -348,7 +401,9 @@ def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_
     log("Cast: " + ", ".join(f"{k}={v['kokoro_voice']}" for k, v in casting["voices"].items() if k != "narrator"))
     # brand: a short logo sting before the story, the signature laugh after it
     intro = 0.0 if fmt == "vertical" else 2.0     # a Short's first frame is the hook, never the logo (brand stays in the outro)
-    if voice_file:
+    if take:
+        voice, timing = voice_from_take(story, take)
+    elif voice_file:
         voice, timing = voice_from_file(story, voice_file)
     else:
         voice, timing = voice_lines(story, casting["voices"], work, intro)
@@ -398,6 +453,6 @@ def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_
     return video, thumb, plan
 
 
-def make_short(story: dict, vcfg: dict, work: Path, seed: int, voice_file: Path | None = None):
+def make_short(story: dict, vcfg: dict, work: Path, seed: int, voice_file: Path | None = None, take: Path | None = None):
     """Kept for run_horror.py: one vertical Short (vcfg is no longer used; every story is cast fresh)."""
-    return make_video(story, work, seed, "vertical", voice_file)
+    return make_video(story, work, seed, "vertical", voice_file, take=take)

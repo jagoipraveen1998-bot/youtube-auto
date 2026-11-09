@@ -6,6 +6,7 @@
 """
 import argparse
 import json
+import os
 import random
 import shutil
 from datetime import datetime, timedelta, timezone
@@ -75,8 +76,13 @@ def main():
     (out / "story.json").write_text(json.dumps(story, indent=2, ensure_ascii=False), encoding="utf-8")
 
     seed = random.randint(0, 10_000)
+    take = None
+    if not args.voice_file and hcfg.get("acted_take", {}).get("enabled") and os.environ.get("GEMINI_API_KEY"):
+        from autotube.voice import acted_take
+        work.mkdir(parents=True, exist_ok=True)
+        take = acted_take([b["line"] for b in story["beats"]], hcfg["acted_take"], work / "take")
     video, thumb, plan = hv.make_short(story, hcfg["voice"], work, seed,
-                                       Path(args.voice_file) if args.voice_file else None)
+                                       Path(args.voice_file) if args.voice_file else None, take=take)
     length = check_playable(video, 15, 175)   # Shorts may run up to 3 minutes
 
     full = latest_long_video()

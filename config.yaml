@@ -175,6 +175,10 @@ horror:
     name: "en-US-ChristopherNeural"  # backup voice if Kokoro cannot run
     rate: "-10%"
     pitch: "-6Hz"
+  acted_take:                        # one Gemini request performs the whole Short (fits the free daily limit)
+    enabled: true
+    gemini_voice: "Charon"
+    persona: "a young British-Indian man telling a creepy story to a friend late at night: dry, deadpan humour, a hushed voice that grows tense at the scares"
   youtube:
     privacy: "public"
     category_id: "1"                 # 1 = Film & Animation

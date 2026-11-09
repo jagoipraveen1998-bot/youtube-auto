@@ -34,7 +34,10 @@ def reel_copy(video: Path) -> Path:
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(video), "-c:v", "libx264", "-preset", "medium",
                     "-profile:v", "high", "-level", "4.1", "-pix_fmt", "yuv420p", "-r", "30", "-g", "60", "-keyint_min", "60",
                     "-sc_threshold", "0", "-b:v", "5M", "-maxrate", "6M", "-bufsize", "10M",
-                    "-vf", "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,setsar=1",
+                    "-vf", "scale=1080:1920:force_original_aspect_ratio=decrease:out_color_matrix=bt709:out_range=tv,"
+                    "pad=1080:1920:(ow-iw)/2:(oh-ih)/2,setsar=1",
+                    "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709", "-color_range", "tv",
+                    "-map_metadata", "-1", "-map_chapters", "-1",
                     "-c:a", "aac", "-b:a", "128k", "-ar", "44100", "-ac", "2", "-movflags", "+faststart", str(out)], check=True)
     return out
 

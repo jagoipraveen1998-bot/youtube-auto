@@ -439,8 +439,9 @@ function drawCaptions(f, sh) {     // big word-by-word captions, key words in ye
   const words = ch.map(w => w[2].toUpperCase().replace(/^["“]|["”]$/g, ''));
   const gap = size * 0.28, widths = words.map(t => ctx.measureText(t).width);
   const total = widths.reduce((a, b) => a + b, 0) + gap * (words.length - 1);
-  const cy = H * (vert ? 0.7 : 0.84), fit = Math.min(1, W * 0.88 / total);
-  ctx.translate(W / 2, cy); ctx.scale(pop * fit, pop * fit);
+  // vertical: inside the band phone apps leave clear (168-1330 px of 1920) and left of the like/share rail
+  const cy = H * (vert ? 0.62 : 0.84), fit = Math.min(1, W * (vert ? 0.8 : 0.88) / total);
+  ctx.translate(vert ? W * 0.46 : W / 2, cy); ctx.scale(pop * fit, pop * fit);
   let x = -total / 2;
   ch.forEach((w, i) => {
     ctx.globalAlpha = 1;
@@ -523,7 +524,7 @@ window.renderFrame = function (f) {
   else { dust(f, sh); grade(0.92, 1.08, 1.0); vignette(0.7, 0.35); }
   // transitions & accents
   if (sh.jump) flash(1 - seg(f, sh.a, sh.a + 7));
-  if (sh === shots[0]) flash(1 - seg(f, INTRO, INTRO + 6), '#000');
+  if (INTRO && sh === shots[0]) flash(1 - seg(f, INTRO, INTRO + 6), '#000');
   if (sh.react === 'appear' && sh.beat != null && f >= sh.beat && f < sh.beat + 5) glitch(0.8);
   if (sh.twist && sh.beat != null && f >= sh.beat && f < sh.beat + 6) { glitch(1.2); flash(0.25 * (1 - bT(f, sh, 6))); }
   if (sh.scene === 'cctv' && f < sh.a + 6 && sh.a > 0 && (shots[shots.indexOf(sh) - 1] || {}).scene !== 'cctv') staticNoise(0.8 * (1 - seg(f, sh.a, sh.a + 6)));

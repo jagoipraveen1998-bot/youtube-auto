@@ -95,6 +95,7 @@ jobs:
             output_horror/cover.jpg
             output_horror/story.json
             output_horror/description.txt
+            output_horror/REVIEW.txt
           retention-days: 3
           if-no-files-found: ignore
 

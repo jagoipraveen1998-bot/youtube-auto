@@ -346,7 +346,7 @@ def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_
     (work / "casting.json").write_text(json.dumps(casting, indent=1), encoding="utf-8")
     log("Cast: " + ", ".join(f"{k}={v['kokoro_voice']}" for k, v in casting["voices"].items() if k != "narrator"))
     # brand: a short logo sting before the story, the signature laugh after it
-    intro = 0.8 if fmt == "vertical" else 2.0
+    intro = 0.0 if fmt == "vertical" else 2.0     # a Short's first frame is the hook, never the logo (brand stays in the outro)
     if voice_file:
         voice, timing = voice_from_file(story, voice_file)
     else:
@@ -389,6 +389,11 @@ def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_
     video = encode(frames_dir, master, work.parent / ("short.mp4" if fmt == "vertical" else "video.mp4"))
     thumb = cover(frames_dir, plan, work.parent / "cover.jpg", title)
     shutil.rmtree(frames_dir, ignore_errors=True)
+    try:                                          # measured review (HyperFrames craft rules): REVIEW.txt next to the video
+        from .review import review
+        review(story, plan, video, fmt)
+    except Exception as exc:
+        log(f"Review skipped: {exc}")
     return video, thumb, plan
 
 

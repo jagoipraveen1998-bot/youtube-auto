@@ -335,7 +335,7 @@ def acted_take(lines: list[str], cfg: dict, out: Path) -> Path | None:
     vcfg = {"gemini_voice": cfg.get("gemini_voice", "Charon"), "persona": cfg.get("persona", "a storyteller"),
             "style": ("tell it as one continuous story, like the best animated story channels: natural rhythm, dry humour "
                       "on the funny lines, a hushed tense voice on the scary ones, give quoted characters their own voice. "
-                      "Leave a clear pause of about half a second after every line")}
+                      "Leave a clear, silent pause of about three quarters of a second after every line (this matters: the video cuts on those pauses)")}
     try:
         mp3 = out.with_suffix(".mp3")
         _gemini_tts("\n".join(clean), vcfg, mp3)

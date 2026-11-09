@@ -54,11 +54,20 @@ SCENES = {
 }
 
 PROMPT = """You write ORIGINAL short animated HORROR-COMEDY stories for the YouTube Shorts channel "CreepyCartoonTales".
-Style: creepy AND funny, never gory. A cartoon everyman narrates in the first person with dry, self-mocking humour
-(think: a hero who is scared but complains about the wrong things). Aim for at least two real laughs: an absurd
-detail, a deadpan line, or the villain being petty, polite or ridiculous. A paradox hook, escalating unease with one or two
-genuinely funny beats (a silly reaction, a deadpan line, a misunderstanding), a pivot, and an ironic twist in the very
-last words that is both creepy and a little funny. Characters TALK: use 4 to 7 short dialogue lines (the hero, the
+Style: creepy AND a little funny, never gory. It is told in the SECOND PERSON, present tense, so the viewer is IN the
+situation: "Imagine...", "You...", "But what if...". The hero on screen is "you". The storyteller talks straight to the
+viewer like a friend daring them. Shape:
+  1. "Imagine..." a normal, relatable moment with a real feeling (you lost your dog, it is your birthday, you are home alone).
+  2. Something good or ordinary happens, and the viewer feels it ("you feel like the happiest person in the world").
+  3. "But what if..." one small wrong detail, then it escalates step by step, each detail creepier and more specific.
+  4. The reveal that turns it upside down.
+  5. The last lines ask the viewer directly what they would do, then tease the next part.
+Example of the voice (do not copy the story): "Imagine your dog went missing two days ago, and suddenly you hear
+barking outside. You rush out and there it is. You feel like the happiest person in the world. But what if, after you
+bring your dog inside, it goes to the bathroom the same way you do? Then, while you're sitting there, you hear a voice
+whispering your name. Your dog is standing on two legs. And then, just like that, it drops back onto four. What would
+you do? Part two is coming next, so follow so you don't miss it."
+Keep one or two light funny touches (a deadpan line, an absurdly specific detail). Characters TALK: use 4 to 7 short dialogue lines (the hero, the
 villain, or a side character) between the narration. Spooky fun, safe for teenagers: no blood, no gore, no weapons,
 no self-harm, no real people, no real brands, nothing sexual, no animal harm.
 
@@ -86,12 +95,12 @@ grin (the other grins) | droop (the other or hero looks exhausted) | text_change
 
 Rules:
 - 22 to 28 beats. Each beat is ONE spoken sentence of 3 to 15 words, plain spoken English, contractions, numbers in words.
-  Total 255 to 300 words, so the Short runs about 95 to 115 seconds (never under 90). Build it in three acts: the hook
+  Total 290 to 330 words, so the Short runs about 95 to 115 seconds at a quick storytelling pace (never under 90). Build it in three acts: the hook
   and setup, a middle with at least two escalating scares and two laughs (a false calm, a second encounter), then the
   pivot and twist. Every beat must move the story; no padding or repeated ideas. Use a different villain type and setting mix from the stories already told.
 - Sentence 1 is the hook and must make the viewer need the answer: either a creepy paradox stated as fact, or a
   "why / what happens if" question the story then answers (like "Why my grandma never answers the door after 3AM.").
-  The last sentence is the twist: short, ironic, surprising, and it pays off the hook.
+  {ending}
 - Shoot it like a film: a wide establishing shot each time the scene changes, then close, snap and push_in on reactions.
   Never use the same cam on two beats in a row. Keep most lines short (3 to 10 words) so a new shot comes every 2 to 3
   seconds.
@@ -102,7 +111,7 @@ Rules:
 - Keep text props short and in capitals for cctv/calendar.
 - These stories were already told, write something clearly different: {used}
 
-The hero (the narrator) is always a boy or a young man: the channel has one narrator voice.
+The hero ("you" on screen) is always a boy or a young man: the channel has one storyteller voice.
 Return ONLY JSON:
 {{"title":"YouTube title under 70 characters that opens a question the viewer needs answered (a why / what-if or a paradox), end with #shorts #horror",
   "story_id":"short-slug",
@@ -240,7 +249,7 @@ def repair(story: dict) -> dict:
     return story
 
 
-def write_story(cfg: dict, used: list[str], hint: str | None = None) -> dict:
+def write_story(cfg: dict, used: list[str], hint: str | None = None, part_of: dict | None = None) -> dict:
     from google import genai
     from google.genai import types
 
@@ -255,27 +264,46 @@ def write_story(cfg: dict, used: list[str], hint: str | None = None) -> dict:
         scenes += ("\nObjects and animals for a place beat (\"things\": up to 2, they stand beside the hero): "
                    + ", ".join(things) + ". Use them when the line mentions them; a recurring animal or object makes a "
                    "running joke viewers remember.")
-    prompt = PROMPT.format(scenes=scenes, used="; ".join(used[-60:]) or "none yet")
+    if part_of:
+        ending = ("This is PART 2 of the story below. Line 1 is a one-line recap starting \"Last time...\" and then it "
+                  "continues the SAME situation, the same villain, the same places. Escalate once more, then resolve it with "
+                  "a final twist that is creepy and a little funny. The last two lines ask the viewer what they would have "
+                  "done and invite them to comment and follow for more. Title ends with (Part 2) before the hashtags.\n"
+                  f"PART 1 was: {part_of['title']}\n" + " ".join(part_of["lines"]))
+    else:
+        ending = ("The story stops on a cliffhanger right after the reveal: do NOT resolve it. The last two lines are a "
+                  "direct question to the viewer (\"What would you do?\") and a tease: part two is coming next, so follow. "
+                  "Title is a curiosity hook ending with (Part 1) before the hashtags.")
+    prompt = PROMPT.format(scenes=scenes, used="; ".join(used[-60:]) or "none yet", ending=ending)
     if hint:
         prompt += f"\nFor this story: {hint}\n"
     models = pick_models(client, cfg.get("ai", {}).get("gemini_model", "auto"))
     last = None
     models = models + [m for m in ("gemini-flash-lite-latest", "gemini-2.5-flash-lite", "gemini-2.5-flash") if m not in models]
-    for attempt in range(10):
-        # "503 high demand" is common: rotate through every model, waiting longer each time (~7 min in all)
-        model = models[attempt % len(models)]
+    dead = set()
+    for attempt in range(16):
+        # "503 high demand" is common: rotate through the models that can still answer, waiting longer each time
+        alive = [m for m in models if m not in dead]
+        if not alive:
+            break
+        model = alive[attempt % len(alive)]
         try:
             resp = client.models.generate_content(
                 model=model, contents=prompt,
                 config=types.GenerateContentConfig(response_mime_type="application/json", temperature=1.0))
             story = repair(json.loads(resp.text))
             words = sum(len(b["line"].split()) for b in story["beats"])
-            if not 235 <= words <= 340:
+            if not 260 <= words <= 360:
                 raise ValueError(f"story is {words} words")
             log(f"Story written by {model}: '{story['title']}' ({len(story['beats'])} beats, {words} words)")
             return story
         except Exception as exc:
             last = exc
-            log(f"Gemini attempt {attempt + 1} failed: {exc}")
-            time.sleep(min(70, 8 * (attempt + 1)))
+            msg = str(exc)
+            if "404" in msg or "limit: 0" in msg or "PerDay" in msg:      # gone, or no quota today: stop asking it
+                dead.add(model)
+                log(f"Gemini {model} cannot answer today ({msg[:90]}); skipping it")
+                continue
+            log(f"Gemini attempt {attempt + 1} ({model}) failed: {msg[:200]}")
+            time.sleep(min(60, 10 * (attempt + 1)))
     raise RuntimeError(f"Could not get a story from Gemini: {last}")

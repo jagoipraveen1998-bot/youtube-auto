@@ -62,7 +62,9 @@ def main():
             story = repair(story)
     else:
         try:
-            story = write_story(cfg, hist["stories"])
+            part_of = hist.get("open_part")             # yesterday's cliffhanger gets its Part 2 next
+            story = write_story(cfg, hist["stories"], part_of=part_of)
+            story["part"] = 2 if part_of else 1
         except Exception as exc:
             # Gemini down: use an original backup story that has not been posted yet
             used = {x.split(":")[0] for x in hist["stories"]}
@@ -86,6 +88,8 @@ def main():
     length = check_playable(video, 15, 175)   # Shorts may run up to 3 minutes
 
     full = latest_long_video()
+    if story.get("part") == 2 and hist.get("open_part", {}).get("video_id"):
+        story["description"] = f"Part 1: https://youtube.com/shorts/{hist['open_part']['video_id']}\n" + story["description"]
     description = "\n".join([story["description"], "",
                              *([f"🎬 Full animated horror story: {full['title']} → https://youtu.be/{full['video_id']}", ""] if full else []),
                              "A Creepy Cartoon Tale: an original animated horror short. New horror Shorts every day.",
@@ -112,6 +116,10 @@ def main():
     hist["stories"] = (hist["stories"] + [f"{story['story_id']}: {story['beats'][0]['line']}"])[-300:]
     hist["videos"] = (hist["videos"] + [{"date": today, "title": title, "video_id": video_id,
                                          "length": f"{length:.0f}s"}])[-300:]
+    if story.get("part") == 1:                       # remember the cliffhanger: the next Short is its Part 2
+        hist["open_part"] = {"title": title, "video_id": video_id, "lines": [b["line"] for b in story["beats"]]}
+    elif story.get("part") == 2:
+        hist.pop("open_part", None)
     hist_path.parent.mkdir(parents=True, exist_ok=True)
     hist_path.write_text(json.dumps(hist, indent=2, ensure_ascii=False), encoding="utf-8")
     log(f"Horror Short uploaded: https://youtube.com/shorts/{video_id}")

@@ -21,6 +21,11 @@ def town_places() -> list[str]:
     return sorted(p.stem for p in PLATES_DIR.glob("*.jpg"))
 
 
+def town_things() -> list[str]:
+    """Painted objects and animals of Creepyville that exist today."""
+    return sorted(p.stem for p in (PLATES_DIR.parent / "props").glob("*.png"))
+
+
 SCENES = {
     "place": "a painted location in our own town of Creepyville (set \"place\" to one of the town's places listed below). "
              "The hero stands or walks there and reacts; nothing in the place moves. Use it to open a new location, for travel, "
@@ -106,7 +111,7 @@ Return ONLY JSON:
   "hero":{{"look":"boy|man","outfit":"pj|hoodie|tee|shirt"}},
   "villain":"double|shadow|ghost|doll|neighbour|tall|delivery",
   "cast":[{{"role":"mum"}}],
-  "beats":[{{"line":"...","speaker":"narrator","side":null,"sideExpr":null,"scene":"...","place":"(only for scene place)","cam":"...","focus":"...","hero":{{"pose":"...","expr":"...","expr2":"..."}} or null,
+  "beats":[{{"line":"...","speaker":"narrator","side":null,"sideExpr":null,"scene":"...","place":"(only for scene place)","things":[],"cam":"...","focus":"...","hero":{{"pose":"...","expr":"...","expr2":"..."}} or null,
             "other":{{"state":"...","where":"..."}} or null,"react":"...","beat_word":"...","jump":false,"twist":false,
             "light":"dark|dawn|on|flicker","room":"kitchen|bedroom","prop":"shoes|shirt|none","fx":["rain"],
             "text":{{"top":"","big":"","label":"","time":"","time2":"","from":"","msg":"","msg2":""}}}}]}}
@@ -164,6 +169,7 @@ def repair(story: dict) -> dict:
                "beat_word": str(b.get("beat_word") or "").strip(" .,!?\"'").lower(),
                "jump": bool(b.get("jump")), "twist": bool(b.get("twist")),
                "place": str(b.get("place")) if scene == "place" else None,
+               "things": [t for t in (b.get("things") or []) if t in town_things()][:2] if scene == "place" else [],
                "light": b.get("light") if b.get("light") in {"dark", "dawn", "on", "flicker"} else None,
                "room": "bedroom" if b.get("room") == "bedroom" else "kitchen",
                "prop": b.get("prop") if b.get("prop") in {"shoes", "shirt"} else None,
@@ -244,6 +250,11 @@ def write_story(cfg: dict, used: list[str], hint: str | None = None) -> dict:
     if places:
         scenes += "\nCreepyville places for scene \"place\": " + ", ".join(places) + \
                   ". Set the story in this town; mix painted places with the drawn scenes."
+    things = town_things()
+    if things:
+        scenes += ("\nObjects and animals for a place beat (\"things\": up to 2, they stand beside the hero): "
+                   + ", ".join(things) + ". Use them when the line mentions them; a recurring animal or object makes a "
+                   "running joke viewers remember.")
     prompt = PROMPT.format(scenes=scenes, used="; ".join(used[-60:]) or "none yet")
     if hint:
         prompt += f"\nFor this story: {hint}\n"

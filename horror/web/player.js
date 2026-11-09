@@ -122,6 +122,28 @@ function drawPlate(name, f) {
   const dx = Math.sin(f / 90) * 18, dy = Math.cos(f / 110) * 10;        // the plate breathes slightly: never a frozen still
   ctx.drawImage(im, W / 2 - im.width * k / 2 + dx, H / 2 - im.height * k / 2 + dy, im.width * k, im.height * k);
 }
+const PROPS_IMG = {};           // painted objects and animals (transparent cut-outs), placed beside the hero
+function drawProp(name, x, y, h, f, i) {
+  const im = PROPS_IMG[name]; if (!im) return;
+  const info = (P.propInfo || {})[name] || {};
+  let k = h / im.height, dy = 0, sq = 1;
+  if (info.kind === 'animal') { sq = 1 + 0.02 * Math.sin(f / 7 + i * 2); dy = 0; if (name === 'crow' || name === 'owl') dy = -Math.abs(Math.sin(f / 23 + i)) * 6; }
+  if (name === 'red_balloon') dy = Math.sin(f / 20 + i) * 18;
+  const w = im.width * k, hh = im.height * k * sq;
+  ctx.save(); ctx.fillStyle = 'rgba(0,0,0,0.32)'; ctx.beginPath(); ctx.ellipse(x, y, w * 0.42, Math.max(10, w * 0.06), 0, 0, 7); ctx.fill(); ctx.restore();
+  ctx.drawImage(im, x - w / 2, y - hh + dy, w, hh);
+}
+function drawThings(sh, f, front) {
+  const things = sh.things || [];
+  things.forEach((t, i) => {
+    const info = (P.propInfo || {})[t] || {}, big = info.kind === 'vehicle';
+    if (big === front) return;                                  // vehicles stand behind the hero, the rest beside him
+    // cartoon scale: small things read bigger than life, vehicles stay big behind him
+    const h = big ? info.h * 1.05 : t === 'red_balloon' ? 460 : Math.max(210, (info.h || 200) * 1.7);
+    const x = big ? (i % 2 ? 250 : 820) : t === 'red_balloon' ? (i % 2 ? 190 : 900) : (i % 2 ? 270 : 800), y = big ? 1760 : 1862;
+    drawProp(t, x, y, h, f, i);
+  });
+}
 const SCENES = {
   plate: {
     frames: { wide: [540, 960, 1.0], hero: [540, 1380, 1.6], prop: [540, 900, 1.5] },
@@ -132,8 +154,10 @@ const SCENES = {
       const g = ctx.createLinearGradient(0, 1500, 0, 1920);           // ground the actor: a soft floor shadow
       g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.45)');
       ctx.fillStyle = g; ctx.fillRect(-200, 1500, W + 400, 600);
+      drawThings(sh, f, false);
       const h = heroObj(sh, f, { x: 540, y: 1860, s: 0.8, look: 0, lookY: 0 });
       if (h) { ctx.save(); ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.ellipse(540, 1852, 140, 26, 0, 0, 7); ctx.fill(); ctx.restore(); guy(h); }
+      drawThings(sh, f, true);
     },
     lights(l, f) { light(l, 540, 1350, 760, '#fff4e6', 0.9); light(l, 540, 700, 900, '#dfe6ff', 0.5); },
     glow: [540, 900, 300, '#ffd9a0', 0.12],
@@ -587,8 +611,8 @@ window.renderFrame = function (f) {
   grain(sh.scene === 'cctv' ? 0.05 : 0.08);
 };
 (function () {                  // ready once every plate image has decoded
-  const list = Object.entries(P.plates || {});
+  const list = Object.entries(P.plates || {}).map(([k, v]) => [k, v, PLATES]).concat(Object.entries(P.props || {}).map(([k, v]) => [k, v, PROPS_IMG]));
   if (!list.length) { window.ready = true; return; }
   let left = list.length;
-  for (const [k, src] of list) { const im = new Image(); im.onload = im.onerror = () => { PLATES[k] = im.width ? im : null; if (--left === 0) window.ready = true; }; im.src = src; }
+  for (const [k, src, into] of list) { const im = new Image(); im.onload = im.onerror = () => { into[k] = im.width ? im : null; if (--left === 0) window.ready = true; }; im.src = src; }
 })();

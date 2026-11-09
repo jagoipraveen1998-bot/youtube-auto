@@ -11,7 +11,7 @@
   "frog":          {"h": 70,  "kind": "animal", "prompt": "a small green frog sitting, big eyes"},
   "goat":          {"h": 360, "kind": "animal", "prompt": "a white goat standing side-on, little horns, staring"},
   "red_car":       {"h": 380, "kind": "vehicle", "prompt": "a small old red hatchback car, side view, headlights off"},
-  "blue_car":      {"h": 400, "kind": "vehicle", "prompt": "a blue family sedan car, three-quarter view"},
+  "blue_car":      {"h": 400, "kind": "vehicle", "prompt": "a plain blue family car with no stickers and no writing, three-quarter view"},
   "police_car":    {"h": 410, "kind": "vehicle", "prompt": "a small-town police car, black and white, light bar on the roof, side view"},
   "school_bus":    {"h": 640, "kind": "vehicle", "prompt": "a yellow school bus, side view"},
   "ice_cream_van": {"h": 600, "kind": "vehicle", "prompt": "an old pastel ice cream van with a big cone on the roof, side view, slightly creepy"},

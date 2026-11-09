@@ -213,6 +213,23 @@ def voice_from_file(story: dict, path: Path) -> tuple[np.ndarray, list[dict]]:
 PLATE_DIR = Path(__file__).resolve().parent.parent / "horror" / "plates"
 PLATE_SCENES = {"hallway": "hallway_night", "kitchen": "kitchen_night", "front_door": "front_door_night",
                 "bedroom": "bedroom_night", "window": "street_night"}
+PROP_DIR = Path(__file__).resolve().parent.parent / "horror" / "props"
+PROP_INFO_FILE = Path(__file__).resolve().parent.parent / "horror" / "library" / "props.json"
+
+
+def prop_assets(story: dict) -> tuple[dict, dict]:
+    """Data URLs and sizes of the objects and animals this story's painted shots use."""
+    have = {p.stem for p in PROP_DIR.glob("*.png")}
+    info = json.loads(PROP_INFO_FILE.read_text(encoding="utf-8"))["props"] if PROP_INFO_FILE.exists() else {}
+    names = set()
+    for b in story["beats"]:
+        b["things"] = [t for t in (b.get("things") or []) if t in have][:2] if b.get("scene") == "plate" else []
+        names.update(b["things"])
+    import base64
+    data = {n: "data:image/png;base64," + base64.b64encode((PROP_DIR / f"{n}.png").read_bytes()).decode() for n in names}
+    return data, {n: {"h": info.get(n, {}).get("h", 200), "kind": info.get(n, {}).get("kind", "object")} for n in names}
+
+
 PLATE_REACTS = {"none", "gag", "jolt", "droop", "ring", "knock"}
 
 
@@ -471,6 +488,10 @@ def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_
     plan = build_plan(story, timing, story_end, casting, fmt, intro_f=int(round(intro * FPS)))
     if plates:
         plan["plates"] = plates
+        props, info = prop_assets(story)
+        if props:
+            plan["props"], plan["propInfo"] = props, info
+            log("Objects and animals: " + ", ".join(sorted(props)))
     plan["intro"] = int(round(intro * FPS))
     if story.get("cover_beat") is not None:      # a storyboard can pick its thumbnail shot
         cs = plan["shots"][story["cover_beat"]]

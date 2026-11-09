@@ -53,7 +53,7 @@ def publish_reel(video: Path, caption: str, cover_offset_ms: int = 2500) -> str 
     try:
         ig = reel_copy(video)
         repo = os.environ.get("GITHUB_REPOSITORY")
-        if repo:                                  # Meta's direct upload is unreliable: host the file briefly, let Instagram fetch it
+        if repo and os.environ.get("IG_METHOD") != "resumable":   # Meta's direct upload is unreliable: host the file briefly, let Instagram fetch it
             tag = f"ig-reel-{os.environ.get('GITHUB_RUN_ID', int(time.time()))}-{int(time.time())}"
             subprocess.run(["gh", "release", "create", tag, str(ig), "--repo", repo, "--prerelease",
                             "--title", "temporary Instagram upload", "--notes", "Deleted automatically after posting."], check=True)

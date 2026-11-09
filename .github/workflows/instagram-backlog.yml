@@ -8,6 +8,9 @@ on:
       count:
         description: "How many videos to post now"
         default: "1"
+      method:
+        description: "Optional: resumable to upload directly instead of by link"
+        default: ""
       pick:
         description: "Optional: part of a file name to post first"
         default: ""
@@ -36,6 +39,7 @@ jobs:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           GH_TOKEN: ${{ github.token }}
           IG_PICK: ${{ inputs.pick }}
+          IG_METHOD: ${{ inputs.method }}
         run: python -m autotube.ig_backlog "${{ inputs.count || '1' }}"
       - name: Remember what was posted
         if: always()

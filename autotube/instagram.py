@@ -43,6 +43,27 @@ def reel_copy(video: Path) -> Path:
 
 
 def publish_reel(video: Path, caption: str, cover_offset_ms: int = 2500) -> str | None:
+    """Post a Reel. Meta accepts some files only by link and others only by direct upload (2207077 / transcoding
+    errors), so try one way and then the other."""
+    first = os.environ.get("IG_METHOD") or "link"
+    other = "link" if first == "resumable" else "resumable"
+    try:
+        for i, method in enumerate((first, other)):
+            os.environ["IG_METHOD"] = method
+            mid = _publish_once(video, caption, cover_offset_ms)
+            if mid:
+                return mid
+            if i == 0:
+                log(f"Instagram: trying again with the {other} upload method")
+        return None
+    finally:
+        if first == "link":
+            os.environ.pop("IG_METHOD", None)
+        else:
+            os.environ["IG_METHOD"] = first
+
+
+def _publish_once(video: Path, caption: str, cover_offset_ms: int = 2500) -> str | None:
     token = os.environ.get("IG_ACCESS_TOKEN", "").strip()
     if not token:
         log("Instagram: IG_ACCESS_TOKEN not set, skipping the Reel")

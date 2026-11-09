@@ -30,16 +30,40 @@ def ig_caption(title: str, description: str, hashtags: list[str]) -> str:
 
 def reel_copy(video: Path) -> Path:
     """Instagram's API is strict: H.264 high@4.1, fixed bitrate, a keyframe every 2 s, AAC 44.1 kHz stereo, moov first."""
-    out = video.with_name(video.stem + "_ig.mp4")
+    out = video.with_name("reel_ig.mp4")       # a plain name: Meta fails to fetch URLs with dotted names (error 2207077)
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(video), "-c:v", "libx264", "-preset", "medium",
                     "-profile:v", "high", "-level", "4.1", "-pix_fmt", "yuv420p", "-r", "30", "-g", "60", "-keyint_min", "60",
                     "-sc_threshold", "0", "-b:v", "5M", "-maxrate", "6M", "-bufsize", "10M",
-                    "-vf", "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,setsar=1",
+                    "-vf", "scale=1080:1920:force_original_aspect_ratio=decrease:out_color_matrix=bt709:out_range=tv,"
+                    "pad=1080:1920:(ow-iw)/2:(oh-ih)/2,setsar=1",
+                    "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709", "-color_range", "tv",
+                    "-map_metadata", "-1", "-map_chapters", "-1",
                     "-c:a", "aac", "-b:a", "128k", "-ar", "44100", "-ac", "2", "-movflags", "+faststart", str(out)], check=True)
     return out
 
 
 def publish_reel(video: Path, caption: str, cover_offset_ms: int = 2500) -> str | None:
+    """Post a Reel. Meta accepts some files only by link and others only by direct upload (2207077 / transcoding
+    errors), so try one way and then the other."""
+    first = os.environ.get("IG_METHOD") or "link"
+    other = "link" if first == "resumable" else "resumable"
+    try:
+        for i, method in enumerate((first, other)):
+            os.environ["IG_METHOD"] = method
+            mid = _publish_once(video, caption, cover_offset_ms)
+            if mid:
+                return mid
+            if i == 0:
+                log(f"Instagram: trying again with the {other} upload method")
+        return None
+    finally:
+        if first == "link":
+            os.environ.pop("IG_METHOD", None)
+        else:
+            os.environ["IG_METHOD"] = first
+
+
+def _publish_once(video: Path, caption: str, cover_offset_ms: int = 2500) -> str | None:
     token = os.environ.get("IG_ACCESS_TOKEN", "").strip()
     if not token:
         log("Instagram: IG_ACCESS_TOKEN not set, skipping the Reel")
@@ -50,7 +74,7 @@ def publish_reel(video: Path, caption: str, cover_offset_ms: int = 2500) -> str 
     try:
         ig = reel_copy(video)
         repo = os.environ.get("GITHUB_REPOSITORY")
-        if repo:                                  # Meta's direct upload is unreliable: host the file briefly, let Instagram fetch it
+        if repo and os.environ.get("IG_METHOD") != "resumable":   # Meta's direct upload is unreliable: host the file briefly, let Instagram fetch it
             tag = f"ig-reel-{os.environ.get('GITHUB_RUN_ID', int(time.time()))}-{int(time.time())}"
             subprocess.run(["gh", "release", "create", tag, str(ig), "--repo", repo, "--prerelease",
                             "--title", "temporary Instagram upload", "--notes", "Deleted automatically after posting."], check=True)

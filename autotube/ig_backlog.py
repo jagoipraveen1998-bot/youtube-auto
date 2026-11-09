@@ -61,6 +61,9 @@ def main(count: int = 1) -> int:
         return match(a)[0], a
 
     todo = sorted((a for a in assets(repo) if a not in done), key=key)
+    pick = os.environ.get("IG_PICK", "").lower()
+    if pick:                                   # post one chosen file first (testing / a retry)
+        todo = [a for a in todo if pick in a.lower()] + [a for a in todo if pick not in a.lower()]
     log(f"Instagram backlog: {len(todo)} videos waiting, posting {min(count, len(todo))} now")
     tags = load_config()["horror"].get("instagram_hashtags", ["#horror", "#reels"])
     n = 0

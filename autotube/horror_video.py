@@ -223,6 +223,15 @@ def apply_plates(story: dict) -> dict:
     used, last = {}, None
     for b in story["beats"]:
         scene = b.get("scene")
+        if scene == "place" and b.get("place") in have:       # a painted place of our town, chosen by the writer
+            b["plate"], b["scene"] = b["place"], "plate"
+            if not b.get("hero"):
+                b["hero"] = {"pose": "stand", "expr": "curious"}
+            elif b["hero"].get("pose") not in ("stand", "walk", "cheeks", "reach"):
+                b["hero"] = dict(b["hero"], pose="stand")
+            used[b["place"]] = used.get(b["place"], 0) + 1
+            last = b["place"]
+            continue
         name = PLATE_SCENES.get(scene)
         if scene == "kitchen" and b.get("light") == "dawn":
             name = "kitchen_dawn"

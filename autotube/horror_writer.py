@@ -5,6 +5,7 @@ draw, so every story can be animated with no human in the loop. Anything Gemini 
 vocabulary is repaired to a safe default rather than failing the run.
 """
 import json
+from pathlib import Path
 import random
 import re
 import time
@@ -12,7 +13,23 @@ import time
 from .script_writer import pick_models
 from .util import env, log
 
+PLATES_DIR = Path(__file__).resolve().parent.parent / "horror" / "plates"
+
+
+def town_places() -> list[str]:
+    """Painted places of our own town (Creepyville) that exist today; the library grows every day."""
+    return sorted(p.stem for p in PLATES_DIR.glob("*.jpg"))
+
+
+def town_things() -> list[str]:
+    """Painted objects and animals of Creepyville that exist today."""
+    return sorted(p.stem for p in (PLATES_DIR.parent / "props").glob("*.png"))
+
+
 SCENES = {
+    "place": "a painted location in our own town of Creepyville (set \"place\" to one of the town's places listed below). "
+             "The hero stands or walks there and reacts; nothing in the place moves. Use it to open a new location, for travel, "
+             "and for calm or funny beats outdoors. focus: hero or wide",
     "bedroom": "the hero's bedroom at night; the hero sits up in bed (pose sit) or is asleep (pose sleep). "
                "other.where = door | window | beside (standing by the bed). focus can be hero, prop (the nightstand), window, door, other",
     "hallway": "a dark hallway seen from the bedroom door, a glowing kitchen doorway at the end. the hero peeks in from the edge "
@@ -94,7 +111,7 @@ Return ONLY JSON:
   "hero":{{"look":"boy|man","outfit":"pj|hoodie|tee|shirt"}},
   "villain":"double|shadow|ghost|doll|neighbour|tall|delivery",
   "cast":[{{"role":"mum"}}],
-  "beats":[{{"line":"...","speaker":"narrator","side":null,"sideExpr":null,"scene":"...","cam":"...","focus":"...","hero":{{"pose":"...","expr":"...","expr2":"..."}} or null,
+  "beats":[{{"line":"...","speaker":"narrator","side":null,"sideExpr":null,"scene":"...","place":"(only for scene place)","things":[],"cam":"...","focus":"...","hero":{{"pose":"...","expr":"...","expr2":"..."}} or null,
             "other":{{"state":"...","where":"..."}} or null,"react":"...","beat_word":"...","jump":false,"twist":false,
             "light":"dark|dawn|on|flicker","room":"kitchen|bedroom","prop":"shoes|shirt|none","fx":["rain"],
             "text":{{"top":"","big":"","label":"","time":"","time2":"","from":"","msg":"","msg2":""}}}}]}}
@@ -109,7 +126,7 @@ REACTS = {"none", "gag", "jolt", "ring", "knock", "lights_on", "lights_off", "fl
 WHERE = {"bedroom": {"door", "window", "beside"}, "front_door": {"under_door", "peephole"}}
 SCENE_POSE = {"bedroom": {"sit", "sleep"}, "hallway": {"peek"}, "kitchen": {"stand", "walk", "reach", "cheeks"},
               "front_door": {"stand", "cheeks"}, "wardrobe": {"stand", "cheeks"}, "desk": {"stand"},
-              "bathroom": {"stand"}, "closeup": {"stand"}}
+              "bathroom": {"stand"}, "closeup": {"stand"}, "place": {"stand", "walk", "cheeks", "reach"}}
 NO_HERO = {"calendar", "phone", "window", "cctv"}
 
 
@@ -141,12 +158,18 @@ def repair(story: dict) -> dict:
         if not line:
             continue
         scene = b.get("scene") if b.get("scene") in SCENES else "closeup"
+        if scene == "place":
+            pl = str(b.get("place") or "")
+            if pl not in town_places():
+                scene = "closeup"
         out = {"line": line, "scene": scene,
                "cam": b.get("cam") if b.get("cam") in CAMS else "push_in",
                "focus": str(b.get("focus") or "")[:12] or None,
                "react": b.get("react") if b.get("react") in REACTS else "none",
                "beat_word": str(b.get("beat_word") or "").strip(" .,!?\"'").lower(),
                "jump": bool(b.get("jump")), "twist": bool(b.get("twist")),
+               "place": str(b.get("place")) if scene == "place" else None,
+               "things": [t for t in (b.get("things") or []) if t in town_things()][:2] if scene == "place" else [],
                "light": b.get("light") if b.get("light") in {"dark", "dawn", "on", "flicker"} else None,
                "room": "bedroom" if b.get("room") == "bedroom" else "kitchen",
                "prop": b.get("prop") if b.get("prop") in {"shoes", "shirt"} else None,
@@ -223,6 +246,15 @@ def write_story(cfg: dict, used: list[str], hint: str | None = None) -> dict:
 
     client = genai.Client(api_key=env("GEMINI_API_KEY"))
     scenes = "\n".join(f"- {k}: {v}" for k, v in SCENES.items())
+    places = town_places()
+    if places:
+        scenes += "\nCreepyville places for scene \"place\": " + ", ".join(places) + \
+                  ". Set the story in this town; mix painted places with the drawn scenes."
+    things = town_things()
+    if things:
+        scenes += ("\nObjects and animals for a place beat (\"things\": up to 2, they stand beside the hero): "
+                   + ", ".join(things) + ". Use them when the line mentions them; a recurring animal or object makes a "
+                   "running joke viewers remember.")
     prompt = PROMPT.format(scenes=scenes, used="; ".join(used[-60:]) or "none yet")
     if hint:
         prompt += f"\nFor this story: {hint}\n"

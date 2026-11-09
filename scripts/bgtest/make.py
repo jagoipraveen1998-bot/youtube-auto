@@ -17,6 +17,9 @@ SCENES = {
     "hallway_night": "a narrow apartment hallway at 3 AM, a long red runner rug, a door at the far end with warm light leaking under it, deep blue shadows, framed pictures on the walls",
     "kitchen_night": "a small home kitchen at midnight, the light over the stove on, a coffee machine glowing on the counter, a window showing a dark garden, cold blue ambience with one warm pool of light",
     "street_night": "a quiet suburban street at night after rain, wet road reflecting a single orange street lamp, houses with dark windows, fog at the end of the street, full moon",
+    "front_door_night": "the inside of a front door of a small house at night, a coat rack and a shoe rack beside it, a thin line of cold light under the door, a dim hallway lamp, wooden floor",
+    "kitchen_dawn": "a small home kitchen at early dawn, pale blue morning light through the window, a coffee machine on the counter, soft shadows, calm but slightly eerie",
+    "livingroom_night": "a small living room at night lit only by a flickering old TV glow and a floor lamp, a sofa, curtains half open to a dark window, cosy but creepy",
 }
 out = Path("horror/bgtest"); out.mkdir(parents=True, exist_ok=True)
 p = illustrate.Painter(load_config(), out)

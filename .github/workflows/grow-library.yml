@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
   push:
     branches: [creepyville]
-    paths: [horror/library/town.json]
+    paths: [horror/library/town.json, horror/library/props.json, scripts/library/build.py]
 
 permissions:
   contents: write
@@ -18,12 +18,12 @@ concurrency:
 jobs:
   paint:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
-      - run: pip install -q -r requirements.txt
+      - run: pip install -q -r requirements.txt "rembg[cpu]"
       - name: Paint new places
         env:
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
@@ -32,7 +32,7 @@ jobs:
       - name: Keep them
         run: |
           git config user.name "autotube-bot"; git config user.email "actions@users.noreply.github.com"
-          git add horror/plates
+          git add horror/plates horror/props
           git diff --cached --quiet && exit 0
           git commit -m "Creepyville library: new places"
           for i in 1 2 3 4 5; do git pull -q --rebase && git push -q && exit 0; sleep 7; done

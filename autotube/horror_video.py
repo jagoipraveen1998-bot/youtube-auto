@@ -81,6 +81,14 @@ def _phone(audio: np.ndarray, stem: Path) -> np.ndarray:
     return ha.load(out)
 
 
+def _mind(audio: np.ndarray, stem: Path) -> np.ndarray:
+    src, out = stem.with_name(stem.name + "_rawt.wav"), stem.with_name(stem.name + "_mind.wav")
+    ha.save(src, audio)
+    run(["ffmpeg", "-y", "-v", "error", "-i", str(src), "-af",
+         "highpass=f=140,lowpass=f=6500,aecho=0.7:0.55:45|95:0.35|0.22,volume=0.9", "-ar", str(ha.SR), "-ac", "1", str(out)])
+    return ha.load(out)
+
+
 def _muffle(audio: np.ndarray, stem: Path) -> np.ndarray:
     src, out = stem.with_name(stem.name + "_rawm.wav"), stem.with_name(stem.name + "_muff.wav")
     ha.save(src, audio)
@@ -94,14 +102,23 @@ def voice_for_speaker(beat: dict, voices: dict) -> dict:
     return voices.get(sp) or voices.get("narrator")
 
 
-def voice_lines(story: dict, voices: dict, work: Path) -> tuple[np.ndarray, list[dict]]:
+def voice_lines(story: dict, voices: dict, work: Path, intro: float = 0.0) -> tuple[np.ndarray, list[dict]]:
     """Speak each beat in its speaker's voice and join them with natural pauses."""
     from .voice import say
 
     parts, timing = [np.zeros(int(LEAD * ha.SR))], []
     t = LEAD
     beats = story["beats"]
+    late = []
     for i, b in enumerate(beats):
+        if b.get("at") is not None:               # the line must start at this time in the finished video
+            want = float(b["at"]) - intro
+            if want > t + 0.02:                   # early: hold the previous shot a little longer
+                pad = want - t
+                parts.append(np.zeros(int(pad * ha.SR)))   # shots run from start to start, so the last one holds
+                t = want
+            elif want < t - 0.5:
+                late.append(f"beat {i} '{(b.get('line') or '')[:30]}' {t - want:.1f}s late")
         if b.get("silent"):                       # an action beat with no words (a photo, a knock, a door)
             dur = float(b["silent"])
             audio = np.zeros(int(dur * ha.SR))
@@ -109,6 +126,8 @@ def voice_lines(story: dict, voices: dict, work: Path) -> tuple[np.ndarray, list
         else:
             mp3 = work / f"line{i:03d}.mp3"
             vcfg = dict(voice_for_speaker(b, voices))
+            if b.get("style"):                       # how this line is acted (Gemini TTS)
+                vcfg["style"] = b["style"]
             if b.get("vspeed"):
                 vcfg["speed"] = vcfg.get("speed", 1.0) * float(b["vspeed"])
             text = b["line"].replace("*", "")            # *key words* are highlighted in captions, not spoken
@@ -125,6 +144,8 @@ def voice_lines(story: dict, voices: dict, work: Path) -> tuple[np.ndarray, list
                 audio = mix / max(1.0, np.abs(mix).max() / 0.98)
             if b.get("phone"):
                 audio = _phone(audio, work / f"line{i:03d}")
+            if b.get("mind"):                     # a thought: close, intimate, a soft echo inside the head
+                audio = _mind(audio, work / f"line{i:03d}")
             if b.get("muffle"):                   # heard through a closed door
                 audio = _muffle(audio, work / f"line{i:03d}")
             if b.get("gain"):
@@ -155,6 +176,8 @@ def voice_lines(story: dict, voices: dict, work: Path) -> tuple[np.ndarray, list
             t += gap
         if i and i % 25 == 0:
             log(f"Voiced {i}/{len(beats)} lines")
+    if late:
+        log("WARNING lines later than asked: " + "; ".join(late))
     return np.concatenate(parts), timing
 
 
@@ -215,7 +238,7 @@ def build_plan(story: dict, timing: list[dict], total: float, casting: dict, fmt
     return {"frames": frames, "format": fmt, "hero": casting["hero"], "other": casting["other"],
             "cast": casting["cast"], "shots": shots, "series": story.get("series"), "captions": bool(story.get("captions")),
             "music": story.get("music"), "scary": bool(story.get("scary")), "piano": bool(story.get("piano")),
-            "film": bool(story.get("film")), "strings": bool(story.get("strings"))}
+            "film": bool(story.get("film")), "strings": bool(story.get("strings")), "score": bool(story.get("score"))}
 
 
 def render(plan: dict, work: Path, frames_dir: Path, stills: list[int] | None = None) -> None:
@@ -322,12 +345,17 @@ def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_
     casting = cast_story(story, seed, funny=(fmt == "vertical"))
     (work / "casting.json").write_text(json.dumps(casting, indent=1), encoding="utf-8")
     log("Cast: " + ", ".join(f"{k}={v['kokoro_voice']}" for k, v in casting["voices"].items() if k != "narrator"))
+    # brand: a short logo sting before the story, the signature laugh after it
+    intro = 0.0 if fmt == "vertical" else 2.0     # a Short's first frame is the hook, never the logo (brand stays in the outro)
     if voice_file:
         voice, timing = voice_from_file(story, voice_file)
     else:
-        voice, timing = voice_lines(story, casting["voices"], work)
-    # brand: a short logo sting before the story, the signature laugh after it
-    intro = 0.8 if fmt == "vertical" else 2.0
+        voice, timing = voice_lines(story, casting["voices"], work, intro)
+        from . import voice as vmod
+        if story.get("film") and vmod.GEMINI_MISSED:   # a film never mixes acted and robotic voices
+            raise RuntimeError(f"{len(vmod.GEMINI_MISSED)} lines could not be acted by Gemini today (free daily limit); "
+                               "the acted lines are cached, so run again after the limit resets (08:00 UTC). Missing: "
+                               + " | ".join(t[:40] for t in vmod.GEMINI_MISSED))
     outro = 3.2
     laugh = np.zeros(1) if voice_file or story.get("outro_laugh") is False else signature_laugh(work)
     story_end = intro + max(len(voice) / ha.SR, timing[-1]["end"]) + TAIL
@@ -348,6 +376,12 @@ def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_
     plan["outro"] = int(round(total * FPS)) - plan["frames"]
     plan["frames"] = int(round(total * FPS))
     (work / "plan.json").write_text(json.dumps(plan, indent=1), encoding="utf-8")
+    rows = []                                    # a timeline to check every line lands where it was asked for
+    for b, sh in zip(story["beats"], plan["shots"]):
+        mm, ss_ = divmod(sh["a"] / FPS, 60)
+        rows.append(f"{int(mm)}:{ss_:05.2f}  {sh['scene']:<10} {b.get('speaker', ''):<8} {b.get('line', '') or '(' + str(b.get('silent')) + 's)'}")
+    (work.parent / "timeline.txt").write_text("\n".join(rows), encoding="utf-8")
+    log("Timeline:\n" + "\n".join(rows))
     log(f"Plan: {len(plan['shots'])} shots, {plan['frames']} frames ({total:.1f}s, {fmt})")
     master = ha.make_soundtrack(voice, plan, work, seed)
     frames_dir = work / "frames"
@@ -355,6 +389,11 @@ def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_
     video = encode(frames_dir, master, work.parent / ("short.mp4" if fmt == "vertical" else "video.mp4"))
     thumb = cover(frames_dir, plan, work.parent / "cover.jpg", title)
     shutil.rmtree(frames_dir, ignore_errors=True)
+    try:                                          # measured review (HyperFrames craft rules): REVIEW.txt next to the video
+        from .review import review
+        review(story, plan, video, fmt)
+    except Exception as exc:
+        log(f"Review skipped: {exc}")
     return video, thumb, plan
 
 

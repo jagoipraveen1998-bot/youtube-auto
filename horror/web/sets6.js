@@ -73,8 +73,9 @@ function miraObj(x, y, s, f, opt = {}) {
     acc: { starClip: true, creaseL: opt.creaseL || 0, creaseR: opt.creaseR || 0 },
     eyeW: 1.0, pupil: 25, brow: 'flat', mouth: 'flat', blink: 0, look: opt.look ?? 0, lookY: opt.lookY ?? 0, lean: opt.lean || 0 });
   if (opt.alive) { o.skin = '#e2b48c'; o.pupil = 20; }
-  if (opt.smile) { o.mouth = 'smile'; o.lid = 0.1; }
-  if (opt.laugh) { const k = opt.laugh; o.mouth = 'grin'; o.grin = 0.45 + 0.55 * k; o.grinW = 1.15; o.lid = 0.3 + 0.2 * k; o.bob = -18 * k; o.tilt = 0.06 * k; o.acc.creaseL = 1; o.acc.creaseR = 1; }
+  if (opt.smile) { o.mouth = 'smile'; o.lid = 0; o.eyeW = 1.08; o.pupil = 15; }
+  if (opt.laugh) { const k = opt.laugh; o.mouth = 'smile'; o.lid = 0.18 * k; o.eyeW = 1.06; o.pupil = 15; o.bob = -10 * k; o.tilt = 0.05 * Math.sin(f * 0.5) * k + 0.08; o.acc.creaseL = 1; o.acc.creaseR = 1; o._giggle = k; }
+  if (opt.tilt) o.tilt = (o.tilt || 0) + opt.tilt;
   if (opt.alpha != null) o.alpha = opt.alpha;
   return o;
 }
@@ -94,11 +95,23 @@ function miraOpt(sp, f, sh) {                       // smile/laugh timing on the
   }
   return o;
 }
+function miraMouth(m) {                            // her stretched smile drawn over the face
+  if (m.mouth !== 'smile') return;
+  const s = m.s, hx = m.x + Math.sin(m.lean || 0) * 775 * s, hy = m.y - Math.cos(m.lean || 0) * 775 * s;
+  ctx.save(); ctx.translate(hx, hy); ctx.rotate((m.lean || 0) + (m.tilt || 0)); ctx.scale(s, s);
+  const g = m._giggle || 0, w = 92;
+  ctx.fillStyle = m.skin; ctx.beginPath(); ctx.ellipse(0, 150 + (m.bob || 0), 70, 34, 0, 0, 7); ctx.fill();
+  ctx.strokeStyle = INK; ctx.lineWidth = 9; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(-w, 128 + (m.bob || 0)); ctx.quadraticCurveTo(0, 176 + 10 * g + (m.bob || 0), w, 128 + (m.bob || 0)); ctx.stroke();
+  if (g > 0.15) { ctx.fillStyle = '#2a1020'; ctx.beginPath(); ctx.moveTo(-w * 0.6, 138 + (m.bob || 0)); ctx.quadraticCurveTo(0, 150 + 26 * g + (m.bob || 0), w * 0.6, 138 + (m.bob || 0)); ctx.quadraticCurveTo(0, 148 + (m.bob || 0), -w * 0.6, 138 + (m.bob || 0)); ctx.fill(); }
+  ctx.restore();
+}
 function miraSeat(a) { return localPt(a, -205, -515); }
 function miraBack(a, f, opt) {                     // her body and head, leaning out from behind his head
   const ms = a.s * 0.46, [sx, sy] = miraSeat(a);
   const m = miraObj(sx, sy + 175 * ms, ms, f, Object.assign({}, opt, { lean: -0.32 + (a.lean || 0) * 0.5 }));
-  guy(m);
+  const mouth = m.mouth; if (mouth === 'smile') m.mouth = 'none';
+  guy(m); m.mouth = mouth; miraMouth(m);
 }
 function miraFront(a, f, opt) {                    // legs hanging over his chest (bare heels against him), hand on his collar
   const ms = a.s * 0.46, [sx, sy] = miraSeat(a);
@@ -252,6 +265,12 @@ function gBedTopSet(f, sh, a) {
     ctx.beginPath(); ctx.ellipse(dx + 6, dy - 8, 118 + 20 * d, 148 + 25 * d, -0.15, Math.PI * 1.05, Math.PI * 1.75); ctx.stroke();
     for (let i = 0; i < 9; i++) { const an = i / 9 * Math.PI * 2 + 0.3; line(dx + Math.cos(an) * 90, dy + Math.sin(an) * 115, dx + Math.cos(an) * (175 + 40 * d), dy + Math.sin(an) * (215 + 40 * d), 'rgba(60,50,60,0.8)', 4); }
     ctx.restore();
+  }
+  if (sh.ghostSmile && a) {                       // her face, there in the dip for a breath, smiling, then gone
+    const t = (f - sh.a) / Math.max(1, sh.b - sh.a), al = 0.75 * ss(clamp((t - 0.42) / 0.12)) * (1 - ss(clamp((t - 0.78) / 0.1)));
+    if (al > 0.01) { const [dx, dy] = localPt(a, -330, -470);
+      const m = miraObj(dx, dy + 775 * 0.36, 0.36, f, { smile: true, creaseL: 1, creaseR: 1, alpha: al, look: 0, lookY: -0.2 });
+      m.mouth = 'none'; guy(m); m.mouth = 'smile'; ctx.save(); ctx.globalAlpha = al; miraMouth(m); ctx.restore(); }
   }
   sf(rr(690, 150, 540, 180, 60), '#ece6da');                                        // pillow
   if (a) { guy(a); }
@@ -636,7 +655,7 @@ Object.assign(SCENES, {
       light(l, 1310, 760, 520, '#4a8aff', 0.9); light(l, 820, 430, 600, '#6a7ac0', 0.5);                    // the phone screen on his face
       const p = ((f - sh.a) % 75) / 75;                            // streetlights sliding across him
       light(l, 1900 - p * 2400, 300, 520, '#ffb05a', 0.85 * Math.sin(Math.PI * p));
-      if (sh.headlights && after(f, sh)) { const k = ss(bT(f, sh, 40)); light(l, 1800 - 300 * k, 520, 600 + 2600 * k, '#fffaf0', 0.6 + 2.4 * k); }
+      if (sh.headlights && (after(f, sh) || sh.headlights === 'full')) { const k = sh.headlights === 'full' ? 0.6 + 0.4 * ss(bT(f, sh, 20)) : ss(bT(f, sh, 40)); light(l, 1800 - 300 * k, 520, 600 + 2600 * k, '#fffaf0', 0.6 + 2.4 * k); }
     },
   },
   gNav: { frames: { wide: [960, 540, 1.0], banner: [800, 220, 1.6] }, ambient: '#4a4f66', draw(f, sh) { gNavSet(f, sh); },

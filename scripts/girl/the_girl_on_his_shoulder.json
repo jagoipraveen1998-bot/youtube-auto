@@ -4,6 +4,7 @@
  "music": "drone",
  "scary": true,
  "piano": true,
+ "score": true,
  "outro_laugh": false,
  "story_id": "the-girl-on-his-shoulder",
  "title": "The Girl on His Shoulder | Animated Horror Short Film",
@@ -33,6 +34,8 @@
    "role": "arjun",
    "gender": "m",
    "voice": "am_michael",
+   "gemini_voice": "Charon",
+   "persona": "Arjun, a 29-year-old Indian man, soft-spoken, natural Indian English accent",
    "omni": "male, young adult, low pitch, indian accent",
    "style": {
     "skin": "#b98059",
@@ -52,6 +55,8 @@
    "role": "rohan",
    "gender": "m",
    "voice": "am_liam",
+   "gemini_voice": "Fenrir",
+   "persona": "Rohan, a 28-year-old Indian man, warm, expressive and emotional, natural Indian English accent",
    "omni": "male, young adult, indian accent",
    "style": {
     "skin": "#c8915f",
@@ -70,6 +75,8 @@
    "role": "rao",
    "gender": "f",
    "voice": "bf_emma",
+   "gemini_voice": "Kore",
+   "persona": "Dr. Leena Rao, a calm Indian woman doctor in her forties, Indian English accent",
    "omni": "female, middle-aged, indian accent",
    "style": {
     "skin": "#a8714f",
@@ -88,17 +95,24 @@
    "role": "mira",
    "gender": "f",
    "voice": "af_sky",
-   "omni": "female, child, whisper"
+   "omni": "female, child, whisper",
+   "gemini_voice": "Leda",
+   "persona": "Mira, the ghost of a 12-year-old Indian girl, tiny breathy voice"
   },
   {
    "role": "nav",
    "gender": "f",
    "voice": "af_nova",
-   "omni": "female, young adult, british accent"
+   "omni": "female, young adult, british accent",
+   "gemini_voice": "Zephyr",
+   "persona": "a car navigation voice, clear and neutral"
   },
   {
    "role": "cw1",
    "gender": "f",
+   "voice": "af_nicole",
+   "gemini_voice": "Aoede",
+   "persona": "an Indian woman office colleague in her twenties, Indian English accent",
    "style": {
     "skin": "#c8915f",
     "hair": "#20161a",
@@ -112,6 +126,9 @@
   {
    "role": "cw2",
    "gender": "m",
+   "voice": "am_eric",
+   "gemini_voice": "Puck",
+   "persona": "a cheerful Indian man office colleague, Indian English accent",
    "style": {
     "skin": "#a8714f",
     "hair": "#1a1418",
@@ -151,50 +168,52 @@
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 4.6,
+   "silent": 1.92,
    "scene": "black",
    "titleCard": {
     "text": "THE GIRL ON HIS SHOULDER"
    },
-   "strings": 0.35,
+   "cue": "lullaby",
    "cam": "wide",
    "focus": "wide"
   },
   {
-   "line": "",
-   "speaker": "narrator",
+   "line": "Ahhh... today I feel very tired. What a stressful day.",
+   "speaker": "arjun",
    "react": "none",
-   "silent": 5.2,
+   "style": "exhausted, heavy breath, low energy, a long tired sigh before speaking, talking to himself while carrying a heavy box up the stairs",
+   "gap": 0.66,
    "scene": "gStairs",
    "cam": "pan",
    "focus": "arjun",
    "focus2": "wide",
    "steps": "wood",
-   "stepsEnd": null,
+   "cue": "calm",
+   "nosubs": false,
    "crew": {
     "arjun": {
      "expr": "tired",
      "look": 0.6,
      "step": [
       0,
-      4.4,
-      4
+      4.4
      ],
      "box": true
     }
    },
-   "fadeIn": 12
+   "fadeIn": 12,
+   "at": 6.3
   },
   {
    "line": "",
    "speaker": "narrator",
    "react": "grab",
-   "silent": 3.0,
+   "silent": 1.86,
    "scene": "gStairs",
    "cam": "close",
    "focus": "gap",
    "beat_at": 0.5,
-   "strings": 0.45,
+   "cue": "uneasy",
    "crew": {
     "arjun": {
      "expr": "tired",
@@ -208,10 +227,11 @@
    }
   },
   {
-   "line": "",
-   "speaker": "narrator",
+   "line": "What was that? Something strange happened to me.",
+   "speaker": "arjun",
    "react": "none",
-   "silent": 4.0,
+   "style": "startled and shaken, catching his breath, puzzled and a little scared, half whispering",
+   "gap": 1.97,
    "scene": "gStairs",
    "cam": "medium",
    "focus": "arjun",
@@ -222,27 +242,30 @@
      "look": 0.6,
      "step": [
       4.7,
-      9.5,
-      14
+      9.5
      ],
+     "stepDelay": 40,
      "box": true,
      "lean": [
       0.06,
       0.0
      ]
     }
-   }
+   },
+   "at": 14.0
   },
   {
-   "line": "",
-   "speaker": "narrator",
+   "line": "I feel tired. I should sleep fast.",
+   "speaker": "arjun",
    "react": "keys",
-   "silent": 4.4,
+   "style": "exhausted, heavy breath, low energy, a long tired sigh before speaking, mumbling as he collapses onto the bed, eyes closing",
+   "gap": 1.3,
    "scene": "gBedTop",
    "cam": "push_in",
    "focus": "hero",
    "fan": true,
-   "beat_at": 0.06,
+   "beat_at": 0.05,
+   "cue": "calm",
    "crew": {
     "arjun": {
      "expr": "tired",
@@ -250,17 +273,18 @@
      "lid": [
       0.5,
       1.0,
-      20,
-      90
+      30,
+      100
      ]
     }
-   }
+   },
+   "at": 20.0
   },
   {
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 3.6,
+   "silent": 2.5,
    "scene": "gBedTop",
    "cam": "close",
    "focus": "face",
@@ -277,13 +301,36 @@
    "line": "",
    "speaker": "narrator",
    "react": "dip",
-   "silent": 5.4,
+   "silent": 2.13,
    "scene": "gBedTop",
    "cam": "push_in",
    "focus": "dip",
    "fan": true,
-   "beat_at": 0.3,
-   "strings": 0.55,
+   "beat_at": 0.35,
+   "cue": "lullaby",
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": 0,
+     "sleep": true
+    }
+   },
+   "at": 29.0
+  },
+  {
+   "line": "Hehehe...",
+   "speaker": "mira",
+   "react": "none",
+   "nosubs": true,
+   "gain": 0.45,
+   "gap": 0.5,
+   "style": "a little girl's soft, breathy, creepy giggle, very quiet, close to the ear",
+   "scene": "gBedTop",
+   "cam": "close",
+   "focus": "dip",
+   "fan": true,
+   "dip": true,
+   "ghostSmile": true,
    "crew": {
     "arjun": {
      "expr": "tired",
@@ -292,8 +339,8 @@
      "headRoll": [
       0,
       0.18,
-      60,
-      110
+      10,
+      50
      ]
     }
    }
@@ -302,19 +349,23 @@
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 1.6,
+   "silent": 1.07,
    "scene": "black",
    "cam": "wide",
-   "focus": "wide"
+   "focus": "wide",
+   "cue": "silence"
   },
   {
-   "line": "",
-   "speaker": "narrator",
+   "line": "Haaaaah... I am getting late. I have to go to the office.",
+   "speaker": "arjun",
    "react": "face",
-   "silent": 6.0,
+   "style": "waking up groggy, a big long yawn first, then hurried and stressed",
+   "gap": 0.4,
    "scene": "gBedSide",
    "cam": "medium",
    "focus": "hero",
+   "cue": "calm",
+   "beat_at": 0.4,
    "crew": {
     "arjun": {
      "expr": "tired",
@@ -329,37 +380,13 @@
      "expr2": "worried"
     }
    },
-   "beat_at": 0.4
-  },
-  {
-   "line": "",
-   "speaker": "narrator",
-   "react": "none",
-   "silent": 4.4,
-   "scene": "gStairs",
-   "day": true,
-   "cam": "medium",
-   "focus": "arjun",
-   "fixed": true,
-   "crew": {
-    "arjun": {
-     "expr": "tired",
-     "look": -0.4,
-     "step": [
-      9,
-      4
-     ],
-     "stepHold": true,
-     "tiltR": 0.55,
-     "lookY": 0.5
-    }
-   }
+   "at": 35.0
   },
   {
    "line": "",
    "speaker": "narrator",
    "react": "catch",
-   "silent": 2.6,
+   "silent": 1.2,
    "scene": "gOffice",
    "mode": "day",
    "cam": "medium",
@@ -384,9 +411,34 @@
    }
   },
   {
+   "line": "Carefully, buddy! What happened to you? You look so tired.",
+   "speaker": "rohan",
+   "react": "none",
+   "style": "a quick reflex 'carefully!', then genuinely concerned and caring, a friend checking on his buddy",
+   "scene": "gOffice",
+   "mode": "day",
+   "cam": "close",
+   "focus": "rohan",
+   "crew": {
+    "arjun": {
+     "expr": "tired",
+     "look": 1,
+     "x": 820,
+     "tiltR": 0.5
+    },
+    "rohan": {
+     "expr": "worried",
+     "look": -1,
+     "x": 1160,
+     "cupHold": true
+    }
+   }
+  },
+  {
    "line": "First night in the new place that bad?",
    "speaker": "rohan",
    "react": "none",
+   "style": "light teasing with a small laugh, warm",
    "scene": "gOffice",
    "mode": "day",
    "cam": "close",
@@ -410,6 +462,7 @@
    "line": "That's the thing. I slept straight through.",
    "speaker": "arjun",
    "react": "none",
+   "style": "puzzled and tired, a weak half laugh, he doesn't understand it himself",
    "scene": "gOffice",
    "mode": "day",
    "cam": "close",
@@ -433,7 +486,7 @@
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 2.2,
+   "silent": 1.0,
    "scene": "gOffice",
    "mode": "day",
    "cam": "medium",
@@ -457,19 +510,19 @@
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 4.4,
+   "silent": 1.0,
    "scene": "gOffice",
    "mode": "meeting",
    "cam": "push_in",
    "focus": "arjun",
-   "piano_hint": true,
+   "cue": "uneasy",
    "crew": {
     "cw1": {
      "x": 420,
      "noLegs": true,
      "y": 860,
      "s": 0.5,
-     "expr": "calm",
+     "expr": "curious",
      "look": 1
     },
     "arjun": {
@@ -487,28 +540,73 @@
      "noLegs": true,
      "y": 860,
      "s": 0.5,
-     "expr": "calm",
+     "expr": "curious",
      "look": -1
     },
     "cw3": {
      "x": 1740,
-     "expr": "calm",
+     "expr": "doubt",
      "look": -1,
      "armL": 1.6
     }
    }
   },
   {
+   "line": "Why does he look tired?",
+   "speaker": "cw1",
+   "react": "none",
+   "style": "a gossiping whisper to the colleague next to her, judging, hushed",
+   "gap": 0.6,
+   "scene": "gOffice",
+   "mode": "meeting",
+   "cam": "medium",
+   "focus": "wide",
+   "crew": {
+    "cw1": {
+     "x": 420,
+     "noLegs": true,
+     "y": 860,
+     "s": 0.5,
+     "expr": "curious",
+     "look": 1
+    },
+    "arjun": {
+     "expr": "tired",
+     "look": 0,
+     "x": 900,
+     "noLegs": true,
+     "y": 860,
+     "s": 0.5,
+     "nod": true,
+     "tiltR": 0.6
+    },
+    "cw2": {
+     "x": 1360,
+     "noLegs": true,
+     "y": 860,
+     "s": 0.5,
+     "expr": "curious",
+     "look": -1
+    },
+    "cw3": {
+     "x": 1740,
+     "expr": "doubt",
+     "look": -1,
+     "armL": 1.6
+    }
+   },
+   "at": 58.0
+  },
+  {
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 4.0,
+   "silent": 4.04,
    "scene": "gStairs",
    "office": true,
    "cam": "wide",
    "focus": "wide",
    "steps": "concrete",
-   "stepsEnd": null,
    "crew": {
     "arjun": {
      "expr": "tired",
@@ -524,15 +622,18 @@
    }
   },
   {
-   "line": "",
-   "speaker": "narrator",
+   "line": "I have to check with a doctor for my pain.",
+   "speaker": "arjun",
    "react": "boxdown",
-   "silent": 4.0,
+   "mind": true,
+   "subItalic": true,
+   "style": "his own thoughts, quiet, worried, tired, rubbing his shoulder",
+   "gap": 1.15,
+   "beat_word": "doctor",
    "scene": "gOffice",
    "mode": "day",
    "cam": "medium",
    "focus": "arjun",
-   "beat_at": 0.5,
    "crew": {
     "arjun": {
      "expr": "tired",
@@ -542,34 +643,16 @@
      "tiltR": 0.8,
      "lookY": 0.6
     }
-   }
-  },
-  {
-   "line": "",
-   "speaker": "narrator",
-   "react": "none",
-   "silent": 3.0,
-   "strings": 0.4,
-   "scene": "gOffice",
-   "mode": "day",
-   "cam": "close",
-   "focus": "arjun",
-   "crew": {
-    "arjun": {
-     "expr": "tired",
-     "look": 0,
-     "x": 900,
-     "bag": "floor",
-     "tiltR": 0.8
-    }
-   }
+   },
+   "at": 66.0
   },
   {
    "line": "",
    "speaker": "narrator",
    "react": "arm",
-   "silent": 4.2,
+   "silent": 3.83,
    "beat_at": 0.72,
+   "cue": "uneasy",
    "scene": "gExam",
    "cam": "medium",
    "focus": "wide",
@@ -594,6 +677,7 @@
    "line": "Does it hurt when you lift it?",
    "speaker": "rao",
    "react": "none",
+   "style": "calm, kind, professional doctor",
    "scene": "gExam",
    "cam": "close",
    "focus": "rao",
@@ -618,7 +702,7 @@
    "line": "It doesn't hurt. It feels like somebody's leaning on me.",
    "speaker": "arjun",
    "react": "none",
-   "strings": 0.3,
+   "style": "confused and uneasy, slowly, the last words almost a whisper",
    "scene": "gExam",
    "cam": "close",
    "focus": "arjun",
@@ -643,7 +727,7 @@
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 1.8,
+   "silent": 1.56,
    "scene": "gExam",
    "cam": "medium",
    "focus": "rao",
@@ -669,6 +753,7 @@
    "line": "Your blood tests and the checks we did today look normal. Come back if the heaviness gets worse. I want to follow up either way.",
    "speaker": "rao",
    "react": "none",
+   "style": "reassuring and gentle, but a little puzzled underneath",
    "scene": "gExam",
    "cam": "close",
    "focus": "rao",
@@ -693,7 +778,7 @@
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 1.6,
+   "silent": 1.38,
    "scene": "gExam",
    "cam": "close",
    "focus": "arjun",
@@ -718,7 +803,7 @@
    "line": "",
    "speaker": "narrator",
    "react": "chair",
-   "silent": 2.6,
+   "silent": 2.33,
    "beat_at": 0.3,
    "scrape": true,
    "scene": "gExam",
@@ -752,10 +837,10 @@
   {
    "line": "",
    "speaker": "narrator",
-   "react": "face",
-   "silent": 1.8,
+   "react": "boom",
+   "silent": 1.78,
    "beat_at": 0.2,
-   "strings": 0.5,
+   "cue": "dread",
    "scene": "gExam",
    "cam": "close",
    "focus": "rao",
@@ -780,7 +865,8 @@
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 3.6,
+   "silent": 2.88,
+   "cue": "festive",
    "scene": "gOffice",
    "mode": "diwali",
    "cam": "pan",
@@ -802,10 +888,10 @@
    }
   },
   {
-   "line": "",
-   "speaker": "narrator",
+   "line": "Hey, buddy, you're late! Let's take a picture.",
+   "speaker": "rohan",
    "react": "none",
-   "silent": 2.8,
+   "style": "happy, energetic, calling out across a festive office party",
    "scene": "gOffice",
    "mode": "diwali",
    "cam": "medium",
@@ -835,12 +921,14 @@
      "x": 1460,
      "expr": "relieved"
     }
-   }
+   },
+   "at": 102.0
   },
   {
    "line": "One photo, then you can go home.",
    "speaker": "rohan",
    "react": "none",
+   "style": "friendly, coaxing, a little pleading",
    "scene": "gOffice",
    "mode": "diwali",
    "cam": "close",
@@ -860,11 +948,10 @@
    }
   },
   {
-   "line": "",
-   "speaker": "narrator",
-   "react": "timer",
-   "silent": 4.0,
-   "beat_at": 0.88,
+   "line": "Smileeee!",
+   "speaker": "cw2",
+   "react": "none",
+   "style": "cheerful photographer, a long stretched playful 'smileee', loud",
    "scene": "gOffice",
    "mode": "diwali",
    "cam": "wide",
@@ -890,7 +977,47 @@
      "look": 0,
      "x": 1200,
      "tiltR": 0.8,
-     "smileAt": 72
+     "smileAt": 40
+    },
+    "cw3": {
+     "x": 1440,
+     "expr": "relieved"
+    }
+   },
+   "at": 109.0
+  },
+  {
+   "line": "",
+   "speaker": "narrator",
+   "react": "timer",
+   "silent": 1.2,
+   "beat_at": 0.75,
+   "scene": "gOffice",
+   "mode": "diwali",
+   "cam": "wide",
+   "focus": "wide",
+   "crew": {
+    "cw1": {
+     "x": 470,
+     "expr": "relieved"
+    },
+    "cw2": {
+     "x": 720,
+     "expr": "relieved",
+     "armR": 0.5
+    },
+    "rohan": {
+     "expr": "relieved",
+     "look": 0,
+     "x": 960,
+     "armR": 0.4
+    },
+    "arjun": {
+     "expr": "tired",
+     "look": 0,
+     "x": 1200,
+     "tiltR": 0.8,
+     "smileAt": 40
     },
     "cw3": {
      "x": 1440,
@@ -902,20 +1029,21 @@
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 1.4,
+   "silent": 1.0,
    "scene": "black",
    "cam": "wide",
    "focus": "wide",
    "titleCard": {
     "text": "LATER"
-   }
+   },
+   "cue": "silence"
   },
   {
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 3.8,
-   "strings": 0.35,
+   "silent": 1.0,
+   "cue": "uneasy",
    "scene": "gPhoto",
    "cam": "wide",
    "focus": "wide",
@@ -939,9 +1067,8 @@
    "line": "",
    "speaker": "narrator",
    "react": "zoom",
-   "silent": 3.4,
+   "silent": 1.2,
    "beat_at": 0.1,
-   "strings": 0.55,
    "scene": "gPhoto",
    "cam": "wide",
    "focus": "wide",
@@ -965,10 +1092,10 @@
    "line": "",
    "speaker": "narrator",
    "react": "reveal",
-   "silent": 5.2,
+   "silent": 2.6,
    "beat_at": 0.2,
    "twist": true,
-   "strings": 0.9,
+   "cue": "dread",
    "whispers": true,
    "scene": "gPhoto",
    "cam": "wide",
@@ -994,12 +1121,11 @@
    ]
   },
   {
-   "line": "",
-   "speaker": "narrator",
+   "line": "Something is sitting on Arjun's shoulder... Ohhh God. I have to inform him. He is in danger.",
+   "speaker": "rohan",
    "react": "face",
-   "silent": 2.4,
-   "beat_at": 0.3,
-   "strings": 0.7,
+   "style": "terrified, breathless whisper, voice shaking, panicking more with every word",
+   "cue": "tension",
    "heart": true,
    "scene": "gOffice",
    "mode": "night",
@@ -1010,18 +1136,19 @@
      "expr": "realize",
      "look": 0,
      "x": 960,
+     "expr2": "dread",
      "pushGlasses": true,
-     "lookY": 0.4,
-     "freeze": true
+     "lookY": 0.4
     }
-   }
+   },
+   "beat_word": "God",
+   "at": 117.0
   },
   {
    "line": "",
    "speaker": "narrator",
    "react": "none",
    "silent": 4.2,
-   "strings": 0.6,
    "scene": "gPhoto",
    "cam": "wide",
    "focus": "wide",
@@ -1045,37 +1172,43 @@
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 1.8,
-   "heart": "accel",
+   "silent": 6.5,
+   "cue": "tension",
+   "heart": true,
    "scene": "gOffice",
    "mode": "night",
-   "cam": "close",
+   "cam": "medium",
    "focus": "rohan",
    "crew": {
     "rohan": {
      "expr": "dread",
-     "look": 0.3,
-     "x": 960,
-     "lookY": 0.4
+     "look": 0.7,
+     "x": 1180,
+     "phone": "up",
+     "lookY": 0.3
     }
    }
   },
   {
-   "line": "",
-   "speaker": "narrator",
+   "line": "Something happened in his new house. Let's browse and find some clues about the house.",
+   "speaker": "rohan",
    "react": "none",
-   "silent": 3.0,
+   "mind": true,
+   "subItalic": true,
+   "style": "his own racing thoughts, nervous, determined, quick",
+   "gap": 0.8,
    "scene": "gScreen",
    "page": "listing",
    "cam": "push_in",
    "focus": "wide",
-   "typing": true
+   "typing": true,
+   "at": 136.0
   },
   {
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 3.2,
+   "silent": 2.98,
    "scene": "gScreen",
    "page": "search",
    "cam": "medium",
@@ -1086,50 +1219,51 @@
    "line": "",
    "speaker": "narrator",
    "react": "boom",
-   "silent": 3.6,
+   "silent": 3.37,
    "scene": "gScreen",
    "page": "news",
    "cam": "push_in",
    "focus": "headline",
-   "beat_at": 0.15,
-   "strings": 0.7
+   "beat_at": 0.15
   },
   {
    "line": "",
    "speaker": "narrator",
    "react": "sting",
-   "silent": 4.4,
+   "silent": 3.97,
    "scene": "gScreen",
    "page": "news",
    "cam": "push_in",
    "focus": "portrait",
    "beat_at": 0.35,
    "whispers": true,
-   "strings": 0.7
+   "cue": "lullaby"
   },
   {
-   "line": "",
-   "speaker": "narrator",
+   "line": "Pick up the call, Arjun... It's urgent.",
+   "speaker": "rohan",
    "react": "ringback",
-   "silent": 3.4,
+   "style": "desperate, pacing, phone to his ear, begging under his breath",
+   "gap": 0.99,
+   "cue": "tension",
    "scene": "gCall",
    "call": "ringing",
    "cam": "push_in",
    "focus": "screen",
-   "beat_at": 0.05
+   "beat_at": 0.02,
+   "at": 151.0
   },
   {
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 3.2,
+   "silent": 2.95,
    "scene": "gBedTop",
    "phoneGlow": "blink",
    "dip": true,
    "fan": false,
    "cam": "medium",
    "focus": "phone",
-   "strings": 0.6,
    "crew": {
     "arjun": {
      "expr": "tired",
@@ -1143,7 +1277,7 @@
    "line": "",
    "speaker": "narrator",
    "react": "vm",
-   "silent": 1.8,
+   "silent": 1.59,
    "scene": "gCall",
    "call": "voicemail",
    "cam": "close",
@@ -1154,7 +1288,7 @@
    "line": "Arjun, call me back. I found something in the photo. It's from the house.",
    "speaker": "rohan",
    "react": "none",
-   "strings": 0.5,
+   "style": "urgent voicemail, scared, trying to stay calm but his voice cracks",
    "scene": "gOffice",
    "mode": "night",
    "cam": "close",
@@ -1169,11 +1303,11 @@
    }
   },
   {
-   "line": "",
-   "speaker": "narrator",
+   "line": "I have to go fast.",
+   "speaker": "rohan",
    "react": "keys",
-   "silent": 1.6,
-   "beat_at": 0.4,
+   "style": "panicked, grabbing his keys, to himself, rushed",
+   "beat_at": 0.1,
    "scene": "gOffice",
    "mode": "night",
    "cam": "medium",
@@ -1187,14 +1321,14 @@
       1500
      ]
     }
-   }
+   },
+   "at": 166.0
   },
   {
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 4.0,
-   "strings": 0.45,
+   "silent": 2.82,
    "scene": "gDrive",
    "cam": "medium",
    "focus": "hero",
@@ -1216,13 +1350,14 @@
    "scene": "gNav",
    "cam": "push_in",
    "focus": "banner",
-   "subItalic": true
+   "subItalic": true,
+   "style": "calm, flat satnav announcement"
   },
   {
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 2.2,
+   "silent": 1.7,
    "indicator": true,
    "scene": "gDrive",
    "cam": "medium",
@@ -1240,7 +1375,7 @@
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 2.0,
+   "silent": 1.7,
    "scene": "gSign",
    "cam": "wide",
    "focus": "wide",
@@ -1250,7 +1385,7 @@
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 2.0,
+   "silent": 1.56,
    "indicator": true,
    "grip": [
     0,
@@ -1271,11 +1406,10 @@
   {
    "line": "",
    "speaker": "narrator",
-   "react": "horn",
-   "silent": 2.8,
+   "react": "face",
+   "silent": 1.2,
    "headlights": true,
-   "whiteout": true,
-   "beat_at": 0.7,
+   "beat_at": 0.15,
    "scene": "gDrive",
    "cam": "close",
    "focus": "hero",
@@ -1285,7 +1419,7 @@
      "look": 0,
      "expr2": "shock",
      "lookTo": 1,
-     "lookAt": 18,
+     "lookAt": 4,
      "armL": 0.55,
      "armR": 0.55,
      "headGlare": true
@@ -1293,24 +1427,49 @@
    }
   },
   {
+   "line": "Ohhhhh God!",
+   "speaker": "rohan",
+   "react": "horn",
+   "style": "a real terrified scream, headlights rushing at him, pure panic",
+   "gap": 0.45,
+   "headlights": "full",
+   "whiteout": true,
+   "beat_word": "God",
+   "scene": "gDrive",
+   "cam": "close",
+   "focus": "hero",
+   "crew": {
+    "rohan": {
+     "expr": "scream",
+     "look": 1,
+     "armL": 0.55,
+     "armR": 0.55,
+     "glare": 0.9
+    }
+   },
+   "at": 180.0
+  },
+  {
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 4.4,
+   "silent": 3.3,
    "scene": "black",
    "cam": "wide",
    "focus": "wide",
    "mute": true,
    "tinnitus": true,
    "monitor": "fadein",
-   "bpm": 88
+   "bpm": 88,
+   "cue": "silence"
   },
   {
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 3.8,
+   "silent": 2.13,
    "steps": "concrete",
+   "cue": "dread",
    "scene": "gHospBed",
    "monitor": true,
    "bpm": 92,
@@ -1349,7 +1508,7 @@
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 4.4,
+   "silent": 2.42,
    "steps": "concrete",
    "scene": "gHospPov",
    "monitor": true,
@@ -1371,9 +1530,34 @@
    }
   },
   {
-   "line": "They called me this morning. I saw your missed calls on the way here.",
+   "line": "Ohhh, mate... are you better now?",
    "speaker": "arjun",
    "react": "none",
+   "style": "relieved to see his friend alive, emotional, soft, almost tearful",
+   "scene": "gHospPov",
+   "monitor": true,
+   "bpm": 92,
+   "cam": "medium",
+   "focus": "face",
+   "crew": {
+    "arjun": {
+     "expr": "worried",
+     "look": 0,
+     "x": 960,
+     "y": 1290,
+     "s": 1.05,
+     "glassesBag": true,
+     "tiltR": 0.6,
+     "lookY": 0.5
+    }
+   },
+   "at": 190.0
+  },
+  {
+   "line": "They called me this morning.",
+   "speaker": "arjun",
+   "react": "none",
+   "style": "quiet, worried",
    "scene": "gHospPov",
    "monitor": true,
    "bpm": 92,
@@ -1396,7 +1580,7 @@
    "line": "",
    "speaker": "narrator",
    "react": "chair",
-   "silent": 1.8,
+   "silent": 1.39,
    "beat_at": 0.25,
    "scene": "gHospPov",
    "monitor": true,
@@ -1419,9 +1603,32 @@
    }
   },
   {
+   "line": "Why was it so urgent? I saw your missed call on the way here.",
+   "speaker": "arjun",
+   "react": "none",
+   "style": "worried and confused, gentle, leaning in",
+   "scene": "gHospPov",
+   "monitor": true,
+   "bpm": 92,
+   "cam": "close",
+   "focus": "face",
+   "crew": {
+    "arjun": {
+     "expr": "worried",
+     "look": 0,
+     "x": 960,
+     "y": 1290,
+     "s": 1.05,
+     "tiltR": 0.95,
+     "lookY": 0.5
+    }
+   }
+  },
+  {
    "line": "What did you need to tell me?",
    "speaker": "arjun",
    "react": "none",
+   "style": "softly, patiently, a little afraid of the answer",
    "scene": "gHospPov",
    "monitor": true,
    "bpm": 92,
@@ -1443,9 +1650,9 @@
    "line": "",
    "speaker": "narrator",
    "react": "reveal",
-   "silent": 3.2,
-   "beat_at": 0.62,
-   "strings": 1.0,
+   "silent": 2.97,
+   "beat_at": 0.6,
+   "cue": "lullaby",
    "scene": "gHospPov",
    "monitor": true,
    "bpm": 92,
@@ -1472,9 +1679,8 @@
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 3.6,
+   "silent": 3.09,
    "whispers": true,
-   "strings": 0.9,
    "scene": "gHospPov",
    "monitor": true,
    "bpm": 92,
@@ -1500,9 +1706,8 @@
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 3.2,
+   "silent": 2.52,
    "heart": "accel",
-   "strings": 0.8,
    "scene": "gHospBed",
    "monitor": true,
    "bpm": 92,
@@ -1538,40 +1743,34 @@
    }
   },
   {
-   "line": "",
-   "speaker": "narrator",
+   "line": "Save... yourself.",
+   "speaker": "rohan",
    "react": "none",
-   "silent": 1.4,
-   "scene": "gHospPov",
+   "style": "barely able to speak, weak, hoarse, injured, a desperate faint whisper",
+   "gain": 0.8,
+   "gap": 0.8,
+   "scene": "gHospBed",
    "monitor": true,
    "bpm": 92,
-   "cam": "push_in",
+   "cam": "close",
    "focus": "face",
    "crew": {
-    "arjun": {
-     "expr": "worried",
-     "look": 0,
-     "x": 960,
-     "y": 1290,
-     "s": 1.05,
-     "tiltR": 0.95,
-     "lookY": 0.5,
-     "lean": [
-      0,
-      0.04
-     ],
-     "mira": {
-      "look": 0,
-      "lookY": 0.3
-     }
+    "rohan": {
+     "expr": "dread",
+     "look": -0.6,
+     "neckBrace": true,
+     "noGlasses": true,
+     "freeze": true,
+     "lookY": -0.4
     }
-   }
+   },
+   "at": 211.0
   },
   {
    "line": "I'm here. Take your time.",
    "speaker": "arjun",
    "react": "none",
-   "strings": 0.5,
+   "style": "kind, didn't understand, soothing, gentle",
    "scene": "gHospPov",
    "monitor": true,
    "bpm": 92,
@@ -1597,7 +1796,7 @@
    "line": "",
    "speaker": "narrator",
    "react": "none",
-   "silent": 3.8,
+   "silent": 3.6,
    "scene": "gHospPov",
    "monitor": true,
    "bpm": 92,
@@ -1615,21 +1814,23 @@
      "mira": {
       "look": 0,
       "lookY": 0.3,
-      "creaseAt": 14
+      "creaseAt": 14,
+      "tilt": 0.06
      }
     }
    }
   },
   {
-   "line": "Heh... heh heh.",
+   "line": "Hehehe...",
    "speaker": "mira",
    "react": "none",
    "nosubs": true,
-   "gain": 0.75,
+   "gain": 0.6,
+   "style": "a little girl's soft breathy giggle, delighted and creepy, quiet",
    "scene": "gHospPov",
    "monitor": true,
    "bpm": 92,
-   "cam": "close",
+   "cam": "push_in",
    "focus": "mira",
    "crew": {
     "arjun": {
@@ -1672,14 +1873,11 @@
    }
   },
   {
-   "line": "Heh heh heh heh!",
+   "line": "Hehehehehe...",
    "speaker": "mira",
    "react": "none",
    "nosubs": true,
-   "layer": {
-    "semitones": -1.0,
-    "gain": 0.5
-   },
+   "style": "the little girl's giggle grows, breathy and delighted, slowly louder",
    "scene": "gHospPov",
    "monitor": true,
    "bpm": 92,
@@ -1703,15 +1901,17 @@
    }
   },
   {
-   "line": "Heh heh...",
+   "line": "Hehe...",
    "speaker": "mira",
    "react": "none",
    "nosubs": true,
-   "gain": 0.5,
+   "gain": 0.45,
+   "style": "one last soft giggle fading away",
    "scene": "black",
    "cam": "wide",
    "focus": "wide",
-   "mute": true
+   "mute": true,
+   "cue": "silence"
   },
   {
    "line": "",
@@ -1724,5 +1924,5 @@
    "mute": true
   }
  ],
- "cover_beat": 33
+ "cover_beat": 35
 }

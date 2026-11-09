@@ -162,6 +162,135 @@ def _omnivoice(text: str, vcfg: dict, out: Path) -> tuple[float, list[dict]]:
     return media_duration(out), words
 
 
+# ---------------------------------------------------------------- Gemini TTS (acted, emotional delivery)
+_GEMINI_OFF = False
+GEMINI_TTS_MODELS = ["gemini-3.1-flash-tts-preview", "gemini-2.5-flash-preview-tts", "gemini-2.5-pro-preview-tts"]
+
+
+def _trim(a, thr=0.012, pad=0.04):
+    import numpy as np
+    idx = np.flatnonzero(np.abs(a) > thr)
+    if not len(idx):
+        return a
+    p = int(pad * SR)
+    return a[max(0, idx[0] - p): min(len(a), idx[-1] + p)]
+
+
+_GEMINI_NEXT: dict = {}        # model -> earliest time the next request may go out (free tier is a few per minute)
+_GEMINI_DEAD: set = set()      # models with no quota left today / not available on this key
+GEMINI_CACHE = Path(__import__("os").environ.get("GEMINI_VOICE_CACHE", "voice_cache"))
+
+
+def _quota_info(r) -> tuple[float, bool]:
+    """From a 429 reply: how long Google asks us to wait, and whether the limit is a daily (or zero) one."""
+    import re
+    wait, daily = 0.0, False
+    try:
+        for d in r.json().get("error", {}).get("details", []):
+            if "retryDelay" in d:
+                wait = float(re.sub(r"[^0-9.]", "", d["retryDelay"]) or 0)
+            for v in d.get("violations", []):
+                q = (v.get("quotaId", "") + v.get("quotaMetric", "")).lower()
+                if "perday" in q or "per_day" in q:
+                    daily = True
+    except Exception:
+        pass
+    if "limit: 0" in r.text:
+        daily = True
+    return wait, daily
+
+
+def _gemini_tts(text: str, vcfg: dict, out: Path) -> tuple[float, list[dict]]:
+    """An acted line: Gemini TTS performs the words with the character's voice and this line's emotion.
+
+    Acted takes are cached (voice_cache/, kept between workflow runs), so a re-render only asks for new or
+    changed lines. Requests are paced to the free-tier per-minute limit and wait as long as Google asks."""
+    global _GEMINI_OFF
+    import base64
+    import hashlib
+    import os
+    import time
+    import numpy as np
+    import requests
+    import soundfile as sf
+
+    who = vcfg.get("persona", "a young man")
+    style = vcfg.get("style") or "natural, conversational"
+    voice = vcfg.get("gemini_voice", "Charon")
+    prompt = (f"Voice: {who}. Delivery: {style}. Perform it like a real person reacting in the moment, "
+              f"not like a narrator. Speak exactly these words and nothing else:\n{text}")
+    key = hashlib.sha1(f"{voice}|{prompt}".encode()).hexdigest()[:20]
+    cached = GEMINI_CACHE / f"{key}.wav"
+    wav = out.with_name(out.stem + "_g.wav")
+    if cached.exists():
+        a, _ = sf.read(cached, dtype="float32")
+        sf.write(wav, a, SR)
+        words = _estimate_words(text, a)
+        _encode(wav, out, float(vcfg.get("gemini_semitones", 0.0)))
+        wav.unlink(missing_ok=True)
+        log(f"Acted line (cached, {voice}): {text[:50]}")
+        return media_duration(out), words
+
+    body = {"contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": {"responseModalities": ["AUDIO"], "speechConfig": {"voiceConfig": {
+                "prebuiltVoiceConfig": {"voiceName": voice}}}}}
+    last = None
+    deadline = time.time() + 600            # up to 10 minutes per line before using the backup voice
+    attempt = 0
+    while time.time() < deadline:
+        alive = [m for m in GEMINI_TTS_MODELS if m not in _GEMINI_DEAD]
+        if not alive:
+            _GEMINI_OFF = True
+            raise RuntimeError(f"Gemini TTS: no model has quota left today ({last})")
+        model = min(alive, key=lambda m: _GEMINI_NEXT.get(m, 0))   # the model that is free soonest
+        pause = _GEMINI_NEXT.get(model, 0) - time.time()
+        if pause > 0:
+            time.sleep(pause)
+        attempt += 1
+        try:
+            r = requests.post(f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+                              headers={"x-goog-api-key": os.environ["GEMINI_API_KEY"]}, json=body, timeout=120)
+            _GEMINI_NEXT[model] = time.time() + 21          # about 3 requests a minute per model
+            if r.status_code == 429:
+                wait, daily = _quota_info(r)
+                if daily:
+                    _GEMINI_DEAD.add(model)
+                    log(f"Gemini TTS ({model}): daily quota used up; not asking it again this run ({r.text[:300]})")
+                else:
+                    _GEMINI_NEXT[model] = time.time() + max(21, wait + 1)
+                    log(f"Gemini TTS ({model}): busy, waiting {max(21, wait + 1):.0f}s")
+                last = f"429 {r.text[:160]}"
+                continue
+            if r.status_code == 404 or "not supported" in r.text.lower():
+                _GEMINI_DEAD.add(model)
+                last = f"{r.status_code} {r.text[:160]}"
+                continue
+            if r.status_code in (400, 403):
+                raise ValueError(f"{r.status_code} {r.text[:200]}")
+            r.raise_for_status()
+            part = r.json()["candidates"][0]["content"]["parts"][0]
+            a = np.frombuffer(base64.b64decode(part["inlineData"]["data"]), dtype="<i2").astype(np.float32) / 32768.0
+            a = _trim(a)
+            if len(a) < SR * 0.2:
+                raise RuntimeError("Gemini returned almost no audio")
+            GEMINI_CACHE.mkdir(parents=True, exist_ok=True)
+            sf.write(cached, a, SR)
+            sf.write(wav, a, SR)
+            words = _estimate_words(text, a)
+            _encode(wav, out, float(vcfg.get("gemini_semitones", 0.0)))
+            wav.unlink(missing_ok=True)
+            log(f"Acted line ({model}, {voice}): {text[:50]}")
+            return media_duration(out), words
+        except ValueError as exc:                 # the request itself is refused: retrying will not help
+            _GEMINI_OFF = True
+            raise RuntimeError(f"Gemini TTS refused the request: {exc}")
+        except Exception as exc:
+            last = exc
+            log(f"Gemini TTS ({model}) attempt {attempt} failed: {str(exc)[:160]}")
+            time.sleep(min(30, 5 * attempt))
+    raise RuntimeError(f"Gemini TTS failed after 10 minutes: {last}")
+
+
 # ---------------------------------------------------------------- Edge (backup)
 async def _speak(text: str, voice: str, rate: str, out: Path, pitch: str = "+0Hz") -> list[dict]:
     import edge_tts
@@ -197,10 +326,20 @@ def speak_words(text: str, voice: str, rate: str, pitch: str, out: Path) -> tupl
 
 
 # ---------------------------------------------------------------- what callers use
+GEMINI_MISSED: list = []      # lines meant to be acted by Gemini that got the backup voice instead
+
+
 def say(text: str, vcfg: dict, out: Path) -> tuple[float, list[dict]]:
     """Speak "text" in this character's voice. Returns (duration_seconds, word timings)."""
-    global _KOKORO_OFF, _OMNI_OFF
+    global _KOKORO_OFF, _OMNI_OFF, _GEMINI_OFF
     vcfg = vcfg or {}
+    if vcfg.get("gemini_voice"):
+        if not _GEMINI_OFF:
+            try:
+                return _gemini_tts(TAG.sub("", text).strip() if not vcfg.get("keep_tags") else text, vcfg, out)
+            except Exception as exc:
+                log(f"Gemini TTS unavailable ({exc}); this line uses the backup voice")
+        GEMINI_MISSED.append(text)
     if vcfg.get("omni") and not _OMNI_OFF:
         for attempt in range(2):
             try:

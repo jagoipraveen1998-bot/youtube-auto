@@ -100,7 +100,7 @@ def cast_story(story: dict, seed: int, funny: bool = False) -> dict:
         if kind == "double":
             other.pop("look")
     side = {}
-    for c in story.get("cast", [])[:8]:
+    for c in story.get("cast", [])[:12]:
         role = c.get("role")
         g, d = ROLES.get(role, ("x", {}))
         g = c.get("gender") or g
@@ -168,6 +168,9 @@ def cast_story(story: dict, seed: int, funny: bool = False) -> dict:
     for role, over in (story.get("voice_over") or {}).items():   # e.g. the villain speaks with a cast member's voice, lower
         base = voices.get(over.get("like", role), voices.get(role, {}))
         voices[role] = dict(base, **{k: v for k, v in over.items() if k != "like"})
+    for c in story.get("cast", [])[:12]:                      # acted voices: Gemini TTS with a persona per character
+        if c.get("gemini_voice") and c["role"] in voices:
+            voices[c["role"]].update(gemini_voice=c["gemini_voice"], persona=c.get("persona", ""))
     for k, v in voices.items():
         v.setdefault("engine", "kokoro")
         v["kokoro_lang"] = "b" if v["kokoro_voice"].startswith("b") else "a"

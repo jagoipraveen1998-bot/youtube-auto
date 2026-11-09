@@ -69,9 +69,17 @@ jobs:
             echo "CHROME_PATH=$(command -v google-chrome || command -v google-chrome-stable || command -v chromium)" >> "$GITHUB_ENV"
           fi
 
+      - name: Bring back acted voice lines from earlier runs
+        uses: actions/cache/restore@v4
+        with:
+          path: voice_cache
+          key: gemini-voices-${{ github.run_id }}
+          restore-keys: gemini-voices-
+
       - name: Make the long video
         timeout-minutes: 300
         env:
+          GEMINI_VOICE_CACHE: ${{ github.workspace }}/voice_cache
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
@@ -84,6 +92,13 @@ jobs:
           [ -n "$TITLE" ] && ARGS+=(--title "$TITLE")
           [ "$MODE" = "no-upload" ] && ARGS+=(--no-upload)
           python run_horror_long.py "${ARGS[@]}"
+
+      - name: Keep acted voice lines for the next run
+        if: always() && hashFiles('voice_cache/**') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: voice_cache
+          key: gemini-voices-${{ github.run_id }}
 
       - name: Keep the video for 3 days
         if: always()

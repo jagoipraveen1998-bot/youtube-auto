@@ -262,6 +262,13 @@
       "video_id": "L2e40YfzTAo",
       "length": "114s",
       "instagram_id": "18132719359687661"
+    },
+    {
+      "date": "2026-11-10 19:49",
+      "title": "Something Was Sitting On His Shoulder | Animated Horror Short Film",
+      "video_id": "u7ONH_GYJo4",
+      "from_queue": true,
+      "publish_at": null
     }
   ],
   "long_videos": [
@@ -271,6 +278,11 @@
       "video_id": "VHmMDrPZ5Lc",
       "script": "the_room_we_never_had.txt",
       "length": "9.6 min"
+    },
+    {
+      "date": "2026-11-10",
+      "title": "Something Was Sitting On His Shoulder | Animated Horror Short Film",
+      "video_id": "u7ONH_GYJo4"
     }
   ]
 }

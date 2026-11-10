@@ -25,5 +25,12 @@
   "And outside, very softly, the ice cream song starts again.",
   "What would you do?",
   "Part two is coming next. Follow, so you don't miss it."
- ]
+ ],
+ "star": {
+  "thing": "ice_cream_van",
+  "names": [
+   "van"
+  ],
+  "pronouns": false
+ }
 }

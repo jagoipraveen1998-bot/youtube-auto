@@ -170,6 +170,11 @@
    "h": 520,
    "kind": "object",
    "prompt": "A humming retro snack vending machine casting a sickly green fluorescent glow, filled with suspiciously mysterious glowing soda cans."
+  },
+  "dog_standing": {
+   "h": 420,
+   "kind": "animal",
+   "prompt": "the same friendly scruffy brown dog with floppy ears and a red collar, standing upright on its two hind legs like a person, front paws hanging down, eerie still pose, full body"
   }
  }
 }

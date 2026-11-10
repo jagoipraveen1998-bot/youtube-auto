@@ -24,5 +24,12 @@
   "*Then one of them pops. And behind it, there's an eye. Looking straight at you.",
   "What would you do?",
   "Part two is coming next. Follow, so you don't miss it."
- ]
+ ],
+ "star": {
+  "thing": "red_balloon",
+  "names": [
+   "balloons"
+  ],
+  "pronouns": false
+ }
 }

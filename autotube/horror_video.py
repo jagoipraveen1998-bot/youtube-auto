@@ -224,6 +224,8 @@ def prop_assets(story: dict) -> tuple[dict, dict]:
     names = set()
     for b in story["beats"]:
         b["things"] = [t for t in (b.get("things") or []) if t in have][:2] if b.get("scene") == "plate" else []
+        if (story.get("star") or {}).get("thing") in DRAWN_PETS:
+            b["things"] = [t for t in b["things"] if t not in DRAWN_PETS and t != "dog_standing"]
         names.update(b["things"])
     import base64
     data = {n: "data:image/png;base64," + base64.b64encode((PROP_DIR / f"{n}.png").read_bytes()).decode() for n in names}
@@ -232,14 +234,187 @@ def prop_assets(story: dict) -> tuple[dict, dict]:
 
 PLATE_REACTS = {"none", "gag", "jolt", "droop", "ring", "knock"}
 
+# Words that name a thing we have a painted cut-out of. If a line says it, the viewer must SEE it in that shot.
+THING_WORDS = {
+    "dog": ["dog", "dogs", "puppy", "pup", "doggy"], "black_cat": ["cat", "cats", "kitten"], "rabbit": ["rabbit", "bunny"],
+    "crow": ["crow", "crows", "raven"], "owl": ["owl"], "deer": ["deer"], "raccoon": ["raccoon"], "frog": ["frog"],
+    "goat": ["goat"], "goose": ["goose", "geese"], "possum": ["possum", "opossum"],
+    "red_car": ["car", "cars"], "police_car": ["police"], "school_bus": ["bus"], "ice_cream_van": ["van"],
+    "bicycle": ["bicycle", "bike", "cycle"], "skateboard": ["skateboard"], "school_bag": ["bag", "backpack"],
+    "suitcase": ["suitcase"], "umbrella": ["umbrella"], "lantern": ["lantern"], "flashlight": ["flashlight", "torch"],
+    "teddy_bear": ["teddy"], "creepy_doll": ["doll"], "red_balloon": ["balloon"], "pumpkin": ["pumpkin"],
+    "mailbox": ["mailbox", "letterbox"], "trash_can": ["bin", "dustbin"], "shopping_cart": ["trolley", "cart"],
+    "traffic_cone": ["cone"], "old_tv": ["tv", "television"], "garden_gnome": ["gnome"], "vending_machine": ["vending"],
+}
+PRONOUNS = {"he", "him", "his", "she", "her", "it", "its", "they", "them"}
+DRAWN_PETS = {"dog"}       # animals drawn as full actors (horror/web/pet.js), not pasted cut-outs
+
+
+ACTIONS = [   # (kind, words): an incident in the line is drawn and animated as it happens
+    ("door_slam", ["slams", "slam", "door shuts", "closes the door", "shut the door", "shuts the door"]),
+    ("door_open", ["open the door", "opens the door", "door opens", "door creaks open", "door swings open",
+                   "you open it", "door is open", "pull the door open"]),
+    ("knock", ["knock"]),
+    ("fight", ["fight", "wrestle", "struggle", "punch", "kick", "tackle", "attacks", "jumps on you", "pins you"]),
+    ("chase", ["chases", "chasing", "runs after", "run for your life", "you run away", "running for your life",
+               "run for it", "you run. ", "you run!", "you sprint", "after you"]),
+    ("grab", ["grabs", "grab you", "hand on your shoulder", "pulls you", "drags you", "catches your"]),
+    ("fall", ["you fall", "you trip", "you slip", "fall down"]),
+    ("hide", ["you hide", "hiding", "you duck behind"]),
+]
+
+
+def action_spec(line: str, next_line: str, story: dict) -> dict | None:
+    """The incident this line describes (door opening, a fight, a chase...), or None."""
+    l = " " + line.lower() + " "
+    kind = next((k for k, ws in ACTIONS if any(w in l for w in ws)), None)
+    if not kind:
+        return None
+    star = (story.get("star") or {})
+    who = "pet" if star.get("thing") in DRAWN_PETS else \
+        ("double" if (story.get("other") or {}).get("kind") == "double" else "shadow")
+    spec = {"kind": kind, "who": who}
+    if kind == "door_open":
+        n = next_line.lower()
+        names = [x.lower() for x in star.get("names", [])]
+        if who == "pet" and any(k in n for k in ("two legs", "hind legs", "standing")):
+            spec["reveal"] = "pet_tall" if "tall" in n else "pet_up"
+        elif who == "pet" and (any(x in n for x in names) or " he " in f" {n} "):
+            spec["reveal"] = "pet"
+        elif any(k in n for k in ("nobody", "no one", "empty", "nothing")):
+            spec["reveal"] = "empty"
+        else:
+            spec["reveal"] = "eyes" if who == "pet" else "shadow"
+    return spec
+
+
+def pet_spec(line: str, twist: bool) -> dict:
+    """What the dog DOES in this line, read literally: the shot acts the words out."""
+    l = line.lower()
+    has = lambda *ks: any(k in l for k in ks)
+    you = l.startswith("you ") or has(" you hug", "you give", "you run to", "you open", "you pet", "you call")
+    if has("missing", "poster"):
+        return {"insert": "poster"}
+    if has("collar", " tag"):
+        return {"insert": "tag"}
+    if has("dinner", "food", "bowl", "doesn't touch", "won't eat", "doesn't eat"):
+        return {"insert": "bowl"}
+    if has("scratch", "claw marks"):
+        return {"insert": "scratch"}
+    spec = {"pose": "sit", "expr": "calm", "frame": "duo" if you else "full"}
+    if has("two legs", "hind legs", "stands up", "standing there", "stood"):
+        spec.update(pose="up", expr="stare", frame="full")
+        if has("behind you", "too tall", "taller"):
+            spec.update(pose="tall", expr="grin", frame="duo")
+    elif has("onto four", "back down", "drops"):
+        spec.update(pose="stand", expr="stare", frame="full")
+    elif has("wag", "muddy", "tired", "there he is", "there she is"):
+        spec.update(pose="sit", expr="happy", wag=1.6, enter=True, frame="full")
+    elif has("he runs", "she runs", "it runs", "running around", "races", "jumps", "chases"):
+        spec.update(pose="run", expr="happy")
+    elif has("walks away", "walks off", "leaves"):
+        spec.update(pose="back", expr="calm", frame="full")
+    elif has("walks", "walk ", "follows", "trots"):
+        spec.update(pose="walk", expr="calm", frame="full")
+    elif has("watching", "watches", "stares", "staring", "looks at you", "smiling", "smiles", "grin"):
+        spec.update(pose="sit", expr="grin" if has("smil", "grin") else "stare", frame="face")
+    elif has("sleeps", "asleep", "sleeping"):
+        spec.update(pose="sit", expr="happy", wag=0, frame="full")
+    elif has("whine", "hug", "cries"):
+        spec.update(pose="sit", expr="sad", frame="duo")
+    if has("dark", "shadow", "silhouette", "moon"):
+        spec["sil"] = True
+    if has("tilt"):
+        spec["tilt"] = 0.35
+    if twist and spec.get("pose") == "sit":
+        spec.update(expr="grin")
+    return spec
+
+
+def must_show(story: dict) -> list[list[str]]:
+    """For each beat, the things its line names (or the story's star animal, by name or by he/him after it appears)."""
+    have = {p.stem for p in PROP_DIR.glob("*.png")}
+    star = story.get("star") or {}
+    star_thing, names = star.get("thing"), {n.lower() for n in star.get("names", [])}
+    prons = set(star["pronouns"]) if isinstance(star.get("pronouns"), list) else PRONOUNS
+    seen_star, out = False, []
+    for b in story["beats"]:
+        ws = [w.strip(" .,!?\"'…*-").lower().replace("’", "'").split("'")[0]
+              for w in re.split(r"[\s—]+", b.get("line", ""))]
+        low = b.get("line", "").lower()
+        if low.startswith(("part two", "what would you", "tell me", "follow")):
+            out.append([]); continue                     # the sign-off lines are about the viewer, not the story
+        def named(words):
+            for k, w in enumerate(ws):
+                if w not in words:
+                    continue
+                before, after = " ".join(ws[max(0, k - 3):k]), ws[k + 1] if k + 1 < len(ws) else ""
+                if before.endswith(("size of a", "like a", "like")) or after in ("keys", "key", "seat", "seatbelt"):
+                    continue                     # "the size of a dog", "car keys": the thing is not in the room
+                return True
+            return False
+        found = [t for t, words in THING_WORDS.items() if t in have and named(words)]
+        if star_thing in have:
+            hit = star_thing in found or any(w in names for w in ws)
+            if hit:
+                seen_star = True
+            elif seen_star and star.get("pronouns") and any(w in prons for w in ws):
+                hit = True
+            if hit and star_thing not in found:
+                found.insert(0, star_thing)
+            if hit and star_thing == "dog" and "dog_standing" in have and any(
+                    k in b.get("line", "").lower() for k in ("two legs", "hind legs", "stands up", "standing up")):
+                found[found.index("dog")] = "dog_standing"
+        out.append(found[:2])
+    return out
+
 
 def apply_plates(story: dict) -> dict:
     """Painted 3D-look backgrounds for the calm and reaction beats (our 2D hero stands in front of them).
     Beats where the room itself acts (a ghost appears, a door, the lights, a prop, the twist) keep the drawn sets."""
     have = {p.stem for p in PLATE_DIR.glob("*.jpg")}
     used, last = {}, None
-    for b in story["beats"]:
+    musts = must_show(story)
+    for b, must in zip(story["beats"], musts):
+        if must:
+            b["must"] = must
+    beats = story["beats"]
+    for i, b in enumerate(beats):
         scene = b.get("scene")
+        star = (story.get("star") or {}).get("thing")
+        act = action_spec(b.get("line", ""), beats[i + 1].get("line", "") if i + 1 < len(beats) else "", story)
+        if act:
+            b["scene"], b["act"], b["cam"], b["focus"] = "action", act, "wide", "wide"
+            b.pop("other", None); b["prop"] = "none"; b.pop("side", None); b["things"] = []
+            if not b.get("hero"):
+                b["hero"] = {"pose": "stand", "expr": "scared"}
+            if b.get("react", "none") in ("none", "gag"):
+                b["react"] = "jolt" if act["kind"] in ("door_slam", "grab", "door_open") else "none"
+            continue
+        if star in DRAWN_PETS and not b.get("twist") and re.search(r"\bscratch|claw marks", b.get("line", "").lower()):
+            b.setdefault("must", [star])
+        if b.get("must") and star in DRAWN_PETS and star in b["must"]:
+            # the dog is the actor of this line: a drawn dog acting the words out (or an insert of what's named)
+            spec = pet_spec(b.get("line", ""), bool(b.get("twist")))
+            name = b.get("place") if scene == "place" else PLATE_SCENES.get(scene)
+            room = name if name in have else last if last in have else next(
+                (k for k in ("hallway_night", "front_door_night", "street_night") if k in have), None)
+            if "insert" in spec:
+                b["scene"], b["insert"] = "insert", spec["insert"]
+            elif room:
+                b["scene"], b["plate"], b["pet"] = "petshot", room, spec
+                used[room] = used.get(room, 0) + 1
+            # the whole dog stays in frame: only a calm sit gets a slow push in
+            b["cam"] = "push_in" if spec.get("pose") == "sit" and spec.get("frame") == "full" else "wide"
+            b["focus"] = "pet"
+            b.pop("other", None); b["prop"] = "none"; b.pop("side", None); b["things"] = []
+            if b.get("react", "none") not in PLATE_REACTS:
+                b["react"] = "jolt" if b.get("twist") else "none"
+            if not b.get("hero"):
+                b["hero"] = {"pose": "stand", "expr": "scared" if b.get("twist") else "worried"}
+            if name in have:
+                last = name
+            continue
         if scene == "place" and b.get("place") in have:       # a painted place of our town, chosen by the writer
             b["plate"], b["scene"] = b["place"], "plate"
             if not b.get("hero"):
@@ -264,8 +439,34 @@ def apply_plates(story: dict) -> dict:
             if b["hero"].get("pose") in ("sit", "peek"):           # the plate actor stands in the room
                 b["hero"] = dict(b["hero"], pose="stand")
             used[name] = used.get(name, 0) + 1
+        if b.get("must") and b.get("scene") != "plate":
+            # the line names an animal or object: it must be on screen, so this shot moves to a painted set with it
+            room = name if name in have else last if last in have else next(
+                (k for k in ("hallway_night", "front_door_night", "street_night") if k in have), None)
+            if room:
+                b["plate"], b["scene"] = room, "plate"
+                b.pop("other", None); b["prop"] = "none"; b.pop("side", None)
+                hero = b.get("hero") or {"pose": "stand", "expr": "scared" if b.get("twist") else "curious"}
+                if hero.get("pose") not in ("stand", "walk", "run", "cheeks", "reach"):
+                    hero = dict(hero, pose="stand")
+                b["hero"] = hero
+                if b.get("react", "none") not in PLATE_REACTS:
+                    b["react"] = "jolt" if b.get("twist") else "none"
+                used[room] = used.get(room, 0) + 1
         if name and scene != "closeup":
             last = name
+    for b in story["beats"]:
+        if b.get("must") and b.get("scene") == "plate":
+            b["things"] = (b["must"] + [t for t in (b.get("things") or []) if t not in b["must"]])[:2]
+            b["focus"] = "thing"                          # frame both him and the thing the line is about
+            if b.get("cam") in ("close", "snap", "crash", "dutch"):
+                b["cam"] = "push_in"
+            line = b.get("line", "").lower()
+            if b["things"][0] == "dog" and any(k in line for k in ("two legs", "hind legs", "stands up", "standing up")):
+                b["thing_tall"] = True                       # no standing-dog cut-out yet: stretch him upright
+    shown = sum(1 for b in story["beats"] if b.get("must"))
+    if shown:
+        log(f"Named things on screen: {shown} lines show what they mention")
     if used:
         log("Painted backgrounds: " + ", ".join(f"{k} x{v}" for k, v in used.items()))
     return {k: "data:image/jpeg;base64," + __import__("base64").b64encode((PLATE_DIR / f"{k}.jpg").read_bytes()).decode()
@@ -392,7 +593,7 @@ def build_plan(story: dict, timing: list[dict], total: float, casting: dict, fmt
         if sh["beat"] is not None:
             sh["beat"] = min(sh["beat"], sh["b"] - 3)
     return {"frames": frames, "format": fmt, "hero": casting["hero"], "other": casting["other"],
-            "cast": casting["cast"], "shots": shots, "series": story.get("series"), "captions": bool(story.get("captions", fmt == "vertical")),
+            "cast": casting["cast"], "shots": shots, "petName": ((story.get("star") or {}).get("names") or [""])[0], "series": story.get("series"), "captions": bool(story.get("captions", fmt == "vertical")),
             "cuts": bool(story.get("cuts", fmt == "vertical" and not story.get("film"))),
             "music": story.get("music"), "scary": bool(story.get("scary")), "piano": bool(story.get("piano")),
             "film": bool(story.get("film")), "strings": bool(story.get("strings")), "score": bool(story.get("score"))}

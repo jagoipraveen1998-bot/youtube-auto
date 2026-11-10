@@ -26,7 +26,8 @@
     "cursed-sleep-doll: My sister left an antique porcelain doll here that strictly enforces an eight-hour sleep schedule.",
     "hallway-landlord: An unnaturally tall man in a black suit stands in my hallway every midnight.",
     "midnight-pizza-delivery: Imagine every midnight, a steaming hot pizza box appears outside your locked front door.",
-    "midnight-pizza-delivery-part2: Last time, a creepy delivery man stepped straight out of your dark bedroom wardrobe."
+    "midnight-pizza-delivery-part2: Last time, a creepy delivery man stepped straight out of your dark bedroom wardrobe.",
+    "dog-came-home-p1: Imagine your dog has been missing for two days."
   ],
   "videos": [
     {
@@ -269,6 +270,14 @@
       "video_id": "u7ONH_GYJo4",
       "from_queue": true,
       "publish_at": null
+    },
+    {
+      "date": "2026-11-10 20:46",
+      "title": "My Dog Came Home… Wrong (Part 1) #shorts #horror",
+      "video_id": "J2O_n3pTtKI",
+      "length": "98s",
+      "pair": "dog-came-home",
+      "instagram_id": "17952451647345376"
     }
   ],
   "long_videos": [

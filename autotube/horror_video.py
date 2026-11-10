@@ -224,6 +224,8 @@ def prop_assets(story: dict) -> tuple[dict, dict]:
     names = set()
     for b in story["beats"]:
         b["things"] = [t for t in (b.get("things") or []) if t in have][:2] if b.get("scene") == "plate" else []
+        if (story.get("star") or {}).get("thing") in DRAWN_PETS:
+            b["things"] = [t for t in b["things"] if t not in DRAWN_PETS and t != "dog_standing"]
         names.update(b["things"])
     import base64
     data = {n: "data:image/png;base64," + base64.b64encode((PROP_DIR / f"{n}.png").read_bytes()).decode() for n in names}
@@ -245,6 +247,50 @@ THING_WORDS = {
     "traffic_cone": ["cone"], "old_tv": ["tv", "television"], "garden_gnome": ["gnome"], "vending_machine": ["vending"],
 }
 PRONOUNS = {"he", "him", "his", "she", "her", "it", "its", "they", "them"}
+DRAWN_PETS = {"dog"}       # animals drawn as full actors (horror/web/pet.js), not pasted cut-outs
+
+
+def pet_spec(line: str, twist: bool) -> dict:
+    """What the dog DOES in this line, read literally: the shot acts the words out."""
+    l = line.lower()
+    has = lambda *ks: any(k in l for k in ks)
+    you = l.startswith("you ") or has(" you hug", "you give", "you run to", "you open", "you pet", "you call")
+    if has("missing", "poster"):
+        return {"insert": "poster"}
+    if has("collar", " tag"):
+        return {"insert": "tag"}
+    if has("dinner", "food", "bowl", "doesn't touch", "won't eat", "doesn't eat"):
+        return {"insert": "bowl"}
+    if has("scratch", "claw marks"):
+        return {"insert": "scratch"}
+    spec = {"pose": "sit", "expr": "calm", "frame": "duo" if you else "full"}
+    if has("two legs", "hind legs", "stands up", "standing there", "stood"):
+        spec.update(pose="up", expr="stare", frame="full")
+        if has("behind you", "too tall", "taller"):
+            spec.update(pose="tall", expr="grin", frame="duo")
+    elif has("onto four", "back down", "drops"):
+        spec.update(pose="stand", expr="stare", frame="full")
+    elif has("wag", "muddy", "tired", "there he is", "there she is"):
+        spec.update(pose="sit", expr="happy", wag=1.6, enter=True, frame="full")
+    elif has("he runs", "she runs", "it runs", "running around", "races", "jumps", "chases"):
+        spec.update(pose="run", expr="happy")
+    elif has("walks away", "walks off", "leaves"):
+        spec.update(pose="back", expr="calm", frame="full")
+    elif has("walks", "walk ", "follows", "trots"):
+        spec.update(pose="walk", expr="calm", frame="full")
+    elif has("watching", "watches", "stares", "staring", "looks at you", "smiling", "smiles", "grin"):
+        spec.update(pose="sit", expr="grin" if has("smil", "grin") else "stare", frame="face")
+    elif has("sleeps", "asleep", "sleeping"):
+        spec.update(pose="sit", expr="happy", wag=0, frame="full")
+    elif has("whine", "hug", "cries"):
+        spec.update(pose="sit", expr="sad", frame="duo")
+    if has("dark", "shadow", "silhouette", "moon"):
+        spec["sil"] = True
+    if has("tilt"):
+        spec["tilt"] = 0.35
+    if twist and spec.get("pose") == "sit":
+        spec.update(expr="grin")
+    return spec
 
 
 def must_show(story: dict) -> list[list[str]]:
@@ -296,6 +342,31 @@ def apply_plates(story: dict) -> dict:
             b["must"] = must
     for b in story["beats"]:
         scene = b.get("scene")
+        star = (story.get("star") or {}).get("thing")
+        if star in DRAWN_PETS and not b.get("twist") and re.search(r"\bscratch|claw marks", b.get("line", "").lower()):
+            b.setdefault("must", [star])
+        if b.get("must") and star in DRAWN_PETS and star in b["must"]:
+            # the dog is the actor of this line: a drawn dog acting the words out (or an insert of what's named)
+            spec = pet_spec(b.get("line", ""), bool(b.get("twist")))
+            name = b.get("place") if scene == "place" else PLATE_SCENES.get(scene)
+            room = name if name in have else last if last in have else next(
+                (k for k in ("hallway_night", "front_door_night", "street_night") if k in have), None)
+            if "insert" in spec:
+                b["scene"], b["insert"] = "insert", spec["insert"]
+            elif room:
+                b["scene"], b["plate"], b["pet"] = "petshot", room, spec
+                used[room] = used.get(room, 0) + 1
+            # the whole dog stays in frame: only a calm sit gets a slow push in
+            b["cam"] = "push_in" if spec.get("pose") == "sit" and spec.get("frame") == "full" else "wide"
+            b["focus"] = "pet"
+            b.pop("other", None); b["prop"] = "none"; b.pop("side", None); b["things"] = []
+            if b.get("react", "none") not in PLATE_REACTS:
+                b["react"] = "jolt" if b.get("twist") else "none"
+            if not b.get("hero"):
+                b["hero"] = {"pose": "stand", "expr": "scared" if b.get("twist") else "worried"}
+            if name in have:
+                last = name
+            continue
         if scene == "place" and b.get("place") in have:       # a painted place of our town, chosen by the writer
             b["plate"], b["scene"] = b["place"], "plate"
             if not b.get("hero"):
@@ -474,7 +545,7 @@ def build_plan(story: dict, timing: list[dict], total: float, casting: dict, fmt
         if sh["beat"] is not None:
             sh["beat"] = min(sh["beat"], sh["b"] - 3)
     return {"frames": frames, "format": fmt, "hero": casting["hero"], "other": casting["other"],
-            "cast": casting["cast"], "shots": shots, "series": story.get("series"), "captions": bool(story.get("captions", fmt == "vertical")),
+            "cast": casting["cast"], "shots": shots, "petName": ((story.get("star") or {}).get("names") or [""])[0], "series": story.get("series"), "captions": bool(story.get("captions", fmt == "vertical")),
             "cuts": bool(story.get("cuts", fmt == "vertical" and not story.get("film"))),
             "music": story.get("music"), "scary": bool(story.get("scary")), "piano": bool(story.get("piano")),
             "film": bool(story.get("film")), "strings": bool(story.get("strings")), "score": bool(story.get("score"))}

@@ -250,6 +250,44 @@ PRONOUNS = {"he", "him", "his", "she", "her", "it", "its", "they", "them"}
 DRAWN_PETS = {"dog"}       # animals drawn as full actors (horror/web/pet.js), not pasted cut-outs
 
 
+ACTIONS = [   # (kind, words): an incident in the line is drawn and animated as it happens
+    ("door_slam", ["slams", "slam", "door shuts", "closes the door", "shut the door", "shuts the door"]),
+    ("door_open", ["open the door", "opens the door", "door opens", "door creaks open", "door swings open",
+                   "you open it", "door is open", "pull the door open"]),
+    ("knock", ["knock"]),
+    ("fight", ["fight", "wrestle", "struggle", "punch", "kick", "tackle", "attacks", "jumps on you", "pins you"]),
+    ("chase", ["chases", "chasing", "runs after", "run for your life", "you run away", "running for your life",
+               "run for it", "you run. ", "you run!", "you sprint", "after you"]),
+    ("grab", ["grabs", "grab you", "hand on your shoulder", "pulls you", "drags you", "catches your"]),
+    ("fall", ["you fall", "you trip", "you slip", "fall down"]),
+    ("hide", ["you hide", "hiding", "you duck behind"]),
+]
+
+
+def action_spec(line: str, next_line: str, story: dict) -> dict | None:
+    """The incident this line describes (door opening, a fight, a chase...), or None."""
+    l = " " + line.lower() + " "
+    kind = next((k for k, ws in ACTIONS if any(w in l for w in ws)), None)
+    if not kind:
+        return None
+    star = (story.get("star") or {})
+    who = "pet" if star.get("thing") in DRAWN_PETS else \
+        ("double" if (story.get("other") or {}).get("kind") == "double" else "shadow")
+    spec = {"kind": kind, "who": who}
+    if kind == "door_open":
+        n = next_line.lower()
+        names = [x.lower() for x in star.get("names", [])]
+        if who == "pet" and any(k in n for k in ("two legs", "hind legs", "standing")):
+            spec["reveal"] = "pet_tall" if "tall" in n else "pet_up"
+        elif who == "pet" and (any(x in n for x in names) or " he " in f" {n} "):
+            spec["reveal"] = "pet"
+        elif any(k in n for k in ("nobody", "no one", "empty", "nothing")):
+            spec["reveal"] = "empty"
+        else:
+            spec["reveal"] = "eyes" if who == "pet" else "shadow"
+    return spec
+
+
 def pet_spec(line: str, twist: bool) -> dict:
     """What the dog DOES in this line, read literally: the shot acts the words out."""
     l = line.lower()
@@ -340,9 +378,19 @@ def apply_plates(story: dict) -> dict:
     for b, must in zip(story["beats"], musts):
         if must:
             b["must"] = must
-    for b in story["beats"]:
+    beats = story["beats"]
+    for i, b in enumerate(beats):
         scene = b.get("scene")
         star = (story.get("star") or {}).get("thing")
+        act = action_spec(b.get("line", ""), beats[i + 1].get("line", "") if i + 1 < len(beats) else "", story)
+        if act:
+            b["scene"], b["act"], b["cam"], b["focus"] = "action", act, "wide", "wide"
+            b.pop("other", None); b["prop"] = "none"; b.pop("side", None); b["things"] = []
+            if not b.get("hero"):
+                b["hero"] = {"pose": "stand", "expr": "scared"}
+            if b.get("react", "none") in ("none", "gag"):
+                b["react"] = "jolt" if act["kind"] in ("door_slam", "grab", "door_open") else "none"
+            continue
         if star in DRAWN_PETS and not b.get("twist") and re.search(r"\bscratch|claw marks", b.get("line", "").lower()):
             b.setdefault("must", [star])
         if b.get("must") and star in DRAWN_PETS and star in b["must"]:

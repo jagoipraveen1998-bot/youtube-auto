@@ -89,6 +89,8 @@ def main():
         raise SystemExit(f"YT_HORROR_REFRESH_TOKEN belongs to {names}, not {hcfg.get('channel')}.")
     ycfg = {"youtube": hcfg["youtube"], "channel": {"language": "en"}}
     video_id = upload(video, thumb, title, description, tags, ycfg, token_env="YT_HORROR_REFRESH_TOKEN")
+    from autotube.localize import add_languages, subtitle_lines
+    add_languages(cfg, video_id, title, description, subtitle_lines(story, plan))
 
     # long videos keep their own history file, so a Short finishing at the same time never conflicts with it
     lhist["stories"] = (lhist["stories"] + [f"{path.stem}: {title}"])[-200:]

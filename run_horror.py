@@ -149,6 +149,8 @@ def main():
     hist_path.parent.mkdir(parents=True, exist_ok=True)
     hist_path.write_text(json.dumps(hist, indent=2, ensure_ascii=False), encoding="utf-8")
     log(f"Horror Short uploaded: https://youtube.com/shorts/{video_id}")
+    from autotube.localize import add_languages, subtitle_lines
+    add_languages(cfg, video_id, title, description, subtitle_lines(story, plan))
 
     # the same Short goes to Instagram as a Reel (skipped quietly if IG_ACCESS_TOKEN is not set)
     from autotube.instagram import ig_caption, publish_reel

@@ -42,14 +42,21 @@ def translate(cfg: dict, title: str, description: str, lines: list[str]) -> dict
         f"Languages (codes): {json.dumps(LANGS)}\n"
         "Return ONLY JSON: {\"<code>\": {\"title\": \"...\", \"description\": \"...\", \"lines\": [\"...\"]}}\n\n"
         f"TITLE: {title}\nDESCRIPTION: {description[:1500]}\nLINES:\n" + "\n".join(lines))
-    for model in pick_models(client, cfg.get("ai", {}).get("gemini_model", "auto"))[:4]:
+    import time
+    models = pick_models(client, cfg.get("ai", {}).get("gemini_model", "auto"))[:4]
+    for attempt in range(8):                         # free tier: a few requests a minute, so wait and retry
+        model = models[attempt % len(models)]
         try:
             r = client.models.generate_content(model=model, contents=prompt, config=types.GenerateContentConfig(
                 response_mime_type="application/json", temperature=0.3))
             data = json.loads(r.text)
             return {k: v for k, v in data.items() if k in LANGS and isinstance(v, dict) and v.get("title")}
         except Exception as exc:
-            log(f"Translation with {model} failed: {str(exc)[:120]}")
+            msg = str(exc)
+            log(f"Translation with {model} failed: {msg[:300]}")
+            if "PerDay" in msg:
+                models = [m for m in models if m != model] or models
+            time.sleep(25 if "429" in msg else 5)
     return {}
 
 
@@ -74,7 +81,7 @@ def add_languages(cfg: dict, video_id: str, title: str, description: str, subs: 
             "localizations": loc}).execute()
         log(f"Translated titles and descriptions: {', '.join(LANGS[c] for c in tr)}")
         added = 0
-        for code, d in tr.items():
+        for code, d in (tr.items() if subs else []):          # subtitles only when the line timing is known
             ls = d.get("lines") or []
             if len(ls) != len(subs):
                 continue
@@ -85,7 +92,7 @@ def add_languages(cfg: dict, video_id: str, title: str, description: str, subs: 
                                      media_body=MediaIoBaseUpload(io.BytesIO(body.encode("utf-8")), mimetype="application/octet-stream")).execute()
                 added += 1
             except Exception as exc:
-                log(f"Subtitles in {LANGS[code]} not added: {str(exc)[:140]}")
+                log(f"Subtitles in {LANGS[code]} not added: {str(exc)[:400]}")
                 if "insufficient" in str(exc).lower() or "403" in str(exc):
                     break                                     # the token is missing the captions permission
         log(f"Subtitles added in {added} languages")

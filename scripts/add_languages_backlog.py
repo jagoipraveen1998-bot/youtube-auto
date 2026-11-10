@@ -21,11 +21,12 @@ done = 0
 for vid in ids:
     try:
         items = yt.videos().list(part="snippet,localizations", id=vid).execute().get("items", [])
-        if not items or len(items[0].get("localizations", {})) >= 5:
+        if not items or len(items[0].get("localizations", {})) >= 10:
             continue
         sn = items[0]["snippet"]
         if add_languages(cfg, vid, sn["title"], sn.get("description", ""), []):
             done += 1
+        __import__("time").sleep(30)                 # stay under the free per-minute limit
     except Exception as exc:
         log(f"{vid}: {str(exc)[:150]}")
 log(f"Other languages added to {done} older videos")

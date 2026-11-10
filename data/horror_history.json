@@ -25,7 +25,8 @@
     "neighbour-lost-found: My friendly neighbour knocks at midnight to return things I haven't lost yet.",
     "cursed-sleep-doll: My sister left an antique porcelain doll here that strictly enforces an eight-hour sleep schedule.",
     "hallway-landlord: An unnaturally tall man in a black suit stands in my hallway every midnight.",
-    "midnight-pizza-delivery: Imagine every midnight, a steaming hot pizza box appears outside your locked front door."
+    "midnight-pizza-delivery: Imagine every midnight, a steaming hot pizza box appears outside your locked front door.",
+    "midnight-pizza-delivery-part2: Last time, a creepy delivery man stepped straight out of your dark bedroom wardrobe."
   ],
   "videos": [
     {
@@ -254,6 +255,13 @@
       "video_id": "VextDZgZZak",
       "length": "121s",
       "instagram_id": "17956718022037477"
+    },
+    {
+      "date": "2026-11-10 14:34",
+      "title": "Why my midnight pizza is delivered by me (Part 2) #shorts #horror",
+      "video_id": "L2e40YfzTAo",
+      "length": "114s",
+      "instagram_id": "18132719359687661"
     }
   ],
   "long_videos": [
@@ -264,37 +272,5 @@
       "script": "the_room_we_never_had.txt",
       "length": "9.6 min"
     }
-  ],
-  "open_part": {
-    "title": "Why my midnight pizza is always delivered by me #shorts #horror",
-    "video_id": "VextDZgZZak",
-    "lines": [
-      "Imagine every midnight, a steaming hot pizza box appears outside your locked front door.",
-      "You never ordered food, but free hot pizza is impossible to resist.",
-      "You polish off the very last slice, feeling like the luckiest student alive.",
-      "Then your sleepy roommate shuffles into the kitchen, rubbing his tired eyes in confusion.",
-      "Hey man, did you order another late night pizza delivery again?",
-      "Dude, I have been sound asleep in bed for four hours straight.",
-      "Suddenly, your front door metal handle rattles with an aggressive metallic click.",
-      "Through the glass peephole, a smiling delivery man in red stares right in.",
-      "He holds another greasy cardboard box marked with your exact full name.",
-      "We did not order anything else, please go away right now!",
-      "Oh, this special midnight box is not dinner, it is dessert.",
-      "Three monstrous knocks violently rattle the door bolts right out of place.",
-      "You bolt down the dark hallway as fast as your legs can carry you.",
-      "Your phone buzzes violently in your pocket with an unexpected incoming text message.",
-      "You open your green security camera feed, trembling from head to toe.",
-      "The camera screen flickers green, revealing the delivery man standing inside your kitchen.",
-      "How did he get past our double deadbolt lock so fast?!",
-      "Check the paper receipt left beside your laptop on the desk!",
-      "You crawl over to the computer desk, squinting at the tiny printed paper.",
-      "The creepy delivery receipt is not stamped for tonight at all.",
-      "The receipt date says tomorrow night, and marks the customer as already inside.",
-      "You slowly shift your eyes toward the cracked dark bedroom wardrobe.",
-      "Thanks for kindly letting yourself inside the house tonight.",
-      "A tall grinning delivery silhouette steps directly out of your dark closet.",
-      "What would you do if your midnight food delivery was actually you?",
-      "Part two is dropping tomorrow, so follow right now so you survive!"
-    ]
-  }
+  ]
 }

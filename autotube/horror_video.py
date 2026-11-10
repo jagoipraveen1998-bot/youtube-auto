@@ -338,11 +338,25 @@ def voice_from_take(story: dict, path: Path) -> tuple[np.ndarray, list[dict]]:
     path.reverse()
     cuts = [(cand[j][1], cand[j][2]) for j in path]
     bounds = [first] + [x for p in cuts for x in p] + [last]
+    # a short script still has to fill the Short: let the silences between lines breathe (suspense), up to 1.5 s each
+    extra = 0.0
+    if story.get("min_len") and cuts and last - first < story["min_len"]:
+        extra = min(1.5, (story["min_len"] - (last - first)) / len(cuts))
+    src = audio
+    if extra > 0:
+        mids = [int((p[0] + p[1]) / 2 * ha.SR) for p in cuts]
+        pieces, a0 = [], 0
+        for m in mids:
+            pieces += [src[a0:m], np.zeros(int(extra * ha.SR))]
+            a0 = m
+        audio = np.concatenate(pieces + [src[a0:]])
+        log(f"Acted take: {extra:.2f}s of extra silence after each line ({last - first:.0f}s -> {last - first + extra * len(cuts):.0f}s)")
     timing = []
     for k, b in enumerate(beats):
         st, en = bounds[2 * k], bounds[2 * k + 1]
-        seg = audio[int(st * ha.SR):int(en * ha.SR)]
+        seg = src[int(st * ha.SR):int(en * ha.SR)]
         dur = max(0.1, en - st)
+        st, en = st + k * extra, en + k * extra
         ws = b["line"].split()
         idx = next((i for i, x in enumerate(ws) if _norm(x) == _norm(b.get("beat_word", ""))), int(len(ws) * 0.6))
         timing.append({"start": st, "end": en, "beat": st + dur * (idx + 0.3) / max(1, len(ws)),

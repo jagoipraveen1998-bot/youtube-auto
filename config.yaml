@@ -175,10 +175,11 @@ horror:
     name: "en-US-ChristopherNeural"  # backup voice if Kokoro cannot run
     rate: "-10%"
     pitch: "-6Hz"
+  approved_scripts_only: true        # Shorts use only scripts in horror/script_queue marked approved; none left = no Short
   acted_take:                        # one Gemini request performs the whole Short (fits the free daily limit)
     enabled: true
     gemini_voice: "Puck"
-    persona: "a real young man casually telling a friend a crazy story he swears is true, like the best animated storytime channels: natural, quick conversational pace with real breaths, dry deadpan jokes, a little smile in the voice on the funny lines, quieter and tense when it gets creepy; never sounds like a narrator or an announcer; neutral American accent"
+    persona: "a real young man casually telling a friend a crazy story he swears is true, like the best animated storytime channels: natural conversational pace that slows down and lets the silences breathe as it gets scary, real breaths, dry deadpan jokes, a little smile in the voice on the funny lines, quieter and tense when it gets creepy; never sounds like a narrator or an announcer; neutral American accent"
   youtube:
     privacy: "public"
     category_id: "1"                 # 1 = Film & Animation

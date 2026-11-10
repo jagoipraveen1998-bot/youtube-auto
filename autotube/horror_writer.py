@@ -249,7 +249,30 @@ def repair(story: dict) -> dict:
     return story
 
 
-def write_story(cfg: dict, used: list[str], hint: str | None = None, part_of: dict | None = None) -> dict:
+def lock_script(story: dict, script: dict) -> dict:
+    """Keep Praveen's approved words exactly: one beat per script line, staging taken from what Gemini planned."""
+    lines = [l.lstrip("*").strip() for l in script["lines"]]
+    twist_i = next((i for i, l in enumerate(script["lines"]) if l.startswith("*")), max(0, len(lines) - 3))
+    src = story["beats"]
+    out = []
+    for i, line in enumerate(lines):
+        b = dict(src[min(len(src) - 1, round(i * len(src) / len(lines)))]) if len(src) != len(lines) else dict(src[i])
+        b["line"] = line
+        ws = [w.strip(" .,!?\"'…").lower() for w in line.split()]
+        if b.get("beat_word", "") not in ws:
+            b["beat_word"] = next((w for w in reversed(ws) if len(w) > 3), ws[-1] if ws else "")
+        b["twist"] = i == twist_i
+        out.append(b)
+    story["beats"] = out
+    story["title"] = script["title"]
+    story["story_id"] = script["id"]
+    if script.get("description"):
+        story["description"] = script["description"]
+    return story
+
+
+def write_story(cfg: dict, used: list[str], hint: str | None = None, part_of: dict | None = None,
+                script: dict | None = None) -> dict:
     from google import genai
     from google.genai import types
 
@@ -277,6 +300,13 @@ def write_story(cfg: dict, used: list[str], hint: str | None = None, part_of: di
     prompt = PROMPT.format(scenes=scenes, used="; ".join(used[-60:]) or "none yet", ending=ending)
     if hint:
         prompt += f"\nFor this story: {hint}\n"
+    if script:
+        numbered = "\n".join(f"{i + 1}. {l.lstrip('*').strip()}" for i, l in enumerate(script["lines"]))
+        prompt += ("\nIMPORTANT: the story is ALREADY WRITTEN and approved. Do not write or change any words. Make exactly "
+                   f"{len(script['lines'])} beats, one per line below, in this order, with each line copied EXACTLY; your job is "
+                   "only the staging (speaker, scene/place, things, cam, hero, other, react, beat_word, light, twist). "
+                   "Lines in quotes are spoken by the character who says them; the rest is the storyteller (narrator). "
+                   f"Title: {script['title']}\n{numbered}\n")
     models = pick_models(client, cfg.get("ai", {}).get("gemini_model", "auto"))
     last = None
     models = models + [m for m in ("gemini-flash-lite-latest", "gemini-2.5-flash-lite", "gemini-2.5-flash") if m not in models]
@@ -293,7 +323,10 @@ def write_story(cfg: dict, used: list[str], hint: str | None = None, part_of: di
                 config=types.GenerateContentConfig(response_mime_type="application/json", temperature=1.0))
             story = repair(json.loads(resp.text))
             words = sum(len(b["line"].split()) for b in story["beats"])
-            if not 260 <= words <= 360:
+            if script:
+                story = lock_script(story, script)
+                words = sum(len(b["line"].split()) for b in story["beats"])
+            elif not 260 <= words <= 360:
                 raise ValueError(f"story is {words} words")
             log(f"Story written by {model}: '{story['title']}' ({len(story['beats'])} beats, {words} words)")
             return story

@@ -27,5 +27,16 @@
   "And a voice, in your voice, says, \"We're out of milk.\"",
   "What would you have done?",
   "Tell me in the comments, and follow for more stories from Creepyville."
- ]
+ ],
+ "star": {
+  "thing": "dog",
+  "names": [
+   "Bruno"
+  ],
+  "pronouns": [
+   "he",
+   "him",
+   "his"
+  ]
+ }
 }

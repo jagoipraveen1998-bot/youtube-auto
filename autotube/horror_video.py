@@ -232,12 +232,68 @@ def prop_assets(story: dict) -> tuple[dict, dict]:
 
 PLATE_REACTS = {"none", "gag", "jolt", "droop", "ring", "knock"}
 
+# Words that name a thing we have a painted cut-out of. If a line says it, the viewer must SEE it in that shot.
+THING_WORDS = {
+    "dog": ["dog", "dogs", "puppy", "pup", "doggy"], "black_cat": ["cat", "cats", "kitten"], "rabbit": ["rabbit", "bunny"],
+    "crow": ["crow", "crows", "raven"], "owl": ["owl"], "deer": ["deer"], "raccoon": ["raccoon"], "frog": ["frog"],
+    "goat": ["goat"], "goose": ["goose", "geese"], "possum": ["possum", "opossum"],
+    "red_car": ["car", "cars"], "police_car": ["police"], "school_bus": ["bus"], "ice_cream_van": ["van"],
+    "bicycle": ["bicycle", "bike", "cycle"], "skateboard": ["skateboard"], "school_bag": ["bag", "backpack"],
+    "suitcase": ["suitcase"], "umbrella": ["umbrella"], "lantern": ["lantern"], "flashlight": ["flashlight", "torch"],
+    "teddy_bear": ["teddy"], "creepy_doll": ["doll"], "red_balloon": ["balloon"], "pumpkin": ["pumpkin"],
+    "mailbox": ["mailbox", "letterbox"], "trash_can": ["bin", "dustbin"], "shopping_cart": ["trolley", "cart"],
+    "traffic_cone": ["cone"], "old_tv": ["tv", "television"], "garden_gnome": ["gnome"], "vending_machine": ["vending"],
+}
+PRONOUNS = {"he", "him", "his", "she", "her", "it", "its", "they", "them"}
+
+
+def must_show(story: dict) -> list[list[str]]:
+    """For each beat, the things its line names (or the story's star animal, by name or by he/him after it appears)."""
+    have = {p.stem for p in PROP_DIR.glob("*.png")}
+    star = story.get("star") or {}
+    star_thing, names = star.get("thing"), {n.lower() for n in star.get("names", [])}
+    prons = set(star["pronouns"]) if isinstance(star.get("pronouns"), list) else PRONOUNS
+    seen_star, out = False, []
+    for b in story["beats"]:
+        ws = [w.strip(" .,!?\"'…*-").lower().replace("’", "'").split("'")[0]
+              for w in re.split(r"[\s—]+", b.get("line", ""))]
+        low = b.get("line", "").lower()
+        if low.startswith(("part two", "what would you", "tell me", "follow")):
+            out.append([]); continue                     # the sign-off lines are about the viewer, not the story
+        def named(words):
+            for k, w in enumerate(ws):
+                if w not in words:
+                    continue
+                before, after = " ".join(ws[max(0, k - 3):k]), ws[k + 1] if k + 1 < len(ws) else ""
+                if before.endswith(("size of a", "like a", "like")) or after in ("keys", "key", "seat", "seatbelt"):
+                    continue                     # "the size of a dog", "car keys": the thing is not in the room
+                return True
+            return False
+        found = [t for t, words in THING_WORDS.items() if t in have and named(words)]
+        if star_thing in have:
+            hit = star_thing in found or any(w in names for w in ws)
+            if hit:
+                seen_star = True
+            elif seen_star and star.get("pronouns") and any(w in prons for w in ws):
+                hit = True
+            if hit and star_thing not in found:
+                found.insert(0, star_thing)
+            if hit and star_thing == "dog" and "dog_standing" in have and any(
+                    k in b.get("line", "").lower() for k in ("two legs", "hind legs", "stands up", "standing up")):
+                found[found.index("dog")] = "dog_standing"
+        out.append(found[:2])
+    return out
+
 
 def apply_plates(story: dict) -> dict:
     """Painted 3D-look backgrounds for the calm and reaction beats (our 2D hero stands in front of them).
     Beats where the room itself acts (a ghost appears, a door, the lights, a prop, the twist) keep the drawn sets."""
     have = {p.stem for p in PLATE_DIR.glob("*.jpg")}
     used, last = {}, None
+    musts = must_show(story)
+    for b, must in zip(story["beats"], musts):
+        if must:
+            b["must"] = must
     for b in story["beats"]:
         scene = b.get("scene")
         if scene == "place" and b.get("place") in have:       # a painted place of our town, chosen by the writer
@@ -264,8 +320,34 @@ def apply_plates(story: dict) -> dict:
             if b["hero"].get("pose") in ("sit", "peek"):           # the plate actor stands in the room
                 b["hero"] = dict(b["hero"], pose="stand")
             used[name] = used.get(name, 0) + 1
+        if b.get("must") and b.get("scene") != "plate":
+            # the line names an animal or object: it must be on screen, so this shot moves to a painted set with it
+            room = name if name in have else last if last in have else next(
+                (k for k in ("hallway_night", "front_door_night", "street_night") if k in have), None)
+            if room:
+                b["plate"], b["scene"] = room, "plate"
+                b.pop("other", None); b["prop"] = "none"; b.pop("side", None)
+                hero = b.get("hero") or {"pose": "stand", "expr": "scared" if b.get("twist") else "curious"}
+                if hero.get("pose") not in ("stand", "walk", "run", "cheeks", "reach"):
+                    hero = dict(hero, pose="stand")
+                b["hero"] = hero
+                if b.get("react", "none") not in PLATE_REACTS:
+                    b["react"] = "jolt" if b.get("twist") else "none"
+                used[room] = used.get(room, 0) + 1
         if name and scene != "closeup":
             last = name
+    for b in story["beats"]:
+        if b.get("must") and b.get("scene") == "plate":
+            b["things"] = (b["must"] + [t for t in (b.get("things") or []) if t not in b["must"]])[:2]
+            b["focus"] = "thing"                          # frame both him and the thing the line is about
+            if b.get("cam") in ("close", "snap", "crash", "dutch"):
+                b["cam"] = "push_in"
+            line = b.get("line", "").lower()
+            if b["things"][0] == "dog" and any(k in line for k in ("two legs", "hind legs", "stands up", "standing up")):
+                b["thing_tall"] = True                       # no standing-dog cut-out yet: stretch him upright
+    shown = sum(1 for b in story["beats"] if b.get("must"))
+    if shown:
+        log(f"Named things on screen: {shown} lines show what they mention")
     if used:
         log("Painted backgrounds: " + ", ".join(f"{k} x{v}" for k, v in used.items()))
     return {k: "data:image/jpeg;base64," + __import__("base64").b64encode((PLATE_DIR / f"{k}.jpg").read_bytes()).decode()

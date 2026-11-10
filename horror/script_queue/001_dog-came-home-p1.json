@@ -29,5 +29,16 @@
   "And wags his tail.",
   "What would you do?",
   "Part two is coming next. Follow, so you don't miss it."
- ]
+ ],
+ "star": {
+  "thing": "dog",
+  "names": [
+   "Bruno"
+  ],
+  "pronouns": [
+   "he",
+   "him",
+   "his"
+  ]
+ }
 }

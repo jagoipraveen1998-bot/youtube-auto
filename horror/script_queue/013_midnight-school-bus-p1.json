@@ -23,5 +23,12 @@
   "*He has no eyes. Just a big, kind, smiling mouth. \"Almost there,\" he says.",
   "What would you do?",
   "Part two is coming next. Follow, so you don't miss it."
- ]
+ ],
+ "star": {
+  "thing": "school_bus",
+  "names": [
+   "bus"
+  ],
+  "pronouns": false
+ }
 }

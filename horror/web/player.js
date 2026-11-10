@@ -125,11 +125,12 @@ function drawPlate(name, f) {
   ctx.drawImage(im, W / 2 - im.width * k / 2 + dx, H / 2 - im.height * k / 2 + dy, im.width * k, im.height * k);
 }
 const PROPS_IMG = {};           // painted objects and animals (transparent cut-outs), placed beside the hero
-function drawProp(name, x, y, h, f, i) {
+function drawProp(name, x, y, h, f, i, tall) {
   const im = PROPS_IMG[name]; if (!im) return;
   const info = (P.propInfo || {})[name] || {};
   let k = h / im.height, dy = 0, sq = 1;
-  if (info.kind === 'animal') { sq = 1 + 0.02 * Math.sin(f / 7 + i * 2); dy = 0; if (name === 'crow' || name === 'owl') dy = -Math.abs(Math.sin(f / 23 + i)) * 6; }
+  if (tall) { k *= 0.85; sq = 1.55; }
+  if (info.kind === 'animal' && !tall) { sq = 1 + 0.02 * Math.sin(f / 7 + i * 2); dy = 0; if (name === 'crow' || name === 'owl') dy = -Math.abs(Math.sin(f / 23 + i)) * 6; }
   if (name === 'red_balloon') dy = Math.sin(f / 20 + i) * 18;
   const w = im.width * k, hh = im.height * k * sq;
   ctx.save(); ctx.fillStyle = 'rgba(0,0,0,0.32)'; ctx.beginPath(); ctx.ellipse(x, y, w * 0.42, Math.max(10, w * 0.06), 0, 0, 7); ctx.fill(); ctx.restore();
@@ -151,12 +152,14 @@ function drawThings(sh, f, front) {
     // cartoon scale: small things read bigger than life, vehicles stay big behind him
     const h = big ? info.h * 1.05 : t === 'red_balloon' ? 460 : Math.max(210, (info.h || 200) * 1.7);
     const x = big ? (i % 2 ? 250 : 820) : t === 'red_balloon' ? (i % 2 ? 190 : 900) : (i % 2 ? 270 : 800), y = big ? 1760 : 1862;
-    drawProp(t, x, y, h, f, i);
+    const star = i === 0 && sh.focus === 'thing', tall = star && sh.thing_tall;
+    // the thing the line is about is the co-star of the shot: bigger, and standing as tall as him when it stands up
+    drawProp(t, star ? x + 30 : x, star ? y + 8 : y, star ? h * (tall ? 1.9 : 1.35) : h, f, i, tall);
   });
 }
 const SCENES = {
   plate: {
-    frames: { wide: [540, 960, 1.0], hero: [540, 1380, 1.6], prop: [540, 900, 1.5] },
+    frames: { wide: [540, 960, 1.0], hero: [540, 1380, 1.6], prop: [540, 900, 1.5], thing: [690, 1320, 1.3] },  // thing: the hero AND the animal/object the line names
     otherFrame() { return [540, 1000, 1.6]; },
     ambient: '#8a90b4',
     draw(f, sh) {

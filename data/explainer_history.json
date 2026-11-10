@@ -12,7 +12,8 @@
     "how a search engine finds a page in a fraction of a second",
     "how face unlock tells you from a photograph of you",
     "how barcodes and QR codes survive being damaged",
-    "how a lift decides which floor to go to next"
+    "how a lift decides which floor to go to next",
+    "how an electric motor actually spins"
   ],
   "videos": [
     {
@@ -92,6 +93,12 @@
       "title": "How a Lift Decides Which Floor to Go to Next",
       "video_id": "W86J258P-8I",
       "length": "04:02"
+    },
+    {
+      "date": "2026-11-11",
+      "title": "How an electric motor actually spins",
+      "video_id": "_jNTrgRrisc",
+      "length": "04:20"
     }
   ]
 }

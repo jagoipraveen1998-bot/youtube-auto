@@ -194,6 +194,21 @@ B.insert(39, dict(line="", speaker="narrator", react="none", silent=6.5, cue="te
                   **NIGHT(cam="medium", focus="rohan", crew=dict(rohan=RO(x=1180, expr="dread", phone="up", look=0.7, lookY=0.3)))))
 del B[10]                     # the stairs walk to work: cut so the office lines land on time
 
+# ============ Timing pass 2: measured on the all-acted render (run 42781906385); indices are FINAL beat numbers.
+# Every acted line is cached, so durations stay the same and each line lands on Praveen's second.
+TIMING2 = {0: ('silent', 1.77), 1: ('gap', 0.4), 2: ('silent', 1.6), 4: ('gap', 1.12), 5: ('silent', 2.17), 11: ('gap', 0.26), 14: ('silent', 0.96), 15: ('silent', 0.96), 18: ('gap', 0.86), 19: ('silent', 2.8), 22: ('silent', 1.3), 24: ('silent', 1.19), 25: ('silent', 1.89), 26: ('silent', 1.67), 27: ('silent', 2.1), 32: ('silent', 0.9), 33: ('silent', 0.9), 35: ('silent', 1.2), 37: ('silent', 4.11), 38: ('silent', 6.35), 39: ('gap', 0.7), 40: ('silent', 2.46), 41: ('silent', 2.83), 42: ('silent', 3.28), 48: ('silent', 2.47), 50: ('silent', 1.55), 51: ('silent', 1.55), 52: ('silent', 1.44), 54: ('gap', 0.44), 55: ('silent', 3.06), 56: ('silent', 2.0), 57: ('silent', 2.27), 58: ('gap', 0.28), 60: ('silent', 1.34), 61: ('gap', 0.28), 63: ('silent', 2.54), 64: ('silent', 2.56), 65: ('silent', 2.13)}
+for i, (k, v) in TIMING2.items():
+    B[i][k] = v
+
+# Timing pass 3: lines from 1:42 on landed 1.1-1.3 s late; take 1.3 s out of the doctor/office stretch.
+TIMING3 = {18: ('gap', 0.74), 19: ('silent', 2.39), 22: ('silent', 1.2), 24: ('silent', 1.12), 25: ('silent', 1.71), 26: ('silent', 1.55), 27: ('silent', 1.79)}
+for i, (k, v) in TIMING3.items():
+    B[i][k] = v
+
+# Timing pass 4: the photo reveal cannot get shorter, so take 1.35 s out of Rohan staring at the photo afterwards;
+# everything from 2:16 on then lands on time.
+B[37]["silent"], B[38]["silent"] = 3.61, 5.5
+
 story = {
     "storyboard": True, "film": True, "music": "drone", "scary": True, "piano": True, "score": True, "outro_laugh": False,
     "story_id": "the-girl-on-his-shoulder",

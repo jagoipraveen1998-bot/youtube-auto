@@ -3,7 +3,8 @@
     "the_room_we_never_had: The Bedroom That Shouldn't Exist",
     "the_fourth_face: The Fourth Face",
     "the_mummy_downstairs: The Mummy Downstairs (a museum coffin delivered to the wrong house)",
-    "the-nine-foot-suit: The Nine-Foot Suit Standing Behind My Desk"
+    "the-nine-foot-suit: The Nine-Foot Suit Standing Behind My Desk",
+    "front-door-peephole-kitchen: My Front Door Peephole Shows My Own Kitchen"
   ],
   "videos": [
     {
@@ -28,6 +29,13 @@
       "video_id": "xIVnqDbLHJw",
       "script": "the-nine-foot-suit.txt",
       "length": "5.2 min"
+    },
+    {
+      "date": "2026-11-10 18:11",
+      "title": "My Front Door Peephole Shows My Own Kitchen",
+      "video_id": "mCmHNCIQScY",
+      "script": "front-door-peephole-kitchen.txt",
+      "length": "4.7 min"
     }
   ]
 }

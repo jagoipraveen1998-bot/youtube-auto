@@ -205,6 +205,10 @@ TIMING3 = {18: ('gap', 0.74), 19: ('silent', 2.39), 22: ('silent', 1.2), 24: ('s
 for i, (k, v) in TIMING3.items():
     B[i][k] = v
 
+# Timing pass 4: the photo reveal cannot get shorter, so take 1.35 s out of Rohan staring at the photo afterwards;
+# everything from 2:16 on then lands on time.
+B[37]["silent"], B[38]["silent"] = 3.61, 5.5
+
 story = {
     "storyboard": True, "film": True, "music": "drone", "scary": True, "piano": True, "score": True, "outro_laugh": False,
     "story_id": "the-girl-on-his-shoulder",

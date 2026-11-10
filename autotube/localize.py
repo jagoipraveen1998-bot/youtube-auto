@@ -6,8 +6,9 @@ import re
 
 from .util import env, log
 
-LANGS = {"hi": "Hindi", "es": "Spanish", "pt": "Portuguese", "id": "Indonesian", "ar": "Arabic",
-         "fr": "French", "de": "German", "ta": "Tamil"}
+LANGS = {"hi": "Hindi", "ta": "Tamil", "te": "Telugu", "kn": "Kannada", "ml": "Malayalam", "bn": "Bengali",
+         "mr": "Marathi", "es": "Spanish", "pt": "Portuguese", "id": "Indonesian", "ar": "Arabic", "fr": "French",
+         "de": "German"}
 
 
 def _ts(t: float) -> str:

@@ -62,9 +62,24 @@ def main():
             story = repair(story)
     else:
         try:
-            part_of = hist.get("open_part")             # yesterday's cliffhanger gets its Part 2 next
-            story = write_story(cfg, hist["stories"], part_of=part_of)
-            story["part"] = 2 if part_of else 1
+            queue = ROOT / "horror" / "script_queue"
+            done_ids = {x.split(":")[0] for x in hist["stories"]}
+            approved = [json.loads(p.read_text(encoding="utf-8")) for p in sorted(queue.glob("*.json"))]
+            approved = [s for s in approved if s.get("approved") and s["id"] not in done_ids]
+            if approved:                                # Praveen's approved scripts, word for word, in order
+                script = approved[0]
+                log(f"Approved script: {script['id']} ({len(approved)} left in the queue)")
+                story = write_story(cfg, hist["stories"], script=script)
+                story["part"] = script.get("part")
+                story["script_pair"] = script.get("pair")
+                story["min_len"] = 93                   # Praveen's rule: every Short at least 1:30
+            elif hcfg.get("approved_scripts_only"):
+                log("No approved script left in horror/script_queue: skipping this Short (add scripts to continue)")
+                return
+            else:
+                part_of = hist.get("open_part")             # yesterday's cliffhanger gets its Part 2 next
+                story = write_story(cfg, hist["stories"], part_of=part_of)
+                story["part"] = 2 if part_of else 1
             tag = f"(Part {story['part']})"
             if tag.lower() not in story["title"].lower():          # the writer sometimes forgets: viewers need it
                 t = story["title"]
@@ -93,7 +108,11 @@ def main():
     length = check_playable(video, 15, 175)   # Shorts may run up to 3 minutes
 
     full = latest_long_video()
-    if story.get("part") == 2 and hist.get("open_part", {}).get("video_id"):
+    if story.get("part") == 2 and story.get("script_pair"):
+        prev = next((v for v in reversed(hist["videos"]) if v.get("pair") == story["script_pair"]), None)
+        if prev:
+            story["description"] = f"Part 1: https://youtube.com/shorts/{prev['video_id']}\n" + story["description"]
+    elif story.get("part") == 2 and hist.get("open_part", {}).get("video_id"):
         story["description"] = f"Part 1: https://youtube.com/shorts/{hist['open_part']['video_id']}\n" + story["description"]
     description = "\n".join([story["description"], "",
                              *([f"🎬 Full animated horror story: {full['title']} → https://youtu.be/{full['video_id']}", ""] if full else []),
@@ -121,9 +140,11 @@ def main():
     hist["stories"] = (hist["stories"] + [f"{story['story_id']}: {story['beats'][0]['line']}"])[-300:]
     hist["videos"] = (hist["videos"] + [{"date": today, "title": title, "video_id": video_id,
                                          "length": f"{length:.0f}s"}])[-300:]
-    if story.get("part") == 1:                       # remember the cliffhanger: the next Short is its Part 2
+    if story.get("script_pair"):
+        hist["videos"][-1]["pair"] = story["script_pair"]
+    if story.get("part") == 1 and not story.get("script_pair"):   # remember the cliffhanger: the next Short is its Part 2
         hist["open_part"] = {"title": title, "video_id": video_id, "lines": [b["line"] for b in story["beats"]]}
-    elif story.get("part") == 2:
+    elif story.get("part") == 2 and not story.get("script_pair"):
         hist.pop("open_part", None)
     hist_path.parent.mkdir(parents=True, exist_ok=True)
     hist_path.write_text(json.dumps(hist, indent=2, ensure_ascii=False), encoding="utf-8")

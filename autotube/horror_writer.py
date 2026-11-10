@@ -85,9 +85,9 @@ worried | shock | relieved | curious).
 speaker = who says the line: narrator (the hero telling the story) | hero (the hero speaking out loud in the scene) |
 villain | one of the side roles. Dialogue lines are written as speech only, without "she said". When the hero or a side
 character speaks, show them in that shot; when the villain speaks, show the villain.
-hero.pose: sit | sleep | stand | walk | peek | cheeks (hands on cheeks) | reach. hero.expr and hero.expr2 (the face after
+hero.pose: sit | sleep | stand | walk | run (only in a place: he runs across it, sweating) | peek | cheeks (hands on cheeks) | reach. In a place, hero.dir is left or right. hero.expr and hero.expr2 (the face after
 the beat): calm | sleepy | curious | worried | shock | scream | relieved | tired | stare.
-cam: wide | medium | close | push_in | pull_out | pan | snap (cut in hard on the beat word). focus picks what the camera
+cam: wide | medium | close | push_in | pull_out | pan | snap (cut in hard on the beat word) | low (from the floor looking up: he looks big, for brave or shocked moments) | high (looking down: he looks small and alone) | dutch (tilted frame: something is wrong) | crash (sudden zoom in on the reveal) | track (follows him as he walks or runs). focus picks what the camera
 moves to. react = what happens ON the beat word: none | gag (a big cartoon comedy take: eyes pop, hair flies, slide
 whistle and boing; use it 2 or 3 times on the funniest lines) | jolt (hero jumps) | ring (a phone or alarm rings) | knock |
 lights_on | lights_off | flicker | appear (the other appears) | vanish | turn (the other turns round to face us) |
@@ -101,7 +101,9 @@ Rules:
 - Sentence 1 is the hook and must make the viewer need the answer: either a creepy paradox stated as fact, or a
   "why / what happens if" question the story then answers (like "Why my grandma never answers the door after 3AM.").
   {ending}
-- Shoot it like a film: a wide establishing shot each time the scene changes, then close, snap and push_in on reactions.
+- Shoot it like a film: a wide or high establishing shot each time the scene changes; track him when he walks or runs
+  between places (run when he is scared or late); low angle when he is brave or shocked, dutch when something feels
+  wrong, crash on the reveal; close, snap and push_in on reactions.
   Never use the same cam on two beats in a row. Keep most lines short (3 to 10 words) so a new shot comes every 2 to 3
   seconds.
 - Every beat names its scene, and the narration must match what that scene can show. Use 7 to 10 different scenes.
@@ -126,16 +128,16 @@ Return ONLY JSON:
             "text":{{"top":"","big":"","label":"","time":"","time2":"","from":"","msg":"","msg2":""}}}}]}}
 """
 
-POSES = {"sit", "sleep", "stand", "walk", "peek", "cheeks", "reach"}
+POSES = {"sit", "sleep", "stand", "walk", "run", "peek", "cheeks", "reach"}
 EXPRS = {"calm", "sleepy", "curious", "worried", "shock", "scream", "relieved", "tired", "stare", "grin"}
 STATES = {"hidden", "back", "front", "stare", "grin", "tired", "lurk"}
-CAMS = {"wide", "medium", "close", "push_in", "pull_out", "pan", "snap"}
+CAMS = {"wide", "medium", "close", "push_in", "pull_out", "pan", "snap", "low", "high", "dutch", "crash", "track"}
 REACTS = {"none", "gag", "jolt", "ring", "knock", "lights_on", "lights_off", "flicker", "appear", "vanish", "turn", "grin",
           "droop", "text_change"}
 WHERE = {"bedroom": {"door", "window", "beside"}, "front_door": {"under_door", "peephole"}}
 SCENE_POSE = {"bedroom": {"sit", "sleep"}, "hallway": {"peek"}, "kitchen": {"stand", "walk", "reach", "cheeks"},
               "front_door": {"stand", "cheeks"}, "wardrobe": {"stand", "cheeks"}, "desk": {"stand"},
-              "bathroom": {"stand"}, "closeup": {"stand"}, "place": {"stand", "walk", "cheeks", "reach"}}
+              "bathroom": {"stand"}, "closeup": {"stand"}, "place": {"stand", "walk", "run", "cheeks", "reach"}}
 NO_HERO = {"calendar", "phone", "window", "cctv"}
 
 
@@ -202,7 +204,8 @@ def repair(story: dict) -> dict:
             pose = h.get("pose") if h.get("pose") in allowed else sorted(allowed)[0] if scene != "bedroom" else "sit"
             out["hero"] = {"pose": pose,
                            "expr": h.get("expr") if h.get("expr") in EXPRS else "worried",
-                           "expr2": h.get("expr2") if h.get("expr2") in EXPRS else None}
+                           "expr2": h.get("expr2") if h.get("expr2") in EXPRS else None,
+                           "dir": "left" if h.get("dir") == "left" else "right"}
         elif (scene in {"bedroom", "hallway", "bathroom"} or (scene == "cctv" and out["room"] == "bedroom")
               or (scene == "closeup" and not out.get("side") and out["speaker"] != "villain"
                   and not (isinstance(b.get("other"), dict) and b["other"].get("state") not in (None, "hidden")))):
@@ -249,7 +252,30 @@ def repair(story: dict) -> dict:
     return story
 
 
-def write_story(cfg: dict, used: list[str], hint: str | None = None, part_of: dict | None = None) -> dict:
+def lock_script(story: dict, script: dict) -> dict:
+    """Keep Praveen's approved words exactly: one beat per script line, staging taken from what Gemini planned."""
+    lines = [l.lstrip("*").strip() for l in script["lines"]]
+    twist_i = next((i for i, l in enumerate(script["lines"]) if l.startswith("*")), max(0, len(lines) - 3))
+    src = story["beats"]
+    out = []
+    for i, line in enumerate(lines):
+        b = dict(src[min(len(src) - 1, round(i * len(src) / len(lines)))]) if len(src) != len(lines) else dict(src[i])
+        b["line"] = line
+        ws = [w.strip(" .,!?\"'…").lower() for w in line.split()]
+        if b.get("beat_word", "") not in ws:
+            b["beat_word"] = next((w for w in reversed(ws) if len(w) > 3), ws[-1] if ws else "")
+        b["twist"] = i == twist_i
+        out.append(b)
+    story["beats"] = out
+    story["title"] = script["title"]
+    story["story_id"] = script["id"]
+    if script.get("description"):
+        story["description"] = script["description"]
+    return story
+
+
+def write_story(cfg: dict, used: list[str], hint: str | None = None, part_of: dict | None = None,
+                script: dict | None = None) -> dict:
     from google import genai
     from google.genai import types
 
@@ -277,6 +303,13 @@ def write_story(cfg: dict, used: list[str], hint: str | None = None, part_of: di
     prompt = PROMPT.format(scenes=scenes, used="; ".join(used[-60:]) or "none yet", ending=ending)
     if hint:
         prompt += f"\nFor this story: {hint}\n"
+    if script:
+        numbered = "\n".join(f"{i + 1}. {l.lstrip('*').strip()}" for i, l in enumerate(script["lines"]))
+        prompt += ("\nIMPORTANT: the story is ALREADY WRITTEN and approved. Do not write or change any words. Make exactly "
+                   f"{len(script['lines'])} beats, one per line below, in this order, with each line copied EXACTLY; your job is "
+                   "only the staging (speaker, scene/place, things, cam, hero, other, react, beat_word, light, twist). "
+                   "Lines in quotes are spoken by the character who says them; the rest is the storyteller (narrator). "
+                   f"Title: {script['title']}\n{numbered}\n")
     models = pick_models(client, cfg.get("ai", {}).get("gemini_model", "auto"))
     last = None
     models = models + [m for m in ("gemini-flash-lite-latest", "gemini-2.5-flash-lite", "gemini-2.5-flash") if m not in models]
@@ -293,7 +326,10 @@ def write_story(cfg: dict, used: list[str], hint: str | None = None, part_of: di
                 config=types.GenerateContentConfig(response_mime_type="application/json", temperature=1.0))
             story = repair(json.loads(resp.text))
             words = sum(len(b["line"].split()) for b in story["beats"])
-            if not 260 <= words <= 360:
+            if script:
+                story = lock_script(story, script)
+                words = sum(len(b["line"].split()) for b in story["beats"])
+            elif not 260 <= words <= 360:
                 raise ValueError(f"story is {words} words")
             log(f"Story written by {model}: '{story['title']}' ({len(story['beats'])} beats, {words} words)")
             return story

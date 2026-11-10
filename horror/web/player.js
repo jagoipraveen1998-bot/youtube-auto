@@ -57,6 +57,8 @@ function heroObj(sh, f, base) {
   if (h.pose === 'reach') o.armR = lerp(0.22, 1.75, ss(seg(f, sh.a + 6, sh.a + 24)));
   o.blink = Math.max(o.blink || 0, (o.lid || 0) > 0.9 ? 0 : blinkAt(f, 2));
   o.bob = (o.bob || 0) + Math.sin(f * 0.15) * 3;
+  const face = (after(f, sh) && h.expr2) || h.expr;
+  if (h.sweat || h.pose === 'run' || ['worried', 'shock', 'scream', 'tired'].includes(face)) o.sweat = true;   // nervous sweat
   return o;
 }
 
@@ -133,6 +135,14 @@ function drawProp(name, x, y, h, f, i) {
   ctx.save(); ctx.fillStyle = 'rgba(0,0,0,0.32)'; ctx.beginPath(); ctx.ellipse(x, y, w * 0.42, Math.max(10, w * 0.06), 0, 0, 7); ctx.fill(); ctx.restore();
   ctx.drawImage(im, x - w / 2, y - hh + dy, w, hh);
 }
+// where the hero is on a painted place: walking or running carries him across the frame
+function plateHeroX(sh, f) {
+  const pose = (sh.hero || {}).pose, dir = (sh.hero || {}).dir === 'left' ? -1 : 1;
+  const t = clamp((f - sh.a) / Math.max(1, sh.b - sh.a));
+  if (pose === 'run') return 540 + dir * lerp(-420, 420, t);
+  if (pose === 'walk') return 540 + dir * lerp(-170, 170, t);
+  return 540;
+}
 function drawThings(sh, f, front) {
   const things = sh.things || [];
   things.forEach((t, i) => {
@@ -155,8 +165,17 @@ const SCENES = {
       g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.45)');
       ctx.fillStyle = g; ctx.fillRect(-200, 1500, W + 400, 600);
       drawThings(sh, f, false);
-      const h = heroObj(sh, f, { x: 540, y: 1860, s: 0.8, look: 0, lookY: 0 });
-      if (h) { ctx.save(); ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.ellipse(540, 1852, 140, 26, 0, 0, 7); ctx.fill(); ctx.restore(); guy(h); }
+      const hx = plateHeroX(sh, f), pose = (sh.hero || {}).pose, dir = (sh.hero || {}).dir === 'left' ? -1 : 1;
+      const h = heroObj(sh, f, { x: hx, y: 1860, s: 0.8, look: 0, lookY: 0 });
+      if (h && (pose === 'walk' || pose === 'run')) {
+        const run = pose === 'run', ph = f * (run ? 0.95 : 0.45);
+        h.walk = ph; h.walkAmt = run ? 1.35 : 1; h.look = dir;
+        h.lean = dir * (run ? 0.17 : 0.04);
+        h.armL = 0.25 + (run ? 0.95 : 0.35) * Math.max(0, Math.sin(ph)); h.armR = 0.25 + (run ? 0.95 : 0.35) * Math.max(0, -Math.sin(ph));
+        h.bob = (h.bob || 0) - Math.abs(Math.sin(ph)) * (run ? 26 : 9);
+        if (run) { h.sweat = true; h.eyeW = (h.eyeW || 1) * 1.15; }
+      }
+      if (h) { ctx.save(); ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.ellipse(hx, 1852, 140, 26, 0, 0, 7); ctx.fill(); ctx.restore(); guy(h); }
       drawThings(sh, f, true);
     },
     lights(l, f) { light(l, 540, 1350, 760, '#fff4e6', 0.9); light(l, 540, 700, 900, '#dfe6ff', 0.5); },
@@ -335,7 +354,7 @@ function framesFor(S, sh, name) {
 const ALT_CAM = { wide: 'medium', medium: 'wide', close: 'medium', push_in: 'medium', pull_out: 'medium', pan: 'medium', snap: 'wide' };
 function camFor(S, sh, f) {
   // Shorts cut every 2-3 s: a long line gets a second framing halfway (a hard cut, not a move)
-  if (P.cuts && FORMAT !== 'landscape' && !sh._cut && !sh.twist && sh.b - sh.a > 84) {
+  if (P.cuts && FORMAT !== 'landscape' && !sh._cut && !sh.twist && sh.b - sh.a > 84 && !(sh.scene === 'plate' && ['walk', 'run'].includes((sh.hero || {}).pose))) {
     const cut = sh.a + Math.round((sh.b - sh.a) * 0.5);
     if (f >= cut && !(sh.beat != null && Math.abs(sh.beat - cut) < 10))
       return camFor(S, Object.assign({}, sh, { a: cut, cam: ALT_CAM[sh.cam] || 'close', _cut: true }), f);
@@ -355,10 +374,22 @@ function camFor(S, sh, f) {
     case 'pull_out': K = [k(0, foc), k(Math.min(dur, 36), wide, eo), k(dur, wide)]; break;
     case 'pan': { const from = framesFor(S, sh, sh.focus2 || 'wide'); K = [k(0, from), k(Math.min(dur, 40), foc), k(dur, foc)]; break; }
     case 'snap': K = [k(0, mid), k(br, mid), k(br + 7, foc, eo), k(dur, foc)]; break;
+    case 'low': { const lo = [foc[0], foc[1] + 130, foc[2] * 0.88]; K = [k(0, lo), k(dur, [lo[0], lo[1] - 30, lo[2] * 0.93])]; break; }   // from the floor up: he looks big
+    case 'high': { const hi = [wide[0], wide[1] - 180, wide[2] * 1.12]; K = [k(0, hi), k(dur, [hi[0], hi[1] + 40, hi[2] * 1.05])]; break; }  // looking down: he looks small and alone
+    case 'dutch': K = [k(0, mid), k(dur, foc)]; break;
+    case 'crash': K = [k(0, wide), k(br, wide), k(br + 5, [foc[0], foc[1], foc[2] * 1.35], eo), k(dur, [foc[0], foc[1], foc[2] * 1.3])]; break;
+    case 'track': K = [k(0, mid), k(dur, mid)]; break;
     default: K = [k(0, wide), k(dur, foc)];
   }
   let c = keys(K, t);
   c = creep(c, t, 0.8);
+  if (sh.scene === 'plate' && ['walk', 'run'].includes((sh.hero || {}).pose) && sh.cam !== 'wide' && sh.cam !== 'high') {
+    c.x = plateHeroX(sh, f);                 // the camera tracks him across the place
+    if (sh.hero.pose === 'run') { c.y += Math.abs(Math.sin(f * 0.95)) * 10; c.r += Math.sin(f * 0.47) * 0.8; }   // handheld chase
+  }
+  if (sh.cam === 'dutch') c.r += 10 * (sh.hero && sh.hero.dir === 'left' ? -1 : 1);
+  if (sh.cam === 'low') c.r -= 3;
+  if (sh.cam === 'crash' && sh.beat != null) c = kick(c, f, sh.beat + 4, 18, 7);
   if (sh.twist) c.r += 3 * ss(seg(t, 0, dur));
   if (sh.beat != null && ['jolt', 'knock', 'appear', 'ring', 'lights_on', 'slam', 'buzz', 'door_open', 'thump', 'crash', 'pound', 'slam1', 'lidfall'].includes(sh.react)) c = kick(c, f, sh.beat, sh.react === 'buzz' ? 8 : 16, 7);
   if (sh.react === 'slam') { c = kick(c, f, sh.beat + 9, 14, 6); c = kick(c, f, sh.beat + 18, 14, 6); }
@@ -480,7 +511,7 @@ function drawOnscreen(f, sh) {     // the hook text for the first seconds: diffe
     ctx.fillStyle = i === lines.length - 1 ? '#ffd53d' : '#ffffff'; ctx.fillText(l, 0, y); });
   ctx.restore();
 }
-function drawCaptions(f, sh) {     // big word-by-word captions, key words in yellow
+function drawCaptions(f, sh, cam) {     // big word-by-word captions, key words in yellow
   const caps = sh.caps; if (!caps || !caps.length) return;
   const chunks = []; let cur = [];
   caps.forEach((w, i) => { cur.push(w); const end = /[.,!?…]$/.test(w[2]) || cur.length === 3 || i === caps.length - 1; if (end) { chunks.push(cur); cur = []; } });
@@ -494,7 +525,8 @@ function drawCaptions(f, sh) {     // big word-by-word captions, key words in ye
   const gap = size * 0.28, widths = words.map(t => ctx.measureText(t).width);
   const total = widths.reduce((a, b) => a + b, 0) + gap * (words.length - 1);
   // vertical: inside the band phone apps leave clear (168-1330 px of 1920) and left of the like/share rail
-  const cy = H * (vert ? (sh.scene === 'plate' ? 0.32 : 0.66) : 0.84), fit = Math.min(1, W * (vert ? 0.8 : 0.88) / total);
+  // on painted places the words sit above his head in wide shots, and below his face when the camera is close
+  const cy = H * (vert ? (sh.scene === 'plate' ? ((cam && cam.z > 1.25) ? 0.74 : 0.32) : 0.66) : 0.84), fit = Math.min(1, W * (vert ? 0.8 : 0.88) / total);
   ctx.translate(vert ? W * 0.46 : W / 2, cy); ctx.scale(pop * fit, pop * fit);
   let x = -total / 2;
   ch.forEach((w, i) => {
@@ -603,7 +635,7 @@ window.renderFrame = function (f) {
   if (sh.whiteout && sh.beat != null && f >= sh.beat) flash(0.95 * ss(bT(f, sh, 24)), '#fffaf0');
   if (P.film) { staticNoise(seg(f, END - 14, END - 1) * 0.9); grain(0.09); letterbox(); filmSubs(f, sh); return; }
   if (P.series) seriesLabel(f, sh);
-  if (P.captions) drawCaptions(f, sh);
+  if (P.captions) drawCaptions(f, sh, c);
   if (sh.onscreen) drawOnscreen(f, sh);
   if (sh.react === 'shutter' && sh.beat != null && f >= sh.beat && f < sh.beat + 8) flash(1 - (f - sh.beat) / 8);
   if (sh.blackout && sh.le != null && f >= sh.le - sh.blackout) { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); ctx.restore(); return; }

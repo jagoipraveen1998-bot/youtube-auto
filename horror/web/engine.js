@@ -174,11 +174,13 @@ function guy(o) {
   if (o.acc && o.acc.ponytail && (o.turn ?? 1) < 0.6) SF(ell(0, -560, 70, 150), HAIR);
   head(o, lw, SF);
   if (front) arms();
-  if (o.sweat) {
-    const t = (F * 0.06) % 1;
-    ctx.save(); ctx.translate(250, -900 + t * 140); ctx.globalAlpha = 1 - t * 0.6;
-    const p = new Path2D(); p.moveTo(0, -40); p.quadraticCurveTo(26, 0, 0, 20); p.quadraticCurveTo(-26, 0, 0, -40);
-    SF(p, '#bfe6ff'); ctx.restore();
+  if (o.sweat) {                                   // nervous sweat: drops run down both sides of the head
+    for (const [dx, dy, ph] of [[250, -900, 0], [-262, -860, 0.45], [205, -780, 0.8]]) {
+      const t = (F * 0.06 + ph) % 1;
+      ctx.save(); ctx.translate(dx, dy + t * 150); ctx.globalAlpha = 1 - t * 0.7; ctx.scale(1.25, 1.25);
+      const p = new Path2D(); p.moveTo(0, -40); p.quadraticCurveTo(26, 0, 0, 20); p.quadraticCurveTo(-26, 0, 0, -40);
+      SF(p, '#bfe6ff'); ctx.restore();
+    }
   }
   ctx.restore();
   if (o.kind === 'shadow' && (o.turn ?? 1) > 0.4) { // glowing eyes on top

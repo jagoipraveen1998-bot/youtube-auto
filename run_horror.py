@@ -56,7 +56,14 @@ def main():
     hist_path = ROOT / "data" / "horror_history.json"
     hist = json.loads(hist_path.read_text(encoding="utf-8")) if hist_path.exists() else {"stories": [], "videos": []}
 
-    if args.story:
+    if args.story and "script_queue" in args.story:      # remake one approved script (word for word)
+        script = json.loads(Path(args.story).read_text(encoding="utf-8"))
+        log(f"Approved script (remake): {script['id']}")
+        story = write_story(cfg, hist["stories"], script=script)
+        story["part"] = script.get("part")
+        story["script_pair"] = script.get("pair")
+        story["min_len"] = 93
+    elif args.story:
         story = json.loads(Path(args.story).read_text(encoding="utf-8"))
         if not story.get("storyboard"):        # hand-made storyboards are used exactly as written
             story = repair(story)

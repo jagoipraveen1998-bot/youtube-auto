@@ -200,6 +200,11 @@ TIMING2 = {0: ('silent', 1.77), 1: ('gap', 0.4), 2: ('silent', 1.6), 4: ('gap', 
 for i, (k, v) in TIMING2.items():
     B[i][k] = v
 
+# Timing pass 3: lines from 1:42 on landed 1.1-1.3 s late; take 1.3 s out of the doctor/office stretch.
+TIMING3 = {18: ('gap', 0.74), 19: ('silent', 2.39), 22: ('silent', 1.2), 24: ('silent', 1.12), 25: ('silent', 1.71), 26: ('silent', 1.55), 27: ('silent', 1.79)}
+for i, (k, v) in TIMING3.items():
+    B[i][k] = v
+
 story = {
     "storyboard": True, "film": True, "music": "drone", "scary": True, "piano": True, "score": True, "outro_laugh": False,
     "story_id": "the-girl-on-his-shoulder",

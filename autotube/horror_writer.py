@@ -85,9 +85,9 @@ worried | shock | relieved | curious).
 speaker = who says the line: narrator (the hero telling the story) | hero (the hero speaking out loud in the scene) |
 villain | one of the side roles. Dialogue lines are written as speech only, without "she said". When the hero or a side
 character speaks, show them in that shot; when the villain speaks, show the villain.
-hero.pose: sit | sleep | stand | walk | peek | cheeks (hands on cheeks) | reach. hero.expr and hero.expr2 (the face after
+hero.pose: sit | sleep | stand | walk | run (only in a place: he runs across it, sweating) | peek | cheeks (hands on cheeks) | reach. In a place, hero.dir is left or right. hero.expr and hero.expr2 (the face after
 the beat): calm | sleepy | curious | worried | shock | scream | relieved | tired | stare.
-cam: wide | medium | close | push_in | pull_out | pan | snap (cut in hard on the beat word). focus picks what the camera
+cam: wide | medium | close | push_in | pull_out | pan | snap (cut in hard on the beat word) | low (from the floor looking up: he looks big, for brave or shocked moments) | high (looking down: he looks small and alone) | dutch (tilted frame: something is wrong) | crash (sudden zoom in on the reveal) | track (follows him as he walks or runs). focus picks what the camera
 moves to. react = what happens ON the beat word: none | gag (a big cartoon comedy take: eyes pop, hair flies, slide
 whistle and boing; use it 2 or 3 times on the funniest lines) | jolt (hero jumps) | ring (a phone or alarm rings) | knock |
 lights_on | lights_off | flicker | appear (the other appears) | vanish | turn (the other turns round to face us) |
@@ -101,7 +101,9 @@ Rules:
 - Sentence 1 is the hook and must make the viewer need the answer: either a creepy paradox stated as fact, or a
   "why / what happens if" question the story then answers (like "Why my grandma never answers the door after 3AM.").
   {ending}
-- Shoot it like a film: a wide establishing shot each time the scene changes, then close, snap and push_in on reactions.
+- Shoot it like a film: a wide or high establishing shot each time the scene changes; track him when he walks or runs
+  between places (run when he is scared or late); low angle when he is brave or shocked, dutch when something feels
+  wrong, crash on the reveal; close, snap and push_in on reactions.
   Never use the same cam on two beats in a row. Keep most lines short (3 to 10 words) so a new shot comes every 2 to 3
   seconds.
 - Every beat names its scene, and the narration must match what that scene can show. Use 7 to 10 different scenes.
@@ -126,16 +128,16 @@ Return ONLY JSON:
             "text":{{"top":"","big":"","label":"","time":"","time2":"","from":"","msg":"","msg2":""}}}}]}}
 """
 
-POSES = {"sit", "sleep", "stand", "walk", "peek", "cheeks", "reach"}
+POSES = {"sit", "sleep", "stand", "walk", "run", "peek", "cheeks", "reach"}
 EXPRS = {"calm", "sleepy", "curious", "worried", "shock", "scream", "relieved", "tired", "stare", "grin"}
 STATES = {"hidden", "back", "front", "stare", "grin", "tired", "lurk"}
-CAMS = {"wide", "medium", "close", "push_in", "pull_out", "pan", "snap"}
+CAMS = {"wide", "medium", "close", "push_in", "pull_out", "pan", "snap", "low", "high", "dutch", "crash", "track"}
 REACTS = {"none", "gag", "jolt", "ring", "knock", "lights_on", "lights_off", "flicker", "appear", "vanish", "turn", "grin",
           "droop", "text_change"}
 WHERE = {"bedroom": {"door", "window", "beside"}, "front_door": {"under_door", "peephole"}}
 SCENE_POSE = {"bedroom": {"sit", "sleep"}, "hallway": {"peek"}, "kitchen": {"stand", "walk", "reach", "cheeks"},
               "front_door": {"stand", "cheeks"}, "wardrobe": {"stand", "cheeks"}, "desk": {"stand"},
-              "bathroom": {"stand"}, "closeup": {"stand"}, "place": {"stand", "walk", "cheeks", "reach"}}
+              "bathroom": {"stand"}, "closeup": {"stand"}, "place": {"stand", "walk", "run", "cheeks", "reach"}}
 NO_HERO = {"calendar", "phone", "window", "cctv"}
 
 
@@ -202,7 +204,8 @@ def repair(story: dict) -> dict:
             pose = h.get("pose") if h.get("pose") in allowed else sorted(allowed)[0] if scene != "bedroom" else "sit"
             out["hero"] = {"pose": pose,
                            "expr": h.get("expr") if h.get("expr") in EXPRS else "worried",
-                           "expr2": h.get("expr2") if h.get("expr2") in EXPRS else None}
+                           "expr2": h.get("expr2") if h.get("expr2") in EXPRS else None,
+                           "dir": "left" if h.get("dir") == "left" else "right"}
         elif (scene in {"bedroom", "hallway", "bathroom"} or (scene == "cctv" and out["room"] == "bedroom")
               or (scene == "closeup" and not out.get("side") and out["speaker"] != "villain"
                   and not (isinstance(b.get("other"), dict) and b["other"].get("state") not in (None, "hidden")))):

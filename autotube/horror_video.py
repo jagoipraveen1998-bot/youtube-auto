@@ -244,7 +244,7 @@ def apply_plates(story: dict) -> dict:
             b["plate"], b["scene"] = b["place"], "plate"
             if not b.get("hero"):
                 b["hero"] = {"pose": "stand", "expr": "curious"}
-            elif b["hero"].get("pose") not in ("stand", "walk", "cheeks", "reach"):
+            elif b["hero"].get("pose") not in ("stand", "walk", "run", "cheeks", "reach"):
                 b["hero"] = dict(b["hero"], pose="stand")
             used[b["place"]] = used.get(b["place"], 0) + 1
             last = b["place"]
@@ -257,7 +257,7 @@ def apply_plates(story: dict) -> dict:
         ok = (name in have and b.get("hero") and not b.get("twist") and not b.get("side")
               and b.get("react", "none") in PLATE_REACTS
               and (not b.get("other") or b["other"].get("state") in (None, "hidden"))
-              and (b.get("hero") or {}).get("pose") in ("stand", "walk", "cheeks", "reach", "sit", "peek", None)
+              and (b.get("hero") or {}).get("pose") in ("stand", "walk", "run", "cheeks", "reach", "sit", "peek", None)
               and b.get("prop") in (None, "none"))
         if ok:
             b["plate"], b["scene"] = name, "plate"

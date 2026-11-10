@@ -28,7 +28,7 @@ jobs:
         with:
           python-version: "3.12"
       - if: steps.q.outputs.count != '0'
-        run: pip install -q pyyaml google-api-python-client google-auth google-auth-oauthlib
+        run: pip install -q pyyaml google-api-python-client google-auth google-auth-oauthlib google-genai
       - if: steps.q.outputs.count != '0'
         name: Upload what YouTube allows
         env:
@@ -36,6 +36,7 @@ jobs:
           YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_HORROR_REFRESH_TOKEN: ${{ secrets.YT_HORROR_REFRESH_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python upload_queue.py
       - if: steps.q.outputs.count != '0'
         name: Save the queue and history

@@ -53,7 +53,7 @@ def main():
             log(f"Artifact {item['artifact']} is gone (older than its keep time); dropping it from the queue.")
             continue
         video = next(art.rglob("*.mp4"))
-        cover = next(art.rglob("cover.jpg"), None)
+        cover = ROOT / item["thumb"] if item.get("thumb") else next(art.rglob("cover.jpg"), None)
         desc = item.get("description") or next(art.rglob("description.txt")).read_text(encoding="utf-8")
         tags = list(dict.fromkeys(item.get("tags", []) + hcfg.get("extra_tags", [])))
         try:
@@ -69,6 +69,13 @@ def main():
         log(f"Uploaded {item['title'][:60]} -> https://youtu.be/{vid} ({item.get('privacy') or 'goes public ' + (item.get('publish_at') or 'now')})")
         hist.setdefault("videos", []).append({"date": datetime.now(IST).strftime("%Y-%m-%d %H:%M"), "title": item["title"],
                                              "video_id": vid, "from_queue": True, "publish_at": item.get("publish_at")})
+        if item.get("long"):
+            hist.setdefault("long_videos", []).append({"date": datetime.now(IST).strftime("%Y-%m-%d"), "title": item["title"], "video_id": vid})
+        try:
+            from autotube.localize import add_languages
+            add_languages({"ai": {"gemini_model": "auto"}}, vid, item["title"], desc, [])
+        except Exception as e:  # noqa: BLE001
+            log(f"Other languages skipped: {e}")
     QUEUE.write_text(json.dumps(left, indent=2, ensure_ascii=False), encoding="utf-8")
     hist_path.write_text(json.dumps(hist, indent=2, ensure_ascii=False), encoding="utf-8")
 

@@ -810,6 +810,6 @@ def make_soundtrack(voice: np.ndarray, plan: dict, work: Path, seed: int) -> Pat
     gain = -14.0 - float(found[-1]) if found else 0.0
     master = work / "master.wav"
     run(["ffmpeg", "-y", "-v", "error", "-i", str(raw), "-af",
-         f"volume={gain:.2f}dB,alimiter=limit=0.708:attack=2:release=60:level=disabled", "-ar", str(SR), str(master)])
+         f"volume={gain:.2f}dB,alimiter=limit=0.794:attack=2:release=60:level=disabled", "-ar", str(SR), str(master)])
     log(f"Master gain {gain:+.1f} dB to about -14 LUFS")
     return master

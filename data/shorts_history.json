@@ -7,7 +7,8 @@
     "how a microwave heats food but not the plate",
     "how noise cancelling erases sound with more sound",
     "why wet roads look like mirrors at night",
-    "why aeroplane windows have a tiny hole in them"
+    "why aeroplane windows have a tiny hole in them",
+    "how a camera sensor turns light into numbers"
   ],
   "videos": [
     {
@@ -57,6 +58,12 @@
       "title": "Why Plane Windows Have a Tiny Hole #Shorts",
       "video_id": "BskM3wihjiQ",
       "length": "40s"
+    },
+    {
+      "date": "2026-11-10",
+      "title": "How a Camera Sensor Captures Light #Shorts",
+      "video_id": "L0PXxDIrLCg",
+      "length": "39s"
     }
   ]
 }

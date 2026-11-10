@@ -65,6 +65,11 @@ def main():
             part_of = hist.get("open_part")             # yesterday's cliffhanger gets its Part 2 next
             story = write_story(cfg, hist["stories"], part_of=part_of)
             story["part"] = 2 if part_of else 1
+            tag = f"(Part {story['part']})"
+            if tag.lower() not in story["title"].lower():          # the writer sometimes forgets: viewers need it
+                t = story["title"]
+                cut = t.lower().find(" #")
+                story["title"] = (t[:cut] + f" {tag}" + t[cut:]) if cut > 0 else f"{t} {tag}"
         except Exception as exc:
             # Gemini down: use an original backup story that has not been posted yet
             used = {x.split(":")[0] for x in hist["stories"]}

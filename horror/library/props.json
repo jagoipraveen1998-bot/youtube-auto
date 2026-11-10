@@ -175,6 +175,16 @@
    "h": 420,
    "kind": "animal",
    "prompt": "the same friendly scruffy brown dog with floppy ears and a red collar, standing upright on its two hind legs like a person, front paws hanging down, eerie still pose, full body"
+  },
+  "bat": {
+   "h": 70,
+   "kind": "animal",
+   "prompt": "A cute yet slightly spooky black bat hanging upside down with big glossy eyes and small folded wings."
+  },
+  "lava_lamp": {
+   "h": 130,
+   "kind": "object",
+   "prompt": "A retro glass lava lamp emitting a soft eerie neon-green glow around swirling blobs of dark orange wax."
   }
  }
 }

@@ -282,14 +282,14 @@ def voice_from_take(story: dict, path: Path) -> tuple[np.ndarray, list[dict]]:
     words = [max(1, len(re.findall(r"[A-Za-z0-9']+", b["line"]))) for b in beats]
     w = int(0.02 * ha.SR); n = len(audio) // w
     rms = np.sqrt((audio[:n * w].reshape(n, w) ** 2).mean(1))
-    loud = rms > rms.max() * 10 ** (-34 / 20)
-    pauses, i = [], 0                                      # quiet runs of at least 0.12 s: (start, end) in seconds
+    loud = rms > rms.max() * 10 ** (-28 / 20)
+    pauses, i = [], 0                                      # quiet runs of at least 0.09 s: (start, end) in seconds
     while i < n:
         if not loud[i]:
             j = i
             while j < n and not loud[j]:
                 j += 1
-            if (j - i) * 0.02 >= 0.12:
+            if (j - i) * 0.02 >= 0.09:
                 pauses.append((i * 0.02, j * 0.02))
             i = j
         else:
@@ -297,18 +297,46 @@ def voice_from_take(story: dict, path: Path) -> tuple[np.ndarray, list[dict]]:
     total = n * 0.02
     first = next((k * 0.02 for k in range(n) if loud[k]), 0.0)
     last = next((k * 0.02 for k in range(n - 1, -1, -1) if loud[k]), total)
-    cum = np.cumsum(words) / sum(words)
-    cuts, prev = [], first
-    for c in cum[:-1]:
-        want = first + (last - first) * c
-        cand = [p for p in pauses if p[0] > prev + 0.3 and abs((p[0] + p[1]) / 2 - want) < 1.5]
-        if cand:
-            p = min(cand, key=lambda p: abs((p[0] + p[1]) / 2 - want) - 0.15 * (p[1] - p[0]))
-            cuts.append(p)
-            prev = p[1]
-        else:
-            cuts.append((max(want, prev + 0.3), max(want, prev + 0.3)))
-            prev = cuts[-1][1]
+    # Choose the line boundaries all at once (dynamic programming): each line should last about its share of the
+    # words, and boundaries should sit in real pauses, the longer the better. A boundary may also fall where no pause
+    # was found (a grid point), at a cost.
+    K = len(beats)
+    rate = sum(words) / max(1.0, (last - first) - sum(min(p[1], last) - max(p[0], first) for p in pauses
+                                                        if p[0] > first and p[1] < last) * 0.5)
+    cand = [((p0 + p1) / 2, p0, p1, p1 - p0) for p0, p1 in pauses if first + 0.3 < p0 and p1 < last - 0.3]
+    have = [c[0] for c in cand]
+    for g in np.arange(first + 0.5, last - 0.3, 0.2):
+        if not have or min(abs(g - h) for h in have) > 0.25:
+            cand.append((g, g, g, 0.0))
+    cand.sort()
+    C = len(cand)
+    mid = np.array([c[0] for c in cand]); st0 = np.array([c[1] for c in cand]); en0 = np.array([c[2] for c in cand])
+    plen = np.array([c[3] for c in cand])
+    bonus = np.where(plen > 0, 2.5 + 6 * np.minimum(plen, 0.8), 0.0)
+
+    def cost(start, end, k):
+        exp = words[k] / rate
+        return ((end - start - exp) / (0.3 * exp + 0.4)) ** 2
+
+    INF = 1e18
+    best = cost(first, st0, 0) - bonus                       # line 0 runs from the first sound to candidate j
+    back = []
+    for k in range(1, K - 1):
+        dur = st0[None, :] - en0[:, None]                    # from candidate i (end of line k-1) to j
+        exp = words[k] / rate
+        c = ((dur - exp) / (0.3 * exp + 0.4)) ** 2
+        c[dur < 0.3] = INF
+        tot = best[:, None] + c
+        arg = tot.argmin(0)
+        best = tot[arg, np.arange(C)] - bonus
+        back.append(arg)
+    final = best + cost(en0, last, K - 1)
+    j = int(final.argmin())
+    path = [j]
+    for arg in reversed(back):
+        j = int(arg[j]); path.append(j)
+    path.reverse()
+    cuts = [(cand[j][1], cand[j][2]) for j in path]
     bounds = [first] + [x for p in cuts for x in p] + [last]
     timing = []
     for k, b in enumerate(beats):

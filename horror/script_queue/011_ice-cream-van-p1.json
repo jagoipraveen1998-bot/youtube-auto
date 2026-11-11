@@ -32,5 +32,9 @@
    "van"
   ],
   "pronouns": false
- }
+ },
+ "choices": [
+  "Hide and stay quiet",
+  "Go outside and look"
+ ]
 }

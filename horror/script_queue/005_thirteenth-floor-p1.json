@@ -25,5 +25,9 @@
   "*Then your own voice calls out: \"Is someone there? Close the door, it's cold.\"",
   "What would you do?",
   "Part two is coming next. Follow, so you don't miss it."
+ ],
+ "choices": [
+  "Close the door and run",
+  "Step inside"
  ]
 }

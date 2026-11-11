@@ -169,6 +169,8 @@ def main():
     hist_path.parent.mkdir(parents=True, exist_ok=True)
     hist_path.write_text(json.dumps(hist, indent=2, ensure_ascii=False), encoding="utf-8")
     log(f"Horror Short uploaded: https://youtube.com/shorts/{video_id}")
+    (out / "uploaded.json").write_text(json.dumps({"video_id": video_id, "title": title, "date": today,
+                                                   "part": story.get("part"), "pair": story.get("script_pair")}), encoding="utf-8")
     if story.get("part") == 2:                       # Part 1 now points straight to Part 2
         p1 = next((v for v in reversed(hist["videos"][:-1]) if story.get("script_pair") and v.get("pair") == story["script_pair"]), None)
         if p1:

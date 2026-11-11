@@ -434,6 +434,43 @@ function cctvOverlay(f, sh) {
   if (g) glitch(1.0);
 }
 
+// ---------- cold open hook + A/B choice card ----------
+let COLD = false;
+function hookCard(f) {                     // over the scariest frame: the story's hook in huge letters
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.fillRect(0, 0, W, H);
+  const words = (P.hook || '').split(' '), lines = [];
+  let cur = '';
+  for (const w of words) { if ((cur + ' ' + w).trim().length > 14) { lines.push(cur.trim()); cur = w; } else cur += ' ' + w; }
+  if (cur.trim()) lines.push(cur.trim());
+  const k = 1 + 0.04 * Math.sin(f * 0.6), y0 = 640 - lines.length * 70;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round'; ctx.font = '900 118px "DejaVu Sans"';
+  const fit = Math.min(1, ...lines.map(l => 960 / Math.max(1, ctx.measureText(l).width)));   // never wider than the screen
+  lines.forEach((l, i) => { ctx.save(); ctx.translate(W / 2 + (f < 4 ? (rnd(f + i) - 0.5) * 30 : 0), y0 + i * 140); ctx.scale(k * fit, k * fit);
+    ctx.lineWidth = 22; ctx.strokeStyle = '#0a0610'; ctx.strokeText(l, 0, 0); ctx.fillStyle = i === lines.length - 1 ? '#ffd23f' : '#ffffff'; ctx.fillText(l, 0, 0); ctx.restore(); });
+  ctx.restore();
+  if (f < 5) glitch(0.9);
+}
+function choiceCard(f, sh) {               // "What would you do?"  A) ...  B) ...  comment below
+  const t = f - sh.a;
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = `rgba(4,3,10,${0.55 * clamp(t / 8)})`; ctx.fillRect(0, 0, W, H);
+  sh.choices.slice(0, 2).forEach((c, i) => {
+    const p = back(clamp((t - 4 - i * 6) / 10)); if (p <= 0) return;
+    ctx.save(); ctx.translate(W / 2, 560 + i * 230); ctx.scale(p, p);
+    ctx.fillStyle = '#1c2140'; ctx.strokeStyle = i ? '#ff5a5a' : '#5ad1ff'; ctx.lineWidth = 10;
+    ctx.beginPath(); ctx.roundRect(-430, -85, 860, 170, 40); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(-340, 0, 54, 0, 7); ctx.fillStyle = i ? '#ff5a5a' : '#5ad1ff'; ctx.fill();
+    ctx.fillStyle = '#0a0610'; ctx.font = '900 70px "DejaVu Sans"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(i ? 'B' : 'A', -340, 4);
+    ctx.fillStyle = '#ffffff'; ctx.font = `800 ${c.length > 20 ? 46 : 56}px "DejaVu Sans"`; ctx.textAlign = 'left'; ctx.fillText(c, -260, 4);
+    ctx.restore();
+  });
+  const q = clamp((t - 18) / 8);
+  if (q > 0) { ctx.globalAlpha = q; ctx.font = '800 54px "DejaVu Sans"'; ctx.textAlign = 'center'; ctx.lineWidth = 12; ctx.strokeStyle = '#0a0610';
+    ctx.strokeText('COMMENT  A  OR  B  👇', W / 2, 1040); ctx.fillStyle = '#ffd23f'; ctx.fillText('COMMENT  A  OR  B  👇', W / 2, 1040); }
+  ctx.restore();
+}
+
 // ---------- brand: intro sting + signature outro ----------
 const INTRO = P.intro || 0, OUTRO = P.outro || 0, END = N - OUTRO;
 function brandTitle(cx, cy, scale, alpha, jitter) {
@@ -592,7 +629,10 @@ window.renderFrame = function (f) {
   F = f; ctx = MAIN;
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; ctx.filter = 'none';
   ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
-  if (f < INTRO) return drawIntro(f);
+  if (f < INTRO) {
+    if (P.coldOpen == null) return drawIntro(f);
+    COLD = true; window.renderFrame(P.coldOpen); COLD = false; F = f; ctx = MAIN; hookCard(f); return;
+  }
   if (OUTRO && f >= END) return drawOutro(f - END);
   const shots = P.shots;
   const sh = shots.find(s => f >= s.a && f < s.b) || shots[shots.length - 1];
@@ -638,8 +678,9 @@ window.renderFrame = function (f) {
   if (sh.whiteout && sh.beat != null && f >= sh.beat) flash(0.95 * ss(bT(f, sh, 24)), '#fffaf0');
   if (P.film) { staticNoise(seg(f, END - 14, END - 1) * 0.9); grain(0.09); letterbox(); filmSubs(f, sh); return; }
   if (P.series) seriesLabel(f, sh);
-  if (P.captions) drawCaptions(f, sh, c);
+  if (P.captions && !COLD) drawCaptions(f, sh, c);
   if (sh.onscreen) drawOnscreen(f, sh);
+  if (sh.choices) choiceCard(f, sh);
   if (sh.react === 'shutter' && sh.beat != null && f >= sh.beat && f < sh.beat + 8) flash(1 - (f - sh.beat) / 8);
   if (sh.blackout && sh.le != null && f >= sh.le - sh.blackout) { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); ctx.restore(); return; }
   staticNoise(seg(f, END - 14, END - 1) * 0.9);

@@ -271,6 +271,11 @@ def lock_script(story: dict, script: dict) -> dict:
     story["story_id"] = script["id"]
     if script.get("description"):
         story["description"] = script["description"]
+    if script.get("choices"):                    # A/B choice card on the question line: viewers answer in the comments
+        story["choices"] = script["choices"]
+        for b in story["beats"]:
+            if b.get("line", "").lower().lstrip("*").startswith("what would you do"):
+                b["choices"] = script["choices"]
     if script.get("star"):
         story["star"] = script["star"]           # the animal/object the story is about: on screen whenever it's mentioned
     return story

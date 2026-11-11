@@ -31,5 +31,9 @@
    "balloons"
   ],
   "pronouns": false
- }
+ },
+ "choices": [
+  "Close the curtains",
+  "Pop the balloon with the eye"
+ ]
 }

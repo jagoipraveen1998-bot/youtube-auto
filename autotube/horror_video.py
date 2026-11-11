@@ -707,6 +707,9 @@ def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_
     log("Cast: " + ", ".join(f"{k}={v['kokoro_voice']}" for k, v in casting["voices"].items() if k != "narrator"))
     # brand: a short logo sting before the story, the signature laugh after it
     intro = 0.0 if fmt == "vertical" else 2.0     # a Short's first frame is the hook, never the logo (brand stays in the outro)
+    cold = fmt == "vertical" and story.get("cold_open", True) and any(b.get("twist") for b in story["beats"])
+    if cold:
+        intro = 0.8                               # cold open: the scariest frame of the story + the hook, then the story starts
     if take:
         voice, timing = voice_from_take(story, take)
     elif voice_file:
@@ -736,6 +739,12 @@ def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_
             plan["props"], plan["propInfo"] = props, info
             log("Objects and animals: " + ", ".join(sorted(props)))
     plan["intro"] = int(round(intro * FPS))
+    if cold:
+        tw = next((sh for sh in plan["shots"] if sh.get("twist")), None)
+        if tw:
+            plan["coldOpen"] = min((tw.get("beat") or tw["a"]) + 8, tw["b"] - 2)
+            hook = re.sub(r"\s*\(part \d\)|#\S+", "", story.get("title", ""), flags=re.I).strip()
+            plan["hook"] = hook.upper()[:60]
     if story.get("cover_beat") is not None:      # a storyboard can pick its thumbnail shot
         cs = plan["shots"][story["cover_beat"]]
         plan["cover_frame"] = cs["b"] - 6

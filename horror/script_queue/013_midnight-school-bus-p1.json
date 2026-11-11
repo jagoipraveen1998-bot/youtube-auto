@@ -30,5 +30,9 @@
    "bus"
   ],
   "pronouns": false
- }
+ },
+ "choices": [
+  "Jump off at the next stop",
+  "Stay quiet and ride"
+ ]
 }

@@ -25,5 +25,9 @@
   "*\"You didn't open it, right? Good. Because I'm not at your door. I'm under your bed.\"",
   "What would you do?",
   "Part two is coming next. Follow, so you don't miss it."
+ ],
+ "choices": [
+  "Run out of the room",
+  "Look under the bed"
  ]
 }

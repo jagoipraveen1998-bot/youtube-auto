@@ -32,6 +32,22 @@ def latest_long_video() -> dict | None:
     return best
 
 
+def link_part2(p1_id: str, p2_id: str) -> None:
+    """Put "PART 2 is out" at the top of Part 1's description (never stops the run)."""
+    try:
+        from autotube.uploader import _client
+        yt = _client("YT_HORROR_REFRESH_TOKEN")
+        v = yt.videos().list(part="snippet", id=p1_id).execute()["items"][0]["snippet"]
+        if p2_id in v.get("description", ""):
+            return
+        v["description"] = f"▶ PART 2 is out: https://youtube.com/shorts/{p2_id}\n\n" + v.get("description", "")
+        yt.videos().update(part="snippet", body={"id": p1_id, "snippet": {
+            k: v[k] for k in ("title", "description", "categoryId", "tags", "defaultLanguage", "defaultAudioLanguage") if k in v}}).execute()
+        log(f"Part 1 ({p1_id}) now links to Part 2")
+    except Exception as exc:
+        log(f"Could not link Part 1 to Part 2: {str(exc)[:200]}")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--no-upload", action="store_true")
@@ -114,6 +130,10 @@ def main():
             story["description"] = f"Part 1: https://youtube.com/shorts/{prev['video_id']}\n" + story["description"]
     elif story.get("part") == 2 and hist.get("open_part", {}).get("video_id"):
         story["description"] = f"Part 1: https://youtube.com/shorts/{hist['open_part']['video_id']}\n" + story["description"]
+    if story.get("choices"):
+        a, b = story["choices"][:2]
+        story["description"] = (f"What would you do? Comment A or B 👇\nA) {a}\nB) {b}\n"
+                                "Part 2 is coming next. Follow so you don't miss it.\n\n" + story["description"])
     description = "\n".join([story["description"], "",
                              *([f"🎬 Full animated horror story: {full['title']} → https://youtu.be/{full['video_id']}", ""] if full else []),
                              "A Creepy Cartoon Tale: an original animated horror short. New horror Shorts every day.",
@@ -149,6 +169,10 @@ def main():
     hist_path.parent.mkdir(parents=True, exist_ok=True)
     hist_path.write_text(json.dumps(hist, indent=2, ensure_ascii=False), encoding="utf-8")
     log(f"Horror Short uploaded: https://youtube.com/shorts/{video_id}")
+    if story.get("part") == 2:                       # Part 1 now points straight to Part 2
+        p1 = next((v for v in reversed(hist["videos"][:-1]) if story.get("script_pair") and v.get("pair") == story["script_pair"]), None)
+        if p1:
+            link_part2(p1["video_id"], video_id)
     from autotube.localize import add_languages, subtitle_lines
     add_languages(cfg, video_id, title, description, subtitle_lines(story, plan))
 

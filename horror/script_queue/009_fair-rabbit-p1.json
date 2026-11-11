@@ -34,5 +34,9 @@
    "it",
    "its"
   ]
- }
+ },
+ "choices": [
+  "Buy the carrots",
+  "Take it back to the fair"
+ ]
 }

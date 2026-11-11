@@ -1,0 +1,74 @@
+{
+ "id": "extra-chair",
+ "title": "There Were Five Chairs At Dinner #shorts #horror",
+ "approved": true,
+ "description": "A CreepyCartoonTales story. What would you do? Tell us in the comments.",
+ "choices": [
+  "Say hello",
+  "Run"
+ ],
+ "lines": [
+  "Imagine you set the table for dinner. Four plates. Four chairs.",
+  "Mum, Dad, your sister, and you.",
+  "You sit down. Everyone is smiling.",
+  "Then you count the chairs. Five.",
+  "Nobody else notices. They pass the rice right over it.",
+  "The fifth plate is already full. Steam is rising.",
+  "The spoon on it lifts. By itself.",
+  "Your sister laughs and says, \"Stop staring at Grandpa.\"",
+  "You never met your grandpa. He died before you were born.",
+  "*The chair slowly turns. Toward you.",
+  "Would you say hello, or run? Comment A or B."
+ ],
+ "shots": [
+  {
+   "set": "dinner",
+   "v": "four"
+  },
+  {
+   "set": "dinner",
+   "v": "four",
+   "cam": "push_in"
+  },
+  {
+   "set": "dinner",
+   "v": "smile"
+  },
+  {
+   "set": "dinner",
+   "v": "count"
+  },
+  {
+   "set": "dinner",
+   "v": "pass"
+  },
+  {
+   "set": "dinner",
+   "v": "steam",
+   "cam": "push_in"
+  },
+  {
+   "set": "dinner",
+   "v": "spoon"
+  },
+  {
+   "set": "dinner",
+   "v": "sister"
+  },
+  {
+   "set": "face",
+   "v": "",
+   "bg": "#6e4f44",
+   "cam": "push_in"
+  },
+  {
+   "set": "dinner",
+   "v": "turn"
+  },
+  {
+   "set": "face",
+   "v": "",
+   "bg": "#6e4f44"
+  }
+ ]
+}

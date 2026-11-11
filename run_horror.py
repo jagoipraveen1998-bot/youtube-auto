@@ -88,7 +88,8 @@ def main():
                 story = write_story(cfg, hist["stories"], script=script)
                 story["part"] = script.get("part")
                 story["script_pair"] = script.get("pair")
-                story["min_len"] = 93                   # Praveen's rule: every Short at least 1:30
+                if script.get("part"):
+                    story["min_len"] = 93               # two-part stories stay at least 1:30; one-part stories run 50-60 s
             elif hcfg.get("approved_scripts_only"):
                 log("No approved script left in horror/script_queue: skipping this Short (add scripts to continue)")
                 return
@@ -97,7 +98,7 @@ def main():
                 story = write_story(cfg, hist["stories"], part_of=part_of)
                 story["part"] = 2 if part_of else 1
             tag = f"(Part {story['part']})"
-            if tag.lower() not in story["title"].lower():          # the writer sometimes forgets: viewers need it
+            if story.get("part") and tag.lower() not in story["title"].lower():          # the writer sometimes forgets: viewers need it
                 t = story["title"]
                 cut = t.lower().find(" #")
                 story["title"] = (t[:cut] + f" {tag}" + t[cut:]) if cut > 0 else f"{t} {tag}"

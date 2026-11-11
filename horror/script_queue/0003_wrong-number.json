@@ -1,0 +1,79 @@
+{
+ "id": "wrong-number",
+ "title": "The 3 A.M. Call Could See Me #shorts #horror",
+ "approved": true,
+ "description": "A CreepyCartoonTales story. What would you do? Tell us in the comments.",
+ "choices": [
+  "Turn around",
+  "Call the number back"
+ ],
+ "lines": [
+  "Imagine your phone rings at 3 a.m. Unknown number.",
+  "A child's voice whispers, \"I can see your light.\"",
+  "You laugh. Wrong number. You hang up.",
+  "It rings again. \"You're wearing blue.\"",
+  "You look down. Blue shirt.",
+  "You run to the window and pull the curtain shut.",
+  "The phone buzzes. A photo.",
+  "It's you. At the window. Taken one second ago.",
+  "*From inside the room.",
+  "Something breathes behind you.",
+  "Would you turn around, or call the number back? Comment A or B."
+ ],
+ "shots": [
+  {
+   "set": "phone",
+   "v": "call"
+  },
+  {
+   "set": "phone",
+   "v": "voice"
+  },
+  {
+   "set": "face",
+   "v": "",
+   "bg": "#2f3554"
+  },
+  {
+   "set": "phone",
+   "v": "voice"
+  },
+  {
+   "set": "face",
+   "v": "",
+   "bg": "#2f3554",
+   "down": true,
+   "cam": "push_in"
+  },
+  {
+   "scene": "window",
+   "hero": {
+    "pose": "run",
+    "expr": "worried"
+   },
+   "cam": "track"
+  },
+  {
+   "set": "phone",
+   "v": "photo"
+  },
+  {
+   "set": "phone",
+   "v": "photo",
+   "cam": "push_in"
+  },
+  {
+   "set": "face",
+   "v": "",
+   "bg": "#1a1d30"
+  },
+  {
+   "set": "behind",
+   "v": ""
+  },
+  {
+   "set": "behind",
+   "v": ""
+  }
+ ]
+}

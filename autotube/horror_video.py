@@ -288,6 +288,46 @@ def action_spec(line: str, next_line: str, story: dict) -> dict | None:
     return spec
 
 
+FEELINGS = [   # (face before the beat, face after it or None, words): the hero's face is what the line makes him feel
+    ("worried", "scream", ["scream", "run!", "grabs", "chases"]),
+    ("worried", "dread", ["you run", "you hide", "you back away"]),
+    ("worried", "terror", ["behind you", "breathes", "breathing", "whispers your name", "staring at you", "smiles at you", "waving at you",
+                            "turns toward you", "looks at you", "by itself", "from the inside", "from inside"]),
+    ("calm", "realize", ["you didn't", "you never", "nobody else", "no one else", "but you", "wasn't there", "should", "died",
+                          "has twelve", "isn't yours", "one second ago", "you live alone", "you count"]),
+    ("worried", "dread", ["heart is pounding", "you freeze", "can't move", "hands shake", "too late", "it knows", "gone"]),
+    ("happy", "laugh", ["you laugh", "giggle", "laughs"]),
+    ("happy", None, ["everyone is smiling", "easy", "you smile", "relief", "safe", "favourite", "wagging"]),
+    ("sad", "cry", ["you cry", "tears", "you miss", "missing for"]),
+    ("suspicious", None, ["wrong number", "strange", "weird", "something is off", "odd", "you check", "you look closer"]),
+    ("curious", None, ["you open", "you look", "you walk", "you follow", "you play it", "you pick up", "you answer", "you find"]),
+    ("confused", None, ["?", "but how", "that's impossible", "doesn't make sense", "why would"]),
+    ("sleepy", "shock", ["3 a.m.", "two a.m.", "midnight", "wakes you", "you wake"]),
+    ("nervous", None, ["you tell", "it's nothing", "just the wind", "you almost ignore", "probably"]),
+    ("calm", None, ["imagine"]),
+]
+
+
+def emote(story: dict) -> None:
+    """Give every hero shot the face its line calls for, so the feeling changes line by line like a real person's."""
+    prev = None
+    for b in story["beats"]:
+        h = b.get("hero")
+        if not isinstance(h, dict) or h.get("pose") == "sleep" or b.get("keep_expr"):
+            continue
+        l = " " + b.get("line", "").lower() + " "
+        hit = next(((a, z) for a, z, ws in FEELINGS if any(w in l for w in ws)), None)
+        if l.strip().startswith(("would you", "what would you")):
+            hit = ("worried", None)
+        if b.get("twist"):
+            hit = (hit[0] if hit else "worried", "terror" if not hit or hit[1] in (None, "realize", "dread") else hit[1])
+        if not hit:
+            hit = ("worried", None) if prev in ("terror", "scream", "dread", "realize") else None
+        if hit:
+            h["expr"], h["expr2"] = hit
+            prev = hit[1] or hit[0]
+
+
 def pet_spec(line: str, twist: bool) -> dict:
     """What the dog DOES in this line, read literally: the shot acts the words out."""
     l = line.lower()
@@ -586,7 +626,7 @@ def build_plan(story: dict, timing: list[dict], total: float, casting: dict, fmt
         a = intro_f if i == 0 else max(shots[-1]["a"] + 6, int(round(tm["start"] * FPS)) - 4)
         sh = {k: v for k, v in b.items() if k not in ("line", "beat_word")}
         sh["a"] = a
-        sh["beat"] = int(round(tm["beat"] * FPS)) - 2 if b.get("react", "none") != "none" or b.get("twist") else None
+        sh["beat"] = int(round(tm["beat"] * FPS)) - 2 if b.get("react", "none") != "none" or b.get("twist") or (b.get("hero") or {}).get("expr2") else None
         if sh["beat"] is not None:
             sh["beat"] = max(a + 3, sh["beat"])
         sp = b.get("speaker") or "narrator"
@@ -712,6 +752,8 @@ def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_
                take: Path | None = None,
                title: str | None = None) -> tuple[Path, Path, dict]:
     work.mkdir(parents=True, exist_ok=True)
+    if fmt == "vertical" and not story.get("film") and not story.get("storyboard"):
+        emote(story)
     plates = apply_plates(story) if fmt == "vertical" and story.get("plates", True) and not story.get("film") else {}
     casting = cast_story(story, seed, funny=(fmt == "vertical"))
     (work / "casting.json").write_text(json.dumps(casting, indent=1), encoding="utf-8")

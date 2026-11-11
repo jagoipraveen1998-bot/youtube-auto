@@ -1,0 +1,90 @@
+name: Tutorial video (how we make our videos)
+
+on:
+  push:
+    branches: [tutorial-video]
+    paths: ["scripts/tutorial/**", ".github/workflows/tutorial.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: horror-long
+  cancel-in-progress: false
+
+jobs:
+  make-long-video:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install ffmpeg and fonts
+        id: apt
+        continue-on-error: true
+        timeout-minutes: 8
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo rm -f /var/lib/man-db/auto-update
+          PKGS="ffmpeg fonts-dejavu-core espeak-ng"
+          sudo timeout 300 apt-get install -y -qq --no-install-recommends $PKGS || (sudo timeout 120 apt-get update -qq && sudo timeout 300 apt-get install -y -qq --no-install-recommends $PKGS)
+
+      - name: Install ffmpeg (backup download)
+        if: steps.apt.outcome != 'success'
+        uses: FedericoCarboni/setup-ffmpeg@v3
+        timeout-minutes: 5
+
+      - name: Install Python packages and the cartoon browser
+        timeout-minutes: 20
+        run: |
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q -r requirements.txt
+          pip install -q omnivoice soundfile || echo "OmniVoice could not be installed; Kokoro will speak"
+          python -c "import torchaudio, kokoro" || pip install -q --force-reinstall --no-deps torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          python -c "import torchaudio, kokoro; print('voice libraries OK')"
+          if ! timeout 420 python -m playwright install --with-deps chromium; then
+            echo "Browser install failed (GitHub's package mirror); using the runner's own Chrome"
+            echo "CHROME_PATH=$(command -v google-chrome || command -v google-chrome-stable || command -v chromium)" >> "$GITHUB_ENV"
+          fi
+
+      - name: Bring back acted voice lines from earlier runs
+        uses: actions/cache/restore@v4
+        with:
+          path: voice_cache
+          key: gemini-voices-${{ github.run_id }}
+          restore-keys: gemini-voices-
+
+      - name: Make the tutorial video
+        timeout-minutes: 200
+        env:
+          GEMINI_VOICE_CACHE: ${{ github.workspace }}/voice_cache
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python scripts/tutorial/make.py
+
+      - name: Keep acted voice lines for the next run
+        if: always() && hashFiles('voice_cache/**') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: voice_cache
+          key: gemini-voices-${{ github.run_id }}
+
+      - name: Keep the video for 3 days
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tutorial-video-${{ github.run_number }}
+          path: |
+            output_long/video.mp4
+            output_long/cover.jpg
+            output_long/description.txt
+            output_long/story.json
+            output_long/*.txt
+          retention-days: 3
+          if-no-files-found: ignore

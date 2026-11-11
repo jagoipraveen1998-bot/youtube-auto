@@ -4,7 +4,8 @@
     "the_fourth_face: The Fourth Face",
     "the_mummy_downstairs: The Mummy Downstairs (a museum coffin delivered to the wrong house)",
     "the-nine-foot-suit: The Nine-Foot Suit Standing Behind My Desk",
-    "front-door-peephole-kitchen: My Front Door Peephole Shows My Own Kitchen"
+    "front-door-peephole-kitchen: My Front Door Peephole Shows My Own Kitchen",
+    "future-double-cereal: My Future Double Kept Stealing My Cereal"
   ],
   "videos": [
     {
@@ -36,6 +37,13 @@
       "video_id": "mCmHNCIQScY",
       "script": "front-door-peephole-kitchen.txt",
       "length": "4.7 min"
+    },
+    {
+      "date": "2026-11-11 17:42",
+      "title": "My Future Double Kept Stealing My Cereal",
+      "video_id": "kngIhBu9g5g",
+      "script": "future-double-cereal.txt",
+      "length": "4.1 min"
     }
   ]
 }

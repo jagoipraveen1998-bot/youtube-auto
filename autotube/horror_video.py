@@ -416,11 +416,13 @@ def apply_plates(story: dict) -> dict:
     used, last = {}, None
     musts = must_show(story)
     for b, must in zip(story["beats"], musts):
-        if must:
+        if must and not b.get("set"):
             b["must"] = must
     beats = story["beats"]
     for i, b in enumerate(beats):
         scene = b.get("scene")
+        if b.get("set"):                                 # a drawn story set: the script staged this line itself
+            continue
         star = (story.get("star") or {}).get("thing")
         act = action_spec(b.get("line", ""), beats[i + 1].get("line", "") if i + 1 < len(beats) else "", story)
         if act:
@@ -626,7 +628,7 @@ def build_plan(story: dict, timing: list[dict], total: float, casting: dict, fmt
         a = intro_f if i == 0 else max(shots[-1]["a"] + 6, int(round(tm["start"] * FPS)) - 4)
         sh = {k: v for k, v in b.items() if k not in ("line", "beat_word")}
         sh["a"] = a
-        sh["beat"] = int(round(tm["beat"] * FPS)) - 2 if b.get("react", "none") != "none" or b.get("twist") or (b.get("hero") or {}).get("expr2") else None
+        sh["beat"] = int(round(tm["beat"] * FPS)) - 2 if b.get("react", "none") != "none" or b.get("twist") or (b.get("hero") or {}).get("expr2") or b.get("set") else None
         if sh["beat"] is not None:
             sh["beat"] = max(a + 3, sh["beat"])
         sp = b.get("speaker") or "narrator"

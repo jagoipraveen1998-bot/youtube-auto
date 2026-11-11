@@ -1,0 +1,71 @@
+{
+ "id": "hide-and-seek",
+ "title": "My Cousin's Friend Was Hiding Since Morning #shorts #horror",
+ "approved": true,
+ "description": "A CreepyCartoonTales story. What would you do? Tell us in the comments.",
+ "choices": [
+  "Open it again",
+  "Leave the house"
+ ],
+ "lines": [
+  "Imagine you're babysitting your little cousin.",
+  "He wants to play hide and seek. You count to ten.",
+  "You find him under the bed. Easy.",
+  "He giggles. \"Now find my friend.\"",
+  "You tell him nobody else is in the house.",
+  "He points at the cupboard. \"She's been hiding since morning.\"",
+  "You open it. Empty. Just coats.",
+  "You turn around to laugh. Your cousin is gone.",
+  "*From inside the cupboard, two voices start counting. \"One. Two. Three.\"",
+  "The cupboard door closes. From the inside.",
+  "Would you open it again, or leave the house? Comment A or B."
+ ],
+ "shots": [
+  {
+   "set": "room",
+   "v": "babysit"
+  },
+  {
+   "set": "room",
+   "v": "count"
+  },
+  {
+   "set": "room",
+   "v": "underbed"
+  },
+  {
+   "set": "room",
+   "v": "underbed",
+   "cam": "push_in"
+  },
+  {
+   "set": "room",
+   "v": "babysit"
+  },
+  {
+   "set": "cupboard",
+   "v": "point"
+  },
+  {
+   "set": "cupboard",
+   "v": "open"
+  },
+  {
+   "set": "cupboard",
+   "v": "gone"
+  },
+  {
+   "set": "cupboard",
+   "v": "count"
+  },
+  {
+   "set": "cupboard",
+   "v": "close"
+  },
+  {
+   "set": "face",
+   "v": "",
+   "bg": "#4a5173"
+  }
+ ]
+}

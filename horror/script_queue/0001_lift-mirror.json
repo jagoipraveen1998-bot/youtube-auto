@@ -1,0 +1,88 @@
+{
+ "id": "lift-mirror",
+ "title": "The Lift Mirror Copied Me Wrong #shorts #horror",
+ "approved": true,
+ "description": "A CreepyCartoonTales story. What would you do? Tell us in the comments.",
+ "choices": [
+  "Turn around",
+  "Keep watching the mirror"
+ ],
+ "lines": [
+  "Imagine you get into the lift alone at midnight.",
+  "There's a mirror on the back wall. You fix your hair.",
+  "Floor 3. Floor 4. Floor 5.",
+  "Your reflection yawns. You didn't.",
+  "You lift your right hand. It lifts its right hand too.",
+  "A mirror should copy you backwards.",
+  "The lift stops. Floor 13. Your building has twelve.",
+  "The doors open behind you. In the mirror, they stay shut.",
+  "Your reflection smiles and presses a button.",
+  "*The doors close. On your side.",
+  "Would you turn around, or keep watching the mirror? Comment A or B."
+ ],
+ "shots": [
+  {
+   "set": "lift",
+   "v": "doors_close",
+   "floor": 1
+  },
+  {
+   "set": "lift",
+   "v": "fix",
+   "floor": 2
+  },
+  {
+   "set": "lift",
+   "v": "idle",
+   "floors": [
+    3,
+    4,
+    5
+   ]
+  },
+  {
+   "set": "lift",
+   "v": "yawn",
+   "floor": 6
+  },
+  {
+   "set": "lift",
+   "v": "hand",
+   "floor": 8
+  },
+  {
+   "set": "lift",
+   "v": "face",
+   "cam": "push_in"
+  },
+  {
+   "set": "lift",
+   "v": "display",
+   "floors": [
+    12,
+    13,
+    13,
+    13
+   ]
+  },
+  {
+   "set": "lift",
+   "v": "doors",
+   "floor": 13
+  },
+  {
+   "set": "lift",
+   "v": "smile",
+   "floor": 13
+  },
+  {
+   "set": "lift",
+   "v": "dark",
+   "floor": 13
+  },
+  {
+   "set": "lift",
+   "v": "face"
+  }
+ ]
+}

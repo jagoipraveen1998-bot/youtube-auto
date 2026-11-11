@@ -267,6 +267,17 @@ def lock_script(story: dict, script: dict) -> dict:
             b["beat_word"] = next((w for w in reversed(ws) if len(w) > 3), ws[-1] if ws else "")
         b["twist"] = i == twist_i
         out.append(b)
+    for b, shot in zip(out, script.get("shots") or []):      # the script says exactly what each line shows
+        if not shot:
+            continue
+        if shot.get("set"):
+            b.update(scene="drawn", react="none", prop="none", cam=shot.get("cam", "wide"), focus="wide")
+            for k in ("other", "side", "sideExpr", "things", "place"):
+                b.pop(k, None)
+            b["hero"] = dict(b.get("hero") or {"pose": "stand", "expr": "worried"}, pose="stand")
+        b.update({k: v for k, v in shot.items() if k != "hero"})
+        if shot.get("hero"):
+            b["hero"] = dict(b.get("hero") or {}, **shot["hero"])
     story["beats"] = out
     story["title"] = script["title"]
     story["story_id"] = script["id"]
@@ -275,7 +286,7 @@ def lock_script(story: dict, script: dict) -> dict:
     if script.get("choices"):                    # A/B choice card on the question line: viewers answer in the comments
         story["choices"] = script["choices"]
         for b in story["beats"]:
-            if b.get("line", "").lower().lstrip("*").startswith("what would you do"):
+            if b.get("line", "").lower().lstrip("*").startswith(("what would you do", "would you")):
                 b["choices"] = script["choices"]
     if script.get("star"):
         story["star"] = script["star"]           # the animal/object the story is about: on screen whenever it's mentioned

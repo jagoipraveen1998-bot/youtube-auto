@@ -1,0 +1,71 @@
+{
+ "id": "last-bus-seat",
+ "title": "Something Sat Next To Me On The Last Bus #shorts #horror",
+ "approved": true,
+ "description": "A CreepyCartoonTales story. What would you do? Tell us in the comments.",
+ "choices": [
+  "Ask the driver",
+  "Jump off"
+ ],
+ "lines": [
+  "Imagine you catch the last bus home. It's empty.",
+  "You sit at the back and put in your earphones.",
+  "At the next stop, nobody gets on. But the doors open.",
+  "The seat beside you sinks. Like someone sat down.",
+  "The window fogs up, next to that seat.",
+  "A finger draws a smiley face on the glass.",
+  "You move to the front. Your heart is pounding.",
+  "In the driver's mirror, you see the back seat.",
+  "*Someone is sitting there. Waving at you.",
+  "The driver says, \"Your friend isn't getting off?\"",
+  "Would you ask the driver what he sees, or jump off? Comment A or B."
+ ],
+ "shots": [
+  {
+   "set": "bus",
+   "v": "ride"
+  },
+  {
+   "set": "bus",
+   "v": "ride",
+   "cam": "push_in"
+  },
+  {
+   "set": "bus",
+   "v": "doors"
+  },
+  {
+   "set": "bus",
+   "v": "sink"
+  },
+  {
+   "set": "bus",
+   "v": "fog"
+  },
+  {
+   "set": "bus",
+   "v": "smiley"
+  },
+  {
+   "set": "bus",
+   "v": "front"
+  },
+  {
+   "set": "bus",
+   "v": "mirror",
+   "nofig": true
+  },
+  {
+   "set": "bus",
+   "v": "mirror"
+  },
+  {
+   "set": "bus",
+   "v": "driver"
+  },
+  {
+   "set": "bus",
+   "v": "front"
+  }
+ ]
+}

@@ -464,6 +464,17 @@ def apply_plates(story: dict) -> dict:
             line = b.get("line", "").lower()
             if b["things"][0] == "dog" and any(k in line for k in ("two legs", "hind legs", "stands up", "standing up")):
                 b["thing_tall"] = True                       # no standing-dog cut-out yet: stretch him upright
+    order, k, prev = ["left", "far", "right", "close", "center"], 0, None      # a new set-up every shot
+    for b in story["beats"]:
+        if b.get("scene") != "plate" or b.get("comp") or (b.get("hero") or {}).get("pose") in ("walk", "run"):
+            prev = None
+            continue
+        comp = "close" if b.get("twist") else order[k % len(order)]
+        if comp == prev:
+            k += 1; comp = order[k % len(order)]
+        if b.get("things"):
+            comp = "left"                       # leave the right of the frame for what the line names
+        b["comp"], prev, k = comp, comp, k + 1
     shown = sum(1 for b in story["beats"] if b.get("must"))
     if shown:
         log(f"Named things on screen: {shown} lines show what they mention")

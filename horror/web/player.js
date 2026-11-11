@@ -124,6 +124,14 @@ function drawPlate(name, f) {
   const dx = Math.sin(f / 90) * 18, dy = Math.cos(f / 110) * 10;        // the plate breathes slightly: never a frozen still
   ctx.drawImage(im, W / 2 - im.width * k / 2 + dx, H / 2 - im.height * k / 2 + dy, im.width * k, im.height * k);
 }
+// where the hero stands in a painted place: a new composition every shot, like a film changing set-ups
+const COMPS = {
+  center: { x: 540, y: 1860, s: 0.8, look: 0, frame: [540, 1380, 1.6] },
+  left: { x: 330, y: 1870, s: 0.84, look: 0.7, frame: [430, 1380, 1.5] },       // on the left third, looking into the room
+  right: { x: 750, y: 1870, s: 0.84, look: -0.7, frame: [650, 1380, 1.5] },
+  far: { x: 560, y: 1640, s: 0.5, look: 0, frame: [550, 1330, 1.3] },           // small and alone, deep in the room
+  close: { x: 540, y: 2420, s: 1.3, look: 0, frame: [540, 1290, 1.12] },        // chest-up: we read his face
+};
 const PROPS_IMG = {};           // painted objects and animals (transparent cut-outs), placed beside the hero
 function drawProp(name, x, y, h, f, i, tall) {
   const im = PROPS_IMG[name]; if (!im) return;
@@ -159,6 +167,11 @@ function drawThings(sh, f, front) {
 }
 const SCENES = {
   plate: {
+    frameFn(sh, name) {                                   // the camera frames him wherever this shot stands him
+      const pose = (sh.hero || {}).pose;
+      if (name !== 'hero' || pose === 'walk' || pose === 'run') return null;
+      return (COMPS[sh.comp] || COMPS.center).frame;
+    },
     frames: { wide: [540, 960, 1.0], hero: [540, 1380, 1.6], prop: [540, 900, 1.5], thing: [690, 1320, 1.3] },  // thing: the hero AND the animal/object the line names
     otherFrame() { return [540, 1000, 1.6]; },
     ambient: '#8a90b4',
@@ -168,8 +181,10 @@ const SCENES = {
       g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.45)');
       ctx.fillStyle = g; ctx.fillRect(-200, 1500, W + 400, 600);
       drawThings(sh, f, false);
-      const hx = plateHeroX(sh, f), pose = (sh.hero || {}).pose, dir = (sh.hero || {}).dir === 'left' ? -1 : 1;
-      const h = heroObj(sh, f, { x: hx, y: 1860, s: 0.8, look: 0, lookY: 0 });
+      const pose = (sh.hero || {}).pose, dir = (sh.hero || {}).dir === 'left' ? -1 : 1;
+      const C = COMPS[(pose === 'walk' || pose === 'run') ? 'center' : (sh.comp || 'center')] || COMPS.center;
+      const hx = plateHeroX(sh, f) + C.x - 540;
+      const h = heroObj(sh, f, { x: hx, y: C.y, s: C.s, look: C.look, lookY: 0 });
       if (h && (pose === 'walk' || pose === 'run')) {
         const run = pose === 'run', ph = f * (run ? 0.95 : 0.45);
         h.walk = ph; h.walkAmt = run ? 1.35 : 1; h.look = dir;
@@ -178,7 +193,7 @@ const SCENES = {
         h.bob = (h.bob || 0) - Math.abs(Math.sin(ph)) * (run ? 26 : 9);
         if (run) { h.sweat = true; h.eyeW = (h.eyeW || 1) * 1.15; }
       }
-      if (h) { ctx.save(); ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.ellipse(hx, 1852, 140, 26, 0, 0, 7); ctx.fill(); ctx.restore(); guy(h); }
+      if (h) { ctx.save(); ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.ellipse(hx, C.y - 8, 175 * C.s, 32 * C.s, 0, 0, 7); ctx.fill(); ctx.restore(); guy(h); }
       drawThings(sh, f, true);
     },
     lights(l, f) { light(l, 540, 1350, 760, '#fff4e6', 0.9); light(l, 540, 700, 900, '#dfe6ff', 0.5); },
@@ -357,7 +372,7 @@ function framesFor(S, sh, name) {
 const ALT_CAM = { wide: 'medium', medium: 'wide', close: 'medium', push_in: 'medium', pull_out: 'medium', pan: 'medium', snap: 'wide' };
 function camFor(S, sh, f) {
   // Shorts cut every 2-3 s: a long line gets a second framing halfway (a hard cut, not a move)
-  if (P.cuts && FORMAT !== 'landscape' && !sh._cut && !sh.twist && sh.b - sh.a > 84 && !(sh.scene === 'plate' && ['walk', 'run'].includes((sh.hero || {}).pose))) {
+  if (P.cuts && FORMAT !== 'landscape' && !sh._cut && !sh.twist && sh.b - sh.a > 72 && !(sh.scene === 'plate' && ['walk', 'run'].includes((sh.hero || {}).pose))) {
     const cut = sh.a + Math.round((sh.b - sh.a) * 0.5);
     if (f >= cut && !(sh.beat != null && Math.abs(sh.beat - cut) < 10))
       return camFor(S, Object.assign({}, sh, { a: cut, cam: ALT_CAM[sh.cam] || 'close', _cut: true }), f);
@@ -649,6 +664,7 @@ window.renderFrame = function (f) {
   const as = ambientScale(sh, f);
   if (as < 1 && sh.scene !== 'kitchen' && sh.scene !== 'cctv') flash(1 - as, '#05030c');
   if (S.glow) glowAdd(c, ...S.glow);
+  if (typeof cinePost === 'function') cinePost(f, sh);
   if (sh.scene === 'cctv') { cctv(f); cctvOverlay(f, sh); }
   else { dust(f, sh); grade(0.92, 1.08, 1.0); vignette(0.7, 0.35); }
   // transitions & accents

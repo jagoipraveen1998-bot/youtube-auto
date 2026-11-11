@@ -129,7 +129,8 @@ Return ONLY JSON:
 """
 
 POSES = {"sit", "sleep", "stand", "walk", "run", "peek", "cheeks", "reach"}
-EXPRS = {"calm", "sleepy", "curious", "worried", "shock", "scream", "relieved", "tired", "stare", "grin"}
+EXPRS = {"calm", "sleepy", "curious", "worried", "shock", "scream", "relieved", "tired", "stare", "grin", "happy", "laugh",
+         "confused", "suspicious", "nervous", "sad", "cry", "angry", "terror", "realize", "dread", "doubt"}
 STATES = {"hidden", "back", "front", "stare", "grin", "tired", "lurk"}
 CAMS = {"wide", "medium", "close", "push_in", "pull_out", "pan", "snap", "low", "high", "dutch", "crash", "track"}
 REACTS = {"none", "gag", "jolt", "ring", "knock", "lights_on", "lights_off", "flicker", "appear", "vanish", "turn", "grin",

@@ -8,20 +8,29 @@ const OTHER = Object.assign({ kind: 'double', outfit: 'shirt' }, P.other || {});
 const blinkAt = (f, seed = 0) => { const p = (f + seed * 37) % 97; return p < 2 ? 1 : p < 4 ? 0.5 : 0; };
 
 const EXPR = {
-  calm: { eyeW: 1, pupil: 20, brow: 'flat', mouth: 'flat' },
-  sleepy: { eyeW: 1, pupil: 20, brow: 'flat', mouth: 'flat', lid: 0.55 },
-  asleep: { eyeW: 1, pupil: 20, brow: 'flat', mouth: 'flat', lid: 1 },
-  curious: { eyeW: 1.05, pupil: 18, brow: 'up', mouth: 'flat' },
-  worried: { eyeW: 1.08, pupil: 17, brow: 'worry', mouth: 'wobble', sweat: true, tremble: 2 },
-  shock: { eyeW: 1.25, pupil: 14, brow: 'up', mouth: 'o', mo: 0.8, hairUp: 0.5, pupilShake: 5, tremble: 4 },
-  scream: { eyeW: 1.32, pupil: 11, brow: 'up', mouth: 'o', mo: 1.45, hairUp: 1.1, pupilShake: 8, tremble: 9, sweat: true },
-  relieved: { eyeW: 1, pupil: 20, brow: 'flat', mouth: 'smile' },
+  calm: { eyeW: 1, pupil: 19, brow: 'flat', mouth: 'flat' },
+  happy: { eyeW: 1, pupil: 20, brow: 'happy', mouth: 'smile', squint: 0.28, blush: 0.5 },
+  laugh: { eyeW: 1, pupil: 20, brow: 'happy', mouth: 'laugh', mo: 1, squint: 0.55, blush: 0.6, lid: 0.2 },
+  sleepy: { eyeW: 1, pupil: 19, brow: 'flat', mouth: 'flat', lid: 0.55 },
+  asleep: { eyeW: 1, pupil: 19, brow: 'flat', mouth: 'flat', lid: 1 },
+  curious: { eyeW: 1.06, pupil: 18, brow: 'raise', mouth: 'flat', tilt: 0.06 },
+  confused: { eyeW: 1, pupil: 17, brow: 'raise', mouth: 'droop', lid: 0.12, tilt: -0.08 },
+  suspicious: { eyeW: 0.95, pupil: 16, brow: 'angry', mouth: 'flat', lid: 0.3, squint: 0.35, look: 0.7 },
+  worried: { eyeW: 1.1, pupil: 16, brow: 'fear', mouth: 'wobble', sweat: true, tremble: 2, darts: 1 },
+  nervous: { eyeW: 1.05, pupil: 16, brow: 'fear', mouth: 'smile', sweat: true, darts: 1, browTwitch: 4 },
+  sad: { eyeW: 1, pupil: 19, brow: 'sad', mouth: 'frown', lid: 0.25, lookY: 0.6 },
+  cry: { eyeW: 1.05, pupil: 19, brow: 'sad', mouth: 'wobble', tears: 1, tremble: 3 },
+  angry: { eyeW: 0.98, pupil: 15, brow: 'angry', mouth: 'grit', lid: 0.15 },
+  shock: { eyeW: 1.28, pupil: 11, brow: 'fear', mouth: 'gasp', mo: 1, hairUp: 0.5, pupilShake: 5, tremble: 4, pale: 0.3 },
+  scream: { eyeW: 1.36, pupil: 8, brow: 'fear', mouth: 'scream', mo: 1.2, hairUp: 1.1, pupilShake: 8, tremble: 9, sweat: true, pale: 0.5, tears: 0.4 },
+  terror: { eyeW: 1.34, pupil: 6, brow: 'fear', mouth: 'grit', hairUp: 0.8, pupilShake: 6, tremble: 8, sweat: true, pale: 0.9 },
+  relieved: { eyeW: 1, pupil: 19, brow: 'happy', mouth: 'smile', lid: 0.3, squint: 0.2 },
   tired: { eyeW: 1, pupil: 18, brow: 'tired', mouth: 'droop', lid: 0.45, circles: 0.9 },
   grin: { eyeW: 1, pupil: 16, brow: 'sly', mouth: 'grin', grin: 1 },
-  stare: { eyeW: 1.12, pupil: 11, brow: 'flat', mouth: 'flat' },
-  doubt: { eyeW: 0.95, pupil: 18, brow: 'raise', mouth: 'flat', lid: 0.2, look: 0.7 },
-  realize: { eyeW: 1.22, pupil: 8, brow: 'worry', mouth: 'flat', sweat: true, tremble: 2 },
-  dread: { eyeW: 1.18, pupil: 7, brow: 'worry', mouth: 'wobble', sweat: true, tremble: 5, pupilShake: 3, hairUp: 0.3 },
+  stare: { eyeW: 1.12, pupil: 10, brow: 'flat', mouth: 'flat' },
+  doubt: { eyeW: 0.95, pupil: 17, brow: 'raise', mouth: 'flat', lid: 0.2, look: 0.7 },
+  realize: { eyeW: 1.24, pupil: 8, brow: 'fear', mouth: 'o', mo: 0.5, sweat: true, tremble: 2, pale: 0.45 },
+  dread: { eyeW: 1.2, pupil: 7, brow: 'fear', mouth: 'grit', sweat: true, tremble: 5, pupilShake: 3, hairUp: 0.3, pale: 0.8, darts: 1.5 },
 };
 const ex = n => Object.assign({}, EXPR[n] || EXPR.calm);
 const bT = (f, sh, len = 8) => sh.beat == null ? 0 : clamp((f - sh.beat) / len);
@@ -52,9 +61,21 @@ function heroObj(sh, f, base) {
     o.bob = (o.bob || 0) - 90 * Math.sin(Math.PI * clamp(t * 1.4));     // a little jump
     o.lean = (o.lean || 0) + 0.12 * Math.sin(f * 1.3) * pop;
     if (!base.noLegs) { o.armL = 2.9 * pop; o.armR = 2.9 * pop; o.armsFront = true; }
-  } else if (h.expr2 && after(f, sh)) Object.assign(o, ex(h.expr2));
+  } else if (h.expr2 && after(f, sh)) {
+    const t = bT(f, sh, 8), A = ex(h.expr || 'worried'), B = ex(h.expr2);
+    Object.assign(o, B);                                // the face MOVES into the new feeling: eyes first, with a little overshoot
+    for (const k of ['eyeW', 'pupil', 'lid', 'squint', 'pale', 'tears', 'hairUp', 'mo', 'blush'])
+      if (A[k] != null || B[k] != null) o[k] = lerp(A[k] ?? (k === 'eyeW' || k === 'mo' ? 1 : k === 'pupil' ? 19 : 0), B[k] ?? (k === 'eyeW' || k === 'mo' ? 1 : k === 'pupil' ? 19 : 0), k === 'eyeW' ? back(t) : ss(t));
+    if (t < 0.45) { o.mouth = A.mouth; o.brow = B.brow; }
+  }
   if (h.pose === 'cheeks') { o.armL = 2.85; o.armR = 2.85; o.armsFront = true; }
   if (h.pose === 'reach') o.armR = lerp(0.22, 1.75, ss(seg(f, sh.a + 6, sh.a + 24)));
+  if (o.darts && h.look == null) {                      // frightened eyes never rest: quick glances side to side
+    const step = Math.floor(f / 16), d = [0, 0.8, 0, -0.9, 0.3, -0.4, 0.9, 0][step % 8] * o.darts;
+    const prev = [0, 0.8, 0, -0.9, 0.3, -0.4, 0.9, 0][(step + 7) % 8] * o.darts;
+    o.look = (o.look || 0) * 0.4 + lerp(prev, d, ss(clamp((f % 16) / 3)));
+  }
+  if (o.tilt && base.tilt == null) o.tilt = o.tilt + Math.sin(f * 0.07) * 0.015;
   o.blink = Math.max(o.blink || 0, (o.lid || 0) > 0.9 ? 0 : blinkAt(f, 2));
   o.bob = (o.bob || 0) + Math.sin(f * 0.15) * 3;
   const face = (after(f, sh) && h.expr2) || h.expr;

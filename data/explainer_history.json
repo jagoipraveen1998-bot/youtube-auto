@@ -13,7 +13,8 @@
     "how face unlock tells you from a photograph of you",
     "how barcodes and QR codes survive being damaged",
     "how a lift decides which floor to go to next",
-    "how an electric motor actually spins"
+    "how an electric motor actually spins",
+    "how noise cancelling headphones erase sound with sound"
   ],
   "videos": [
     {
@@ -99,6 +100,12 @@
       "title": "How an electric motor actually spins",
       "video_id": "_jNTrgRrisc",
       "length": "04:20"
+    },
+    {
+      "date": "2026-11-12",
+      "title": "How Noise Cancelling Headphones Actually Work",
+      "video_id": "gekjMK8PDOY",
+      "length": "04:16"
     }
   ]
 }

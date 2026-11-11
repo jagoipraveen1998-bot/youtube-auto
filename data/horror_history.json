@@ -29,7 +29,8 @@
     "midnight-pizza-delivery-part2: Last time, a creepy delivery man stepped straight out of your dark bedroom wardrobe.",
     "dog-came-home-p1: Imagine your dog has been missing for two days.",
     "dog-came-home-p2: Last time, your missing dog came home. And stood on two legs.",
-    "voice-note-tomorrow-p1: Imagine your best friend sends you a voice note at two a.m."
+    "voice-note-tomorrow-p1: Imagine your best friend sends you a voice note at two a.m.",
+    "voice-note-tomorrow-p2: Last time, someone knocked with your best friend's voice. And the real one said he was under your bed."
   ],
   "videos": [
     {
@@ -296,6 +297,14 @@
       "length": "92s",
       "pair": "voice-note-tomorrow",
       "instagram_id": "18649810330020727"
+    },
+    {
+      "date": "2026-11-11 20:59",
+      "title": "The Voice Note From Tomorrow (Part 2) #shorts #horror",
+      "video_id": "7PUhjqzJwV0",
+      "length": "111s",
+      "pair": "voice-note-tomorrow",
+      "instagram_id": "18058327199581281"
     }
   ],
   "long_videos": [

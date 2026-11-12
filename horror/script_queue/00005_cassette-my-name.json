@@ -1,0 +1,72 @@
+{
+ "id": "cassette-my-name",
+ "title": "I Found A Cassette With My Name In Grandma's Cupboard #shorts #horror",
+ "approved": true,
+ "description": "A CreepyCartoonTales story. What would you do? Tell us in the comments.",
+ "choices": [
+  "Hide the tape",
+  "Ask Grandma"
+ ],
+ "lines": [
+  "Imagine you're cleaning Grandma's old cupboard.",
+  "You find a cassette tape. On it, someone wrote your name.",
+  "You play it on her old radio.",
+  "It's a little kid's voice. It's you, age five.",
+  "\"Hello, big me. Don't go to Grandma's this year.\"",
+  "You laugh. You don't remember recording that.",
+  "The tape keeps going. \"She's not Grandma anymore.\"",
+  "The cupboard door creaks behind you.",
+  "*\"Found something nice, kanna?\" Grandma asks, smiling.",
+  "The tape whispers, \"Don't let her see this.\"",
+  "Would you hide the tape, or ask Grandma about it? Comment A or B."
+ ],
+ "shots": [
+  {
+   "set": "cassette",
+   "v": "cupboard"
+  },
+  {
+   "set": "cassette",
+   "v": "tape"
+  },
+  {
+   "set": "cassette",
+   "v": "radio"
+  },
+  {
+   "set": "cassette",
+   "v": "kid"
+  },
+  {
+   "set": "cassette",
+   "v": "kid",
+   "cam": "push_in"
+  },
+  {
+   "set": "cassette",
+   "v": "radio"
+  },
+  {
+   "set": "cassette",
+   "v": "tape",
+   "cam": "push_in"
+  },
+  {
+   "set": "cassette",
+   "v": "play"
+  },
+  {
+   "set": "cassette",
+   "v": "grandma"
+  },
+  {
+   "set": "cassette",
+   "v": "whisper"
+  },
+  {
+   "set": "face",
+   "v": "",
+   "bg": "#7a4a5a"
+  }
+ ]
+}

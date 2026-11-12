@@ -1,0 +1,75 @@
+{
+ "id": "mum-home-early",
+ "title": "Mum Came Home Early… But She Just Texted Me #shorts #horror",
+ "approved": true,
+ "description": "A CreepyCartoonTales story. What would you do? Tell us in the comments.",
+ "choices": [
+  "Go to the kitchen",
+  "Run outside"
+ ],
+ "lines": [
+  "Imagine you're home alone after school.",
+  "The front door opens. \"I'm home early!\" It's Mum.",
+  "She smiles and goes into the kitchen.",
+  "Your phone buzzes. A text from Mum.",
+  "\"Stuck in traffic. Home in two hours. Don't open the door.\"",
+  "In the kitchen, someone is humming Mum's song.",
+  "\"Come and help me, beta,\" the voice calls.",
+  "You look at the shoes by the door. They're on the wrong feet.",
+  "The humming stops.",
+  "*\"Why are you texting, beta? I'm right here.\"",
+  "Would you go to the kitchen, or run outside? Comment A or B."
+ ],
+ "shots": [
+  {
+   "set": "home",
+   "v": "sofa"
+  },
+  {
+   "set": "home",
+   "v": "door"
+  },
+  {
+   "set": "home",
+   "v": "tokitchen"
+  },
+  {
+   "set": "phone",
+   "v": "text",
+   "texts": []
+  },
+  {
+   "set": "phone",
+   "v": "text",
+   "texts": [
+    "Stuck in traffic. Home in two hours.",
+    "Don't open the door."
+   ]
+  },
+  {
+   "set": "home",
+   "v": "kitchen"
+  },
+  {
+   "set": "home",
+   "v": "calls"
+  },
+  {
+   "set": "home",
+   "v": "shoes"
+  },
+  {
+   "set": "home",
+   "v": "silent"
+  },
+  {
+   "set": "home",
+   "v": "peek"
+  },
+  {
+   "set": "face",
+   "v": "",
+   "bg": "#5f6fb0"
+  }
+ ]
+}

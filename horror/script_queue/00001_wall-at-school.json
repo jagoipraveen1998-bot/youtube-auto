@@ -1,0 +1,72 @@
+{
+ "id": "wall-at-school",
+ "title": "I Leaned On The School Wall And Fell Into The Backrooms #shorts #horror",
+ "approved": true,
+ "description": "A CreepyCartoonTales story. What would you do? Tell us in the comments.",
+ "choices": [
+  "Run",
+  "Stand completely still"
+ ],
+ "lines": [
+  "Imagine you lean against the wall in your school corridor.",
+  "And you fall straight through it.",
+  "You land in a yellow room. Old carpet. Buzzing lights.",
+  "There's another yellow room behind it. And another. And another.",
+  "No windows. No doors. Just the hum.",
+  "You walk for an hour. Every room is the same.",
+  "Then you find a backpack on the floor.",
+  "It's yours. Your name is on it. It's covered in dust.",
+  "Inside is a note in your handwriting: \"Don't follow the footsteps.\"",
+  "*Behind you, something starts walking. Exactly in step with you.",
+  "Would you run, or stand completely still? Comment A or B."
+ ],
+ "shots": [
+  {
+   "set": "school",
+   "v": "lean"
+  },
+  {
+   "set": "school",
+   "v": "fall"
+  },
+  {
+   "set": "backrooms",
+   "v": "room"
+  },
+  {
+   "set": "backrooms",
+   "v": "endless"
+  },
+  {
+   "set": "backrooms",
+   "v": "room",
+   "cam": "push_in"
+  },
+  {
+   "set": "backrooms",
+   "v": "endless"
+  },
+  {
+   "set": "backrooms",
+   "v": "backpack"
+  },
+  {
+   "set": "backrooms",
+   "v": "backpack",
+   "cam": "push_in"
+  },
+  {
+   "set": "backrooms",
+   "v": "note"
+  },
+  {
+   "set": "backrooms",
+   "v": "steps"
+  },
+  {
+   "set": "face",
+   "v": "",
+   "bg": "#e8d26a"
+  }
+ ]
+}

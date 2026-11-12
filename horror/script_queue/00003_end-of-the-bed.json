@@ -1,0 +1,77 @@
+{
+ "id": "end-of-the-bed",
+ "title": "Something Sat At The End Of My Bed At 3 A.M. #shorts #horror",
+ "approved": true,
+ "description": "A CreepyCartoonTales story. What would you do? Tell us in the comments.",
+ "choices": [
+  "Check under the bed",
+  "Leave the room"
+ ],
+ "lines": [
+  "Imagine you wake up at 3 a.m. and you can't move.",
+  "Not your arms. Not your legs. Only your eyes.",
+  "Something is sitting at the end of your bed.",
+  "The mattress sinks where it sits.",
+  "It's turned away from you. Very still.",
+  "You try to scream. Nothing comes out.",
+  "*Slowly, it starts to turn its head.",
+  "Then your alarm rings. You can move. The room is empty.",
+  "You laugh. Just a dream.",
+  "Then you see the dent at the end of the bed. Still there.",
+  "Would you check under the bed, or leave the room? Comment A or B."
+ ],
+ "shots": [
+  {
+   "set": "bednight",
+   "v": "awake"
+  },
+  {
+   "set": "bednight",
+   "v": "awake",
+   "cam": "push_in"
+  },
+  {
+   "set": "bednight",
+   "v": "figure"
+  },
+  {
+   "set": "bednight",
+   "v": "sink"
+  },
+  {
+   "set": "bednight",
+   "v": "figure",
+   "cam": "push_in"
+  },
+  {
+   "set": "face",
+   "v": "",
+   "bg": "#2c2f5a",
+   "hero": {
+    "expr": "terror"
+   }
+  },
+  {
+   "set": "bednight",
+   "v": "turn"
+  },
+  {
+   "set": "bednight",
+   "v": "morning"
+  },
+  {
+   "set": "bednight",
+   "v": "morning",
+   "cam": "push_in"
+  },
+  {
+   "set": "bednight",
+   "v": "dent"
+  },
+  {
+   "set": "face",
+   "v": "",
+   "bg": "#9ad0c2"
+  }
+ ]
+}

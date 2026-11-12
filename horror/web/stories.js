@@ -202,10 +202,23 @@ const STORY = {
       sTxt('just now', sx + sw / 2, sy + 70, 44, '#e8ecff', false);
     } else {
       fillR(sx, sy, sw, sh2, '#141a30');
-      sTxt('3:00', 540, sy + 150, 120, '#e8ecff', false);
-      sf(ell(540, sy + 520, 130, 130), '#39406a', 0); sTxt('?', 540, sy + 528, 170, '#aab2d8', false);
-      sTxt('Unknown number', 540, sy + 760, 62, '#ffffff', false);
-      if (v === 'call') { for (let i = 0; i < 3; i++) { const r = 150 + ((f * 4 + i * 60) % 180); ctx.save(); ctx.globalAlpha = 1 - (r - 150) / 180; ctx.strokeStyle = '#7fe3ff'; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(540, sy + 520, r, 0, 7); ctx.stroke(); ctx.restore(); }
+      if (v === 'text') {                                                        // a message thread
+        sTxt('Mum ♥', 540, sy + 110, 64, '#ffffff', false);
+        (sh.texts || []).forEach((t, i) => {
+          const a = clamp((f - sh.a - 6 - i * 16) / 8); if (a <= 0) return;
+          ctx.save(); ctx.globalAlpha = a; ctx.font = '700 46px "DejaVu Sans"';
+          const lines = []; let cur = ''; for (const w of t.split(' ')) { if (ctx.measureText(cur + ' ' + w).width > 560) { lines.push(cur.trim()); cur = w; } else cur += ' ' + w; } lines.push(cur.trim());
+          const bh = 40 + lines.length * 58, y = sy + 260 + i * 260;
+          sf(rr(sx + 50, y, 620, bh, 36), '#39406a', 0);
+          lines.forEach((l, j) => sTxt(l, sx + 90, y + 50 + j * 58, 46, '#ffffff', false, 'left'));
+          ctx.restore();
+        });
+        ctx.restore(); ctx.restore(); return;
+      }
+      sTxt(v === 'mumcall' ? '0:14' : '3:00', 540, sy + 150, 120, '#e8ecff', false);
+      sf(ell(540, sy + 520, 130, 130), '#39406a', 0); sTxt(sh.caller ? sh.caller[0] : '?', 540, sy + 528, 170, '#aab2d8', false);
+      sTxt(sh.caller || 'Unknown number', 540, sy + 760, 62, '#ffffff', false);
+      if (v === 'call' || v === 'calling') { for (let i = 0; i < 3; i++) { const r = 150 + ((f * 4 + i * 60) % 180); ctx.save(); ctx.globalAlpha = 1 - (r - 150) / 180; ctx.strokeStyle = '#7fe3ff'; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(540, sy + 520, r, 0, 7); ctx.stroke(); ctx.restore(); }
         sf(ell(350, sy + 1200, 86, 86), '#e8453c', 0); sf(ell(730, sy + 1200, 86, 86), '#3ccf72', 0); }
       else { ctx.strokeStyle = '#7fe3ff'; ctx.lineWidth = 10; ctx.lineCap = 'round'; ctx.beginPath(); for (let x = 250; x <= 830; x += 20) { const a = 20 + 110 * noise1(x * 0.07 + f * 0.35) * (on || v === 'voice' ? 1 : 0.2); ctx.moveTo(x, sy + 1050 - a); ctx.lineTo(x, sy + 1050 + a); } ctx.stroke();
         sTxt('00:0' + (1 + Math.floor((f - sh.a) / 30)), 540, sy + 880, 54, '#aab2d8', false); }

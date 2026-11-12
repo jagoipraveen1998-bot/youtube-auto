@@ -526,6 +526,84 @@ def story_sfx(syn: Synth, plan: dict) -> np.ndarray:
     return out
 
 
+def _hits(n, times, sound):
+    """Place a short sound at each time (seconds) inside an n-sample shot."""
+    out = np.zeros(n)
+    for tt in times:
+        i = int(tt * SR)
+        if 0 <= i < n:
+            m = min(len(sound), n - i)
+            out[i:i + m] += sound[:m]
+    return out
+
+
+def _set_ambience(syn: Synth, rng, sh: dict, n: int, t: np.ndarray, a: float) -> np.ndarray:
+    """Make the viewer feel they are standing in the drawn set: its own room tone plus the small sounds of that place."""
+    st, v, dur = sh["set"], sh.get("v", ""), n / SR
+    beat = ((sh.get("beat") or sh["a"]) / FPS) - a
+    tone = lp(rng.standard_normal(n), 170) * 0.7                       # every room has a low hush
+    clock = lambda: _hits(n, np.arange(0.3, dur, 1.0), hp(rng.standard_normal(int(0.012 * SR)), 3000) * 2.0)
+    steps = lambda gap=0.55, g=1.0: _hits(n, np.arange(0.2, dur, gap), wood_step(syn, rng) * g)
+    if st == "backrooms":                                               # the fluorescent buzz is everywhere
+        buzz = lp(np.sign(np.sin(2 * np.pi * 120 * t)) * 0.3 + np.sin(2 * np.pi * 240 * t) * 0.4, 1800)
+        flick = 1 + 0.4 * (rng.random(n // 2000 + 1).repeat(2000)[:n] > 0.93)
+        tone = tone + buzz * 0.5 * flick
+        if v == "steps":
+            tone += _hits(n, np.arange(0.4, dur, 0.62), lp(concrete_step(syn, rng), 900) * 1.4)
+    elif st == "school":                                                # empty corridor, a far bell, a locker rattle
+        tone = lp(rng.standard_normal(n), 400) * 0.5 + _hits(n, [0.6], bowed([1320, 1980], 1.6) * 0.35)
+        if v == "fall":
+            tone += _hits(n, [max(0.0, beat)], syn.thud(70, 0.6) * 1.6)
+    elif st == "home":                                                  # fridge hum and the kitchen clock
+        tone = tone + lp(np.sin(2 * np.pi * 100 * t) + 0.4 * np.sin(2 * np.pi * 200 * t), 400) * 0.25 + clock()
+        if v in ("door", "peek"):
+            tone += _hits(n, [max(0.0, beat - 0.3)], creak(syn, rng, 0.9) * 1.3)
+        if v == "kitchen":                                              # someone humming a tune in the kitchen
+            hum = np.zeros(n)
+            for k, semi in enumerate([0, 2, 4, 2, 0, -3, 0]):
+                m = int(0.5 * SR); tn = np.arange(m) / SR
+                hum = hum + _hits(n, [0.3 + k * 0.55], np.sin(2 * np.pi * 220 * 2 ** (semi / 12) * tn) * np.sin(np.pi * tn / 0.5) * 0.4)
+            tone += bp(hum, 180, 900)
+    elif st == "bednight":                                              # quiet bedroom: clock, wind on the window
+        wind = bp(rng.standard_normal(n), 200, 900) * (0.4 + 0.4 * np.sin(2 * np.pi * 0.15 * t + 1.3))
+        tone = tone + wind * 0.5 + clock()
+        if v in ("sink", "dent"):
+            tone += _hits(n, [max(0.0, beat - 0.2)], creak(syn, rng, 1.1) * 1.2)
+        if v == "morning":
+            tone = lp(rng.standard_normal(n), 500) * 0.3 + _hits(n, [0.4, 1.3, 2.1], bowed([2600, 3100], 0.35) * 0.3)
+    elif st == "call":                                                  # laptop fan; chat pings
+        tone = bp(rng.standard_normal(n), 400, 2500) * 0.25 + tone * 0.5
+        if v in ("chat", "reply", "count"):
+            tone += _hits(n, [max(0.0, beat - 0.1)], syn.beep(1568, 0.09, square=False) * 0.6)
+        if v == "fifth":
+            tone += lp(rng.standard_normal(n), 900) * 0.2 * (0.5 + 0.5 * np.sin(2 * np.pi * 0.35 * t))   # breathing
+    elif st == "cassette":                                              # tape hiss and the play click
+        tone = tone * 0.6 + hp(rng.standard_normal(n), 2500) * 0.18
+        if v in ("play", "radio"):
+            tone += _hits(n, [max(0.0, beat - 0.4)], syn.click() * 2.0) + lp(np.sin(2 * np.pi * 50 * t), 120) * 0.1
+    elif st == "street":                                                # birds and far traffic
+        tone = lp(rng.standard_normal(n), 300) * 0.8 + _hits(n, rng.uniform(0, dur, int(dur * 1.4)),
+                                                                    bowed([3400, 4100], 0.18, vib=0.05) * 0.25)
+        if v == "walk":
+            tone += _hits(n, np.arange(0.2, dur, 0.5), concrete_step(syn, rng) * 0.8)
+        if v == "police":
+            si = np.sin(2 * np.pi * (750 + 250 * np.sign(np.sin(2 * np.pi * 0.9 * t))) * t)
+            tone += bp(si, 500, 1400) * 0.25
+    elif st == "lift":                                                  # lift motor hum and the floor ding
+        tone = tone + lp(np.sin(2 * np.pi * 55 * t), 160) * 0.4 + _hits(n, [max(0.0, beat - 0.2)], syn.bell(2600, 1.0) * 0.4)
+    elif st == "bus":
+        tone = lp(rng.standard_normal(n), 220) * 1.6 + np.sin(2 * np.pi * 40 * t) * 0.3
+    elif st == "dinner":
+        tone = tone + clock() + _hits(n, rng.uniform(0, dur, int(dur * 0.8)), hp(rng.standard_normal(int(0.03 * SR)), 2500) * 0.4)
+    elif st in ("cupboard", "room", "behind", "face"):
+        tone = tone + clock() * 0.7
+        if st == "behind":
+            tone += steps(0.7, 0.8)
+    elif st == "phone":
+        tone = tone + clock() * 0.6
+    return tone
+
+
 def ambience_track(syn: Synth, plan: dict) -> np.ndarray:
     """Room tone for scripted sets: the car engine and road, the radio, the gas station's buzzing light."""
     amb = np.zeros(syn.n)
@@ -579,6 +657,8 @@ def ambience_track(syn: Synth, plan: dict) -> np.ndarray:
         if sc in ("gDrive", "gSign"):                                               # the car on a night road
             road = lp(rng.standard_normal(n), 220) * 2.0 + np.sin(2 * np.pi * 38 * t) * 0.3 + bp(rng.standard_normal(n), 900, 3000) * 0.1
             _add(amb, road * fade, a, 1.0)
+        if sc == "drawn" and sh.get("set"):
+            _add(amb, _set_ambience(syn, rng, sh, n, t, a) * fade, a, 1.0)
         if sh.get("radio"):
             mel = [0, 4, 7, 9, 7, 4, 2, 4]
             out = np.zeros(n)

@@ -1,0 +1,71 @@
+{
+ "id": "extra-face-call",
+ "title": "There Was An Extra Face On Our Video Call #shorts #horror",
+ "approved": true,
+ "description": "A CreepyCartoonTales story. What would you do? Tell us in the comments.",
+ "choices": [
+  "Turn around",
+  "End the call"
+ ],
+ "lines": [
+  "Imagine a late-night video call with your best friends.",
+  "Four of you. Four little squares.",
+  "Everyone's laughing at a dumb joke.",
+  "Then a fifth square appears. Camera off. No name.",
+  "Nobody else seems to notice it.",
+  "The fifth square's microphone turns on. You hear breathing.",
+  "You type in the chat: \"Who added this?\"",
+  "Your friend replies: \"Added who? It's just the three of us.\"",
+  "Three? You count again. One of the squares is you, from behind.",
+  "*Your own square shows a hand reaching for your shoulder.",
+  "Would you turn around, or end the call? Comment A or B."
+ ],
+ "shots": [
+  {
+   "set": "call",
+   "v": "four"
+  },
+  {
+   "set": "call",
+   "v": "four",
+   "cam": "push_in"
+  },
+  {
+   "set": "call",
+   "v": "laugh"
+  },
+  {
+   "set": "call",
+   "v": "fifth"
+  },
+  {
+   "set": "call",
+   "v": "laugh"
+  },
+  {
+   "set": "call",
+   "v": "mic"
+  },
+  {
+   "set": "call",
+   "v": "chat"
+  },
+  {
+   "set": "call",
+   "v": "reply"
+  },
+  {
+   "set": "call",
+   "v": "count"
+  },
+  {
+   "set": "call",
+   "v": "hand"
+  },
+  {
+   "set": "face",
+   "v": "",
+   "bg": "#141626"
+  }
+ ]
+}

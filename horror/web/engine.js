@@ -102,6 +102,12 @@ const KINDS = {
   tall: { skin: '#e9e6ef', hair: '#151320', hairStyle: 'mop', outfit: 'suit', stretch: true, eyeCol: '#ffffff', pupil: 0.1 },
   delivery: { skin: '#d9a07a', hair: '#2a1d16', hairStyle: 'spiky', outfit: 'uniform', acc: { cap: '#7a5a34' } },
 };
+const DETAIL_OFF = o => o.kind === 'shadow' || o.kind === 'ghost' || o.flat;
+function shade(hex, k) {                            // lighten (k>0) or darken (k<0) a #rrggbb colour
+  const n = parseInt((hex || '#888888').slice(1), 16); let r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+  const f = v => Math.round(k < 0 ? v * (1 + k) : v + (255 - v) * k);
+  return `rgb(${f(r)},${f(g)},${f(b)})`;
+}
 function guy(o) {
   const s = o.s;
   const _skin = SKIN, _hair = HAIR;
@@ -134,8 +140,17 @@ function guy(o) {
       const pp = ph + (sd > 0 ? Math.PI : 0);
       const lift = Math.max(0, Math.sin(pp)) * 45 * (o.walkAmt ?? (o.walk ? 1 : 0));
       const lx = sd * 62 + Math.cos(pp) * 34 * (o.walkAmt ?? (o.walk ? 1 : 0));
-      SF(rr(lx - 46, -215 - lift, 92, 205, 40), out.pants);
+      const lg = rr(lx - 46, -215 - lift, 92, 205, 40);
+      SF(lg, out.pants);
+      if (!DETAIL_OFF(o)) {                          // cloth shading and a seam down the leg
+        ctx.save(); ctx.clip(lg); ctx.fillStyle = 'rgba(0,0,0,0.18)'; ctx.fillRect(lx + (sd > 0 ? 10 : -46), -215 - lift, 36, 205);
+        ctx.strokeStyle = 'rgba(0,0,0,0.22)'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(lx, -200 - lift); ctx.lineTo(lx + sd * 4, -30 - lift); ctx.stroke(); ctx.restore();
+      }
       SF(ell(lx + sd * 12, -14 - lift, 74, 32), o.shoes || '#2c2232');
+      if (!DETAIL_OFF(o)) {                          // white sole and a lace
+        ctx.strokeStyle = '#e9e6ef'; ctx.lineWidth = 9; ctx.beginPath(); ctx.ellipse(lx + sd * 12, -14 - lift, 70, 28, 0, 0.15, Math.PI - 0.15); ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,255,255,0.6)'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(lx + sd * 12 - 18, -30 - lift); ctx.lineTo(lx + sd * 12 + 18, -24 - lift); ctx.stroke();
+      }
     }
   }
   const arms = () => {
@@ -146,7 +161,15 @@ function guy(o) {
       ctx.lineCap = 'round'; ctx.strokeStyle = INK; ctx.lineWidth = 76 + 2 * L(lw);
       ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(hx, hy); ctx.stroke();
       ctx.strokeStyle = out.top; ctx.lineWidth = 76; ctx.stroke();
+      if (!DETAIL_OFF(o)) {                          // sleeve shade along the underside + a cuff at the wrist
+        ctx.strokeStyle = 'rgba(0,0,0,0.16)'; ctx.lineWidth = 26; ctx.beginPath();
+        ctx.moveTo(sx + sd * 18, sy + 10); ctx.lineTo(hx + sd * 18 - (hx - sx) * 0.15, hy - (hy - sy) * 0.15); ctx.stroke();
+        const cx = sx + (hx - sx) * 0.82, cy = sy + (hy - sy) * 0.82;
+        ctx.strokeStyle = INK; ctx.lineWidth = 80 + 2 * L(lw); ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(sx + (hx - sx) * 0.9, sy + (hy - sy) * 0.9); ctx.stroke();
+        ctx.strokeStyle = shade(out.top, -0.18); ctx.lineWidth = 80; ctx.stroke();
+      }
       SF(ell(hx, hy, 42, 42), SKIN);
+      if (!DETAIL_OFF(o)) SF(ell(hx - sd * 30, hy - 14, 16, 22), SKIN);   // thumb
       if (sd > 0 && o.holdR) o.holdR(hx, hy);
       if (sd < 0 && o.holdL) o.holdL(hx, hy);
     }
@@ -156,6 +179,17 @@ function guy(o) {
   SF(rr(-42, -560, 84, 70, 20), SKIN); // neck
   const tp = rr(-152, -515, 304, 340, 110);
   SF(tp, out.top);
+  if (!DETAIL_OFF(o)) {                            // the top has weight: side shade, a hem band and two soft folds
+    ctx.save(); ctx.clip(tp);
+    const g = ctx.createLinearGradient(-152, 0, 152, 0);
+    g.addColorStop(0, 'rgba(0,0,0,0.22)'); g.addColorStop(0.35, 'rgba(0,0,0,0)'); g.addColorStop(0.75, 'rgba(255,255,255,0.06)'); g.addColorStop(1, 'rgba(0,0,0,0.18)');
+    ctx.fillStyle = g; ctx.fillRect(-160, -520, 320, 350);
+    ctx.fillStyle = shade(out.top, -0.2); ctx.fillRect(-160, -215, 320, 45);
+    ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.lineWidth = 7; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(-80, -300); ctx.quadraticCurveTo(-60, -260, -86, -225); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(70, -330); ctx.quadraticCurveTo(95, -290, 74, -240); ctx.stroke();
+    ctx.restore(); ctx.lineWidth = L(lw); ctx.strokeStyle = INK; ctx.stroke(tp);
+  }
   if (out.stripe) {
     ctx.save(); ctx.clip(tp); ctx.strokeStyle = out.stripe; ctx.lineWidth = 18;
     for (let x = -150; x <= 150; x += 58) { ctx.beginPath(); ctx.moveTo(x, -520); ctx.lineTo(x, -170); ctx.stroke(); }

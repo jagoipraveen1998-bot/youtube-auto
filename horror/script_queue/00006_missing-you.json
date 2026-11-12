@@ -1,0 +1,78 @@
+{
+ "id": "missing-you",
+ "title": "I Saw A MISSING Poster With My Own Face #shorts #horror",
+ "approved": true,
+ "description": "A CreepyCartoonTales story. What would you do? Tell us in the comments.",
+ "choices": [
+  "Go home",
+  "Go see the other you"
+ ],
+ "lines": [
+  "Imagine you walk to school on a normal morning.",
+  "There's a MISSING poster on the lamppost.",
+  "You stop. It's your photo.",
+  "Your name. Your school uniform.",
+  "\"Missing since last night.\"",
+  "You call Mum, laughing. \"Someone's pranking me!\"",
+  "Mum is crying. \"Who is this? Our child has been missing all night.\"",
+  "A police car slows down beside you.",
+  "The officer looks at the poster, then at you.",
+  "*\"Kid, the one we found this morning looks exactly like you.\"",
+  "Would you go home, or go see the other you? Comment A or B."
+ ],
+ "shots": [
+  {
+   "set": "street",
+   "v": "walk"
+  },
+  {
+   "set": "street",
+   "v": "stop"
+  },
+  {
+   "set": "street",
+   "v": "poster"
+  },
+  {
+   "set": "street",
+   "v": "poster",
+   "cam": "push_in"
+  },
+  {
+   "set": "street",
+   "v": "poster"
+  },
+  {
+   "set": "phone",
+   "v": "calling",
+   "caller": "Mum"
+  },
+  {
+   "set": "phone",
+   "v": "mumcall",
+   "caller": "Mum"
+  },
+  {
+   "set": "street",
+   "v": "police"
+  },
+  {
+   "set": "street",
+   "v": "police",
+   "cam": "push_in"
+  },
+  {
+   "set": "face",
+   "v": "",
+   "bg": "#7fd0ff",
+   "hero": {
+    "expr": "terror"
+   }
+  },
+  {
+   "set": "face",
+   "v": "",
+   "bg": "#7fd0ff"
+  }
+ ]
+}

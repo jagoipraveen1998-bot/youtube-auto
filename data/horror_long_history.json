@@ -5,7 +5,8 @@
     "the_mummy_downstairs: The Mummy Downstairs (a museum coffin delivered to the wrong house)",
     "the-nine-foot-suit: The Nine-Foot Suit Standing Behind My Desk",
     "front-door-peephole-kitchen: My Front Door Peephole Shows My Own Kitchen",
-    "future-double-cereal: My Future Double Kept Stealing My Cereal"
+    "future-double-cereal: My Future Double Kept Stealing My Cereal",
+    "calendar-shadow-schedule: My Calendar Showed Tomorrow Was Crossed Off. Then It Lived It."
   ],
   "videos": [
     {
@@ -44,6 +45,13 @@
       "video_id": "kngIhBu9g5g",
       "script": "future-double-cereal.txt",
       "length": "4.1 min"
+    },
+    {
+      "date": "2026-11-12 18:06",
+      "title": "My Calendar Showed Tomorrow Was Crossed Off. Then It Lived It.",
+      "video_id": "aKC4cc5KHws",
+      "script": "calendar-shadow-schedule.txt",
+      "length": "4.4 min"
     }
   ]
 }

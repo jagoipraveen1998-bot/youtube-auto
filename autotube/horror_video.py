@@ -533,7 +533,8 @@ def voice_from_take(story: dict, path: Path) -> tuple[np.ndarray, list[dict]]:
     (within 1.5 s), otherwise the cut falls at the expected time."""
     audio = ha.load(path)
     beats = story["beats"]
-    words = [max(1, len(re.findall(r"[A-Za-z0-9']+", b["line"]))) for b in beats]
+    words = [max(1, len(b["line"].split()) if story.get("split_words") else len(re.findall(r"[A-Za-z0-9']+", b["line"])))
+             for b in beats]
     w = int(0.02 * ha.SR); n = len(audio) // w
     rms = np.sqrt((audio[:n * w].reshape(n, w) ** 2).mean(1))
     loud = rms > rms.max() * 10 ** (-28 / 20)

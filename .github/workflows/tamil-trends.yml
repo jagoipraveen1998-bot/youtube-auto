@@ -1,0 +1,106 @@
+name: Tamil world trends (Inner Mechanics channel)
+
+on:
+  schedule:
+    - cron: "37 5 * * *"    # 05:37 UTC = 11:07 IST
+    - cron: "37 12 * * *"   # 12:37 UTC = 18:07 IST
+  push:
+    branches: [tamil-trends]      # test builds only (never uploads)
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Render only (watch it in the run's files), or make and publish"
+        type: choice
+        default: no-upload
+        options:
+          - no-upload
+          - full
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tamil-trends
+  cancel-in-progress: false
+
+jobs:
+  make-trend-short:
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install ffmpeg and fonts
+        id: apt
+        continue-on-error: true
+        timeout-minutes: 8
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo rm -f /var/lib/man-db/auto-update
+          PKGS="ffmpeg fonts-dejavu-core fonts-noto-core"
+          sudo timeout 300 apt-get install -y -qq --no-install-recommends $PKGS || (sudo timeout 120 apt-get update -qq && sudo timeout 300 apt-get install -y -qq --no-install-recommends $PKGS)
+          ffmpeg -version | head -1
+
+      - name: Install ffmpeg (backup download)
+        if: steps.apt.outcome != 'success'
+        uses: FedericoCarboni/setup-ffmpeg@v3
+        timeout-minutes: 5
+
+      - name: Install Python packages and the cartoon browser
+        timeout-minutes: 20
+        run: |
+          pip install -q -r requirements.txt soundfile feedparser
+          if ! timeout 420 python -m playwright install --with-deps chromium; then
+            echo "Browser install failed (GitHub's package mirror); using the runner's own Chrome"
+            echo "CHROME_PATH=$(command -v google-chrome || command -v google-chrome-stable || command -v chromium)" >> "$GITHUB_ENV"
+          fi
+
+      - name: Make the Tamil trend Short
+        timeout-minutes: 60
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          MODE: ${{ github.event_name == 'schedule' && 'full' || inputs.mode || 'no-upload' }}
+        run: |
+          if [ "$MODE" = "no-upload" ]; then python run_trends.py --no-upload; else python run_trends.py; fi
+
+      - name: Keep the video for 3 days
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trend-short-${{ github.run_number }}
+          path: |
+            output_trends/short.mp4
+            output_trends/cover.jpg
+            output_trends/script.json
+          retention-days: 10
+          if-no-files-found: ignore
+
+      - name: Save trend history
+        if: success()
+        run: |
+          git config user.name "autotube-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/trends_history.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No history changes to save"
+            exit 0
+          fi
+          git commit -m "Save trend history for run ${GITHUB_RUN_NUMBER}"
+          for i in 1 2 3 4 5; do
+            if git pull -q --rebase && git push -q; then exit 0; fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((RANDOM % 10 + 3))
+          done
+          echo "Could not push trend history after five retries" >&2
+          exit 1

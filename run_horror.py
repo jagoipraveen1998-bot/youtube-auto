@@ -120,6 +120,10 @@ def main():
         from autotube.voice import acted_take
         work.mkdir(parents=True, exist_ok=True)
         take = acted_take([b["line"] for b in story["beats"]], hcfg["acted_take"], work / "take")
+        if take is None and story.get("story_id"):
+            # Praveen's rule: no robotic voice on the channel. Keep the script for the next slot instead.
+            log(f"No acted storyteller take today for {story['story_id']}: skipping this slot, the script stays in the queue")
+            return
     video, thumb, plan = hv.make_short(story, hcfg["voice"], work, seed,
                                        Path(args.voice_file) if args.voice_file else None, take=take)
     length = check_playable(video, 15, 175)   # Shorts may run up to 3 minutes

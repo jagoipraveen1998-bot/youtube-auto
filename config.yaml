@@ -4,7 +4,7 @@
 # =============================================================
 
 channel:
-  name: "Inner Mechanics"            # shown on videos and thumbnails - keep in step with the YouTube channel name
+  name: "World Trend"                # shown on videos and thumbnails - keep in step with the YouTube channel name
   topic: "how modern technology actually works, explained clearly"
   language: "en"
 
@@ -191,7 +191,7 @@ horror:
 
 # ---------------- Tamil world-trend Shorts on the Inner Mechanics channel (run_trends.py) ----------------
 trends:
-  channel_label: "உலக Trend"           # shown on the follow card; change with the channel's new name
+  channel_label: "World Trend"          # shown on the follow card
   voice:
     gemini_voice: "Puck"
     persona: "a cheerful young Chennai guy, a popular Tamil YouTuber, talking to his friends in casual Chennai slang (Madras Tamil, mixing English): fast, fun, full of energy and reactions, never formal or news-reader style"

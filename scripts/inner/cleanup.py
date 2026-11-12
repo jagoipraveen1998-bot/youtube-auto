@@ -27,6 +27,18 @@ for v in vids:
     print(f"  {v['date']}  {v['id']}  [{v['status']}]  {v['title']}")
 Path("inner_videos.json").write_text(json.dumps({"channel": ch["snippet"]["title"], "id": ch["id"], "videos": vids}, indent=1))
 
+if sys.argv[1:2] == ["private"]:          # Praveen: hide every old video (reversible), keep them on the channel
+    done = 0
+    for v in vids:
+        if v["status"] == "private":
+            continue
+        try:
+            yt.videos().update(part="status", body={"id": v["id"], "status": {"privacyStatus": "private"}}).execute()
+            done += 1; print(f"PRIVATE {v['id']}  {v['title']}")
+        except Exception as exc:
+            print(f"FAILED  {v['id']}  {v['title']}: {str(exc)[:200]}")
+    print(f"Made {done} videos private; {sum(1 for v in vids if v['status'] == 'private')} were already private")
+
 if sys.argv[1:2] == ["delete"]:
     if ch["snippet"]["title"].lower().replace(" ", "") != "innermechanics":
         raise SystemExit(f"Refusing: this token is for '{ch['snippet']['title']}', not Inner Mechanics")

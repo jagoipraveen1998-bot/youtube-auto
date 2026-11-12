@@ -124,13 +124,17 @@ def main():
 
     seed = random.randint(0, 10_000)
     take = None
-    if not args.voice_file and hcfg.get("acted_take", {}).get("enabled") and os.environ.get("GEMINI_API_KEY"):
-        from autotube.voice import acted_take
-        work.mkdir(parents=True, exist_ok=True)
-        take = acted_take([b["line"] for b in story["beats"]], hcfg["acted_take"], work / "take")
-        if take is None and story.get("story_id"):
-            # Praveen's rule: no robotic voice on the channel. Keep the script for the next slot instead.
-            log(f"No acted storyteller take today for {story['story_id']}: skipping this slot, the script stays in the queue")
+    if not args.voice_file:
+        # Praveen's rule: ONLY the storyteller voice. If it can't be had right now, nothing is uploaded:
+        # the script stays first in the queue and the next run (03:07 / 08:07 / 14:07 UTC) tries again.
+        take = None
+        if os.environ.get("GEMINI_API_KEY"):
+            from autotube.voice import acted_take
+            work.mkdir(parents=True, exist_ok=True)
+            take = acted_take([b["line"] for b in story["beats"]], hcfg["acted_take"], work / "take")
+        if take is None:
+            log(f"Storyteller voice not available for {story.get('story_id')}: nothing uploaded; the script waits for the next run")
+            (out / "WAITING_FOR_VOICE").write_text(story.get("story_id", ""), encoding="utf-8")
             return
     video, thumb, plan = hv.make_short(story, hcfg["voice"], work, seed,
                                        Path(args.voice_file) if args.voice_file else None, take=take)

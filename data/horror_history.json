@@ -30,7 +30,8 @@
     "dog-came-home-p1: Imagine your dog has been missing for two days.",
     "dog-came-home-p2: Last time, your missing dog came home. And stood on two legs.",
     "voice-note-tomorrow-p1: Imagine your best friend sends you a voice note at two a.m.",
-    "voice-note-tomorrow-p2: Last time, someone knocked with your best friend's voice. And the real one said he was under your bed."
+    "voice-note-tomorrow-p2: Last time, someone knocked with your best friend's voice. And the real one said he was under your bed.",
+    "lift-mirror: Imagine you get into the lift alone at midnight."
   ],
   "videos": [
     {
@@ -305,6 +306,13 @@
       "length": "111s",
       "pair": "voice-note-tomorrow",
       "instagram_id": "18058327199581281"
+    },
+    {
+      "date": "2026-11-12 10:08",
+      "title": "The Lift Mirror Copied Me Wrong #shorts #horror",
+      "video_id": "Se18aNxlv-w",
+      "length": "36s",
+      "instagram_id": "18000879168046510"
     }
   ],
   "long_videos": [

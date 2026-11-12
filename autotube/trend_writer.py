@@ -34,10 +34,15 @@ disasters, crime, politics, elections, courts, religion or disease. Avoid these 
 Facts: use ONLY facts stated in that story's headline and summary. Do not invent numbers, names or details. If
 you explain background (how something works), keep it general and true.
 
-Write {n} short lines in spoken, everyday Tamil (Tamil script; common English words like phone, record, robot are
-fine as people really say them). Line 1 is a hook question or shock. Then explain what happened, why it matters or
-how it works, with one funny comparison to daily life in Tamil Nadu. The last line asks viewers to follow for
-daily world trends. Total 75 to 105 Tamil words. Keep each line under 16 words.
+Write {n} short lines in CHENNAI SLANG Tamil, exactly how young people in Chennai talk to friends, NOT pure or
+literary Tamil and NOT news-reader Tamil. Mix in English words the way Chennai people really do (phone, record,
+world, actually, super, scene, full-ah, simple-ah). Use Chennai expressions naturally: macha, da/di, semma, vera level,
+gethu, mass, scene-u, kalakkitaanga, paaru, enna da idhu, sollu, theriyuma, bayangaram, kandippa, chumma.
+Spoken forms only: "pannaanga" not "seidhanar", "irukku" not "ullathu", "theriyuma" not "theriyuma enbathai",
+"poyittu" not "sendru". Write it in Tamil script (English words may stay in English letters).
+Keep it friendly and clean: no abuse words, nothing rude about any group. Line 1 is a hook question or shock. Then explain what happened, why it matters or
+how it works, with one funny comparison to daily life in Chennai (traffic, tea kadai, local train, beach, power cut, biryani, cricket). The last line asks viewers to follow for
+daily world trends. Total 70 to 105 words. Keep each line under 16 words.
 
 For EACH line also give:
   "img": an English description of ONE colourful cartoon illustration that shows exactly what the line says

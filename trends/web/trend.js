@@ -79,7 +79,7 @@ function outro(f) {                                 // follow card over the last
   ctx.save(); ctx.translate(W / 2, 900); const k = back(t); ctx.scale(k, k);
   text(P.channel || '', 0, -170, 86, '#ffd23f');
   pill(-330, -50, 660, 140, '#e8453c'); text('FOLLOW பண்ணுங்க!', 0, 20, 64, '#ffffff', null);
-  text('தினமும் உலக Trends 🔥', 0, 200, 58, '#ffffff');
+  text('daily world trends, Chennai style 🔥', 0, 200, 54, '#ffffff');
   ctx.restore();
 }
 

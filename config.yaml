@@ -194,7 +194,7 @@ trends:
   channel_label: "உலக Trend"           # shown on the follow card; change with the channel's new name
   voice:
     gemini_voice: "Puck"
-    persona: "a cheerful young Tamil YouTuber from Chennai explaining world news to friends: fast, fun, expressive, natural spoken Tamil"
+    persona: "a cheerful young Chennai guy, a popular Tamil YouTuber, talking to his friends in casual Chennai slang (Madras Tamil, mixing English): fast, fun, full of energy and reactions, never formal or news-reader style"
   youtube:
     privacy: "public"
     category_id: "25"

@@ -73,7 +73,7 @@ def main():
     # 1. the voice: the acted Tamil storyteller, or nothing
     from autotube.voice import acted_take
     take = acted_take(lines, tcfg.get("voice", {"gemini_voice": "Puck", "persona":
-                      "a cheerful young Tamil YouTuber from Chennai explaining world news to friends, fast, fun and expressive"}),
+                      "a cheerful young Chennai guy talking to friends in casual Chennai slang Tamil, fast and fun"}),
                       work / "take")
     if take is None:
         log("Storyteller voice not available: nothing uploaded; the next run tries again")

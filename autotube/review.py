@@ -34,7 +34,7 @@ def review(story: dict, plan: dict, video: Path, fmt: str) -> list[str]:
     t = lambda f: f"{int(f / FPS // 60)}:{f / FPS % 60:05.2f}"
 
     # the first second is the hook: frame 0 is the thumbnail on social players
-    if vert and plan.get("intro", 0) > 0:
+    if vert and plan.get("intro", 0) > 0 and plan.get("coldOpen") is None:
         notes.append(f"P1 · 0:00 · the Short opens on the logo sting ({plan['intro'] / FPS:.1f}s) → open on the story's first shot")
     first_voice = next((s for s in shots if s.get("caps")), None)
     if vert and first_voice and first_voice["ls"] / FPS > 1.5:

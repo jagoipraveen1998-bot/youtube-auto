@@ -72,7 +72,15 @@ def main():
     hist_path = ROOT / "data" / "horror_history.json"
     hist = json.loads(hist_path.read_text(encoding="utf-8")) if hist_path.exists() else {"stories": [], "videos": []}
 
-    if args.story:
+    if args.story and "script_queue" in args.story:      # remake one approved script (word for word)
+        script = json.loads(Path(args.story).read_text(encoding="utf-8"))
+        log(f"Approved script (remake): {script['id']}")
+        story = write_story(cfg, hist["stories"], script=script)
+        story["part"] = script.get("part")
+        story["script_pair"] = script.get("pair")
+        if script.get("part"):
+            story["min_len"] = 93
+    elif args.story:
         story = json.loads(Path(args.story).read_text(encoding="utf-8"))
         if not story.get("storyboard"):        # hand-made storyboards are used exactly as written
             story = repair(story)
@@ -120,6 +128,10 @@ def main():
         from autotube.voice import acted_take
         work.mkdir(parents=True, exist_ok=True)
         take = acted_take([b["line"] for b in story["beats"]], hcfg["acted_take"], work / "take")
+        if take is None and story.get("story_id"):
+            # Praveen's rule: no robotic voice on the channel. Keep the script for the next slot instead.
+            log(f"No acted storyteller take today for {story['story_id']}: skipping this slot, the script stays in the queue")
+            return
     video, thumb, plan = hv.make_short(story, hcfg["voice"], work, seed,
                                        Path(args.voice_file) if args.voice_file else None, take=take)
     length = check_playable(video, 15, 175)   # Shorts may run up to 3 minutes

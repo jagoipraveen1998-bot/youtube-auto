@@ -336,21 +336,56 @@ def acted_take(lines: list[str], cfg: dict, out: Path) -> Path | None:
             "style": ("tell it as one continuous story, like the best animated story channels: natural rhythm, dry humour "
                       "on the funny lines, a hushed tense voice on the scary ones, give quoted characters their own voice. "
                       "Leave a clear, silent pause of about three quarters of a second after every line (this matters: the video cuts on those pauses)")}
-    try:
-        mp3 = out.with_suffix(".mp3")
-        _gemini_tts("\n".join(clean), vcfg, mp3)
-        wav = out.with_suffix(".wav")
-        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(mp3), "-ar", str(SR), "-ac", "1", str(wav)], check=True)
-        dur = sf.info(str(wav)).duration
-        words = sum(len(l.split()) for l in clean)
-        if not (words / 4.2 < dur < words / 1.4):          # Gemini skipped or repeated text: do not trust the take
-            log(f"Acted take rejected: {dur:.0f}s for {words} words")
+    import numpy as np
+    words = sum(len(l.split()) for l in clean)
+    base_style = vcfg["style"]
+    for attempt in range(3):          # a bad take (skipped, repeated or dragged-out words) gets re-performed, not a robot voice
+        if attempt:
+            vcfg["style"] = base_style + (" Keep a steady, gripping storytelling pace: no long dramatic silences, "
+                                          "read every line exactly once." if attempt == 1 else
+                                          " Brisk and clear, like a trailer voice-over. Read each line once, in order.")
+        try:
+            mp3 = out.with_suffix(f".{attempt}.mp3")
+            _gemini_tts("\n".join(clean), vcfg, mp3)
+            wav = out.with_suffix(".wav")
+            subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(mp3), "-ar", str(SR), "-ac", "1", str(wav)], check=True)
+            a, sr = sf.read(str(wav), dtype="float32")
+            a = _squeeze_silence(a, sr)          # long dramatic pauses become ~0.9 s: the cuts still land on them
+            sf.write(str(wav), a, sr)
+            dur = len(a) / sr
+            if not (words / 4.2 < dur < words / 1.4):      # Gemini skipped or repeated text: do not trust the take
+                log(f"Acted take {attempt + 1} rejected: {dur:.0f}s for {words} words")
+                continue
+            log(f"Acted take: {len(clean)} lines, {words} words, {dur:.1f}s")
+            return wav
+        except Exception as exc:
+            log(f"Acted take unavailable ({str(exc)[:160]})")
             return None
-        log(f"Acted take: {len(clean)} lines, {words} words, {dur:.1f}s")
-        return wav
-    except Exception as exc:
-        log(f"Acted take unavailable ({str(exc)[:160]}); using the usual voices")
-        return None
+    return None
+
+
+def _squeeze_silence(a, sr, longest: float = 0.9, quiet_db: float = -42.0):
+    """Shorten every silence longer than `longest` seconds down to `longest`."""
+    import numpy as np
+    hop = int(sr * 0.02)
+    n = len(a) // hop
+    if n < 3:
+        return a
+    rms = np.sqrt(np.mean(a[: n * hop].reshape(n, hop) ** 2, axis=1) + 1e-12)
+    quiet = 20 * np.log10(rms) < quiet_db
+    keep, i = [], 0
+    limit = int(longest * sr / hop)
+    while i < n:
+        j = i
+        while j < n and quiet[j] == quiet[i]:
+            j += 1
+        if quiet[i] and j - i > limit:
+            keep.append(a[i * hop:(i + limit) * hop])
+        else:
+            keep.append(a[i * hop:j * hop])
+        i = j
+    keep.append(a[n * hop:])
+    return np.concatenate(keep)
 
 
 GEMINI_MISSED: list = []      # lines meant to be acted by Gemini that got the backup voice instead

@@ -32,6 +32,10 @@ def latest_long_video() -> dict | None:
     return best
 
 
+CAST_CALL = ("Want to be in a CreepyCartoonTales story? 👻 Comment \"Put me in\" with your FIRST NAME and you might "
+             "become the next character! (If you enjoyed this one, a like and follow helps a lot 🙏)")
+
+
 def link_part2(p1_id: str, p2_id: str) -> None:
     """Put "PART 2 is out" at the top of Part 1's description (never stops the run)."""
     try:
@@ -122,6 +126,9 @@ def main():
             story = repair(json.loads(pick.read_text(encoding="utf-8")))
     (out / "story.json").write_text(json.dumps(story, indent=2, ensure_ascii=False), encoding="utf-8")
 
+    now_ist = datetime.now(IST)
+    if os.environ.get("CAST_CALL") == "1" or (now_ist.weekday() == 0 and now_ist.hour < 12):
+        story["cast_call"] = True                 # Monday morning's Short invites viewers into a story
     seed = random.randint(0, 10_000)
     take = None
     if not args.voice_file:
@@ -150,7 +157,10 @@ def main():
     if story.get("choices"):
         a, b = story["choices"][:2]
         story["description"] = (f"What would you do? Comment A or B 👇\nA) {a}\nB) {b}\n"
-                                "Part 2 is coming next. Follow so you don't miss it.\n\n" + story["description"])
+                                + ("Part 2 is coming next. Follow so you don't miss it.\n" if story.get("part") == 1 else "")
+                                + "\n" + story["description"])
+    if story.get("cast_call"):                   # once a week: viewers can ask to be a character (first name only)
+        story["description"] = (CAST_CALL + "\n\n" + story["description"])
     description = "\n".join([story["description"], "",
                              *([f"🎬 Full animated horror story: {full['title']} → https://youtu.be/{full['video_id']}", ""] if full else []),
                              "A Creepy Cartoon Tale: an original animated horror short. New horror Shorts every day.",

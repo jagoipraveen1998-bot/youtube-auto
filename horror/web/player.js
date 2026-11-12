@@ -554,7 +554,13 @@ function drawOutro(f) {
   brandTitle(land ? W * 0.69 : W / 2, land ? H * 0.42 : H * 0.69, land ? 0.95 : 0.95, ss(seg(t, 0.05, 0.25)), 0);
   ctx.save(); ctx.textAlign = 'center'; ctx.font = 'bold 46px "DejaVu Sans Mono"'; ctx.fillStyle = '#b9c9bf';
   ctx.globalAlpha = ss(seg(t, 0.25, 0.45));
-  ctx.fillText('NEW HORROR EVERY DAY', land ? W * 0.69 : W / 2, land ? H * 0.68 : H * 0.81); ctx.restore();
+  if (P.castCall && !land) {                  // once a week: be the next character
+    ctx.font = '900 54px "DejaVu Sans"'; ctx.fillStyle = '#ffd23f'; ctx.lineWidth = 10; ctx.strokeStyle = '#05030a'; ctx.lineJoin = 'round';
+    ctx.strokeText('WANT TO BE IN A STORY? 👻', W / 2, H * 0.80); ctx.fillText('WANT TO BE IN A STORY? 👻', W / 2, H * 0.80);
+    ctx.font = 'bold 38px "DejaVu Sans"'; ctx.fillStyle = '#ffffff';
+    ctx.fillText('Comment "Put me in" + your first name 👇', W / 2, H * 0.85);
+  } else ctx.fillText('NEW HORROR EVERY DAY', land ? W * 0.69 : W / 2, land ? H * 0.68 : H * 0.81);
+  ctx.restore();
   ctx.save(); ctx.globalCompositeOperation = 'lighter'; light(ctx, cx, cy, 520, '#ff3b3b', 0.08 + 0.06 * Math.sin(f * 0.5)); ctx.restore();
   if (f < 5) staticNoise(0.7 * (1 - f / 5));
   if (t > 0.9) { glitch(1.2); staticNoise(seg(t, 0.9, 1)); }

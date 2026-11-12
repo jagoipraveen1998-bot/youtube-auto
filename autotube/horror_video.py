@@ -795,6 +795,8 @@ def make_video(story: dict, work: Path, seed: int, fmt: str = "vertical", voice_
             plan["props"], plan["propInfo"] = props, info
             log("Objects and animals: " + ", ".join(sorted(props)))
     plan["intro"] = int(round(intro * FPS))
+    if story.get("cast_call"):
+        plan["castCall"] = True
     if cold:
         tw = next((sh for sh in plan["shots"] if sh.get("twist")), None)
         if tw:

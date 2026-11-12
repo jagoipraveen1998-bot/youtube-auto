@@ -27,6 +27,17 @@ for v in vids:
     print(f"  {v['date']}  {v['id']}  [{v['status']}]  {v['title']}")
 Path("inner_videos.json").write_text(json.dumps({"channel": ch["snippet"]["title"], "id": ch["id"], "videos": vids}, indent=1))
 
+if sys.argv[1:2] == ["rename"]:           # new channel name (YouTube may not allow this through the API)
+    new = " ".join(sys.argv[2:])
+    b = yt.channels().list(part="brandingSettings", id=ch["id"]).execute()["items"][0]["brandingSettings"]
+    b.setdefault("channel", {})["title"] = new
+    try:
+        yt.channels().update(part="brandingSettings", body={"id": ch["id"], "brandingSettings": b}).execute()
+        after = yt.channels().list(part="snippet", id=ch["id"]).execute()["items"][0]["snippet"]["title"]
+        print(f"RENAME result: channel title is now '{after}'")
+    except Exception as exc:
+        print(f"RENAME FAILED: {str(exc)[:300]}")
+
 if sys.argv[1:2] == ["private"]:          # Praveen: hide every old video (reversible), keep them on the channel
     done = 0
     for v in vids:

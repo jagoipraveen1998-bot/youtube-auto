@@ -185,6 +185,16 @@
    "h": 130,
    "kind": "object",
    "prompt": "A retro glass lava lamp emitting a soft eerie neon-green glow around swirling blobs of dark orange wax."
+  },
+  "gargoyle": {
+   "h": 140,
+   "kind": "object",
+   "prompt": "A small mossy stone gargoyle statue sitting crouched with a surprisingly goofy, wide-eyed expression."
+  },
+  "skunk": {
+   "h": 80,
+   "kind": "animal",
+   "prompt": "A mischievous black-and-white skunk standing alertly with a puffed tail and glowing yellow eyes."
   }
  }
 }

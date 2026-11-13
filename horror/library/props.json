@@ -195,6 +195,16 @@
    "h": 80,
    "kind": "animal",
    "prompt": "A mischievous black-and-white skunk standing alertly with a puffed tail and glowing yellow eyes."
+  },
+  "chihuahua": {
+   "h": 180,
+   "kind": "animal",
+   "prompt": "A tiny, shivering brown chihuahua with bulging eyes and a hilarious, perpetually suspicious expression."
+  },
+  "gumball_machine": {
+   "h": 420,
+   "kind": "object",
+   "prompt": "A classic red metal gumball machine on a stand, filled with colorful round candies decorated like tiny staring eyeballs."
   }
  }
 }

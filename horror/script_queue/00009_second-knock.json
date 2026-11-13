@@ -1,0 +1,86 @@
+{
+ "id": "second-knock",
+ "title": "Why My Grandma Never Opens the Door on the Second Knock 😨",
+ "approved": true,
+ "description": "A CreepyCartoonTales story. Would you have opened it? Tell us in the comments.",
+ "lines": [
+  "My grandma has one rule.",
+  "Never open the door on the second knock.",
+  "First knock, she opens it. The milkman, the neighbours, me.",
+  "Second knock, she turns off the TV and sits very still.",
+  "I thought it was an old village habit.",
+  "Last night, she was asleep.",
+  "Someone knocked.",
+  "I opened it. Nobody there.",
+  "Then it knocked again.",
+  "And Grandma's voice came through the door.",
+  "\"Open it, kanna. It's cold.\"",
+  "I turned around.",
+  "*Grandma was standing behind me, finger on her lips.",
+  "That's why she never answers the second knock.",
+  "The second one always sounds like family."
+ ],
+ "shots": [
+  {
+   "set": "knock",
+   "v": "rule"
+  },
+  {
+   "set": "knock",
+   "v": "rule",
+   "card": true
+  },
+  {
+   "set": "knock",
+   "v": "first"
+  },
+  {
+   "set": "knock",
+   "v": "still"
+  },
+  {
+   "set": "knock",
+   "v": "habit"
+  },
+  {
+   "set": "knock",
+   "v": "night"
+  },
+  {
+   "set": "knock",
+   "v": "knock1"
+  },
+  {
+   "set": "knock",
+   "v": "nobody"
+  },
+  {
+   "set": "knock",
+   "v": "knock2"
+  },
+  {
+   "set": "knock",
+   "v": "voice"
+  },
+  {
+   "set": "knock",
+   "v": "voice"
+  },
+  {
+   "set": "knock",
+   "v": "turn"
+  },
+  {
+   "set": "knock",
+   "v": "behind"
+  },
+  {
+   "set": "knock",
+   "v": "behind"
+  },
+  {
+   "set": "knock",
+   "v": "door"
+  }
+ ]
+}

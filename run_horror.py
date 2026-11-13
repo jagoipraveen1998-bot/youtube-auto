@@ -1,3 +1,4 @@
+import re
 """Make (and upload) one horror Short for CreepyCartoonTales.
 
     python run_horror.py                     # write, animate, upload
@@ -167,7 +168,7 @@ def main():
                              "", " ".join(hcfg.get("hashtags", ["#shorts", "#horror"]))])
     (out / "description.txt").write_text(description, encoding="utf-8")
     tags = list(dict.fromkeys(story.get("tags", []) + hcfg.get("extra_tags", [])))
-    title = story["title"] if "#shorts" in story["title"].lower() else (story["title"] + " #shorts")[:100]
+    title = re.sub(r"\s*#\w+", "", story["title"]).strip()[:100]   # clean hook title; the hashtags live in the description
 
     if args.no_upload:
         log(f"Upload skipped. Files are in {out.name}/ ({length:.0f}s)")

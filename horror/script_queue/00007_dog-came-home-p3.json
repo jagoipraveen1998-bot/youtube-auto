@@ -1,0 +1,98 @@
+{
+ "id": "dog-came-home-p3",
+ "title": "My Dog Came Home… Wrong 😨 (Part 3)",
+ "approved": true,
+ "description": "A CreepyCartoonTales story from Creepyville. Bruno is back. What would you do? Tell us in the comments.",
+ "star": {
+  "thing": "dog",
+  "names": [
+   "Bruno"
+  ],
+  "pronouns": [
+   "he",
+   "him",
+   "his"
+  ]
+ },
+ "choices": [
+  "Hide under the bed",
+  "Run to Mum"
+ ],
+ "lines": [
+  "Since my dog came home wrong, I lock my bedroom door every night.",
+  "Tonight, the lock on my door started beeping.",
+  "One. Nine. Nine. Eight.",
+  "That's my birthday. Only family knows it.",
+  "The door clicked open.",
+  "He walked in slowly. On four legs this time.",
+  "He sat by my bed, wagging his tail. Like a good boy.",
+  "I almost relaxed.",
+  "Then I heard Mum's car outside.",
+  "Through the window, I saw her get out, holding the leash.",
+  "Our dog was with her. Bruno.",
+  "I looked back at my bed.",
+  "*The thing beside me stopped wagging. And smiled.",
+  "Would you hide under the bed, or run to Mum? Comment A or B."
+ ],
+ "shots": [
+  {
+   "set": "dognight",
+   "v": "lock"
+  },
+  {
+   "set": "dognight",
+   "v": "keypad",
+   "code": "1998"
+  },
+  {
+   "set": "dognight",
+   "v": "keypad",
+   "code": "1998"
+  },
+  {
+   "set": "dognight",
+   "v": "calm"
+  },
+  {
+   "set": "dognight",
+   "v": "open"
+  },
+  {
+   "set": "dognight",
+   "v": "enter"
+  },
+  {
+   "set": "dognight",
+   "v": "sit"
+  },
+  {
+   "set": "dognight",
+   "v": "calm"
+  },
+  {
+   "set": "dognight",
+   "v": "window"
+  },
+  {
+   "set": "dognight",
+   "v": "outside"
+  },
+  {
+   "set": "dognight",
+   "v": "outside2"
+  },
+  {
+   "set": "dognight",
+   "v": "look"
+  },
+  {
+   "set": "dognight",
+   "v": "smile"
+  },
+  {
+   "set": "face",
+   "v": "",
+   "bg": "#3b4a8a"
+  }
+ ]
+}

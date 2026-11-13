@@ -1,0 +1,77 @@
+{
+ "id": "borrowed-shadow",
+ "title": "In My Town, You Get Your Shadow at 13. Mine Came Early 😨",
+ "approved": true,
+ "description": "A CreepyCartoonTales story. What would you do? Tell us in the comments.",
+ "choices": [
+  "Talk to it",
+  "Switch on every light"
+ ],
+ "lines": [
+  "In my town, you get your shadow on your thirteenth birthday.",
+  "Before that, kids don't have one. That's normal here.",
+  "I'm twelve.",
+  "Last night, I saw a shadow on my wall.",
+  "And it moved when I moved.",
+  "Mum went pale.",
+  "\"Shadows that come early are borrowed,\" she whispered.",
+  "\"Borrowed from who?\"",
+  "She pointed at Grandpa's photo on the wall.",
+  "In the photo, he didn't have a shadow anymore.",
+  "*Then the shadow on my wall waved. I wasn't moving.",
+  "Would you talk to it, or switch on every light? Comment A or B."
+ ],
+ "shots": [
+  {
+   "set": "shadowtown",
+   "v": "cake"
+  },
+  {
+   "set": "shadowtown",
+   "v": "kids"
+  },
+  {
+   "set": "shadowtown",
+   "v": "twelve"
+  },
+  {
+   "set": "shadowtown",
+   "v": "wall"
+  },
+  {
+   "set": "shadowtown",
+   "v": "moves"
+  },
+  {
+   "set": "shadowtown",
+   "v": "mum"
+  },
+  {
+   "set": "shadowtown",
+   "v": "mum"
+  },
+  {
+   "set": "shadowtown",
+   "v": "ask"
+  },
+  {
+   "set": "shadowtown",
+   "v": "photo",
+   "point": true
+  },
+  {
+   "set": "shadowtown",
+   "v": "photo",
+   "gone": true
+  },
+  {
+   "set": "shadowtown",
+   "v": "wave"
+  },
+  {
+   "set": "face",
+   "v": "",
+   "bg": "#3b4a8a"
+  }
+ ]
+}

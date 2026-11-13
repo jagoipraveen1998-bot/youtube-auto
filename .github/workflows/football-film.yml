@@ -20,7 +20,7 @@ jobs:
       - name: Install
         run: |
           sudo apt-get install -y -qq ffmpeg || true
-          pip install -q requests numpy soundfile
+          pip install -q requests numpy soundfile pyyaml
       - name: Narrate
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

@@ -19,7 +19,8 @@
   "She pointed at Grandpa's photo on the wall.",
   "In the photo, he didn't have a shadow anymore.",
   "*Then the shadow on my wall waved. I wasn't moving.",
-  "Would you talk to it, or switch on every light? Comment A or B."
+  "That night, Grandpa called for the first time in years.",
+  "He said only one thing: \"Take good care of it. I want it back when you turn thirteen.\""
  ],
  "shots": [
   {
@@ -69,9 +70,14 @@
    "v": "wave"
   },
   {
-   "set": "face",
-   "v": "",
-   "bg": "#3b4a8a"
+   "set": "phone",
+   "v": "calling",
+   "caller": "Grandpa"
+  },
+  {
+   "set": "shadowtown",
+   "v": "wave"
   }
- ]
+ ],
+ "ending": "finished"
 }

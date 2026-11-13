@@ -82,5 +82,6 @@
    "set": "knock",
    "v": "door"
   }
- ]
+ ],
+ "three_d": "second-knock"
 }

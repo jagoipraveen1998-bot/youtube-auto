@@ -18,7 +18,8 @@
   "Your friend replies: \"Added who? It's just the three of us.\"",
   "Three? You count again. One of the squares is you, from behind.",
   "*Your own square shows a hand reaching for your shoulder.",
-  "Would you turn around, or end the call? Comment A or B."
+  "You slam the laptop shut. The room is empty.",
+  "But on the dark screen, in the reflection, there are two of you."
  ],
  "shots": [
   {
@@ -63,9 +64,13 @@
    "v": "hand"
   },
   {
-   "set": "face",
-   "v": "",
-   "bg": "#141626"
+   "set": "ending",
+   "v": "shut"
+  },
+  {
+   "set": "ending",
+   "v": "reflect"
   }
- ]
+ ],
+ "ending": "finished"
 }

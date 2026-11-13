@@ -1,0 +1,31 @@
+name: Football film narration (one-off)
+
+on:
+  push:
+    branches: [football-film]
+    paths: ["scripts/football/**", ".github/workflows/football-film.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  narrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: |
+          sudo apt-get install -y -qq ffmpeg || true
+          pip install -q requests numpy soundfile
+      - name: Narrate
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python scripts/football/voice.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: football-narration
+          path: football_out/

@@ -6,7 +6,7 @@ on:
     paths: ["scripts/football/**", ".github/workflows/football-film.yml"]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   narrate:
@@ -25,7 +25,9 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python scripts/football/voice.py
-      - uses: actions/upload-artifact@v4
-        with:
-          name: football-narration
-          path: football_out/
+      - name: Save the narration to this branch
+        run: |
+          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f football_out/narration.wav football_out/scenes.json
+          git commit -m "football film narration"
+          git push

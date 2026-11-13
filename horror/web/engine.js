@@ -1,3 +1,9 @@
+// never crash a render on a shape that shrinks below zero for one frame (tears, squints, bounces)
+(function () {
+  const P = CanvasRenderingContext2D.prototype, el = P.ellipse, ar = P.arc;
+  P.ellipse = function (x, y, rx, ry, ...r) { return el.call(this, x, y, Math.max(0, rx || 0), Math.max(0, ry || 0), ...r); };
+  P.arc = function (x, y, rad, ...r) { return ar.call(this, x, y, Math.max(0, rad || 0), ...r); };
+})();
 // ---------- core ----------
 const FORMAT = ((window.PLAN || {}).format) || 'vertical';
 const W = FORMAT === 'landscape' ? 1920 : 1080, H = FORMAT === 'landscape' ? 1080 : 1920;

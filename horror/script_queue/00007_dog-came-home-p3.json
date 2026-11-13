@@ -32,7 +32,9 @@
   "Our dog was with her. Bruno.",
   "I looked back at my bed.",
   "*The thing beside me stopped wagging. And smiled.",
-  "Would you hide under the bed, or run to Mum? Comment A or B."
+  "Downstairs, the front door opened. The real Bruno started barking.",
+  "The thing on my bed put one paw to its lips.",
+  "Then it crawled under my bed, and stayed there."
  ],
  "shots": [
   {
@@ -90,9 +92,17 @@
    "v": "smile"
   },
   {
-   "set": "face",
-   "v": "",
-   "bg": "#3b4a8a"
+   "set": "ending",
+   "v": "shh"
+  },
+  {
+   "set": "ending",
+   "v": "shh"
+  },
+  {
+   "set": "ending",
+   "v": "under"
   }
- ]
+ ],
+ "ending": "finished"
 }

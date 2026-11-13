@@ -18,7 +18,8 @@
   "A police car slows down beside you.",
   "The officer looks at the poster, then at you.",
   "*\"Kid, the one we found this morning looks exactly like you.\"",
-  "Would you go home, or go see the other you? Comment A or B."
+  "Mum looks up from the poster. She looks at me for a long time.",
+  "Then she asks, \"So which one of you came home last night?\""
  ],
  "shots": [
   {
@@ -70,9 +71,13 @@
    }
   },
   {
-   "set": "face",
-   "v": "",
-   "bg": "#7fd0ff"
+   "set": "ending",
+   "v": "mumlook"
+  },
+  {
+   "set": "ending",
+   "v": "which"
   }
- ]
+ ],
+ "ending": "finished"
 }

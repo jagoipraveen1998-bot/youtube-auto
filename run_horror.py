@@ -83,6 +83,7 @@ def main():
         story = write_story(cfg, hist["stories"], script=script)
         story["part"] = script.get("part")
         story["script_pair"] = script.get("pair")
+        story["three_d"] = script.get("three_d")
         if script.get("part"):
             story["min_len"] = 93
     elif args.story:
@@ -101,6 +102,7 @@ def main():
                 story = write_story(cfg, hist["stories"], script=script)
                 story["part"] = script.get("part")
                 story["script_pair"] = script.get("pair")
+                story["three_d"] = script.get("three_d")
                 if script.get("part"):
                     story["min_len"] = 93               # two-part stories stay at least 1:30; one-part stories run 50-60 s
             elif hcfg.get("approved_scripts_only"):
@@ -144,8 +146,17 @@ def main():
             log(f"Storyteller voice not available for {story.get('story_id')}: nothing uploaded; the script waits for the next run")
             (out / "WAITING_FOR_VOICE").write_text(story.get("story_id", ""), encoding="utf-8")
             return
-    video, thumb, plan = hv.make_short(story, hcfg["voice"], work, seed,
-                                       Path(args.voice_file) if args.voice_file else None, take=take)
+    video = None
+    if story.get("three_d") and take:            # this story has a 3D set: make it in 3D; any failure falls back to the drawn style
+        try:
+            from autotube import horror3d
+            video, thumb, plan = horror3d.make_short(story, take, work)
+        except Exception as exc:
+            log(f"3D build failed ({type(exc).__name__}: {exc}); making this Short in the usual style instead")
+            video = None
+    if video is None:
+        video, thumb, plan = hv.make_short(story, hcfg["voice"], work, seed,
+                                           Path(args.voice_file) if args.voice_file else None, take=take)
     length = check_playable(video, 15, 175)   # Shorts may run up to 3 minutes
 
     full = latest_long_video()

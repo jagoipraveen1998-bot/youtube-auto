@@ -18,7 +18,8 @@
   "The cupboard door creaks behind you.",
   "*\"Found something nice, kanna?\" Grandma asks, smiling.",
   "The tape whispers, \"Don't let her see this.\"",
-  "Would you hide the tape, or ask Grandma about it? Comment A or B."
+  "You hide it behind your back. Grandma smiles wider.",
+  "\"That's alright,\" she says. \"I recorded over the first one too.\""
  ],
  "shots": [
   {
@@ -64,9 +65,13 @@
    "v": "whisper"
   },
   {
-   "set": "face",
-   "v": "",
-   "bg": "#7a4a5a"
+   "set": "ending",
+   "v": "hide"
+  },
+  {
+   "set": "ending",
+   "v": "recorded"
   }
- ]
+ ],
+ "ending": "finished"
 }

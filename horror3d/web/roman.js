@@ -5,6 +5,7 @@ FACE.hush = { eye: ["lid", "lid"], brow: [3, -3], mouth: "dash" };
 FACE.scared = { eye: ["shock", "shock"], brow: [-6, 3], mouth: "wave" };
 FACE.sleep = { eye: ["dash", "dash"], brow: [0, -1], mouth: "dash" };
 FACE.wary = { eye: ["small", "small"], brow: [-2, 2], mouth: "dash" };
+FACE.creepy = { eye: ["small", "small"], brow: [1, -1], mouth: "grin" };     // a smile that is too wide, eyes that don't smile
 
 // ---------------- Roman-era cast (our own designs), built on the Pen / blob / face helpers above ----------------
 const STEEL = "#aeb6bf", BRASS = "#d9a845", LEATHER = "#7a4a2a";
@@ -115,6 +116,7 @@ export const romanFront = (p, key, opts = {}) => {
       case "cross": return { pts: [s, [X(2), s[1] + 0.38 * HH], [tcx - side * 0.45 * T.a, s[1] + 0.32 * HH]], front: true };
       case "reach": { const lf = (opts.lift || 0) * 0.62 * HH; return { pts: [s, [X(42), s[1] - 0.12 * HH - lf * 0.6], [X(82), s[1] - 0.5 * HH - lf]], front: false }; }
       case "cheek": return { pts: [s, [X(16), s[1] + 0.05 * HH], [cx + side * (H.a + 2 * u), hc + 0.25 * H.b]], front: false };
+      case "behind": return { pts: [s, [X(4), s[1] + 0.36 * HH], [tcx + side * 0.35 * T.a, torsoBot - 0.12 * HH]], front: false };   // hands hidden behind the back
       case "hush": return { pts: [s, [X(-6), s[1] + 0.3 * HH], [cx + 2 * u, hc + 0.62 * H.b]], front: true, fingerUp: true };
       case "knock": { const k = opts.kn || 0; return { pts: [s, [X(26), s[1] + 0.05 * HH], [X(46 + 8 * k), s[1] - 0.15 * HH]], front: false }; }
       case "thumb": return { pts: [s, [X(20), s[1] + 0.12 * HH], [X(44), s[1] - 0.12 * HH]], front: false, thumb: true };

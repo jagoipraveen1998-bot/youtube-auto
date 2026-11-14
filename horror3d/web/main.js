@@ -172,7 +172,7 @@ const motes = new THREE.Points(new THREE.BufferGeometry().setAttribute('position
 motes.userData.ndSkip = true; scene.add(motes);
 
 // a story can add its own props (a laptop, a cassette, a dog bed…) and hide house pieces it doesn't need
-const STORY_PROPS = ST.build ? ST.build({ THREE, world, scene, camera, add, box, tbox, toon, texM, M, P, grad, chair, tvG, rug, clockG }) || {} : {};
+const STORY_PROPS = ST.build ? ST.build({ THREE, world, scene, camera, add, box, tbox, toon, texM, M, P, grad, chair, tvG, rug, clockG, lights: { lamp, tvLight, porchLight, fillLight } }) || {} : {};
 // ---------- cards ----------
 const CW = 1200, CH = 2000, CM = 2.25; // canvas px, card height in metres (design 600x1000 -> 2.25 m)
 const cardGeo = new THREE.PlaneGeometry(CM * 0.6, CM); cardGeo.translate(0, CM / 2 - CM * 0.025, 0);

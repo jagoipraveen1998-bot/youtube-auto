@@ -1,0 +1,30 @@
+name: Beach Monster voices (one-off)
+
+on:
+  push:
+    branches: [beach-monster]
+    paths: ["scripts/beach/**", ".github/workflows/beach-voices.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  voices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -q requests
+      - name: Record the voices
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: python scripts/beach/voices.py
+      - name: Save them to this branch
+        run: |
+          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f beach_out
+          git commit -m "beach monster voices"
+          git push

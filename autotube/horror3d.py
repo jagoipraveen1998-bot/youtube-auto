@@ -107,6 +107,9 @@ def make_short(story: dict, take: Path, work: Path) -> tuple[Path, Path, dict]:
     mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
     n_s = int(total / FPS * ha.SR)
     bed = mod.build(shots, total, FPS, ha.SR)[:n_s]
+    tw_i = next((i for i, b in enumerate(story["beats"]) if b.get("twist")), None)
+    music = score([dict(s, twist=(i == tw_i)) for i, s in enumerate(shots)], total, ha.SR)[:n_s]
+    bed = bed + music * 0.22                     # the music bed sits under every Short, never alone in silence
     v = np.zeros(n_s); v[:min(n_s, len(voice))] = voice[:n_s]
     env = np.convolve(np.abs(v), np.ones(2400) / 2400, "same"); duck = 1 - 0.5 * np.clip(env / max(1e-6, env.max()) * 5, 0, 1)
     mix = v / max(1e-6, np.abs(v).max()) * 0.9 + bed * duck
@@ -136,3 +139,52 @@ def make_short(story: dict, take: Path, work: Path) -> tuple[Path, Path, dict]:
     (work / "plan.json").write_text(json.dumps(plan, indent=1), encoding="utf-8")
     log(f"3D Short ready: {video.name} ({total / FPS:.1f}s)")
     return video, thumb, plan
+
+def score(shots: list[dict], total: int, sr: int, seed: int = 7) -> np.ndarray:
+    """An original horror music bed for the whole Short: a low string pad that moves with the story, a slow
+    music-box piano, a heartbeat pulse that grows towards the twist, and a hit on the twist itself."""
+    from scipy.signal import lfilter
+    rng = np.random.default_rng(seed)
+    n = int(total / FPS * sr); t = np.arange(n) / sr
+    lp = lambda x, fc: (lambda a: lfilter([1 - a], [1, -a], lfilter([1 - a], [1, -a], x)))(np.exp(-2 * np.pi * fc / sr))
+    hz = lambda m: 440 * 2 ** ((m - 69) / 12)
+    out = np.zeros(n)
+    twist = next((s for s in shots if s.get("twist")), shots[max(0, len(shots) - 3)])
+    tw = twist["beat"] / FPS
+    # string pad: a minor progression, one chord per ~4 s, darker after the twist
+    prog = [[45, 52, 57, 60], [41, 48, 53, 57], [43, 50, 55, 58], [40, 47, 52, 56]]
+    seg = 4.0
+    for k in range(int(n / sr / seg) + 1):
+        a, b = int(k * seg * sr), min(n, int((k + 1.15) * seg * sr))
+        if a >= n: break
+        tt = np.arange(b - a) / sr
+        chord = prog[k % 4] if k * seg < tw else [m - 1 for m in prog[k % 4]]
+        x = sum(lp(2 * ((hz(m) * (1 + d) * tt) % 1) - 1, 900) for m in chord for d in (-0.003, 0.003)) / (2 * len(chord))
+        e = np.minimum(1, tt / 0.8) * np.minimum(1, (tt[-1] - tt + 1e-3) / 0.8)
+        out[a:b] += x * e * 0.5
+    # music-box piano, sparse, until the twist
+    mel = [76, 74, 72, 71, 72, 69, 71, 67]
+    for i, at in enumerate(np.arange(0.8, tw - 0.5, 1.6)):
+        f0 = hz(mel[i % len(mel)]); tt = np.arange(int(1.5 * sr)) / sr
+        note = (np.sin(2 * np.pi * f0 * tt) + 0.3 * np.sin(2 * np.pi * f0 * 2.01 * tt)) * np.exp(-tt * 2.6) * 0.32
+        a = int(at * sr); m = min(len(note), n - a)
+        if m > 0: out[a:a + m] += note[:m]
+    # heartbeat pulse that speeds up and grows towards the twist
+    at = max(1.0, tw - 12)
+    while at < tw:
+        k = 1 - (tw - at) / 12
+        for off, g in ((0, 1.0), (0.18, 0.7)):
+            tt = np.arange(int(0.25 * sr)) / sr; th = np.sin(2 * np.pi * 52 * tt) * np.exp(-tt * 22) * g * (0.3 + 0.7 * k)
+            a = int((at + off) * sr); m = min(len(th), n - a)
+            if m > 0: out[a:a + m] += th[:m] * 0.9
+        at += 1.0 - 0.45 * k
+    # the hit on the twist, then a low drone to the end
+    tt = np.arange(int(3.5 * sr)) / sr
+    hit = (np.sin(2 * np.pi * (36 + 30 * np.exp(-tt * 6)) * tt) * np.exp(-tt * 1.4) * 1.3
+           + lp(rng.standard_normal(len(tt)), 3000) * np.exp(-tt * 4) * 0.4
+           + sum(np.sin(2 * np.pi * hz(m) * tt) for m in (51, 57, 63)) * np.exp(-tt * 0.8) * 0.12)
+    a = int(max(0, tw - 0.08) * sr); m = min(len(hit), n - a)
+    if m > 0: out[a:a + m] += hit[:m]
+    out += lp(np.sin(2 * np.pi * 41.2 * t) + 0.5 * np.sin(2 * np.pi * 61.7 * t), 200) * np.clip((t - tw) / 2, 0, 1) * 0.35
+    return out / max(1e-6, np.percentile(np.abs(out), 99.7))
+

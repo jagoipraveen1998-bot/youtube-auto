@@ -222,16 +222,26 @@ def main():
         p1 = next((v for v in reversed(hist["videos"][:-1]) if story.get("script_pair") and v.get("pair") == story["script_pair"]), None)
         if p1:
             link_part2(p1["video_id"], video_id)
-    from autotube.localize import add_languages, subtitle_lines
-    add_languages(cfg, video_id, title, description, subtitle_lines(story, plan))
+    # the same Short goes to Instagram as a Reel straight away (skipped quietly if IG_ACCESS_TOKEN is not set)
+    try:
+        from autotube.instagram import ig_caption, publish_reel
+        ig_id = publish_reel(video, ig_caption(title, story.get("description", ""),
+                                               hcfg.get("instagram_hashtags", ["#horror", "#reels"])))
+        if ig_id:
+            hist["videos"][-1]["instagram_id"] = ig_id
+            hist_path.write_text(json.dumps(hist, indent=2, ensure_ascii=False), encoding="utf-8")
+    except Exception as exc:
+        log(f"Instagram Reel failed ({type(exc).__name__}: {exc}); the YouTube Short is already live")
 
-    # the same Short goes to Instagram as a Reel (skipped quietly if IG_ACCESS_TOKEN is not set)
-    from autotube.instagram import ig_caption, publish_reel
-    ig_id = publish_reel(video, ig_caption(title, story.get("description", ""),
-                                           hcfg.get("instagram_hashtags", ["#horror", "#reels"])))
-    if ig_id:
-        hist["videos"][-1]["instagram_id"] = ig_id
-        hist_path.write_text(json.dumps(hist, indent=2, ensure_ascii=False), encoding="utf-8")
+    # translated titles last, and never allowed to hold up the run: they stop after 6 minutes
+    import threading
+    from autotube.localize import add_languages, subtitle_lines
+    th = threading.Thread(target=lambda: add_languages(cfg, video_id, title, description, subtitle_lines(story, plan)), daemon=True)
+    th.start(); th.join(360)
+    if th.is_alive():
+        log("Translations took too long; skipped for this Short")
+    import sys; sys.stdout.flush(); sys.stderr.flush()
+    os._exit(0)                       # don't wait for a stuck translation thread
 
 
 if __name__ == "__main__":

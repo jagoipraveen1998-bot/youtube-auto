@@ -37,7 +37,8 @@
     "wall-at-school: Imagine you lean against the wall in your school corridor.",
     "mum-home-early: Imagine you're home alone after school.",
     "end-of-the-bed: Imagine you wake up at 3 a.m. and you can't move.",
-    "second-knock: My grandma has one rule."
+    "second-knock: My grandma has one rule.",
+    "extra-face-call: Imagine a late-night video call with your best friends."
   ],
   "videos": [
     {
@@ -361,6 +362,12 @@
       "video_id": "3eOWIxqI1lA",
       "length": "44s",
       "instagram_id": "17999561112043622"
+    },
+    {
+      "date": "2026-11-14 16:58",
+      "title": "There Was An Extra Face On Our Video Call",
+      "video_id": "UGMB4p_1_RU",
+      "length": "53s"
     }
   ],
   "long_videos": [

@@ -2,6 +2,7 @@ import * as THREE from './lib/three.module.js';
 import * as T from './toon.js';
 import * as P from './paint.js';
 import { SHOTS, TOTAL, shotAt, camAt, dofAt, LIGHTS, lightFor, actorsAt, worldAt, fxAt } from './story.js';
+import * as ST from './story.js';
 
 const W = 1080, H = 1920;
 const canvas = document.getElementById('c');
@@ -170,6 +171,8 @@ const motes = new THREE.Points(new THREE.BufferGeometry().setAttribute('position
   new THREE.PointsMaterial({ color: '#cfe0ff', size: 0.012, transparent: true, opacity: 0.5 }));
 motes.userData.ndSkip = true; scene.add(motes);
 
+// a story can add its own props (a laptop, a cassette, a dog bed…) and hide house pieces it doesn't need
+const STORY_PROPS = ST.build ? ST.build({ THREE, world, scene, camera, add, box, tbox, toon, texM, M, P, grad, chair, tvG, rug, clockG }) || {} : {};
 // ---------- cards ----------
 const CW = 1200, CH = 2000, CM = 2.25; // canvas px, card height in metres (design 600x1000 -> 2.25 m)
 const cardGeo = new THREE.PlaneGeometry(CM * 0.6, CM); cardGeo.translate(0, CM / 2 - CM * 0.025, 0);
@@ -270,6 +273,7 @@ function worldState(S, f) {
   const mins = (f / 30) * 6; minH.rotation.z = -rx(mins * 6); hourH.rotation.z = -rx(mins * 0.5 + 75);
   minH.position.set(Math.sin(minH.rotation.z) * -0.08, Math.cos(minH.rotation.z) * 0.08, 0.035); hourH.position.set(Math.sin(hourH.rotation.z) * -0.05, Math.cos(hourH.rotation.z) * 0.05, 0.03);
   const pa = motes.geometry.attributes.position; for (let i = 0; i < pa.count; i++) pa.setY(i, (P.rng(i + 7)() * 2.6 + f * 0.0015 * (1 + (i % 5) * 0.2)) % 2.6); pa.needsUpdate = true;
+  if (ST.update) ST.update(S, f, STORY_PROPS);
   motes.visible = !!S.motes; gap.visible = !!S.gap; feet.forEach((m) => { m.visible = !!S.feet; }); porchLight.position.set(0, 2.3, BZ - 1.2);
 }
 function drawActors(list, cam) {

@@ -205,6 +205,16 @@
    "h": 420,
    "kind": "object",
    "prompt": "A classic red metal gumball machine on a stand, filled with colorful round candies decorated like tiny staring eyeballs."
+  },
+  "tricycle": {
+   "h": 260,
+   "kind": "vehicle",
+   "prompt": "A rusted vintage red metal tricycle with squeaky rubber tires and faded handlebar streamers that inexplicably turns up in empty hallways."
+  },
+  "plastic_flamingo": {
+   "h": 215,
+   "kind": "object",
+   "prompt": "A weathered neon-pink lawn flamingo mounted on thin wire legs with chipped paint and comically suspicious, unblinking black eyes."
   }
  }
 }

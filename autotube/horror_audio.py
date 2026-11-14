@@ -621,13 +621,9 @@ def ambience_track(syn: Synth, plan: dict) -> np.ndarray:
         if sh["scene"] == "station" or (sh["scene"] == "phone2" and sh.get("bg") == "station"):
             hum = lp(np.sin(2 * np.pi * 120 * t) + 0.5 * np.sin(2 * np.pi * 240 * t) + 0.25 * np.sign(np.sin(2 * np.pi * 120 * t)), 900)
             _add(amb, (hum * 0.35 + lp(rng.standard_normal(n), 500) * 0.4) * fade, a, 1.0)
-        if sh["scene"] == "stairs":                    # an old house at night: low room tone and a slow clock
+        if sh["scene"] == "stairs":                    # an old house at night: low room tone (no clock tick)
             tone = lp(rng.standard_normal(n), 180) * 0.8 + np.sin(2 * np.pi * 50 * t) * 0.05
-            tick = np.zeros(n)
-            for k in range(int((b - a) / 1.0) + 1):
-                i = int(k * SR); m = int(0.012 * SR)
-                if i + m < n: tick[i:i + m] += hp(rng.standard_normal(m), 3000) * 2.2
-            _add(amb, (tone + tick) * fade, a, 1.0)
+            _add(amb, tone * fade, a, 1.0)
         if sh["scene"] == "kitchenB":              # fridge hum and a quiet house
             hum = lp(np.sin(2 * np.pi * 100 * t) + 0.4 * np.sin(2 * np.pi * 200 * t), 400) * 0.25 + lp(rng.standard_normal(n), 300) * 0.3
             _add(amb, hum * fade, a, 1.0)

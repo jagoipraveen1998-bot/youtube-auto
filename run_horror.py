@@ -96,6 +96,12 @@ def main():
             done_ids = {x.split(":")[0] for x in hist["stories"]}
             approved = [json.loads(p.read_text(encoding="utf-8")) for p in sorted(queue.glob("*.json"))]
             approved = [s for s in approved if s.get("approved") and s["id"] not in done_ids]
+            if hcfg.get("three_d_only"):                 # 3D only: a story waits in the queue until its 3D set is built
+                waiting = [s["id"] for s in approved if not (s.get("three_d") and (ROOT / "horror3d" / "stories" / s["three_d"] / "story.js").exists())]
+                approved = [s for s in approved if s["id"] not in waiting]
+                if not approved:
+                    log(f"No approved story has a 3D set yet ({len(waiting)} waiting): skipping this Short (3D only)")
+                    return
             if approved:                                # Praveen's approved scripts, word for word, in order
                 script = approved[0]
                 log(f"Approved script: {script['id']} ({len(approved)} left in the queue)")
@@ -152,6 +158,8 @@ def main():
             from autotube import horror3d
             video, thumb, plan = horror3d.make_short(story, take, work)
         except Exception as exc:
+            if hcfg.get("three_d_only"):
+                raise SystemExit(f"3D build failed ({type(exc).__name__}: {exc}); nothing uploaded, the story stays in the queue")
             log(f"3D build failed ({type(exc).__name__}: {exc}); making this Short in the usual style instead")
             video = None
     if video is None:

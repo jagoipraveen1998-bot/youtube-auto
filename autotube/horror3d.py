@@ -72,12 +72,35 @@ def _captions(frames_dir: Path, lines: list[str], shots: list[dict], total: int)
         yield f, im, buf.getvalue()
 
 
-def make_short(story: dict, take: Path, work: Path) -> tuple[Path, Path, dict]:
+def render_frames(web: Path, frames: Path, total: int, machines: int = 1, k: int = 0) -> None:
+    """Render this machine's share of the frames (every machines-th frame from k), split over all its CPU cores."""
+    mine = [f for f in range(total) if f % machines == k]
+    n = max(1, min(len(mine), int(os.environ.get("RENDER_WORKERS") or (os.cpu_count() or 2))))
+    procs = [subprocess.Popen([sys.executable, str(KIT / "render_worker.py"), str(web), str(frames), str(total), "1", "0",
+                               ",".join(map(str, mine[j::n]))]) for j in range(n)]
+    codes = [p.wait() for p in procs]
+    missing = [f for f in mine if not (frames / f"f{f:05d}.jpg").exists()]
+    if any(codes) or missing:
+        raise RuntimeError(f"3D render failed (worker exit codes {codes}, {len(missing)} frames missing)")
+
+
+def make_short(story: dict, take: Path | None, work: Path, stage: str = "all"):
+    """stage "all": everything on this machine.  "prepare": set up web3d + state3d.json and stop (the frames are
+    rendered on several machines by the workflow).  "finish": frames are already in work/frames3d: sound, captions, encode."""
     from . import horror_video as hv
     name = story["three_d"]
     src = KIT / "stories" / name
     if not (src / "story.js").exists():
         raise FileNotFoundError(f"no 3D set for '{name}' in horror3d/stories")
+    web, frames, state = work / "web3d", work / "frames3d", work / "state3d.json"
+    if stage == "finish":
+        st = json.loads(state.read_text(encoding="utf-8"))
+        shots, total = st["shots"], st["total"]
+        voice = np.load(work / "voice3d.npy")
+        missing = [f for f in range(total) if not (frames / f"f{f:05d}.jpg").exists()]
+        if missing:
+            raise RuntimeError(f"3D render incomplete: {len(missing)} of {total} frames missing")
+        return _finish(story, work, src, name, shots, total, voice, frames)
     voice, timing = hv.voice_from_take(story, take)
     shots, total = line_frames(timing)
     for s, t in zip(shots, timing):
@@ -85,23 +108,21 @@ def make_short(story: dict, take: Path, work: Path) -> tuple[Path, Path, dict]:
     need = int((src / "LINES").read_text().strip()) if (src / "LINES").exists() else len(shots)
     if len(shots) != need:
         raise ValueError(f"the 3D set '{name}' was built for {need} lines but the script has {len(shots)}")
-    web = work / "web3d"
     shutil.rmtree(web, ignore_errors=True)
     shutil.copytree(KIT / "web", web)
     shutil.copy(src / "story.js", web / "story.js")
     (web / "timing.js").write_text(f"export const TIMING = {json.dumps(shots)};\nexport const TOTAL = {total};\n", encoding="utf-8")
     log(f"3D Short '{name}': {len(shots)} shots, {total} frames ({total / FPS:.1f}s)")
-
-    frames = work / "frames3d"
     shutil.rmtree(frames, ignore_errors=True)
-    n = max(1, int(os.environ.get("RENDER_WORKERS") or (os.cpu_count() or 2)))
-    procs = [subprocess.Popen([sys.executable, str(KIT / "render_worker.py"), str(web), str(frames), str(total), str(n), str(k)])
-             for k in range(n)]
-    codes = [p.wait() for p in procs]
-    missing = [f for f in range(total) if not (frames / f"f{f:05d}.jpg").exists()]
-    if any(codes) or missing:
-        raise RuntimeError(f"3D render failed (worker exit codes {codes}, {len(missing)} frames missing)")
+    if stage == "prepare":
+        state.write_text(json.dumps({"name": name, "shots": shots, "total": total}), encoding="utf-8")
+        np.save(work / "voice3d.npy", np.asarray(voice, dtype=np.float64))
+        return total
+    render_frames(web, frames, total)
+    return _finish(story, work, src, name, shots, total, voice, frames)
 
+
+def _finish(story, work, src, name, shots, total, voice, frames):
     # sound: the voice on top of the set's own room tone, knocks, creaks and music
     spec = importlib.util.spec_from_file_location("sound3d", src / "sound.py")
     mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
@@ -136,3 +157,12 @@ def make_short(story: dict, take: Path, work: Path) -> tuple[Path, Path, dict]:
     (work / "plan.json").write_text(json.dumps(plan, indent=1), encoding="utf-8")
     log(f"3D Short ready: {video.name} ({total / FPS:.1f}s)")
     return video, thumb, plan
+
+
+if __name__ == "__main__":
+    # one render machine of the workflow:  python -m autotube.horror3d <work dir> <machines> <k>
+    w, m, k = Path(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3])
+    st = json.loads((w / "state3d.json").read_text(encoding="utf-8"))
+    log(f"Rendering part {k + 1} of {m}: {len(range(k, st['total'], m))} of {st['total']} frames")
+    render_frames(w / "web3d", w / "frames3d", st["total"], m, k)
+    log(f"Part {k + 1} of {m} rendered")

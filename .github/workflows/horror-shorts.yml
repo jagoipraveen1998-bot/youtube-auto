@@ -27,9 +27,13 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # 1) pick the story, get the storyteller's voice, set up the 3D scene (a drawn Short is made start to finish here)
   make-horror-short:
     runs-on: ubuntu-latest
     timeout-minutes: 200
+    outputs:
+      render: ${{ steps.make.outputs.render }}
+      frames: ${{ steps.make.outputs.frames }}
     steps:
       - uses: actions/checkout@v4
 
@@ -69,6 +73,7 @@ jobs:
           fi
 
       - name: Make the horror Short
+        id: make
         timeout-minutes: 170
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -83,7 +88,156 @@ jobs:
           ARGS=()
           [ -n "$STORY" ] && ARGS+=(--story "$STORY")
           [ "$MODE" = "no-upload" ] && ARGS+=(--no-upload)
-          python run_horror.py "${ARGS[@]}"
+          python run_horror.py --phase prepare "${ARGS[@]}"
+
+      - name: Hand the 3D scene to the render machines
+        if: steps.make.outputs.render == 'yes'
+        uses: actions/upload-artifact@v4
+        with:
+          name: prep3d-${{ github.run_id }}
+          path: output_horror/
+          include-hidden-files: true
+          retention-days: 1
+          compression-level: 1
+
+      - name: Keep the video for 3 days
+        if: always() && steps.make.outputs.render != 'yes'
+        uses: actions/upload-artifact@v4
+        with:
+          name: horror-short-${{ github.run_number }}
+          path: |
+            output_horror/short.mp4
+            output_horror/cover.jpg
+            output_horror/story.json
+            output_horror/description.txt
+            output_horror/REVIEW.txt
+            output_horror/uploaded.json
+          retention-days: 10
+          if-no-files-found: ignore
+
+      - name: Save horror history
+        if: always()
+        run: |
+          git config user.name "autotube-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/horror_history.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No history changes to save"
+            exit 0
+          fi
+          git commit -m "Save horror history for run ${GITHUB_RUN_NUMBER}"
+          for i in 1 2 3 4 5; do
+            if git pull -q --rebase && git push -q; then exit 0; fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((RANDOM % 10 + 3))
+          done
+          echo "Could not push horror history after five retries" >&2
+          exit 1
+
+  # 2) the 3D frames, drawn on 4 machines at once (same code and settings: 1080x1920, 30 fps, full quality)
+  render-3d:
+    needs: make-horror-short
+    if: needs.make-horror-short.outputs.render == 'yes'
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    strategy:
+      fail-fast: true
+      matrix:
+        part: [0, 1, 2, 3]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install the cartoon browser
+        timeout-minutes: 15
+        run: |
+          pip install -q numpy pyyaml playwright
+          if ! timeout 420 python -m playwright install --with-deps chromium; then
+            echo "Browser install failed (GitHub's package mirror); using the runner's own Chrome"
+            echo "CHROME_PATH=$(command -v google-chrome || command -v google-chrome-stable || command -v chromium)" >> "$GITHUB_ENV"
+          fi
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: prep3d-${{ github.run_id }}
+          path: output_horror
+
+      - name: Render part ${{ matrix.part }} of the frames
+        timeout-minutes: 135
+        run: python -m autotube.horror3d output_horror/work 4 ${{ matrix.part }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frames3d-${{ github.run_id }}-${{ matrix.part }}
+          path: output_horror/work/frames3d/
+          retention-days: 1
+          compression-level: 0
+
+  # 3) join the frames, add captions and sound, upload to YouTube and Instagram
+  finish-3d:
+    needs: [make-horror-short, render-3d]
+    if: needs.make-horror-short.outputs.render == 'yes' && needs.render-3d.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install ffmpeg and fonts
+        id: apt
+        continue-on-error: true
+        timeout-minutes: 8
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo rm -f /var/lib/man-db/auto-update
+          PKGS="ffmpeg fonts-dejavu-core"
+          sudo timeout 300 apt-get install -y -qq --no-install-recommends $PKGS || (sudo timeout 120 apt-get update -qq && sudo timeout 300 apt-get install -y -qq --no-install-recommends $PKGS)
+          ffmpeg -version | head -1
+
+      - name: Install ffmpeg (backup download)
+        if: steps.apt.outcome != 'success'
+        uses: FedericoCarboni/setup-ffmpeg@v3
+        timeout-minutes: 5
+
+      - name: Install Python packages
+        timeout-minutes: 15
+        run: |
+          pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -q -r requirements.txt
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: prep3d-${{ github.run_id }}
+          path: output_horror
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: frames3d-${{ github.run_id }}-*
+          path: output_horror/work/frames3d
+          merge-multiple: true
+
+      - name: Finish and publish the 3D Short
+        timeout-minutes: 30
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_HORROR_REFRESH_TOKEN: ${{ secrets.YT_HORROR_REFRESH_TOKEN }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+          MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'full' }}
+        run: |
+          ARGS=()
+          [ "$MODE" = "no-upload" ] && ARGS+=(--no-upload)
+          python run_horror.py --phase finish "${ARGS[@]}"
 
       - name: Keep the video for 3 days
         if: always()

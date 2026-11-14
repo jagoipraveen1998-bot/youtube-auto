@@ -58,6 +58,9 @@ def main():
     ap.add_argument("--no-upload", action="store_true")
     ap.add_argument("--story", help="use a story JSON file instead of asking Gemini")
     ap.add_argument("--voice-file", help="use a recorded narration (testing)")
+    ap.add_argument("--phase", choices=["all", "prepare", "finish"], default="all",
+                    help="prepare: stop once a 3D Short is set up (the workflow renders it on several machines); "
+                         "finish: frames are in output_horror/work/frames3d, make the video and upload it")
     args = ap.parse_args()
 
     import os
@@ -70,12 +73,19 @@ def main():
     cfg = load_config()
     hcfg = cfg["horror"]
     out = ROOT / "output_horror"
-    shutil.rmtree(out, ignore_errors=True)
     work = out / "work"
-    work.mkdir(parents=True)
-
     hist_path = ROOT / "data" / "horror_history.json"
     hist = json.loads(hist_path.read_text(encoding="utf-8")) if hist_path.exists() else {"stories": [], "videos": []}
+    if args.phase == "finish":                    # the frames were rendered on several machines: finish and publish
+        from autotube import horror3d
+        story = json.loads((out / "story.json").read_text(encoding="utf-8"))
+        try:
+            video, thumb, plan = horror3d.make_short(story, None, work, stage="finish")
+        except Exception as exc:
+            raise SystemExit(f"3D build failed ({type(exc).__name__}: {exc}); nothing uploaded, the story stays in the queue")
+        return publish(args, cfg, hcfg, out, hist, hist_path, story, video, thumb, plan)
+    shutil.rmtree(out, ignore_errors=True)
+    work.mkdir(parents=True)
 
     if args.story and "script_queue" in args.story:      # remake one approved script (word for word)
         script = json.loads(Path(args.story).read_text(encoding="utf-8"))
@@ -156,6 +166,14 @@ def main():
     if story.get("three_d") and take:            # this story has a 3D set: make it in 3D; any failure falls back to the drawn style
         try:
             from autotube import horror3d
+            if args.phase == "prepare":           # the workflow renders the frames on several machines, then runs --phase finish
+                total = horror3d.make_short(story, take, work, stage="prepare")
+                (out / "story.json").write_text(json.dumps(story, indent=2, ensure_ascii=False), encoding="utf-8")
+                if os.environ.get("GITHUB_OUTPUT"):
+                    with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as gh:
+                        gh.write(f"render=yes\nframes={total}\n")
+                log(f"3D Short prepared ({total} frames): the render machines take over")
+                return
             video, thumb, plan = horror3d.make_short(story, take, work)
         except Exception as exc:
             if hcfg.get("three_d_only"):
@@ -165,6 +183,10 @@ def main():
     if video is None:
         video, thumb, plan = hv.make_short(story, hcfg["voice"], work, seed,
                                            Path(args.voice_file) if args.voice_file else None, take=take)
+    return publish(args, cfg, hcfg, out, hist, hist_path, story, video, thumb, plan)
+
+
+def publish(args, cfg, hcfg, out, hist, hist_path, story, video, thumb, plan):
     length = check_playable(video, 15, 175)   # Shorts may run up to 3 minutes
 
     full = latest_long_video()

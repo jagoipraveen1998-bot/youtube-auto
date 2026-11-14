@@ -26,9 +26,6 @@ def build(shots, total, FPS, SR):
     tv = bp(nz(N / SR + 1)[:N], 300, 2500) * (0.5 + 0.5 * np.abs(np.sin(2 * np.pi * 3.1 * t)) * np.abs(np.sin(2 * np.pi * 0.7 * t)))
     amb += tv * 0.22 * (t < tv_off)
     amb += bp(nz(N / SR + 1)[:N], 150, 900) * (0.5 + 0.5 * np.sin(2 * np.pi * 0.17 * t + 1)) * 0.7 * (t >= night0)
-    tick = hp(nz(0.012), 3000) * 2.5
-    for s in np.arange(0.4, N / SR, 1.0):
-        put(sfx, s, tick, 0.4 if s < night0 else 0.7)
 
     def knock(g):
         n = int(0.16 * SR); tt = np.arange(n) / SR

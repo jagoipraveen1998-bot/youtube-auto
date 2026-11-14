@@ -60,9 +60,7 @@ class Mix:
         self.mus += self.lp(dr, 300) * g * np.clip((t - t0) / rise, 0, 1) * (t < t1)
 
     # ---- hits ----
-    def tick_clock(self, t0, t1, g=0.5):
-        tick = self.hp(self.nz(0.012), 3000) * 2.5
-        for s in np.arange(t0, t1, 1.0): self.put(self.sfx, s, tick, g)
+    # (no clock tick: Praveen found the every-second tick irritating)
     def click(self, at, g=1.0):                          # a button / latch / key
         n = int(0.05 * self.SR); tt = np.arange(n) / self.SR
         self.put(self.sfx, at, (self.hp(self.rng.standard_normal(n), 1500) * np.exp(-tt * 120) + np.sin(2 * np.pi * 900 * tt) * np.exp(-tt * 90) * 0.5) * g)

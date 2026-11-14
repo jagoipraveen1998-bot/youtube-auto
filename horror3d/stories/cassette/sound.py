@@ -10,7 +10,6 @@ IDS = ['clean', 'find', 'play', 'voice', 'warn', 'laugh', 'notgran', 'creak', 'g
 def build(shots, total, FPS, SR):
     m = Mix(shots, total, FPS, SR, IDS, seed=11)
     m.room(0.6); m.hum(0.12)
-    m.tick_clock(0.4, m.a('notgran'), 0.35)
     m.music_box(0.3, m.a('play'), g=0.16, detune=0.985)                  # slightly out of tune, like an old toy
     m.click(m.beat('find'), 0.6)
     m.clunk(m.beat('play'), 1.0); m.click(m.beat('play', 6), 1.2)

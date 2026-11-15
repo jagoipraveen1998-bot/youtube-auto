@@ -10,3 +10,5 @@ After editing `web/roman.js` (the cast) run: `cat web/toonbase.js web/roman.js >
 - `web/kit.js`: `makeStory()` turns shot ids + cameras + lights into everything main.js needs; also `actor`, `fx`, `word`, `MOODS`.
 - `soundkit.py`: `Mix` with room tone, hum, hiss, clicks, creaks, knocks, beeps, stings, music box. A story's `sound.py` is a few lines.
 - A new story = `stories/<name>/story.js` (pick a set, list shots and cameras), `sound.py`, `LINES`, and `"three_d": "<name>"` in the script.
+- `web/pet3d.js`: Bruno the dog for 3D stories (the drawn Shorts' own dog drawing, unchanged) — `petCard(p, { pose, expr, wag, shh }, f)`.
+- Cast added: `mum`, `mumNight`, `police`, `grandpa`; arm poses `phone` and `posters`.

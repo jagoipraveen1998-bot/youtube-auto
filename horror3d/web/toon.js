@@ -2471,6 +2471,10 @@ export const OUTFITS = {
   granNight: { tunic: "#e8e4f0", skin: "#e8c8b0", hair: "#e4e2de", dress: "#d8d2e6", stout: true },
   kid: { tunic: "#3f6fb0", skin: "#f5c9a0", hair: "#2b1d16" },
   milk: { tunic: "#f2f2ea", skin: "#c99067", cap: "#3a7a5a", apron: "#e6e6dc" },
+  mum: { tunic: "#c9506f", skin: "#e8b48e", hair: "#3a2418" },
+  mumNight: { tunic: "#8a9ac8", skin: "#e2b08c", hair: "#3a2418" },
+  police: { tunic: "#2c3e6e", skin: "#d9a27a", cap: "#1f2b4d", moustache: "#3a2418" },
+  grandpa: { tunic: "#6d5a48", skin: "#f0cfb4", hair: "#e8e6e2", beard: "#eeeeea", brows: "#eeeeea" },
 };
 
 /** galea: iron bowl, brass brow band, cheek guards, transverse red crest */
@@ -2565,6 +2569,8 @@ export const romanFront = (p, key, opts = {}) => {
       case "reach": { const lf = (opts.lift || 0) * 0.62 * HH; return { pts: [s, [X(42), s[1] - 0.12 * HH - lf * 0.6], [X(82), s[1] - 0.5 * HH - lf]], front: false }; }
       case "cheek": return { pts: [s, [X(16), s[1] + 0.05 * HH], [cx + side * (H.a + 2 * u), hc + 0.25 * H.b]], front: false };
       case "behind": return { pts: [s, [X(4), s[1] + 0.36 * HH], [tcx + side * 0.35 * T.a, torsoBot - 0.12 * HH]], front: false };   // hands hidden behind the back
+      case "phone": return { pts: [s, [X(16), s[1] + 0.05 * HH], [cx + side * (H.a - 1 * u), hc + 0.2 * H.b]], front: true, phone: true };   // a phone held to the ear
+      case "posters": return { pts: [s, [X(10), s[1] + 0.42 * HH], [cx + side * 0.18 * W, torsoBot - 0.5 * HH]], front: true, posters: true };   // a stack of paper held in front
       case "hush": return { pts: [s, [X(-6), s[1] + 0.3 * HH], [cx + 2 * u, hc + 0.62 * H.b]], front: true, fingerUp: true };
       case "knock": { const k = opts.kn || 0; return { pts: [s, [X(26), s[1] + 0.05 * HH], [X(46 + 8 * k), s[1] - 0.15 * HH]], front: false }; }
       case "thumb": return { pts: [s, [X(20), s[1] + 0.12 * HH], [X(44), s[1] - 0.12 * HH]], front: false, thumb: true };
@@ -2578,6 +2584,8 @@ export const romanFront = (p, key, opts = {}) => {
     p.dot(hx, hy, 5.5 * u);
     if (a.finger) { const dx = a.pts[2][0] - a.pts[1][0], dy = a.pts[2][1] - a.pts[1][1], l = Math.hypot(dx, dy); p.stroke([[hx, hy], [hx + dx / l * 14 * u, hy + dy / l * 14 * u]], 2.6 * u); }
     if (a.fingerUp) p.stroke([[hx, hy], [hx, hy - 16 * u]], 2.8 * u);
+    if (a.phone) { const g = p.g; g.save(); g.translate(hx, hy - 4 * u); g.rotate(Math.sign(hx - cx) * 0.25); g.fillStyle = "#1c1e26"; g.strokeStyle = "#241726"; g.lineWidth = 2 * u; g.beginPath(); g.roundRect(-5 * u, -11 * u, 10 * u, 20 * u, 2.5 * u); g.fill(); g.stroke(); g.restore(); }
+    if (a.posters && hx > cx) { const g = p.g; g.save(); g.fillStyle = "#f4f1ea"; g.strokeStyle = "#241726"; g.lineWidth = 2 * u; g.beginPath(); g.rect(cx - 0.3 * W, hy - 30 * u, 0.6 * W, 38 * u); g.fill(); g.stroke(); g.fillStyle = "#c0302a"; g.fillRect(cx - 0.24 * W, hy - 25 * u, 0.48 * W, 7 * u); g.restore(); }
     if (a.thumb) p.stroke([[hx, hy], [hx + Math.sign(hx - cx) * 6 * u, hy - 12 * u]], 2.6 * u);
   };
   // spear behind

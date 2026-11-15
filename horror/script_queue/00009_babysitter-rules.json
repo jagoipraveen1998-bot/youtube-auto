@@ -1,6 +1,6 @@
 {
  "id": "babysitter-rules",
- "title": "You Got The Babysitting Job. Follow The 6 Rules 😨",
+ "title": "You Got The Babysitting Job. Follow The 12 Rules 😨",
  "approved": true,
  "three_d": "babysitter",
  "cta": "Tag your jobless friend in the comments",
@@ -20,7 +20,13 @@
   "Rule four. At eleven eleven, every toy turns to face the wall. They don't want to see what's in the hall.",
   "Rule five. The baby monitor hums a lullaby. It has no speaker. Unplug it, and the humming moves into the walls.",
   "Rule six. Small handprints on the window? Wipe them off, fast. They are not Nora's.",
-  "*They're his. And he hates being ignored.",
+  "They're his. And he hates being ignored.",
+  "Rule seven. If the hall light comes on by itself, don't look at the door. Count to ten. He'll go back.",
+  "Rule eight. You'll find a second glass of milk by her bed. Don't drink it. Don't pour it away. It's his.",
+  "Rule nine. At midnight, the family photo changes. If there's a boy in it now, do not count the faces.",
+  "Rule ten. If Nora laughs in her sleep, laugh with her, quietly. He has to think you're in on the joke.",
+  "Rule eleven. Never ask his name. If Nora tries to whisper it to you, cover your ears.",
+  "*Rule twelve. At dawn, the parents come home. Count them. If three people walk in, you broke a rule.",
   "Good luck."
  ],
  "ending": "finished"

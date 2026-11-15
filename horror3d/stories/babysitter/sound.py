@@ -4,7 +4,7 @@ import sys, pathlib
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2]))
 from soundkit import Mix
 
-IDS = ['hired', 'pay', 'mrs', 'photos', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'his', 'luck']
+IDS = ['hired', 'pay', 'mrs', 'photos', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'his', 'r7', 'r8', 'r9', 'r10', 'r11', 'r12', 'luck']
 
 
 def build(shots, total, FPS, SR):
@@ -21,7 +21,12 @@ def build(shots, total, FPS, SR):
     m.music_box(m.a('r5', 6), m.b('r5'), g=0.14, detune=0.97, step=0.6)
     m.hush(m.beat('his', -50), m.beat('his', -3))
     m.sting(m.beat('his', -2), 1.3)
-    m.hush(m.beat('luck', -30), m.beat('luck', -2))
-    m.sting(m.beat('luck'), 1.0)
+    m.click(m.a('r7', 10), 0.9)                                   # the hall light
+    m.heartbeat(m.a('r7'), m.beat('r12', -50), 60, 110, 0.45)
+    m.sting(m.beat('r9'), 0.7)
+    m.creak(m.a('r12', 4), 1.4, 0.6, pitch=130)
+    m.hush(m.beat('r12', -50), m.beat('r12', -3))
+    m.sting(m.beat('r12', -2), 1.3)
+    m.sting(m.beat('luck'), 0.7)
     m.tail(m.a('luck'), 0.4)
     return m.done()

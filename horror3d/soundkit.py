@@ -131,6 +131,6 @@ class Mix:
         tt = np.arange(max(0, self.N - int(t0 * self.SR))) / self.SR
         self.put(self.mus, t0, self.lp(np.sin(2 * np.pi * 49 * tt), 200) * np.minimum(1, tt / 3), g)
 
-    def done(self, amb=0.10, sfx=0.34, mus=0.26):
+    def done(self, amb=0.05, sfx=0.30, mus=0.26):          # background kept very low under the voice
         norm = lambda x, p: x / max(1e-6, np.percentile(np.abs(x), 99.7)) * p if np.abs(x).max() > 0 else x
         return norm(self.amb, amb) + norm(self.sfx, sfx) + norm(self.mus, mus)

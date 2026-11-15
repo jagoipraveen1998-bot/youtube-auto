@@ -2,7 +2,7 @@
 // then the bedroom set at night. The kid never casts a shadow; the borrowed one lives on the bedroom wall.
 import * as TT from './toon.js';
 import * as SETS from './sets.js';
-import { makeStory, MOODS, smooth, ramp, lerp, lerp3, q, blinkAt, actor } from './kit.js';
+import { makeStory, MOODS, smooth, ramp, lerp, lerp3, q, blinkAt, actor, fx } from './kit.js';
 
 const B = [-40, 0, 0], ST = [0, 0, 60];
 const W0 = (x, y, z) => [B[0] + x, B[1] + y, B[2] + z], S0 = (x, y, z) => [ST[0] + x, ST[1] + y, ST[2] + z];
@@ -26,12 +26,12 @@ const CAMS = {
   call: [{ pos: W0(1.3, 1.3, -0.9), look: W0(0.1, 1.15, 0.55), fov: 40 }, { pos: W0(1.1, 1.3, -0.65), look: W0(0.1, 1.17, 0.55), fov: 34 }],
   voice: [{ pos: W0(1.0, 1.3, -0.5), look: W0(0.1, 1.17, 0.55), fov: 32 }, { pos: W0(0.9, 1.3, -0.4), look: W0(0.1, 1.18, 0.55), fov: 28 }],
 };
-const SHCAM = [{ pos: W0(0.4, 1.3, -0.1), look: W0(1.1, 1.3, 2.05), fov: 42 }, { pos: W0(0.7, 1.3, 0.3), look: W0(1.1, 1.35, 2.05), fov: 38 }];
+const SHCAM = [{ pos: W0(0.4, 1.3, -0.1), look: W0(1.1, 1.75, 2.05), fov: 44 }, { pos: W0(0.5, 1.15, 0.0), look: W0(1.08, 2.25, 1.8), fov: 46 }];   // looking up at it as it looms
 
 const LIGHTS = {
-  evening: { ...MOODS.evening, az: 150, el: 16, shadowExt: 9 },
-  night: { ...MOODS.night, hemi: 1.0, fogNear: 9, fogFar: 40 },
-  dread: { ...MOODS.dread, hemi: 0.85, fogNear: 8, fogFar: 36 },
+  evening: { ...MOODS.night, az: 150, el: 20, sunI: 2.8, hemi: 0.7, shadowExt: 9, vig: 0.5, fogNear: 10, fogFar: 46 },   // after dark: moon shadows only
+  night: { ...MOODS.night, hemi: 0.8, fogNear: 9, fogFar: 40, vig: 0.52 },
+  dread: { ...MOODS.dread, hemi: 0.62, fogNear: 8, fogFar: 36, vig: 0.72 },
 };
 const K = makeStory({
   ids: IDS, cams: CAMS, lights: LIGHTS,
@@ -76,7 +76,7 @@ export const update = (W, f, P) => {
 };
 export const worldAt = (f) => {
   const S = shotAt(f);
-  return { door: S.i >= 5 ? 0.5 : 0, beep: -1, unlocked: false, lamp: S.i >= 10 ? 1.0 : 1.5, moon: 0.9, street: 1.0, headlights: 0, car: false,
+  return { door: S.i >= 5 ? 0.5 : 0, beep: -1, unlocked: false, lamp: S.i >= 10 ? 0.45 : 1.0, moon: 0.9, street: 1.0, headlights: 0, car: false,
     photoShadow: false, motes: false, gap: false, feet: false, wind: 0 };
 };
 
@@ -85,7 +85,7 @@ const KS = 0.72, AS = 0.84;
 export const actorsAt = (f, T) => {
   const S = shotAt(f), id = S.id, out = [];
   const kid = (expr, o = {}, pos = KID) => out.push(actor(T, 'kid', { seed: 9, expr, blink: blinkAt(f, 9), ...o }, pos, { s: KS, ...NOSH }));
-  const shadow = (o = {}, alpha = 0.62) => out.push(actor(T, 'kid', { seed: 9, expr: 'neutral', blink: 0, ...o }, SHADOW, { s: 1.0, tint: '#05050c', alpha, ...NOSH, order: 1 }));
+  const shadow = (o = {}, alpha = 0.62, s = 1.0, pos = SHADOW) => out.push(actor(T, 'kid', { seed: 9, expr: 'neutral', blink: 0, ...o }, pos, { s, tint: '#05050c', alpha, ...NOSH, order: 1 }));
   if (id === 'town') {                                       // grown-ups walk home with long evening shadows
     const t = ramp(f, S.a, S.b), st = q((f * 0.04) % 1, 2);
     out.push(actor(T, 'milk', { seed: 51, expr: 'smile', blink: blinkAt(f, 51), step: st, look: 0.5 }, S0(lerp(-0.4, 1.0, t), PATH, -3.2), { s: AS }));
@@ -96,14 +96,23 @@ export const actorsAt = (f, T) => {
     kid('smile', { look: -0.4 }, S0(0.2, PATH, -3.3));
   }
   if (id === 'twelve') kid(f < S.beat ? 'smile' : 'grin', { R: f >= S.beat ? 'thumb' : undefined }, S0(0.2, PATH, -3.3));
-  if (id === 'wall') { kid(f < S.beat ? 'neutral' : 'wary', { look: 0.3 }); if (f >= S.beat - 8) shadow({}, 0.62 * smooth(ramp(f, S.beat - 8, S.beat + 10))); }
+  if (id === 'wall') { kid(f < S.beat ? 'neutral' : 'wary', { look: 0.3 }); if (f >= S.beat - 8) shadow({}, 0.62 * smooth(ramp(f, S.beat - 8, S.beat + 10)), 0.9); }
   if (id === 'moved') { const up = f >= S.beat - 6; kid('nervous', { R: up ? 'wave' : undefined }); shadow({ L: up ? 'wave' : undefined }); }
   if (id === 'mum' || id === 'borrowed') out.push(actor(T, 'mumNight', { seed: 41, expr: id === 'mum' ? 'shock' : 'nervous', blink: id === 'mum' ? 0 : blinkAt(f, 41), look: -0.6, L: id === 'borrowed' ? 'hush' : undefined }, MUM, { s: AS }));
   if (id === 'who') kid('wary', { look: 0.6 });
   if (id === 'point') { out.push(actor(T, 'mumNight', { seed: 41, expr: 'nervous', blink: blinkAt(f, 41), look: -0.7, R: 'point' }, W0(0.9, 0, -0.3), { s: AS })); }
-  if (id === 'wave') { kid('scared', { blink: 0, look: 0.3 }); shadow({ L: 'wave', headTilt: f >= S.beat ? Math.round(5 * Math.sin(f * 0.35)) : 0, bob: 0 }, 0.7); }
+  if (id === 'wave') { kid('scared', { blink: 0, look: 0.3 }); shadow({ L: 'wave', headTilt: f >= S.beat ? Math.round(5 * Math.sin(f * 0.35)) : 0, bob: 0 }, 0.78, 1.2); }   // it is bigger now
   if (id === 'call') kid(f < S.beat ? 'wary' : 'nervous', { R: 'phone' });
-  if (id === 'voice') { if (f < S.beat) kid('scared', { R: 'phone', blink: 0 }); else shadow({ headTilt: 6 }, 0.75); }
+  if (id === 'voice') { if (f < S.beat) kid('scared', { R: 'phone', blink: 0 }); else { const g = smooth(ramp(f, S.beat, S.b)); shadow({ headTilt: 6 }, 0.86, lerp(1.25, 1.55, g), lerp3(SHADOW, W0(1.08, 0, 1.8), g)); } }   // it leans off the wall toward you
   return out;
 };
-export const fxAt = () => [];
+const eyes = (open) => (p) => { const g = p.g; g.save(); g.globalCompositeOperation = 'lighter';                 // two pale eyes on the shadow's face
+  for (const x of [272, 328]) { const gr = g.createRadialGradient(x, 262, 0, x, 262, 34); gr.addColorStop(0, 'rgba(255,246,214,0.9)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(x - 34, 228, 68, 68);
+    g.fillStyle = '#fffbe8'; g.beginPath(); g.ellipse(x, 262, 9, 9 * open, 0, 0, 7); g.fill(); } g.restore(); };
+export const fxAt = (f) => {
+  const S = shotAt(f), out = [];
+  if (S.id === 'wave' && f >= S.beat + 6) { const o = q(Math.min(1, (f - S.beat - 6) / 8), 1); out.push(fx('eyes' + o, eyes(o), [SHADOW[0], SHADOW[1], SHADOW[2] - 0.03], 1.2)); }
+  if (S.id === 'voice' && f >= S.beat) { const g = smooth(ramp(f, S.beat, S.b)), p = lerp3(SHADOW, W0(1.08, 0, 1.8), g), blink = (f - S.beat) % 80 > 76;
+    if (!blink) out.push(fx('eyesv' + q(g, 2), eyes(1), [p[0], p[1], p[2] - 0.03], lerp(1.25, 1.55, g))); }
+  return out;
+};

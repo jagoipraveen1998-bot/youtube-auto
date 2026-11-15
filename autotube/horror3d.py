@@ -23,11 +23,11 @@ KIT = ROOT / "horror3d"
 TAIL = 1.6          # seconds held on the last shot after the final word
 
 
-def line_frames(timing: list[dict]) -> tuple[list[dict], int]:
+def line_frames(timing: list[dict], tail: float = TAIL) -> tuple[list[dict], int]:
     """Each line owns the frames from its first word to the next line's first word (the last one also gets the tail)."""
     starts = [int(round(t["start"] * FPS)) for t in timing]
     starts[0] = 0
-    total = int(round((timing[-1]["end"] + TAIL) * FPS))
+    total = int(round((timing[-1]["end"] + tail) * FPS))
     out = []
     for i, t in enumerate(timing):
         a = starts[i]
@@ -36,7 +36,7 @@ def line_frames(timing: list[dict]) -> tuple[list[dict], int]:
     return out, total
 
 
-def _captions(frames_dir: Path, lines: list[str], shots: list[dict], total: int):
+def _captions(frames_dir: Path, lines: list[str], shots: list[dict], total: int, cta: str = ""):
     """Yield every frame as JPEG bytes with the word-by-word caption burned in."""
     from io import BytesIO
     from PIL import Image, ImageDraw, ImageFont
@@ -46,7 +46,23 @@ def _captions(frames_dir: Path, lines: list[str], shots: list[dict], total: int)
     for f in range(total):
         im = Image.open(frames_dir / f"f{f:05d}.jpg").convert("RGB")
         k = next((i for i, s in enumerate(shots) if s["a"] <= f <= s["b"]), None)
-        if k is not None:
+        last = shots[-1]
+        if cta and f > last.get("said", last["b"]) + int(0.5 * FPS):          # the end line: "Tag a friend who..."
+            d = ImageDraw.Draw(im, "RGBA")
+            rows, cur = [], ""
+            for w in cta.split():
+                t = (cur + " " + w).strip()
+                if d.textlength(t, font=font) > 860 and cur:
+                    rows.append(cur); cur = w
+                else:
+                    cur = t
+            rows.append(cur)
+            y0 = 1500 - (len(rows) - 1) * 42
+            wmax = max(d.textlength(r, font=font) for r in rows)
+            d.rounded_rectangle((540 - wmax / 2 - 44, y0 - 26, 540 + wmax / 2 + 44, y0 + len(rows) * 84 + 14), 34, fill=(20, 12, 28, 215))
+            for i, row in enumerate(rows):
+                d.text((540 - d.textlength(row, font=font) / 2, y0 + i * 84), row, font=font, fill=(255, 225, 74), stroke_width=4, stroke_fill=(20, 12, 28))
+        elif k is not None:
             d = ImageDraw.Draw(im)
             words = lines[k].split()
             said = shots[k].get("said", shots[k]["b"])                      # frame where the line's last word ends
@@ -102,7 +118,7 @@ def make_short(story: dict, take: Path | None, work: Path, stage: str = "all"):
             raise RuntimeError(f"3D render incomplete: {len(missing)} of {total} frames missing")
         return _finish(story, work, src, name, shots, total, voice, frames)
     voice, timing = hv.voice_from_take(story, take)
-    shots, total = line_frames(timing)
+    shots, total = line_frames(timing, 3.4 if story.get("cta") else TAIL)       # hold longer when an end line is shown
     for s, t in zip(shots, timing):
         s["said"] = int(round(t["end"] * FPS))
     need = int((src / "LINES").read_text().strip()) if (src / "LINES").exists() else len(shots)
@@ -143,7 +159,7 @@ def _finish(story, work, src, name, shots, total, voice, frames):
     ff = subprocess.Popen(["ffmpeg", "-y", "-v", "error", "-f", "image2pipe", "-framerate", str(FPS), "-c:v", "mjpeg", "-i", "-", "-i", str(wav),
                            "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k",
                            "-ac", "2", "-shortest", "-movflags", "+faststart", str(video)], stdin=subprocess.PIPE)
-    for f, im, data in _captions(frames, lines, shots, total):
+    for f, im, data in _captions(frames, lines, shots, total, cta=story.get("cta") or ""):
         ff.stdin.write(data)
         if f == cover_f:
             Image_open = __import__("PIL.Image", fromlist=["open"]).open

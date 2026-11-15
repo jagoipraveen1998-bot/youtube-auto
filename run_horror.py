@@ -94,6 +94,7 @@ def main():
         story["part"] = script.get("part")
         story["script_pair"] = script.get("pair")
         story["three_d"] = script.get("three_d")
+        story["cta"] = script.get("cta")
         if script.get("part"):
             story["min_len"] = 93
     elif args.story:
@@ -119,6 +120,7 @@ def main():
                 story["part"] = script.get("part")
                 story["script_pair"] = script.get("pair")
                 story["three_d"] = script.get("three_d")
+                story["cta"] = script.get("cta")
                 if script.get("part"):
                     story["min_len"] = 93               # two-part stories stay at least 1:30; one-part stories run 50-60 s
             elif hcfg.get("approved_scripts_only"):
@@ -203,6 +205,8 @@ def publish(args, cfg, hcfg, out, hist, hist_path, story, video, thumb, plan):
                                 + "\n" + story["description"])
     if story.get("cast_call"):                   # once a week: viewers can ask to be a character (first name only)
         story["description"] = (CAST_CALL + "\n\n" + story["description"])
+    if story.get("cta"):                                  # the end line also opens the description
+        story["description"] = story["cta"] + " \U0001F447\n\n" + story["description"]
     description = "\n".join([story["description"], "",
                              *([f"🎬 Full animated horror story: {full['title']} → https://youtu.be/{full['video_id']}", ""] if full else []),
                              "A Creepy Cartoon Tale: an original animated horror short. New horror Shorts every day.",

@@ -127,10 +127,22 @@ class Mix:
         for s in np.arange(t0, t1, step):
             n = int(0.03 * self.SR); tt = np.arange(n) / self.SR
             self.put(self.sfx, s, self.hp(self.rng.standard_normal(n), 1800) * np.exp(-tt * 160), g * (0.7 + 0.3 * self.rng.random()))
+    def heartbeat(self, t0, t1, bpm0=58, bpm1=96, g=0.5):   # a low heartbeat that speeds up as the dread builds
+        t = t0
+        while t < t1:
+            k = (t - t0) / max(0.1, t1 - t0); n = int(0.16 * self.SR); tt = np.arange(n) / self.SR
+            th = np.sin(2 * np.pi * (58 - 60 * tt) * tt) * np.exp(-tt * 22)
+            self.put(self.mus, t, th, g * (0.6 + 0.4 * k)); self.put(self.mus, t + 0.19, th, g * 0.6 * (0.6 + 0.4 * k))
+            t += 60 / (bpm0 + (bpm1 - bpm0) * k)
+    def hush(self, t0, t1):                             # dead silence before a scare (applied when the mix is finished)
+        self._hush = getattr(self, '_hush', []) + [(t0, t1)]
     def tail(self, t0, g=0.4):
         tt = np.arange(max(0, self.N - int(t0 * self.SR))) / self.SR
         self.put(self.mus, t0, self.lp(np.sin(2 * np.pi * 49 * tt), 200) * np.minimum(1, tt / 3), g)
 
     def done(self, amb=0.05, sfx=0.30, mus=0.26):          # background kept very low under the voice
+        for t0, t1 in getattr(self, '_hush', []):
+            w = np.clip(np.minimum((t0 - self.t) / 0.25 + 1, (self.t - t1) / 0.02 + 1), 0, 1) if True else 1
+            for b in (self.amb, self.mus): b *= np.where((self.t > t0 - 0.25) & (self.t < t1), w, 1.0)
         norm = lambda x, p: x / max(1e-6, np.percentile(np.abs(x), 99.7)) * p if np.abs(x).max() > 0 else x
         return norm(self.amb, amb) + norm(self.sfx, sfx) + norm(self.mus, mus)

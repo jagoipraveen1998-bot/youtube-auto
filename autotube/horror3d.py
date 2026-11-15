@@ -36,13 +36,14 @@ def line_frames(timing: list[dict]) -> tuple[list[dict], int]:
     return out, total
 
 
-def _captions(frames_dir: Path, lines: list[str], shots: list[dict], total: int):
+def _captions(frames_dir: Path, lines: list[str], shots: list[dict], total: int, wide: bool = False):
     """Yield every frame as JPEG bytes with the word-by-word caption burned in."""
     from io import BytesIO
     from PIL import Image, ImageDraw, ImageFont
     fonts = ["/usr/share/fonts/truetype/google-fonts/Poppins-Bold.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
              "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"]
-    font = ImageFont.truetype(next(f for f in fonts if Path(f).exists()), 64)
+    font = ImageFont.truetype(next(f for f in fonts if Path(f).exists()), 56 if wide else 64)
+    CX, MAXW, BASE, STEP = (960, 1560, 940, 74) if wide else (540, 920, 1500, 84)
     for f in range(total):
         im = Image.open(frames_dir / f"f{f:05d}.jpg").convert("RGB")
         k = next((i for i, s in enumerate(shots) if s["a"] <= f <= s["b"]), None)
@@ -54,30 +55,31 @@ def _captions(frames_dir: Path, lines: list[str], shots: list[dict], total: int)
             rows, cur = [], ""
             for w in words:
                 t = (cur + " " + w).strip()
-                if d.textlength(t, font=font) > 920 and cur:
+                if d.textlength(t, font=font) > MAXW and cur:
                     rows.append(cur); cur = w
                 else:
                     cur = t
             rows.append(cur)
-            y, n = 1500 - (len(rows) - 1) * 42, 0
+            y, n = BASE - (len(rows) - 1) * (STEP // 2 if not wide else STEP), 0
             for row in rows:
-                x = 540 - d.textlength(row, font=font) / 2
+                x = CX - d.textlength(row, font=font) / 2
                 for w in row.split():
                     if n < shown:
                         d.text((x, y), w, font=font, fill=(255, 225, 74) if n == shown - 1 else (255, 255, 255),
                                stroke_width=9, stroke_fill=(20, 12, 28))
                     x += d.textlength(w + " ", font=font); n += 1
-                y += 84
+                y += STEP
         buf = BytesIO(); im.save(buf, "JPEG", quality=93)
         yield f, im, buf.getvalue()
 
 
-def render_frames(web: Path, frames: Path, total: int, machines: int = 1, k: int = 0) -> None:
+def render_frames(web: Path, frames: Path, total: int, machines: int = 1, k: int = 0, wide: bool = False) -> None:
     """Render this machine's share of the frames (every machines-th frame from k), split over all its CPU cores."""
     mine = [f for f in range(total) if f % machines == k]
     n = max(1, min(len(mine), int(os.environ.get("RENDER_WORKERS") or (os.cpu_count() or 2))))
+    env = {**os.environ, **({"RENDER_WIDE": "1"} if wide else {})}
     procs = [subprocess.Popen([sys.executable, str(KIT / "render_worker.py"), str(web), str(frames), str(total), "1", "0",
-                               ",".join(map(str, mine[j::n]))]) for j in range(n)]
+                               ",".join(map(str, mine[j::n]))], env=env) for j in range(n)]
     codes = [p.wait() for p in procs]
     missing = [f for f in mine if not (frames / f"f{f:05d}.jpg").exists()]
     if any(codes) or missing:
@@ -115,10 +117,10 @@ def make_short(story: dict, take: Path | None, work: Path, stage: str = "all"):
     log(f"3D Short '{name}': {len(shots)} shots, {total} frames ({total / FPS:.1f}s)")
     shutil.rmtree(frames, ignore_errors=True)
     if stage == "prepare":
-        state.write_text(json.dumps({"name": name, "shots": shots, "total": total}), encoding="utf-8")
+        state.write_text(json.dumps({"name": name, "shots": shots, "total": total, "wide": bool(story.get("wide"))}), encoding="utf-8")
         np.save(work / "voice3d.npy", np.asarray(voice, dtype=np.float64))
         return total
-    render_frames(web, frames, total)
+    render_frames(web, frames, total, wide=bool(story.get("wide")))
     return _finish(story, work, src, name, shots, total, voice, frames)
 
 
@@ -143,7 +145,7 @@ def _finish(story, work, src, name, shots, total, voice, frames):
     ff = subprocess.Popen(["ffmpeg", "-y", "-v", "error", "-f", "image2pipe", "-framerate", str(FPS), "-c:v", "mjpeg", "-i", "-", "-i", str(wav),
                            "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k",
                            "-ac", "2", "-shortest", "-movflags", "+faststart", str(video)], stdin=subprocess.PIPE)
-    for f, im, data in _captions(frames, lines, shots, total):
+    for f, im, data in _captions(frames, lines, shots, total, wide=bool(story.get("wide"))):
         ff.stdin.write(data)
         if f == cover_f:
             Image_open = __import__("PIL.Image", fromlist=["open"]).open
@@ -164,5 +166,5 @@ if __name__ == "__main__":
     w, m, k = Path(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3])
     st = json.loads((w / "state3d.json").read_text(encoding="utf-8"))
     log(f"Rendering part {k + 1} of {m}: {len(range(k, st['total'], m))} of {st['total']} frames")
-    render_frames(w / "web3d", w / "frames3d", st["total"], m, k)
+    render_frames(w / "web3d", w / "frames3d", st["total"], m, k, wide=bool(st.get("wide")))
     log(f"Part {k + 1} of {m} rendered")

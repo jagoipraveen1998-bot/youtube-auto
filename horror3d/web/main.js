@@ -4,7 +4,8 @@ import * as P from './paint.js';
 import { SHOTS, TOTAL, shotAt, camAt, dofAt, LIGHTS, lightFor, actorsAt, worldAt, fxAt } from './story.js';
 import * as ST from './story.js';
 
-const W = 1080, H = 1920;
+const WIDE = new URLSearchParams(location.search).has('wide');   // episodes are 16:9, Shorts 9:16
+const W = WIDE ? 1920 : 1080, H = WIDE ? 1080 : 1920;
 const canvas = document.getElementById('c');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, preserveDrawingBuffer: true });
 renderer.setPixelRatio(1); renderer.setSize(W, H, false);
@@ -287,7 +288,7 @@ function drawActors(list, cam) {
     c.mat.color.set(a.tint || '#ffffff'); c.mat.opacity = a.alpha ?? 1;
     c.mesh.castShadow = a.shadow !== false;
     c.mesh.renderOrder = a.order || 2;
-    if (a.blob !== false && a.y < DECK + 0.5 && a.y > -0.05) { c.blob.visible = true; c.blob.position.set(a.x, (a.ground ?? DECK) + 0.02, a.z); c.blob.scale.set(0.95 * s, 0.6 * s, 1); }
+    if (a.blob !== false && (a.ground !== undefined || (a.y < DECK + 0.5 && a.y > -0.05))) { c.blob.visible = true; c.blob.position.set(a.x, (a.ground ?? DECK) + 0.02, a.z); c.blob.scale.set(0.95 * s, 0.6 * s, 1); }
   });
 }
 

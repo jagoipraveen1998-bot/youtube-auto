@@ -23,6 +23,7 @@ export const OUTFITS = {
   granNight: { tunic: "#e8e4f0", skin: "#e8c8b0", hair: "#e4e2de", dress: "#d8d2e6", stout: true },
   kid: { tunic: "#3f6fb0", skin: "#f5c9a0", hair: "#2b1d16" },
   milk: { tunic: "#f2f2ea", skin: "#c99067", cap: "#3a7a5a", apron: "#e6e6dc" },
+  tom: { tunic: "#5b4a3c", skin: "#f0c8a0", cap: "#3b3d46", hair: "#6a4a2a" },
   mum: { tunic: "#c9506f", skin: "#e8b48e", hair: "#3a2418" },
   mumNight: { tunic: "#8a9ac8", skin: "#e2b08c", hair: "#3a2418" },
   police: { tunic: "#2c3e6e", skin: "#d9a27a", cap: "#1f2b4d", moustache: "#3a2418" },

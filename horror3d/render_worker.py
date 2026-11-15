@@ -23,10 +23,11 @@ with sync_playwright() as p:
     if os.environ.get("CHROME_PATH"):
         kw["executable_path"] = os.environ["CHROME_PATH"]
     br = p.chromium.launch(**kw)
-    pg = br.new_page(viewport={"width": 1080, "height": 1920})
+    wide = bool(os.environ.get("RENDER_WIDE"))                      # 16:9 episodes
+    pg = br.new_page(viewport={"width": 1920, "height": 1080} if wide else {"width": 1080, "height": 1920})
     errs = []
     pg.on("pageerror", lambda e: errs.append(str(e)))
-    pg.goto(f"http://127.0.0.1:{srv.server_address[1]}/index.html")
+    pg.goto(f"http://127.0.0.1:{srv.server_address[1]}/index.html{'?wide=1' if wide else ''}")
     pg.wait_for_function("window.ready || window.err", timeout=240000)
     if pg.evaluate("window.err") or errs:
         sys.exit(f"3D page error: {pg.evaluate('window.err')} {errs[:2]}")

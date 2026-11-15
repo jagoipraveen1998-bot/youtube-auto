@@ -215,6 +215,16 @@
    "h": 215,
    "kind": "object",
    "prompt": "A weathered neon-pink lawn flamingo mounted on thin wire legs with chipped paint and comically suspicious, unblinking black eyes."
+  },
+  "mannequin": {
+   "h": 580,
+   "kind": "object",
+   "prompt": "A pale, featureless fiberglass retail mannequin standing rigidly on a chrome circular stand, dressed in a slightly ill-fitting retro suit jacket."
+  },
+  "pigeon": {
+   "h": 110,
+   "kind": "animal",
+   "prompt": "A plump gray city pigeon with iridescent neck feathers and wide unblinking round eyes that stares forward with an unsettlingly blank expression."
   }
  }
 }

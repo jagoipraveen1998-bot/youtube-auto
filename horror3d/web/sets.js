@@ -146,7 +146,7 @@ export function granRoom(ctx, { at = [40, 0, 0], label = 'YOU' } = {}) {
   const cal = canvasPlane(ctx, 0.36, 0.5, 256, G, { lit: true }); cal.mesh.position.set(RX - 0.11, 1.65, -1.2); cal.mesh.rotation.y = -Math.PI / 2;
   cal.draw('cal', (c, w, h) => { c.fillStyle = '#f6f0e2'; c.fillRect(0, 0, w, h); c.fillStyle = '#c84a3a'; c.fillRect(0, 0, w, h * 0.42); c.fillStyle = '#ffd36a'; c.beginPath(); c.arc(w / 2, h * 0.2, 40, 0, 7); c.fill();
     c.fillStyle = '#444'; for (let r = 0; r < 5; r++) for (let k = 0; k < 7; k++) c.fillRect(14 + k * 33, h * 0.5 + r * 30, 22, 18); });
-  const ph = canvasPlane(ctx, 0.42, 0.32, 256, G, { lit: true }); ph.mesh.position.set(-0.1 + 1.0, 1.75, BZ + 0.13);
+  const ph = canvasPlane(ctx, 0.42, 0.32, 256, G, { lit: true }); ph.mesh.position.set(-0.1 + 1.0, 1.75, BZ + 0.14);
   add(box(0.48, 0.38, 0.03), toon({ color: '#c9a86a' }), 0.9, 1.75, BZ + 0.115, G);
   const bl = bulb(ctx, G, 0.2, RH, 0.1);
   const moon = new THREE.PointLight('#8fa8ff', 0, 7, 1.4); moon.position.set(LX + 0.8, 1.8, 0.1); G.add(moon);
@@ -233,7 +233,7 @@ export function bedroom(ctx, { at = [-40, 0, 0] } = {}) {
   const rug = add(new THREE.CylinderGeometry(0.9, 0.9, 0.02, 30), toon({ color: '#4a8a8a' }), 0.4, 0.01, 0.6, G, { cast: false }); rug.scale.z = 0.7;
   add(box(0.6, 1.9, 1.1), toon({ color: '#9a6a46' }), RX - 0.4, 0.95, -1.4, G);
   for (const [x, y, c] of [[0.8, 1.7, '#3a8ad0'], [1.45, 1.55, '#e0a03a']]) add(box(0.45, 0.6, 0.02), toon({ color: c }), x, y, -RZ + 0.11, G);
-  const photo = canvasPlane(ctx, 0.36, 0.46, 256, G, { lit: true }); photo.mesh.position.set(BX - 0.1, 1.75, -RZ + 0.13);
+  const photo = canvasPlane(ctx, 0.36, 0.46, 256, G, { lit: true }); photo.mesh.position.set(BX - 0.1, 1.75, -RZ + 0.14);
   add(box(0.44, 0.54, 0.03), toon({ color: '#3a2a1a' }), BX - 0.1, 1.75, -RZ + 0.115, G);
   const moon = new THREE.PointLight('#8fa8ff', 0, 7, 1.3); moon.position.set(LX + 0.8, 1.7, -0.2); G.add(moon);
   const S0 = (x) => v3(at, x);

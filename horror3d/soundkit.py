@@ -98,6 +98,35 @@ class Mix:
             if at + 0.4 > t1: break
             fq = 440 * 2 ** ((nn - 69) / 12) * detune; tt = np.arange(int(1.2 * self.SR)) / self.SR
             self.put(self.mus, at, (np.sin(2 * np.pi * fq * tt) + 0.35 * np.sin(2 * np.pi * fq * 2.01 * tt) + 0.15 * np.sin(2 * np.pi * fq * 3.98 * tt)) * np.exp(-tt * 3.2), g)
+    def birds(self, t0, t1, g=0.4):                    # morning birdsong: short chirps at random
+        for s in np.arange(t0, t1, 0.45):
+            if self.rng.random() < 0.55:
+                n = int(0.09 * self.SR); tt = np.arange(n) / self.SR; f0 = 2600 + self.rng.random() * 1800
+                ch = np.sin(2 * np.pi * (f0 + 900 * np.sin(2 * np.pi * 22 * tt)) * tt) * np.sin(np.pi * tt / tt[-1])
+                self.put(self.amb, s + self.rng.random() * 0.3, ch, g * (0.4 + 0.6 * self.rng.random()))
+    def traffic(self, g=0.4, mask=None):               # a town far away: low rumble, a car now and then
+        x = self.lp(self.nz(self.N / self.SR + 1)[:self.N], 220) * (0.7 + 0.3 * np.sin(2 * np.pi * 0.05 * self.t)) * g
+        self.amb += x if mask is None else x * mask
+    def engine(self, t0, t1, g=0.6):                   # a car arriving and idling
+        m = self.span(t0, t1); tt = self.t
+        rev = np.clip((tt - t0) / max(0.1, t1 - t0), 0, 1)
+        x = self.lp(np.sign(np.sin(2 * np.pi * (38 - 10 * rev) * tt)) * 0.6 + self.nz(self.N / self.SR + 1)[:self.N] * 0.4, 400)
+        self.sfx += x * g * m * np.minimum(1, (tt - t0) * 1.5)
+    def siren_whoop(self, at, g=0.5):                  # one short police whoop, not a full siren
+        tt = np.arange(int(0.9 * self.SR)) / self.SR; f = 500 + 700 * np.sin(np.pi * tt / 0.9)
+        self.put(self.sfx, at, np.sin(2 * np.pi * np.cumsum(f) / self.SR) * np.sin(np.pi * tt / 0.9) * g)
+    def phone_line(self, t0, t1, g=0.3):               # the faint crackle of a phone call
+        m = self.span(t0, t1)
+        self.amb += self.bp(self.nz(self.N / self.SR + 1)[:self.N], 900, 3000) * g * m
+    def bark(self, at, g=0.7, n_=1, gap=0.38):         # a dog barking, muffled (outside a door)
+        for k in range(n_):
+            n = int(0.16 * self.SR); tt = np.arange(n) / self.SR
+            x = np.sign(np.sin(2 * np.pi * (330 - 600 * tt) * tt)) * self.rng.random(n) + np.sin(2 * np.pi * 190 * tt)
+            self.put(self.sfx, at + k * gap, self.bp(x, 250, 1400) * np.sin(np.pi * tt / tt[-1]) ** 0.6, g)
+    def paws(self, t0, t1, g=0.35, step=0.22):         # claws tapping on a wooden floor
+        for s in np.arange(t0, t1, step):
+            n = int(0.03 * self.SR); tt = np.arange(n) / self.SR
+            self.put(self.sfx, s, self.hp(self.rng.standard_normal(n), 1800) * np.exp(-tt * 160), g * (0.7 + 0.3 * self.rng.random()))
     def tail(self, t0, g=0.4):
         tt = np.arange(max(0, self.N - int(t0 * self.SR))) / self.SR
         self.put(self.mus, t0, self.lp(np.sin(2 * np.pi * 49 * tt), 200) * np.minimum(1, tt / 3), g)

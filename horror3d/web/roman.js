@@ -24,6 +24,13 @@ export const OUTFITS = {
   kid: { tunic: "#3f6fb0", skin: "#f5c9a0", hair: "#2b1d16" },
   milk: { tunic: "#f2f2ea", skin: "#c99067", cap: "#3a7a5a", apron: "#e6e6dc" },
   tom: { tunic: "#5b4a3c", skin: "#f0c8a0", cap: "#3b3d46", hair: "#6a4a2a" },
+  hollis: { tunic: "#4a4038", skin: "#e8c0a0", cap: "#2e2e34", moustache: "#b8b4ae" },
+  pell: { tunic: "#a8785a", skin: "#f0cdb0", hair: "#8a7a6e", dress: "#8f6248", apron: "#f1ece0", stout: true },
+  crane: { tunic: "#17171d", skin: "#e6d2c2", hat: "tophat", cape: "#1d1d25", glasses: "#2a3a44" },
+  mabry: { tunic: "#3c3c44", skin: "#e8cbb2", hair: "#ecebe6", beard: "#f0efea" },
+  lady: { tunic: "#15151b", skin: "#ecdccf", hair: "#3a3034", dress: "#15151b" },
+  rose: { tunic: "#f3f2ee", skin: "#f4ece6", hair: "#c9aa7c", dress: "#f3f2ee" },
+  ned: { tunic: "#2f4a5a", skin: "#d8a888", cap: "#c8a23a", beard: "#6a4a30" },
   mum: { tunic: "#c9506f", skin: "#e8b48e", hair: "#3a2418" },
   mumNight: { tunic: "#8a9ac8", skin: "#e2b08c", hair: "#3a2418" },
   police: { tunic: "#2c3e6e", skin: "#d9a27a", cap: "#1f2b4d", moustache: "#3a2418" },
@@ -220,7 +227,8 @@ export const romanFront = (p, key, opts = {}) => {
     p.band([[cx - H.a * 1.05, bandY], [cx + H.a * 1.05, bandY]], old ? "#a88a4a" : BRASS, 7 * u, 1.8 * u, "round");
     p.poly(rrect(cx - 4 * u, bandY - 0.55 * H.b, cx + 4 * u, bandY - 3 * u, 2 * u), old ? "#a88a4a" : BRASS, 1.5 * u);
     cheeks(p, H, cx, hc, light, ow, old, u);
-  } else if (O.cap) hatOn(p, { hat: "cap", cap: O.cap, jacket: O.tunic }, hp, H, cx, hc, light, seed, facing, false);
+  } else if (O.hat) hatOn(p, { hat: O.hat, dress: O.dress || O.tunic, jacket: O.tunic }, hp, H, cx, hc, light, seed, facing, false);
+  else if (O.cap) hatOn(p, { hat: "cap", cap: O.cap, jacket: O.tunic }, hp, H, cx, hc, light, seed, facing, false);
   else if (O.hair) hatOn(p, { hat: "hair", hair: O.hair, jacket: O.tunic }, hp, H, cx, hc, light, seed, facing, false);
   else if (O.helmet && nohelmet) { // bald old head with white side tufts
     for (const s of [-1, 1]) p.ell(cx + s * 0.9 * H.a, hc - 0.1 * H.b, 0.22 * H.a, 0.3 * H.b, "#f4f1ea", 3 * u);
@@ -232,6 +240,12 @@ export const romanFront = (p, key, opts = {}) => {
     p.inkRing(bd, ow * 0.8, thick);
   }
   faceFront(p, cx, hc, W, expr, facing, look, lid, helmet, skin, O.beard ? O.beard : O.moustache, !!O.stout);
+  if (O.glasses) {                                           // round tinted glasses (Mr Crane)
+    const g = p.g, ex = cx + 7 * u * facing, ey = hc - 6 * u;
+    g.save(); g.fillStyle = O.glasses; g.strokeStyle = "#241726"; g.lineWidth = 2.6 * u;
+    for (const s of [-1, 1]) { g.beginPath(); g.arc(ex + s * 15 * u, ey, 11 * u, 0, 7); g.fill(); g.stroke(); }
+    g.beginPath(); g.moveTo(ex - 4 * u, ey); g.lineTo(ex + 4 * u, ey); g.stroke(); g.restore();
+  }
   for (const a of arms) if (a.fingerUp) drawArm(a);          // the shushing hand goes over the face
   if (O.brows) for (const s of [-1, 1]) p.ell(cx + 7 * u * facing + s * 14 * u, hc - 20 * u, 11 * u, 5 * u, O.brows, 2 * u);
   if (O.beard) { // re-draw the mouth over the beard for open mouths

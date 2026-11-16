@@ -225,6 +225,16 @@
    "h": 110,
    "kind": "animal",
    "prompt": "A plump gray city pigeon with iridescent neck feathers and wide unblinking round eyes that stares forward with an unsettlingly blank expression."
+  },
+  "haunted_cuckoo_clock": {
+   "h": 180,
+   "kind": "object",
+   "prompt": "An ornate carved wooden cuckoo clock with a tiny glowing skeletal bird popping out of its door."
+  },
+  "ferret": {
+   "h": 120,
+   "kind": "animal",
+   "prompt": "A mischievous black ferret wearing a miniature purple cape and sporting bright yellow glowing eyes."
   }
  }
 }

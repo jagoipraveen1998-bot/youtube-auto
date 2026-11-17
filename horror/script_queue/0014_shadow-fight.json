@@ -1,0 +1,78 @@
+{
+ "id": "shadow-fight",
+ "title": "I Had To Fight For My Life Against My Own Shadow",
+ "approved": false,
+ "three_d": "shadow-fight",
+ "cta": "Tag a friend who is scared of their own shadow",
+ "description": "A CreepyCartoonTales story. Would you have turned around? Tell us in the comments.",
+ "lines": [
+  "I had to fight for my life against my own shadow.",
+  "My mum has one rule. After sunset, never turn your back on your shadow.",
+  "Last night the power went out. One candle on the table.",
+  "I turned around to find the torch.",
+  "My shadow didn't turn with me.",
+  "It stayed on the wall, facing me. Then it smiled.",
+  "*It peeled off the wall and grabbed my ankle.",
+  "It dragged me toward the dark hallway. I clawed at the floor.",
+  "I grabbed the candle and shoved it into its face.",
+  "It shrank, hissing, back into the corner.",
+  "The lights came on. I was alive.",
+  "You see, the rule was never about it hurting you. It was about it taking your place.",
+  "Because Mum walked in, looked at me and screamed. I don't have a shadow anymore."
+ ],
+ "shots": [
+  {
+   "set": "3d",
+   "v": "s0"
+  },
+  {
+   "set": "3d",
+   "v": "s1"
+  },
+  {
+   "set": "3d",
+   "v": "s2"
+  },
+  {
+   "set": "3d",
+   "v": "s3"
+  },
+  {
+   "set": "3d",
+   "v": "s4"
+  },
+  {
+   "set": "3d",
+   "v": "s5"
+  },
+  {
+   "set": "3d",
+   "v": "s6"
+  },
+  {
+   "set": "3d",
+   "v": "s7"
+  },
+  {
+   "set": "3d",
+   "v": "s8"
+  },
+  {
+   "set": "3d",
+   "v": "s9"
+  },
+  {
+   "set": "3d",
+   "v": "s10"
+  },
+  {
+   "set": "3d",
+   "v": "s11"
+  },
+  {
+   "set": "3d",
+   "v": "s12"
+  }
+ ],
+ "ending": "finished"
+}

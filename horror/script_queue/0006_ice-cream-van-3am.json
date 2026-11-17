@@ -1,0 +1,71 @@
+{
+ "id": "ice-cream-van-3am",
+ "title": "The Ice Cream Van Came At 3AM #shorts #horror",
+ "approved": true,
+ "three_d": "ice-cream-van-3am",
+ "description": "A CreepyCartoonTales story. What would you do? Tell us in the comments.",
+ "choices": [
+  "Run outside",
+  "Lock the door"
+ ],
+ "lines": [
+  "Imagine you hear the ice cream van song. At three a.m.",
+  "It's parked under the only street lamp. Lights on. Window open.",
+  "The man inside smiles. Too wide. \"What flavour, buddy?\"",
+  "The menu has one flavour you've never seen. \"Your Favourite Memory.\"",
+  "\"That one's free,\" he says. You laugh and take it.",
+  "It tastes like your seventh birthday. Like Grandma's kitchen.",
+  "In the morning, Mum shows you a photo. You, blowing out candles.",
+  "You don't remember it. Not the cake. Not the party. Nothing.",
+  "*Then you look closer. Grandma isn't in the photo anymore. Just an empty chair.",
+  "Outside, very softly, the ice cream song starts again.",
+  "And the man is calling your name. \"Ready for seconds?\""
+ ],
+ "shots": [
+  {
+   "set": "3d",
+   "v": "song"
+  },
+  {
+   "set": "3d",
+   "v": "van"
+  },
+  {
+   "set": "3d",
+   "v": "smile"
+  },
+  {
+   "set": "3d",
+   "v": "menu"
+  },
+  {
+   "set": "3d",
+   "v": "free"
+  },
+  {
+   "set": "3d",
+   "v": "taste"
+  },
+  {
+   "set": "3d",
+   "v": "photo"
+  },
+  {
+   "set": "3d",
+   "v": "blank"
+  },
+  {
+   "set": "3d",
+   "v": "chair"
+  },
+  {
+   "set": "3d",
+   "v": "again"
+  },
+  {
+   "set": "3d",
+   "v": "seconds"
+  }
+ ],
+ "ending": "finished"
+}

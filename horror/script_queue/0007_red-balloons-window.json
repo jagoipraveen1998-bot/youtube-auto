@@ -1,0 +1,71 @@
+{
+ "id": "red-balloons-window",
+ "title": "Red Balloons Keep Appearing On My Window #shorts #horror",
+ "approved": true,
+ "three_d": "red-balloons-window",
+ "description": "A CreepyCartoonTales story. What would you do? Tell us in the comments.",
+ "choices": [
+  "Cut the string",
+  "Run"
+ ],
+ "lines": [
+  "Imagine a red balloon is tied to your window. The card says \"Happy birthday.\"",
+  "It's not your birthday.",
+  "Next morning, two balloons. Then four. Then ten.",
+  "By Friday, your whole window is red. Your room glows red all night.",
+  "At midnight, you hear squeaking. Like someone rubbing a balloon.",
+  "You pull back the curtain. Every balloon has a smiley face.",
+  "And they're all slowly turning. Like heads.",
+  "*One pops. Behind it, there's an eye. Looking straight at you.",
+  "You scream. Mum runs in and rips the curtain open. Nothing. Clean glass.",
+  "\"Bad dream,\" she says, and kisses your head.",
+  "Then you see the red string. Tied around her wrist."
+ ],
+ "shots": [
+  {
+   "set": "3d",
+   "v": "one"
+  },
+  {
+   "set": "3d",
+   "v": "card"
+  },
+  {
+   "set": "3d",
+   "v": "more"
+  },
+  {
+   "set": "3d",
+   "v": "red"
+  },
+  {
+   "set": "3d",
+   "v": "squeak"
+  },
+  {
+   "set": "3d",
+   "v": "faces"
+  },
+  {
+   "set": "3d",
+   "v": "turn"
+  },
+  {
+   "set": "3d",
+   "v": "pop"
+  },
+  {
+   "set": "3d",
+   "v": "mum"
+  },
+  {
+   "set": "3d",
+   "v": "kiss"
+  },
+  {
+   "set": "3d",
+   "v": "string"
+  }
+ ],
+ "ending": "finished"
+}

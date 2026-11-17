@@ -1,0 +1,71 @@
+{
+ "id": "crow-says-my-name",
+ "title": "A Crow Keeps Saying My Name #shorts #horror",
+ "approved": true,
+ "three_d": "crow-says-my-name",
+ "description": "A CreepyCartoonTales story. What would you do? Tell us in the comments.",
+ "choices": [
+  "Keep the window shut",
+  "Let it in"
+ ],
+ "lines": [
+  "Imagine a crow sits on your fence every morning. You feed it toast.",
+  "One day, it tilts its head and says your name.",
+  "The next day it says, \"Don't cross the road.\"",
+  "You stop. A truck flies through the red light, right where you'd be.",
+  "That night, it taps on your window.",
+  "*It speaks in your dad's voice. \"Let me in. It's cold.\"",
+  "Your dad has been gone for three years.",
+  "You open the window. Of course you do.",
+  "It knows your secret handshake. It laughs his laugh.",
+  "\"Let me in,\" it says. \"All the way.\" It flies into your chest.",
+  "You wake up on the fence. Small. Black. Feathers. And inside, you're eating toast."
+ ],
+ "shots": [
+  {
+   "set": "3d",
+   "v": "toast"
+  },
+  {
+   "set": "3d",
+   "v": "name"
+  },
+  {
+   "set": "3d",
+   "v": "warn"
+  },
+  {
+   "set": "3d",
+   "v": "truck"
+  },
+  {
+   "set": "3d",
+   "v": "tap"
+  },
+  {
+   "set": "3d",
+   "v": "voice"
+  },
+  {
+   "set": "3d",
+   "v": "gone"
+  },
+  {
+   "set": "3d",
+   "v": "open"
+  },
+  {
+   "set": "3d",
+   "v": "laugh"
+  },
+  {
+   "set": "3d",
+   "v": "chest"
+  },
+  {
+   "set": "3d",
+   "v": "fence"
+  }
+ ],
+ "ending": "finished"
+}

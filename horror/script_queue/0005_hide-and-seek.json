@@ -2,6 +2,7 @@
  "id": "hide-and-seek",
  "title": "My Cousin's Friend Was Hiding Since Morning #shorts #horror",
  "approved": true,
+ "three_d": "hide-and-seek",
  "description": "A CreepyCartoonTales story. What would you do? Tell us in the comments.",
  "choices": [
   "Open it again",
@@ -67,5 +68,6 @@
    "v": "",
    "bg": "#4a5173"
   }
- ]
+ ],
+ "ending": "finished"
 }

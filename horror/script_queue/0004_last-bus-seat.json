@@ -2,6 +2,7 @@
  "id": "last-bus-seat",
  "title": "Something Sat Next To Me On The Last Bus #shorts #horror",
  "approved": true,
+ "three_d": "last-bus-seat",
  "description": "A CreepyCartoonTales story. What would you do? Tell us in the comments.",
  "choices": [
   "Ask the driver",
@@ -67,5 +68,6 @@
    "set": "bus",
    "v": "front"
   }
- ]
+ ],
+ "ending": "finished"
 }

@@ -45,6 +45,8 @@ def _captions(frames_dir: Path, lines: list[str], shots: list[dict], total: int,
     font = ImageFont.truetype(next(f for f in fonts if Path(f).exists()), 64)
     for f in range(total):
         im = Image.open(frames_dir / f"f{f:05d}.jpg").convert("RGB")
+        cx, wrap = im.width / 2, min(920, im.width * 0.7)
+        base = 1500 if im.height > im.width else im.height - 190            # captions low on a horizontal frame
         k = next((i for i, s in enumerate(shots) if s["a"] <= f <= s["b"]), None)
         last = shots[-1]
         if cta and f > last.get("said", last["b"]) + int(0.5 * FPS):          # the end line: "Tag a friend who..."
@@ -52,16 +54,16 @@ def _captions(frames_dir: Path, lines: list[str], shots: list[dict], total: int,
             rows, cur = [], ""
             for w in cta.split():
                 t = (cur + " " + w).strip()
-                if d.textlength(t, font=font) > 860 and cur:
+                if d.textlength(t, font=font) > wrap - 60 and cur:
                     rows.append(cur); cur = w
                 else:
                     cur = t
             rows.append(cur)
-            y0 = 1500 - (len(rows) - 1) * 42
+            y0 = base - (len(rows) - 1) * 42
             wmax = max(d.textlength(r, font=font) for r in rows)
-            d.rounded_rectangle((540 - wmax / 2 - 44, y0 - 26, 540 + wmax / 2 + 44, y0 + len(rows) * 84 + 14), 34, fill=(20, 12, 28, 215))
+            d.rounded_rectangle((cx - wmax / 2 - 44, y0 - 26, cx + wmax / 2 + 44, y0 + len(rows) * 84 + 14), 34, fill=(20, 12, 28, 215))
             for i, row in enumerate(rows):
-                d.text((540 - d.textlength(row, font=font) / 2, y0 + i * 84), row, font=font, fill=(255, 225, 74), stroke_width=4, stroke_fill=(20, 12, 28))
+                d.text((cx - d.textlength(row, font=font) / 2, y0 + i * 84), row, font=font, fill=(255, 225, 74), stroke_width=4, stroke_fill=(20, 12, 28))
         elif k is not None:
             d = ImageDraw.Draw(im)
             words = lines[k].split()
@@ -70,14 +72,14 @@ def _captions(frames_dir: Path, lines: list[str], shots: list[dict], total: int,
             rows, cur = [], ""
             for w in words:
                 t = (cur + " " + w).strip()
-                if d.textlength(t, font=font) > 920 and cur:
+                if d.textlength(t, font=font) > wrap and cur:
                     rows.append(cur); cur = w
                 else:
                     cur = t
             rows.append(cur)
-            y, n = 1500 - (len(rows) - 1) * 42, 0
+            y, n = base - (len(rows) - 1) * 42, 0
             for row in rows:
-                x = 540 - d.textlength(row, font=font) / 2
+                x = cx - d.textlength(row, font=font) / 2
                 for w in row.split():
                     if n < shown:
                         d.text((x, y), w, font=font, fill=(255, 225, 74) if n == shown - 1 else (255, 255, 255),

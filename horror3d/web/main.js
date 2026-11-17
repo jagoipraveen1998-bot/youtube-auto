@@ -4,7 +4,7 @@ import * as P from './paint.js';
 import { SHOTS, TOTAL, shotAt, camAt, dofAt, LIGHTS, lightFor, actorsAt, worldAt, fxAt } from './story.js';
 import * as ST from './story.js';
 
-const W = 1080, H = 1920;
+const [W, H] = ST.SIZE || [1080, 1920];                // a story may export SIZE = [1920, 1080] for horizontal episodes
 const canvas = document.getElementById('c');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, preserveDrawingBuffer: true });
 renderer.setPixelRatio(1); renderer.setSize(W, H, false);

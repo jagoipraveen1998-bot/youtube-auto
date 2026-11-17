@@ -1,5 +1,5 @@
 """Render every N-th frame of the 3D Short with headless Chromium: python render_worker.py <web> <out> <total> <n> <k>"""
-import base64, http.server, os, socketserver, sys, threading
+import base64, http.server, os, re, socketserver, sys, threading
 from functools import partial
 from pathlib import Path
 from playwright.sync_api import sync_playwright
@@ -23,7 +23,9 @@ with sync_playwright() as p:
     if os.environ.get("CHROME_PATH"):
         kw["executable_path"] = os.environ["CHROME_PATH"]
     br = p.chromium.launch(**kw)
-    pg = br.new_page(viewport={"width": 1080, "height": 1920})
+    m = re.search(r"export const SIZE = \[(\d+),\s*(\d+)\]", (web / "story.js").read_text(encoding="utf-8"))
+    vw, vh = (int(m.group(1)), int(m.group(2))) if m else (1080, 1920)     # vertical Shorts unless the story says otherwise
+    pg = br.new_page(viewport={"width": vw, "height": vh})
     errs = []
     pg.on("pageerror", lambda e: errs.append(str(e)))
     pg.goto(f"http://127.0.0.1:{srv.server_address[1]}/index.html")

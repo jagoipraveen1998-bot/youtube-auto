@@ -235,6 +235,16 @@
    "h": 120,
    "kind": "animal",
    "prompt": "A mischievous black ferret wearing a miniature purple cape and sporting bright yellow glowing eyes."
+  },
+  "sphynx_cat": {
+   "h": 170,
+   "kind": "animal",
+   "prompt": "A completely hairless, wrinkly pink sphynx cat wearing a slightly oversized striped sweater, glaring forward with an unimpressed and suspicious expression."
+  },
+  "jack_in_the_box": {
+   "h": 220,
+   "kind": "object",
+   "prompt": "A vintage metal wind-up toy box with faded circus decals and a popped-open lid revealing a wide-eyed, goofy-grinning jester puppet on a coiled spring."
   }
  }
 }

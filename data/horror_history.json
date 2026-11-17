@@ -44,7 +44,8 @@
     "dog-came-home-p3: Since my dog came home wrong, I lock my bedroom door every night.",
     "borrowed-shadow: In my town, you get your shadow on your thirteenth birthday.",
     "babysitter-rules: Congratulations. You got the babysitting job at the Marlow house.",
-    "last-bus-seat: Imagine you catch the last bus home. It's empty."
+    "last-bus-seat: Imagine you catch the last bus home. It's empty.",
+    "hide-and-seek: Imagine you're babysitting your little cousin."
   ],
   "videos": [
     {
@@ -416,6 +417,13 @@
       "video_id": "cb64Oyrz43E",
       "length": "50s",
       "instagram_id": "17874887169644588"
+    },
+    {
+      "date": "2026-11-17 21:02",
+      "title": "My Cousin's Friend Was Hiding Since Morning",
+      "video_id": "9pt6YH7jl0I",
+      "length": "51s",
+      "instagram_id": "18133933021697416"
     }
   ],
   "long_videos": [

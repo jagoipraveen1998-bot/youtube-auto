@@ -1,0 +1,68 @@
+{
+ "id": "room-nine",
+ "title": "My School Has One Rule: Never Look Into Room 9 After The Bell",
+ "approved": true,
+ "three_d": "room-nine",
+ "cta": "Tag a friend who is always late",
+ "description": "A CreepyCartoonTales story. Would you have broken the rule? Tell us in the comments.",
+ "lines": [
+  "My school has one rule.",
+  "Never look into Room 9 after the last bell.",
+  "The door is always locked. The window is painted black.",
+  "Yesterday, I forgot my bag. The bell rang.",
+  "A bit of the paint had scratched off.",
+  "So I looked.",
+  "A full class, sitting in silence.",
+  "*Every kid had my face.",
+  "They were all writing my name.",
+  "Then they turned. All at once.",
+  "And the teacher said, \"You're late.\""
+ ],
+ "shots": [
+  {
+   "set": "3d",
+   "v": "s0"
+  },
+  {
+   "set": "3d",
+   "v": "s1"
+  },
+  {
+   "set": "3d",
+   "v": "s2"
+  },
+  {
+   "set": "3d",
+   "v": "s3"
+  },
+  {
+   "set": "3d",
+   "v": "s4"
+  },
+  {
+   "set": "3d",
+   "v": "s5"
+  },
+  {
+   "set": "3d",
+   "v": "s6"
+  },
+  {
+   "set": "3d",
+   "v": "s7"
+  },
+  {
+   "set": "3d",
+   "v": "s8"
+  },
+  {
+   "set": "3d",
+   "v": "s9"
+  },
+  {
+   "set": "3d",
+   "v": "s10"
+  }
+ ],
+ "ending": "finished"
+}

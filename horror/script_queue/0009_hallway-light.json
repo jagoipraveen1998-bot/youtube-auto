@@ -1,0 +1,68 @@
+{
+ "id": "hallway-light",
+ "title": "My New House Has One Rule: Never Turn Off The Hallway Light",
+ "approved": true,
+ "three_d": "hallway-light",
+ "cta": "Tag a friend who sleeps with the lights on",
+ "description": "A CreepyCartoonTales story. Would you have broken the rule? Tell us in the comments.",
+ "lines": [
+  "My new house has one rule.",
+  "Never turn off the hallway light.",
+  "The old owner wrote it on the switch. In red.",
+  "Dad laughed. He said it wastes power.",
+  "Last night, I switched it off.",
+  "The hallway got longer.",
+  "There were doors I had never seen.",
+  "One door was open. It was my room.",
+  "*And I was already in bed.",
+  "The me in bed sat up and smiled.",
+  "\"Thanks,\" it whispered. \"My turn now.\""
+ ],
+ "shots": [
+  {
+   "set": "3d",
+   "v": "s0"
+  },
+  {
+   "set": "3d",
+   "v": "s1"
+  },
+  {
+   "set": "3d",
+   "v": "s2"
+  },
+  {
+   "set": "3d",
+   "v": "s3"
+  },
+  {
+   "set": "3d",
+   "v": "s4"
+  },
+  {
+   "set": "3d",
+   "v": "s5"
+  },
+  {
+   "set": "3d",
+   "v": "s6"
+  },
+  {
+   "set": "3d",
+   "v": "s7"
+  },
+  {
+   "set": "3d",
+   "v": "s8"
+  },
+  {
+   "set": "3d",
+   "v": "s9"
+  },
+  {
+   "set": "3d",
+   "v": "s10"
+  }
+ ],
+ "ending": "finished"
+}

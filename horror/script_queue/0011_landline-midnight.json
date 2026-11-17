@@ -1,0 +1,68 @@
+{
+ "id": "landline-midnight",
+ "title": "My Dad Says Never Answer The Landline After Midnight",
+ "approved": true,
+ "three_d": "landline-midnight",
+ "cta": "Tag a friend who never answers calls",
+ "description": "A CreepyCartoonTales story. Would you have broken the rule? Tell us in the comments.",
+ "lines": [
+  "My dad has one rule.",
+  "Never answer the landline after midnight.",
+  "It rings anyway. Every night. At 12:01.",
+  "Last night, Dad was away. So I picked up.",
+  "It was my voice.",
+  "\"Don't pick up,\" it whispered.",
+  "I said, \"I already did.\"",
+  "*It laughed. \"Good. Now I'm the one inside.\"",
+  "I slammed the phone down.",
+  "Then I looked at the window.",
+  "My reflection was still holding the phone."
+ ],
+ "shots": [
+  {
+   "set": "3d",
+   "v": "s0"
+  },
+  {
+   "set": "3d",
+   "v": "s1"
+  },
+  {
+   "set": "3d",
+   "v": "s2"
+  },
+  {
+   "set": "3d",
+   "v": "s3"
+  },
+  {
+   "set": "3d",
+   "v": "s4"
+  },
+  {
+   "set": "3d",
+   "v": "s5"
+  },
+  {
+   "set": "3d",
+   "v": "s6"
+  },
+  {
+   "set": "3d",
+   "v": "s7"
+  },
+  {
+   "set": "3d",
+   "v": "s8"
+  },
+  {
+   "set": "3d",
+   "v": "s9"
+  },
+  {
+   "set": "3d",
+   "v": "s10"
+  }
+ ],
+ "ending": "finished"
+}

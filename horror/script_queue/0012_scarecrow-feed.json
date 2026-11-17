@@ -1,0 +1,68 @@
+{
+ "id": "scarecrow-feed",
+ "title": "My Grandpa's Rule: Feed The Scarecrow Before Dark",
+ "approved": true,
+ "three_d": "scarecrow-feed",
+ "cta": "Tag a friend who always forgets their chores",
+ "description": "A CreepyCartoonTales story. Would you have broken the rule? Tell us in the comments.",
+ "lines": [
+  "My grandpa has one rule on the farm.",
+  "Feed the scarecrow before dark. One bowl of rice. Every night.",
+  "I thought it was a joke for little kids.",
+  "Yesterday, I forgot.",
+  "That night, it was standing at my window.",
+  "I shut my eyes and counted to a hundred.",
+  "In the morning, I came down for breakfast.",
+  "*The scarecrow was sitting in my chair.",
+  "And Mum called it by my name.",
+  "She gave it my lunchbox.",
+  "Then she looked right through me."
+ ],
+ "shots": [
+  {
+   "set": "3d",
+   "v": "s0"
+  },
+  {
+   "set": "3d",
+   "v": "s1"
+  },
+  {
+   "set": "3d",
+   "v": "s2"
+  },
+  {
+   "set": "3d",
+   "v": "s3"
+  },
+  {
+   "set": "3d",
+   "v": "s4"
+  },
+  {
+   "set": "3d",
+   "v": "s5"
+  },
+  {
+   "set": "3d",
+   "v": "s6"
+  },
+  {
+   "set": "3d",
+   "v": "s7"
+  },
+  {
+   "set": "3d",
+   "v": "s8"
+  },
+  {
+   "set": "3d",
+   "v": "s9"
+  },
+  {
+   "set": "3d",
+   "v": "s10"
+  }
+ ],
+ "ending": "finished"
+}

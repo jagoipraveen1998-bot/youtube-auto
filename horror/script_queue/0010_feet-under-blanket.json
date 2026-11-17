@@ -1,0 +1,68 @@
+{
+ "id": "feet-under-blanket",
+ "title": "My Friend's Mum Said: Keep Your Feet Under The Blanket",
+ "approved": true,
+ "three_d": "feet-under-blanket",
+ "cta": "Tag a friend who sleeps with one foot out",
+ "description": "A CreepyCartoonTales story. Would you have broken the rule? Tell us in the comments.",
+ "lines": [
+  "My friend's mum had one rule for sleepovers.",
+  "Keep your feet under the blanket. All night.",
+  "My friend nodded like it was normal.",
+  "At 3 a.m., I got hot. One foot slipped out.",
+  "Something under the bed started counting.",
+  "\"One. Two. Three.\"",
+  "It was counting my toes.",
+  "\"Nine. Ten.\"",
+  "*\"Eleven.\"",
+  "I have ten toes.",
+  "In the morning, I pulled off my sock. I counted eleven."
+ ],
+ "shots": [
+  {
+   "set": "3d",
+   "v": "s0"
+  },
+  {
+   "set": "3d",
+   "v": "s1"
+  },
+  {
+   "set": "3d",
+   "v": "s2"
+  },
+  {
+   "set": "3d",
+   "v": "s3"
+  },
+  {
+   "set": "3d",
+   "v": "s4"
+  },
+  {
+   "set": "3d",
+   "v": "s5"
+  },
+  {
+   "set": "3d",
+   "v": "s6"
+  },
+  {
+   "set": "3d",
+   "v": "s7"
+  },
+  {
+   "set": "3d",
+   "v": "s8"
+  },
+  {
+   "set": "3d",
+   "v": "s9"
+  },
+  {
+   "set": "3d",
+   "v": "s10"
+  }
+ ],
+ "ending": "finished"
+}

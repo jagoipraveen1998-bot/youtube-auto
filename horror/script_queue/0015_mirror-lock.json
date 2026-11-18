@@ -1,0 +1,28 @@
+{
+ "id": "mirror-lock",
+ "title": "My Brother Is Trapped Inside Our Bathroom Mirror",
+ "approved": true,
+ "release_from": "2026-11-22",
+ "three_d": "mirror-lock",
+ "cta": "BREAK IT or KEEP IT LOCKED? Top comment decides Part 2",
+ "description": "BREAK IT: save my brother and risk releasing whatever is behind him.\nKEEP IT LOCKED: protect everyone outside and leave him with that thing.\nChoose, and tell me why. The top comment becomes my decision in Part 2.\n\nThe Mirror Is a Lock, Part 1. A CreepyCartoonTales story.",
+ "lines": [
+  "My little brother is trapped inside our bathroom mirror.",
+  "Every night, the thing behind him gets closer.",
+  "Tonight, its hands reached his shoulders.",
+  "He pressed a note to the glass. \"Break it before midnight.\"",
+  "I picked up the hammer.",
+  "Mum grabbed my wrist, and played Dad's last recording.",
+  "\"He's alive. But that mirror is a lock. Break it, and everything behind him gets out.\"",
+  "In the glass, my brother started crying. \"You promised you'd never leave me.\"",
+  "Mum pulled back the curtain.",
+  "Every neighbour on our street was standing at a window. Watching our house. Smiling.",
+  "*Then my brother whispered, \"If they're already outside... what are you keeping locked in?\"",
+  "The clock began to strike twelve."
+ ],
+ "shots": [
+  {"set": "3d", "v": "s0"}, {"set": "3d", "v": "s1"}, {"set": "3d", "v": "s2"}, {"set": "3d", "v": "s3"},
+  {"set": "3d", "v": "s4"}, {"set": "3d", "v": "s5"}, {"set": "3d", "v": "s6"}, {"set": "3d", "v": "s7"},
+  {"set": "3d", "v": "s8"}, {"set": "3d", "v": "s9"}, {"set": "3d", "v": "s10"}, {"set": "3d", "v": "s11"}
+ ]
+}

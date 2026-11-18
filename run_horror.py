@@ -118,6 +118,8 @@ def main():
             done_ids = {x.split(":")[0] for x in hist["stories"]}
             approved = [json.loads(p.read_text(encoding="utf-8")) for p in sorted(queue.glob("*.json"))]
             approved = [s for s in approved if s.get("approved") and s["id"] not in done_ids]
+            today = datetime.now(IST).strftime("%Y-%m-%d")
+            approved = [s for s in approved if s.get("release_from", "") <= today]     # a script can wait for its day
             if hcfg.get("three_d_only"):                 # 3D only: a story waits in the queue until its 3D set is built
                 waiting = [s["id"] for s in approved if not (s.get("three_d") and (ROOT / "horror3d" / "stories" / s["three_d"] / "story.js").exists())]
                 approved = [s for s in approved if s["id"] not in waiting]

@@ -9,6 +9,7 @@
 import * as SETS from './sets.js';
 import { OUTFITS } from './toon.js';
 import { makeStory, MOODS, SHOT, smooth, ramp, lerp, lerp3, q, blinkAt, actor, fx, word } from './kit.js';
+import { animeActor } from './anime.js';            // anime-style cast (our own designs)
 
 const MB = [120, 0, 0], L = (x, y, z) => [MB[0] + x, MB[1] + y, MB[2] + z];
 // cast: everyone different at a glance
@@ -43,7 +44,8 @@ const FOCUS = (S) => ({ trapped: L(0, 1.55, -2.0), closer: L(0, 1.5, -2.8), hand
 const K = makeStory({
   ids: IDS, cams: CAMS, lights: LIGHTS,
   light: (S) => (S.id === 'street' ? 'street' : ['hands', 'crying', 'whisper'].includes(S.id) ? 'glass' : 'bath'),
-  tweak: (L_, S, f) => { if (S.id === 'whisper') L_.vig = 0.74; if (S.id === 'twelve' && f > S.beat) L_.vig = 0.66; },
+  tweak: (L_, S, f) => { if (S.id === 'whisper') L_.vig = 0.74; if (S.id === 'twelve' && f > S.beat) L_.vig = 0.66;
+    if ((S.id === 'hands' || S.id === 'whisper') && f >= S.beat && f < S.beat + 3) { L_.gain = '#ffffff'; L_.lift = '#3a3a48'; L_.vig = 0.1; } },   // impact flash frame
   kicks: ['hands', 'whisper'],
   focus: (S) => FOCUS(S),
   shadowAt: () => L(0, 1, -0.5),
@@ -180,7 +182,7 @@ export const worldAt = (f) => {
   const S = shotAt(f), id = S.id, i = S.i;
   const W = { note: i >= 3 && i <= 4, curtain: i >= 9 ? 1 : 0, mins: 57 + Math.min(2, Math.floor(i / 5)), tape: id === 'recording' || id === 'mum', hammer: { p: L(0.62, 0.95, -1.0), r: [Math.PI / 2, 0, 0.3] }, bulb: 2.4, mirror: 2.2 };
   if (id === 'curtain') W.curtain = smooth(ramp(f, S.a + 6, S.beat + 10));
-  const HAND = L(-0.1, 1.15, 0.52);
+  const HAND = L(-0.1, 1.3, 0.52);
   const held = (t) => ({ p: lerp3(L(0.62, 0.95, -1.0), HAND, t), r: [lerp(Math.PI / 2, 0.1, t), 0, lerp(0.3, 0.15, t)] });
   if (id === 'hammer') W.hammer = held(smooth(ramp(f, S.a + 4, S.beat + 6)));
   if (id === 'mum' || id === 'recording' || id === 'crying') W.hammer = held(1);
@@ -195,7 +197,7 @@ export const worldAt = (f) => {
 const KS = 0.62;
 export const actorsAt = (f, T) => {
   const S = shotAt(f), id = S.id, i = S.i, out = [];
-  const inGlass = (o = {}, x = {}) => out.push(actor(T, BRO, { seed: 57, blink: blinkAt(f, 57), look: 0, ...o, who: 'bro' }, BROP, { s: 0.48, tint: '#cfe4e0', blob: false, ...x }));
+  const inGlass = (o = {}, x = {}) => out.push(animeActor('bro', { blink: blinkAt(f, 57), look: 0, ...o }, BROP, { s: 0.5, tint: '#d8ece8', blob: false, ...x }));
   // the thing: a tall black figure deep in the glass, closer each time; huge when it rises
   const thing = (z, s, y = 0.55, x = 0.05) => out.push(actor(T, THING, { seed: 99, expr: 'neutral', blink: 0, look: 0 }, L(x, y, z), { s, tint: '#020204', blob: false, shadow: false, order: 1 }));
   const thingAt = { trapped: [-5.6, 0.7], closer: [-4.2, 0.8], hands: [-2.75, 0.85], note: [-3.0, 0.8], hammer: null, mum: null, recording: null, crying: [-2.9, 0.85], curtain: null, street: null, whisper: [-2.95, 0.85], twelve: [-2.8, 1.9] }[id];
@@ -204,14 +206,14 @@ export const actorsAt = (f, T) => {
     if (id === 'whisper') { const t = smooth(ramp(f, S.beat - 4, S.b - 6)); s = lerp(0.85, 2.0, t); y = lerp(0.55, 0.3, t); }
     thing(z, s, y);
   }
-  const broExpr = { trapped: 'scared', closer: 'scared', hands: 'shock', note: 'nervous', hammer: 'nervous', mum: 'pained', recording: 'pained', crying: 'pained', curtain: 'dazed', whisper: 'creepy', twelve: 'creepy' }[id];
-  if (broExpr && !['curtain', 'street', 'recording'].includes(id)) inGlass({ expr: broExpr, R: id === 'note' ? 'up' : 'hang', look: id === 'whisper' || id === 'twelve' ? 0 : 0.2, headTilt: id === 'crying' ? -6 : 0 });
-  const sis = (expr, o = {}, pos = SISP) => out.push(actor(T, SIS, { seed: 31, expr, blink: blinkAt(f, 31), ...o, who: 'sis' }, pos, { s: KS }));
-  const mum = (expr, o = {}, pos = MUMP) => out.push(actor(T, MUM, { seed: 9, expr, blink: blinkAt(f, 9), ...o, who: 'mum' }, pos, { s: 0.8 }));
+  const broExpr = { trapped: 'scared', closer: 'scared', hands: 'shock', note: 'nervous', hammer: 'nervous', mum: 'pained', recording: 'pained', crying: 'cry', curtain: 'dazed', whisper: 'creepy', twelve: 'creepy' }[id];
+  if (broExpr && !['curtain', 'street', 'recording'].includes(id)) inGlass({ expr: broExpr, R: id === 'note' ? 'up' : 'hang', look: id === 'whisper' || id === 'twelve' ? 0 : 0.2, tearT: id === 'crying' ? q((f % 40) / 40, 1) : 0 });
+  const sis = (expr, o = {}, pos = SISP) => out.push(animeActor('sis', { expr, blink: blinkAt(f, 31), ...o }, pos, { s: 0.66 }));
+  const mum = (expr, o = {}, pos = MUMP) => out.push(animeActor('mum', { expr, blink: blinkAt(f, 9), ...o }, pos, { s: 0.78 }));
   if (id === 'hammer') sis('stubborn', { R: 'lift', look: -0.1 });
   if (id === 'mum') { sis('shock', { R: 'lift', look: 0.6 }); mum('stern', { R: 'reach', look: -0.6 }); }
   if (id === 'curtain') { mum('wary', { R: 'reach', look: -0.8 }, L(-1.15, 0, -0.55)); sis('scared', { look: -0.7 }, L(0.0, 0, 0.55)); }
-  if (id === 'twelve') sis('stubborn', { R: 'lift', look: -0.2, blink: 0 }, L(0.4, 0, 0.75));
+  // the end: no one in frame, just the hammer hanging at the glass
   return out;
 };
 // fx: the thing's pale eyes, its long black hands on his shoulders, the sob, the clock's strike, the word KEEP IT
@@ -222,8 +224,15 @@ const hands = (t) => (p) => { const g = p.g; g.save(); g.fillStyle = '#030305';
     for (let k = 0; k < 4; k++) { g.beginPath(); g.moveTo(x - 36 + k * 22, y + 10); g.quadraticCurveTo(x - 40 + k * 24 + s * 6, y + 70, x - 30 + k * 22, y + 110 + (k === 1 || k === 2 ? 20 : 0)); g.lineWidth = 15; g.lineCap = 'round'; g.strokeStyle = '#030305'; g.stroke(); } }
   g.restore(); };
 const tear = (t) => (p) => { const g = p.g; g.fillStyle = 'rgba(170,215,240,0.95)'; for (const x of [266, 334]) { const y = 470 + (t * 160) % 120; g.beginPath(); g.ellipse(x, y, 6, 10, 0, 0, 7); g.fill(); } };
+// anime impact: radial speed lines bursting from the centre for a few frames
+const speed = (t) => (p) => { const g = p.g; g.save(); g.globalAlpha = Math.max(0, 1 - t); g.strokeStyle = '#f4f8ff'; g.lineCap = 'round';
+  for (let k = 0; k < 44; k++) { const a = k / 44 * Math.PI * 2 + (k % 3) * 0.05, r0 = 250 + (k % 5) * 30 - t * 60, r1 = 900;
+    g.lineWidth = 4 + (k % 4) * 3; g.beginPath(); g.moveTo(300 + Math.cos(a) * r0, 500 + Math.sin(a) * r0 * 1.4); g.lineTo(300 + Math.cos(a) * r1, 500 + Math.sin(a) * r1 * 1.4); g.stroke(); }
+  g.restore(); };
 export const fxAt = (f) => {
   const S = shotAt(f), id = S.id, out = [];
+  if ((id === 'hands' || id === 'whisper') && f >= S.beat && f < S.beat + 12) { const c = camAt(f), d = [c.look[0] - c.pos[0], c.look[1] - c.pos[1], c.look[2] - c.pos[2]], n = Math.hypot(...d);
+    const k = 1.4, sc = 2 * k * Math.tan((c.fov || 40) * 1.2 * Math.PI / 360) / 2.25 * 1.05; out.push(fx('sp' + (f - S.beat), speed((f - S.beat) / 12), [c.pos[0] + d[0] / n * k, c.pos[1] + d[1] / n * k - 0.475 * 2.25 * sc, c.pos[2] + d[2] / n * k], sc, { order: 9 })); }
   const thingPos = { trapped: [-5.6, 0.7], closer: [-4.2, 0.8], hands: [-2.75, 0.85], note: [-3.0, 0.8], crying: [-2.9, 0.85], whisper: [-2.95, 0.85], twelve: [-2.8, 1.9] }[id];
   if (thingPos) { let [z, s] = thingPos, y = 0.55; if (id === 'whisper') { const t = smooth(ramp(f, S.beat - 4, S.b - 6)); s = lerp(0.85, 2.0, t); y = lerp(0.55, 0.3, t); }
     out.push(fx('e' + q(s, 2), eyes(1), L(0.05, y + 1.03 * s, z + 0.05), 0.3 * s / 0.66, { order: 3 })); }

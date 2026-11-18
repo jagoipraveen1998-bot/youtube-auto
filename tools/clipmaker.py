@@ -54,7 +54,7 @@ def download(url, start, end, work):
 
 def cut_local(path, start, end, work):
     out = os.path.join(work, "src.mp4")
-    run(["ffmpeg", "-y", "-ss", str(start), "-to", str(end), "-i", path,
+    run(["ffmpeg", "-y", "-ss", str(start), "-to", str(end), "-i", path, "-vf", "fps=30", "-fps_mode", "cfr",   # browser recordings are variable-rate
          "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-c:a", "aac", out])
     return out
 

@@ -1,6 +1,8 @@
 name: Clip maker (Stream Snipz)
 
 on:
+  push:
+    branches: [clip-maker-test]
   workflow_dispatch:
     inputs:
       url:
@@ -28,7 +30,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: clip-maker-${{ github.event.inputs.name }}
+  group: clip-maker-${{ github.event.inputs.name || 'test-01' }}
 
 jobs:
   clip:
@@ -45,22 +47,22 @@ jobs:
           pip install -q -U yt-dlp faster-whisper
       - name: Make clip
         env:
-          URL: ${{ github.event.inputs.url }}
-          START: ${{ github.event.inputs.start }}
-          END: ${{ github.event.inputs.end }}
-          HOOK: ${{ github.event.inputs.hook }}
-          NAME: ${{ github.event.inputs.name }}
-          CTA: ${{ github.event.inputs.cta }}
+          URL: ${{ github.event.inputs.url || 'https://www.youtube.com/watch?v=jNQXAC9IVRw' }}
+          START: ${{ github.event.inputs.start || '0:00' }}
+          END: ${{ github.event.inputs.end || '0:18' }}
+          HOOK: ${{ github.event.inputs.hook || 'Test clip' }}
+          NAME: ${{ github.event.inputs.name || 'test-01' }}
+          CTA: ${{ github.event.inputs.cta || 'Subscribe to Tomo on YouTube\\N@Tomovids' }}
         run: |
           python tools/clipmaker.py --url "$URL" --start "$START" --end "$END" \
             --hook "$HOOK" --cta "$CTA" --out "out/$NAME.mp4"
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.event.inputs.name }}
+          name: ${{ github.event.inputs.name || 'test-01' }}
           path: out/
       - name: Save to clips branch
         env:
-          NAME: ${{ github.event.inputs.name }}
+          NAME: ${{ github.event.inputs.name || 'test-01' }}
         run: |
           git config user.name "clip-bot"
           git config user.email "clip-bot@users.noreply.github.com"

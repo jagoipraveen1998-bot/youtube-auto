@@ -152,3 +152,60 @@ export function radial(col = '0,0,0', a = 0.55) {
   gr.addColorStop(0, `rgba(${col},${a})`); gr.addColorStop(0.55, `rgba(${col},${a * 0.6})`); gr.addColorStop(1, `rgba(${col},0)`);
   g.fillStyle = gr; g.fillRect(0, 0, 128, 128); return c;
 }
+
+/** red/brown brick in stretcher bond with mortar, chipped faces and colour variation */
+export function brick(seed = 11, hue = 12, sat = 42, lig = 40) {
+  const [c, g] = cv(512, 512), r = rng(seed), bw = 64, bh = 24;
+  g.fillStyle = '#b8ae9c'; g.fillRect(0, 0, 512, 512);
+  for (let row = 0; row < 512 / bh; row++) for (let col = -1; col < 512 / bw + 1; col++) {
+    const x = col * bw + (row % 2) * bw / 2, y = row * bh, L = lig - 7 + r() * 14;
+    g.fillStyle = hsl(hue + r() * 10 - 5, sat - r() * 10, L); g.fillRect(x + 2, y + 2, bw - 4, bh - 4);
+    g.fillStyle = hsl(hue, sat, L + 8, .5); g.fillRect(x + 3, y + 3, bw - 8, 3);
+    g.fillStyle = hsl(hue, sat, L - 12, .5); g.fillRect(x + 3, y + bh - 6, bw - 6, 3);
+    for (let k = 0; k < 4; k++) { g.fillStyle = hsl(hue, sat - 10, L - 10 - r() * 10, .6); g.fillRect(x + r() * bw, y + r() * bh, 2 + r() * 4, 1 + r() * 2); }
+  }
+  return c;
+}
+/** irregular rubble stone, as on old fishing cottages and harbour walls */
+export function rubble(seed = 12, hue = 34, sat = 10, lig = 60) {
+  const [c, g] = cv(512, 512), r = rng(seed);
+  g.fillStyle = '#5a544a'; g.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < 260; i++) {
+    const x = r() * 512, y = r() * 512, w = 22 + r() * 40, h = 14 + r() * 22, L = lig - 10 + r() * 18;
+    g.fillStyle = hsl(hue + r() * 12 - 6, sat, L); g.beginPath(); g.ellipse(x, y, w / 2, h / 2, r() * 0.4 - 0.2, 0, 7); g.fill();
+    g.fillStyle = hsl(hue, sat, L + 9, .5); g.beginPath(); g.ellipse(x - w * 0.1, y - h * 0.2, w * 0.3, h * 0.15, 0, 0, 7); g.fill();
+    g.strokeStyle = hsl(hue, sat, 30, .55); g.lineWidth = 2; g.beginPath(); g.ellipse(x, y, w / 2, h / 2, 0, 0, 7); g.stroke();
+  }
+  return c;
+}
+/** grey-blue slate roof: overlapping rows, a few lighter or broken slates */
+export function slate(seed = 13) {
+  const [c, g] = cv(256, 256), r = rng(seed);
+  g.fillStyle = '#2e333c'; g.fillRect(0, 0, 256, 256);
+  for (let row = 0; row < 10; row++) for (let col = -1; col < 9; col++) {
+    const x = col * 32 + (row % 2) * 16, y = row * 26, L = 30 + r() * 12;
+    g.fillStyle = hsl(215 + r() * 10, 12, L); g.fillRect(x + 1, y, 30, 25);
+    g.fillStyle = 'rgba(255,255,255,.08)'; g.fillRect(x + 2, y + 1, 28, 3);
+    g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(x + 1, y + 22, 30, 3);
+  }
+  return c;
+}
+/** weathering on top of any wall texture: rain streaks from the top, damp and grime at the bottom */
+export function weather(c0, seed = 14, amt = 1) {
+  const [c, g] = cv(c0.width, c0.height), r = rng(seed); g.drawImage(c0, 0, 0);
+  const H = c.height, W = c.width;
+  const gr = g.createLinearGradient(0, H * 0.6, 0, H); gr.addColorStop(0, 'rgba(30,32,26,0)'); gr.addColorStop(1, `rgba(30,32,26,${0.45 * amt})`); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  for (let i = 0; i < 26 * amt; i++) { const x = r() * W, l = H * (0.15 + r() * 0.45); const s = g.createLinearGradient(0, 0, 0, l); s.addColorStop(0, 'rgba(40,40,36,.35)'); s.addColorStop(1, 'rgba(40,40,36,0)'); g.fillStyle = s; g.fillRect(x, 0, 2 + r() * 6, l); }
+  for (let i = 0; i < 60 * amt; i++) { g.fillStyle = `rgba(60,70,40,${0.15 + r() * 0.2})`; g.beginPath(); g.ellipse(r() * W, H * (0.8 + r() * 0.2), 4 + r() * 12, 2 + r() * 5, 0, 0, 7); g.fill(); }
+  return c;
+}
+/** window glass: a dark interior with a sky reflection streak, or a warm lit room with curtains */
+export function glass(lit = false, seed = 15) {
+  const [c, g] = cv(128, 192), r = rng(seed);
+  if (lit) { const gr = g.createRadialGradient(64, 110, 10, 64, 110, 120); gr.addColorStop(0, '#ffe2a0'); gr.addColorStop(1, '#c87830'); g.fillStyle = gr; g.fillRect(0, 0, 128, 192);
+    g.fillStyle = 'rgba(120,40,30,.85)'; g.fillRect(0, 0, 26, 192); g.fillRect(102, 0, 26, 192); }
+  else { const gr = g.createLinearGradient(0, 0, 0, 192); gr.addColorStop(0, '#5a6a80'); gr.addColorStop(1, '#141a24'); g.fillStyle = gr; g.fillRect(0, 0, 128, 192);
+    g.fillStyle = 'rgba(200,220,240,.22)'; g.beginPath(); g.moveTo(20, 192); g.lineTo(70, 0); g.lineTo(96, 0); g.lineTo(46, 192); g.fill();
+    g.fillStyle = 'rgba(160,40,40,.5)'; g.fillRect(0, 0, 18 + r() * 10, 192); }
+  return c;
+}

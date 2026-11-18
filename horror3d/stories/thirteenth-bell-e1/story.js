@@ -122,37 +122,43 @@ export const build = (ctx) => {
   // ---- outdoors ----
   const G = new THREE.Group(); G.position.set(...GO); ctx.world.add(G);
   add(new THREE.PlaneGeometry(160, 70), toon({ color: '#2a4a54' }), 0, -0.9, -36, G, { cast: false }).rotation.x = -Math.PI / 2;
-  add(tbox(34, 1.2, 2, 1), stone, 0, -0.4, -1, G);                                                   // harbour wall
+  add(tbox(34, 1.2, 2, 1), texM(P.weather(P.rubble(48), 49, 1.4), 12, 1, '#b8b0a2'), 0, -0.4, -1, G);   // harbour wall
   add(tbox(44, 0.2, 40, 1), cobble, 0, -0.1, 20, G, { cast: false });                                 // quay, lane, hill
   for (let k = 0; k < 5; k++) add(box(1.4, 0.2, 0.5), stone, 6.2, -0.15 - k * 0.18, -0.3 - k * 0.45, G);   // harbour steps
   const boats = [[-6, -5, 0.3], [-1.5, -7.5, -0.4], [3.5, -5.5, 0.2], [9, -8, 0.6]].map(([x, z, r], i) => {
     const b = new THREE.Group(); b.position.set(x, -0.85, z); b.rotation.y = r; G.add(b);
     add(box(1.4, 0.55, 4.2), toon({ color: ['#6a3a2a', '#3a4a5a', '#5a4a2a', '#4a2a2a'][i] }), 0, 0.2, 0, b); add(box(1.2, 0.08, 3.9), wood, 0, 0.5, 0, b);
     add(new THREE.CylinderGeometry(0.05, 0.06, 4, 8), wood, 0, 2.4, 0.4, b); return b; });
-  const lamps = [-10, -3, 4, 11].map((x) => { add(new THREE.CylinderGeometry(0.06, 0.08, 3, 8), toon({ color: '#2a2a30' }), x, 1.5, 1.0, G);
-    const l = add(box(0.3, 0.38, 0.3), lit.clone(), x, 3.1, 1.0, G, { cast: false }); return l; });
-  const lampLights = [-10, -3, 4, 11].map((x) => { const l = new THREE.PointLight('#ffc070', 0, 12, 1.3); l.position.set(x, 3.0, 1.2); G.add(l); return l; });
-  for (const [x, z] of [[-1.5, 1.4], [0.4, 1.8], [-8, 1.6]]) { const n = add(new THREE.SphereGeometry(0.55, 12, 8), toon({ color: '#7a6a48' }), x, 0.12, z, G); n.scale.y = 0.35; }
-  for (const [x, z] of [[2.2, 1.6], [2.9, 1.7], [-12, 2]]) add(box(0.6, 0.5, 0.6), wood, x, 0.25, z, G);
+  const LP = [-10, -3, 4, 11].map((x) => SETS.streetLamp(ctx, G, x, 1.0));
+  const lamps = LP.map((l) => ({ material: l.glass })), lampLights = LP.map((l) => l.light);
+  // harbour clutter, as on a real quay: barrels, crates, rope coils, lobster pots, nets drying on frames
+  for (const [x, z] of [[7.6, 2.6], [-12, 2], [8.3, 2.9]]) SETS.barrel(ctx, G, x, z);
+  SETS.crate(ctx, G, 8.9, 2.0, 1, 0.3); SETS.crate(ctx, G, 9.1, 2.6, 0.8, -0.2); SETS.crate(ctx, G, -11.2, 1.7, 1, 0.5);
+  for (const [x, z] of [[-1.5, 1.4], [-8, 1.6]]) SETS.ropeCoil(ctx, G, x, z);
+  for (const [x, z] of [[0.4, 1.8], [-5.5, 2.2], [-5.0, 2.4]]) SETS.lobsterPot(ctx, G, x, z);
+  SETS.netFrame(ctx, G, -7.2, 3.2, 0.1); SETS.netFrame(ctx, G, 8.5, 3.0, -0.2);
   // Fish Lane: a row of cottages facing the harbour (front at z = 10)
-  const doors = {};
-  for (let k = -4; k <= 4; k++) {
-    const x = k * 3.6, cg = new THREE.Group(); cg.position.set(x, 0, 12); G.add(cg);
-    add(tbox(3.5, 4.4, 4, 1), k % 2 ? plaster : stone, 0, 2.2, 0, cg);
-    const rf = add(new THREE.CylinderGeometry(0.01, 2.6, 1.8, 4, 1), roofM, 0, 5.3, 0, cg); rf.rotation.y = Math.PI / 4; rf.scale.set(1.0, 1, 1.1);
-    add(box(0.5, 1.2, 0.5), stone, 1.0, 6.2, 0.4, cg);
-    const dg = new THREE.Group(); dg.position.set(-0.45, 0, -2.02); cg.add(dg);
-    add(box(0.9, 2.0, 0.08), toon({ color: ['#3a4a5a', '#5a2e2a', '#2e4a3a'][(k + 9) % 3] }), 0.45, 1.0, 0, dg);
-    add(box(0.9, 2.0, 0.02), dark, 0, 1.0, 0.04, cg).position.set(0, 1.0, -1.99);
-    for (const wx of [-1.0, 1.0]) add(box(0.7, 0.6, 0.05), dark, wx, 3.1, -2.02, cg, { cast: false });
-    add(box(0.7, 0.6, 0.05), dark, 1.05, 1.3, -2.02, cg, { cast: false });
-    doors[k] = dg;
+  const doors = {}, litGlass = [];
+  const WALLS = ['stone', 'plaster', 'brick', 'plasterB', 'stoneB', 'plaster', 'stone', 'brick', 'plasterB'], DOORS = ['#3a4a5a', '#5a2e2a', '#2e4a3a', '#6a5a2a', '#2a2a3a'];
+  for (let k = -4; k <= 4; k++) {                 // Fish Lane: real terraced fishing cottages, each one different
+    const c = SETS.cottage(ctx, G, { x: k * 3.6, z: 12, w: 3.6, wall: WALLS[k + 4], roof: k % 3 ? 'slate' : 'tile', door: DOORS[(k + 9) % 5], seed: k + 20,
+      lit: k === -3 ? [1] : k === 2 ? [0] : k === -1 ? [2] : [], number: k + 5, ends: k === -4 || k === 4 });
+    doors[k] = c.door; if ([-3, 2, -1].includes(k)) litGlass.push(...c.glass);
   }
   const haleGlow = new THREE.PointLight('#ffc888', 0, 5, 1.4); haleGlow.position.set(3.6, 1.2, 9.6); G.add(haleGlow);
   // the church and its tower on the hill
-  add(tbox(8, 5, 6, 1), stone, 0.5, 2.5, 27, G); const nr = add(new THREE.CylinderGeometry(0.01, 5.3, 2.6, 4, 1), roofM, 0.5, 6.3, 27, G); nr.rotation.y = Math.PI / 4; nr.scale.set(1, 1, 0.8);
-  add(tbox(3, 11.6, 3, 1), stone, 5, 5.8, 24, G); add(tbox(3.2, 0.4, 3.2, 1), stone, 5, 14.0, 24, G);
-  for (const [dx, dz] of [[-1.3, -1.3], [1.3, -1.3], [-1.3, 1.3], [1.3, 1.3]]) add(tbox(0.4, 2.4, 0.4, 1), stone, 5 + dx, 12.8, 24 + dz, G);
+  const chS = texM(P.weather(P.stone(46, 30, 10, 60), 47), 3, 2, '#c8c0b4');
+  add(tbox(8, 5, 6, 1), chS, 0.5, 2.5, 27, G);
+  for (const x of [-2.2, 0.5, 3.2]) { SETS.sashWindow(ctx, G, x, 2.8, 23.99, 0.7, 1.8, { frame: '#5a5048' }); }       // tall church windows
+  for (const x of [-3.5, -1, 2, 4.5]) add(box(0.4, 3.2, 0.5), chS, x, 1.6, 23.8, G);                                     // buttresses
+  add(tbox(3.2, 0.25, 3.2, 1), chS, 5, 11.5, 24, G);                                                                     // string course
+  const clock = SETS.canvasPlane(ctx, 1.4, 1.4, 512, G, { lit: true }); clock.mesh.position.set(5, 10.2, 22.47); clock.mesh.rotation.y = Math.PI;
+  clock.draw('c', (cg, cw) => { cg.fillStyle = '#e8e0cc'; cg.beginPath(); cg.arc(cw / 2, cw / 2, cw * 0.46, 0, 7); cg.fill(); cg.lineWidth = 14; cg.strokeStyle = '#2a2420'; cg.stroke();
+    cg.fillStyle = '#2a2420'; cg.font = 'bold 44px Georgia'; cg.textAlign = 'center'; cg.textBaseline = 'middle';
+    ['XII', 'I', 'II', 'III', 'IIII', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'].forEach((t, i) => { const a = i / 12 * Math.PI * 2; cg.fillText(t, cw / 2 + Math.sin(a) * cw * 0.36, cw / 2 - Math.cos(a) * cw * 0.36); });
+    cg.lineCap = 'round'; cg.lineWidth = 16; cg.beginPath(); cg.moveTo(cw / 2, cw / 2); cg.lineTo(cw / 2, cw * 0.2); cg.stroke(); cg.lineWidth = 20; cg.beginPath(); cg.moveTo(cw / 2, cw / 2); cg.lineTo(cw * 0.66, cw * 0.4); cg.stroke(); }); const nr = add(new THREE.CylinderGeometry(0.01, 5.3, 2.6, 4, 1), roofM, 0.5, 6.3, 27, G); nr.rotation.y = Math.PI / 4; nr.scale.set(1, 1, 0.8);
+  add(tbox(3, 11.6, 3, 1), chS, 5, 5.8, 24, G); add(tbox(3.2, 0.4, 3.2, 1), chS, 5, 14.0, 24, G);
+  for (const [dx, dz] of [[-1.3, -1.3], [1.3, -1.3], [-1.3, 1.3], [1.3, 1.3]]) add(tbox(0.4, 2.4, 0.4, 1), chS, 5 + dx, 12.8, 24 + dz, G);
   const spire = add(new THREE.CylinderGeometry(0.01, 2.3, 4, 4, 1), roofM, 5, 16.2, 24, G); spire.rotation.y = Math.PI / 4;
   const pts = [[0, 0], [0.5, 0], [0.55, 0.1], [0.45, 0.3], [0.32, 0.8], [0.25, 1.0], [0, 1.05]].map(([r, y]) => new THREE.Vector2(r, y));
   const bellM = toon({ color: '#b08a3a' });
@@ -195,21 +201,36 @@ export const build = (ctx) => {
   for (let k = -1; k <= 1; k++) add(box(0.04, 0.9, 0.04), wood, -1.72, 0.45 + (k + 1) * 0.78 + 0.4, 1.0 - (k + 1) * 0.9, Kc);
   add(box(0.06, 0.06, 3.3), wood, -1.72, 0, 0, Kc).position.set(-1.72, 1.55, 0); 
   add(box(0.05, 0.7, 0.9), toon({ color: '#3a2e24' }), 2.48, 1.5, -0.4, Kc);                          // shuttered window
+  // kitchen life, as in a real 1880s fisherman's cottage: ceiling beams, a fireplace with a mantel and a kettle, a dresser with plates, a picture, skirting
+  const beamM = texM(P.beam(81), 1, 1, '#6a4a30');
+  for (const z of [-1.4, -0.2, 1.0]) add(box(5.2, 0.18, 0.16), beamM, 0, 2.5, z, Kc);
+  add(tbox(1.5, 1.3, 0.4, 1), texM(P.brick(82), 1, 1, '#ffffff'), -1.3, 0.65, -1.85, Kc); add(box(1.0, 0.8, 0.3), toon({ color: '#100c0a' }), -1.3, 0.45, -1.68, Kc, { cast: false });
+  add(box(1.8, 0.1, 0.5), wood, -1.3, 1.35, -1.8, Kc); const ket = add(new THREE.SphereGeometry(0.13, 12, 8), toon({ color: '#2a2a2e' }), -1.3, 0.25, -1.6, Kc); ket.scale.y = 0.8;
+  for (const x of [-1.8, -0.8]) add(new THREE.CylinderGeometry(0.05, 0.06, 0.18, 10), toon({ color: '#c8a048' }), x, 1.49, -1.8, Kc);
+  add(box(0.4, 1.9, 1.3), wood, 2.35, 0.95, 1.2, Kc); for (const y of [1.35, 1.75]) { add(box(0.36, 0.04, 1.2), wood, 2.15, y, 1.2, Kc);
+    for (let k = 0; k < 4; k++) { const pl = add(new THREE.CylinderGeometry(0.11, 0.11, 0.015, 16), toon({ color: '#e8e4dc' }), 2.25, y + 0.12, 0.75 + k * 0.3, Kc); pl.rotation.z = Math.PI / 2; } }
+  const pic = SETS.canvasPlane(ctx, 0.5, 0.4, 256, Kc, { lit: true }); pic.mesh.position.set(-1.2, 1.85, 2.09); pic.mesh.rotation.y = Math.PI;
+  pic.draw('p', (cg, cw, ch) => { cg.fillStyle = '#5a3a20'; cg.fillRect(0, 0, cw, ch); cg.fillStyle = '#8aa0b0'; cg.fillRect(14, 14, cw - 28, ch - 28); cg.fillStyle = '#3a4a5a'; cg.fillRect(14, ch * 0.6, cw - 28, ch * 0.4 - 14); cg.fillStyle = '#5a3a2a'; cg.beginPath(); cg.moveTo(cw * 0.3, ch * 0.62); cg.lineTo(cw * 0.7, ch * 0.62); cg.lineTo(cw * 0.62, ch * 0.72); cg.lineTo(cw * 0.38, ch * 0.72); cg.fill(); cg.fillStyle = '#e8e0d0'; cg.beginPath(); cg.moveTo(cw * 0.5, ch * 0.3); cg.lineTo(cw * 0.5, ch * 0.6); cg.lineTo(cw * 0.66, ch * 0.58); cg.fill(); });
+  for (const [x, z, w, d] of [[0, 2.08, 5.0, 0.04], [-2.48, 0, 0.04, 4.2], [2.48, 0, 0.04, 4.2]]) add(box(w, 0.12, d), toon({ color: '#3a2a1e' }), x, 0.06, z, Kc, { cast: false });
   // ---- children's room ----
   const Rm = new THREE.Group(); Rm.position.set(...RO); ctx.world.add(Rm);
   add(tbox(4.4, 0.2, 3.6, 1), wood, 0, -0.1, 0, Rm, { cast: false }); add(tbox(4.4, 0.2, 3.6, 1), wood, 0, 2.5, 0, Rm, { cast: false });
   add(tbox(4.4, 2.6, 0.2, 1), plaster, 0, 1.2, -1.8, Rm); add(tbox(0.2, 2.6, 3.6, 1), plaster, -2.2, 1.2, 0, Rm); add(tbox(0.2, 2.6, 3.6, 1), plaster, 2.2, 1.2, 0, Rm);
   for (const x of [-0.8, 1.0]) { add(box(0.9, 0.35, 1.7), wood, x, 0.18, -0.9, Rm); add(box(0.86, 0.12, 1.4), toon({ color: '#d8d0c0' }), x, 0.41, -0.75, Rm); add(box(0.6, 0.12, 0.3), toon({ color: '#f0ece4' }), x, 0.42, -1.6, Rm); }
   for (let k = 0; k < 5; k++) add(box(0.04, 0.06, 0.9), toon({ color: '#3a2e24' }), 2.08, 1.15 + k * 0.16, 0.3, Rm);
+  for (const z of [-1.0, 0.4]) add(box(4.4, 0.16, 0.14), texM(P.beam(83), 1, 1, '#6a4a30'), 0, 2.35, z, Rm);
+  add(box(1.0, 0.5, 0.5), wood, 1.3, 0.25, 1.3, Rm); add(box(1.04, 0.06, 0.54), toon({ color: '#3a2a1e' }), 1.3, 0.52, 1.3, Rm);      // toy chest
+  const rug = add(new THREE.CircleGeometry(0.9, 24), toon({ color: '#7a3a3a' }), 0.1, 0.005, 0.3, Rm, { cast: false }); rug.rotation.x = -Math.PI / 2; rug.scale.set(1.3, 0.8, 1);
+  for (const [x, z, w, d] of [[0, -1.68, 4.2, 0.04], [-2.08, 0, 0.04, 3.4], [2.08, 0, 0.04, 3.4]]) add(box(w, 0.1, d), toon({ color: '#3a2a1e' }), x, 0.05, z, Rm, { cast: false });
   const moon = new THREE.SpotLight('#9ab4ff', 6, 10, 0.5, 0.6, 1.2); moon.position.set(...R(3.5, 2.2, 0.3)); moon.target.position.set(...R(-0.8, 0.5, -0.8)); ctx.world.add(moon); ctx.world.add(moon.target);
   // a black card that hides everything (the hard cut to black)
   const black = new THREE.Mesh(new THREE.PlaneGeometry(4, 4), new THREE.MeshBasicMaterial({ color: '#000', depthTest: false, transparent: true })); black.renderOrder = 999; black.visible = false; ctx.world.add(black);
-  return { boats, lamps, lampLights, doors, haleGlow, tBell, bBell, rope, prints, watch, water, candle, flame, candleL, wet, black, lanL, stairL };
+  return { boats, lamps, lampLights, litGlass, doors, haleGlow, tBell, bBell, rope, prints, watch, water, candle, flame, candleL, wet, black, lanL, stairL };
 };
 export const update = (W, f, P) => {
   if (!P.boats) return;
   P.boats.forEach((b, i) => { b.position.y = -0.85 + Math.sin(f * 0.05 + i) * 0.05; b.rotation.z = Math.sin(f * 0.04 + i * 2) * 0.04; });
-  P.lamps.forEach((m) => m.material.color.set(W.lamps ? '#ffd28a' : '#4a4a40')); P.lampLights.forEach((l) => (l.intensity = W.lamps ? 4.0 : 0));
+  P.lamps.forEach((m) => m.material.color.set(W.lamps ? '#ffd28a' : '#4a4a40')); P.litGlass.forEach((m) => m.color.set(W.lamps ? '#ffffff' : '#6a6a6a')); P.lampLights.forEach((l) => (l.intensity = W.lamps ? 4.0 : 0));
   P.doors[1].rotation.y = -W.hale * 1.3; P.haleGlow.intensity = W.haleGlow;
   P.tBell.rotation.z = W.swing * Math.sin(f * 0.22); P.bBell.rotation.z = W.swing * 0.8 * Math.sin(f * 0.22); P.rope.position.y = 1.3 + W.swing * 0.15 * Math.sin(f * 0.22);
   P.prints.forEach((m, i) => (m.visible = W.prints));

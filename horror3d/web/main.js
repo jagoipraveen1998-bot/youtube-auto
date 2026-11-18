@@ -256,6 +256,7 @@ class Card {
     const p = new T.Pen(g); fn(p); this.t.needsUpdate = true;
   }
 }
+const CARD_GAIN = 1.3;
 const cards = []; const getCard = (i) => cards[i] || (cards[i] = new Card());
 // ---------- render targets & post ----------
 const rtColor = new THREE.WebGLRenderTarget(W, H, { samples: 4, type: THREE.HalfFloatType });
@@ -349,7 +350,8 @@ function drawActors(list, cam) {
     c.mesh.visible = true; c.mesh.position.set(a.x, a.y, a.z);
     const s = a.s || 1; c.mesh.scale.set(s * (a.flip ? -1 : 1), s, s);
     c.mesh.rotation.set(0, Math.atan2(cam.position.x - a.x, cam.position.z - a.z) + (a.yaw || 0), a.roll || 0);
-    c.mat.color.set(a.tint || '#ffffff'); c.mat.opacity = a.alpha ?? 1;
+    // characters are lifted above the set so they read clearly, even at night (a.gain overrides; tinted ghosts lift less)
+    c.mat.color.set(a.tint || '#ffffff').multiplyScalar(a.gain ?? (a.tint ? 1.12 : CARD_GAIN)); c.mat.opacity = a.alpha ?? 1;
     c.mesh.castShadow = a.shadow !== false;
     c.mesh.renderOrder = a.order || 2;
     if (a.blob !== false && a.y < DECK + 0.5 && a.y > -0.05) { c.blob.visible = true; c.blob.position.set(a.x, (a.ground ?? DECK) + 0.02, a.z); c.blob.scale.set(0.95 * s, 0.6 * s, 1); }

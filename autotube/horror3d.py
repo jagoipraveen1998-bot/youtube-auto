@@ -119,6 +119,11 @@ def make_short(story: dict, take: Path | None, work: Path, stage: str = "all"):
         if missing:
             raise RuntimeError(f"3D render incomplete: {len(missing)} of {total} frames missing")
         return _finish(story, work, src, name, shots, total, voice, frames)
+    if story.get("speed") and take:              # a faster read (e.g. 1.1x): same pitch, the whole film follows the voice
+        fast = work / "take_fast.wav"
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(take), "-filter:a", f"atempo={float(story['speed'])}", str(fast)], check=True)
+        log(f"Voice sped up {story['speed']}x")
+        take = fast
     voice, timing = hv.voice_from_take(story, take)
     shots, total = line_frames(timing, 3.4 if story.get("cta") else TAIL)       # hold longer when an end line is shown
     for s, t in zip(shots, timing):
@@ -158,6 +163,8 @@ def _finish(story, work, src, name, shots, total, voice, frames):
     lines = [b["line"].replace("*", "") for b in story["beats"]]
     tw = next((i for i, b in enumerate(story["beats"]) if b.get("twist")), len(shots) - 2)
     cover_f = min(total - 1, shots[tw]["beat"] + 14)
+    if story.get("parts"):                       # a series episode cut into vertical Shorts: Part 1, Part 2, ...
+        return _finish_parts(story, work, name, shots, total, frames, lines, mix, bed, out_dir)
     ff = subprocess.Popen(["ffmpeg", "-y", "-v", "error", "-f", "image2pipe", "-framerate", str(FPS), "-c:v", "mjpeg", "-i", "-", "-i", str(wav),
                            "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k",
                            "-ac", "2", "-shortest", "-movflags", "+faststart", str(video)], stdin=subprocess.PIPE)
@@ -175,6 +182,125 @@ def _finish(story, work, src, name, shots, total, voice, frames):
     (work / "plan.json").write_text(json.dumps(plan, indent=1), encoding="utf-8")
     log(f"3D Short ready: {video.name} ({total / FPS:.1f}s)")
     return video, thumb, plan
+
+
+def _font(size: int):
+    from PIL import ImageFont
+    fonts = ["/usr/share/fonts/truetype/google-fonts/Poppins-Bold.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+             "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"]
+    return ImageFont.truetype(next(f for f in fonts if Path(f).exists()), size)
+
+
+def _badge(im, series: str, k: int, n: int):
+    """The part badge at the top of every frame: series name small, PART k/n big, so any frame works as the cover."""
+    from PIL import ImageDraw
+    d = ImageDraw.Draw(im, "RGBA")
+    f1, f2 = _font(40), _font(78)
+    t1, t2 = series.upper(), f"PART {k} OF {n}"
+    w = max(d.textlength(t1, font=f1), d.textlength(t2, font=f2)) + 80
+    cx, y = im.width / 2, 200
+    d.rounded_rectangle((cx - w / 2, y, cx + w / 2, y + 150), 30, fill=(12, 8, 20, 200))
+    d.text((cx - d.textlength(t1, font=f1) / 2, y + 16), t1, font=f1, fill=(225, 230, 255))
+    d.text((cx - d.textlength(t2, font=f2) / 2, y + 56), t2, font=f2, fill=(255, 225, 74), stroke_width=3, stroke_fill=(12, 8, 20))
+
+
+def _end_card(im, rows: list[str]):
+    from PIL import ImageDraw
+    d = ImageDraw.Draw(im, "RGBA")
+    f = _font(66)
+    cx, y0 = im.width / 2, 1380
+    w = max(d.textlength(r, font=f) for r in rows) + 100
+    d.rounded_rectangle((cx - w / 2, y0 - 30, cx + w / 2, y0 + len(rows) * 92 + 10), 36, fill=(12, 8, 20, 225))
+    for i, r in enumerate(rows):
+        d.text((cx - d.textlength(r, font=f) / 2, y0 + i * 92), r, font=f, fill=(255, 225, 74) if i == 0 else (255, 255, 255),
+               stroke_width=4, stroke_fill=(12, 8, 20))
+
+
+def _cover(frame_path: Path, out: Path, series: str, k: int, n: int):
+    """Thumbnail: a strong frame, PART k huge in the middle, the series name under it. Readable at phone-grid size."""
+    from PIL import Image, ImageDraw, ImageEnhance
+    im = ImageEnhance.Brightness(Image.open(frame_path).convert("RGB")).enhance(0.8)
+    d = ImageDraw.Draw(im, "RGBA")
+    d.rectangle((0, 0, im.width, im.height), fill=(0, 0, 0, 60))
+    big, mid = _font(250), _font(92)
+    t = f"PART {k}"
+    d.text((im.width / 2 - d.textlength(t, font=big) / 2, 640), t, font=big, fill=(255, 225, 74), stroke_width=14, stroke_fill=(10, 6, 16))
+    words = series.upper().split()
+    rows = [" ".join(words[:2]), " ".join(words[2:])] if len(words) > 2 else [series.upper()]
+    for i, r in enumerate(rows):
+        d.text((im.width / 2 - d.textlength(r, font=mid) / 2, 960 + i * 110), r, font=mid, fill=(255, 255, 255), stroke_width=8, stroke_fill=(10, 6, 16))
+    d.text((im.width / 2 - d.textlength(f"{k} / {n}", font=mid) / 2, 1250), f"{k} / {n}", font=mid, fill=(255, 225, 74), stroke_width=8, stroke_fill=(10, 6, 16))
+    im.save(out, quality=92)
+
+
+def _finish_parts(story, work, name, shots, total, frames, lines, mix, bed, out_dir):
+    """Cut the finished episode into Shorts at the cliffhangers given in story["parts"] ([first line, last line] each).
+    Every part has the PART k OF n badge, ends on its cliffhanger held about 2.5 s with "PART k+1 IS NEXT"
+    (the last part ends on the story's end line), and gets its own cover: partK.mp4 and partK.jpg."""
+    from io import BytesIO
+    from PIL import Image
+    parts, n, series = story["parts"], len(story["parts"]), story.get("series", "")
+    hold = int(2.5 * FPS)
+    caps = _captions(frames, lines, shots, total, cta=story.get("cta") or "")
+    cache = {}
+    def frame(f):                                   # captioned frame f (the generator runs forward once)
+        while f not in cache:
+            g, im, _ = next(caps)
+            cache[g] = im
+        return cache.pop(f)
+    covers = story.get("part_covers") or [p[1] for p in parts]
+    videos = []
+    for k, (l0, l1) in enumerate(parts, 1):
+        a = shots[l0]["a"]
+        said = shots[l1].get("said", shots[l1]["b"])
+        last = k == n
+        b = total - 1 if last else min(shots[l1]["b"], said + hold)
+        extra = 0 if last else max(0, said + hold - b)          # freeze the last frame if the next line starts too soon
+        nf = b - a + 1 + extra
+        sa, sb = int(a / FPS * ha.SR), int((b + 1) / FPS * ha.SR)
+        audio = mix[sa:sb].copy()
+        if extra:                                    # the hold: this shot's own room tone, no voice
+            pad = bed[max(0, sb - int(extra / FPS * ha.SR)):sb]
+            audio = np.concatenate([audio, pad[:int(extra / FPS * ha.SR)]])
+        fade = int(0.4 * ha.SR)
+        audio[-fade:] *= np.linspace(1, 0, fade)
+        wav = work / f"part{k}.wav"
+        ha.save(wav, audio)
+        video = out_dir / f"part{k}.mp4"
+        ff = subprocess.Popen(["ffmpeg", "-y", "-v", "error", "-f", "image2pipe", "-framerate", str(FPS), "-c:v", "mjpeg", "-i", "-", "-i", str(wav),
+                               "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k",
+                               "-ac", "2", "-shortest", "-movflags", "+faststart", str(video)], stdin=subprocess.PIPE)
+        cover_f = min(b, shots[covers[k - 1]]["beat"] + 14)
+        end_from = said + int(0.4 * FPS)
+        def ending(f):                               # the held cliffhanger: no subtitle, "PART k+1 IS NEXT"
+            e = Image.open(frames / f"f{min(f, b):05d}.jpg").convert("RGB")
+            _badge(e, series, k, n)
+            _end_card(e, [f"PART {k + 1} IS NEXT", "Follow so you don't miss it"])
+            out = BytesIO(); e.save(out, "JPEG", quality=93)
+            return out.getvalue()
+        for f in range(a, b + 1):
+            im = frame(f)
+            if f == cover_f:
+                _cover(frames / f"f{f:05d}.jpg", out_dir / f"part{k}.jpg", series, k, n)
+            if not last and f > end_from:
+                ff.stdin.write(ending(f))
+                continue
+            _badge(im, series, k, n)
+            buf = BytesIO(); im.save(buf, "JPEG", quality=93); ff.stdin.write(buf.getvalue())
+        if extra:
+            held = ending(b)
+            for _ in range(extra):
+                ff.stdin.write(held)
+        ff.stdin.close()
+        if ff.wait() != 0 or not video.exists():
+            raise RuntimeError(f"ffmpeg could not encode part {k}")
+        log(f"Part {k} of {n}: lines {l0 + 1}-{l1 + 1}, {nf / FPS:.1f}s")
+        videos.append(video)
+    shutil.rmtree(frames, ignore_errors=True)
+    plan = {"frames": total, "three_d": name, "parts": [str(v.name) for v in videos],
+            "shots": [{"a": s["a"], "b": s["b"], "ls": s["a"], "le": s["said"], "scene": "3d"} for s in shots]}
+    (work / "plan.json").write_text(json.dumps(plan, indent=1), encoding="utf-8")
+    return videos[0], out_dir / "part1.jpg", plan
 
 
 if __name__ == "__main__":

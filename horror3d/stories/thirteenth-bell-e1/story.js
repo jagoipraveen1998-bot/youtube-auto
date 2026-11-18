@@ -7,7 +7,7 @@ import { OUTFITS } from './toon.js';
 import * as SETS from './sets.js';
 import { makeStory, MOODS, smooth, ramp, lerp, lerp3, q, blinkAt, actor, fx, word } from './kit.js';
 
-export const SIZE = [1920, 1080];
+// vertical 9:16 Shorts (the default size)
 const at = (o) => (x, y, z) => [o[0] + x, o[1] + y, o[2] + z];
 const GO = [300, 0, 0], O = at(GO);            // outdoors: harbour, Fish Lane, tower
 const BO = [360, 0, 0], Bf = at(BO);           // belfry
@@ -59,6 +59,11 @@ const LIGHTS = {
   lamp: { ...MOODS.night, hemi: 0.42, sky: '#5a4838', ground: '#1a120c', fog: '#140c08', fogNear: 4, fogFar: 18, gain: '#ffe4c4', lift: '#0e0810', vig: 0.5, sat: 1.15 },
   blue: { ...MOODS.night, hemi: 0.5, sky: '#3a58c0', ground: '#101a40', fog: '#0a1238', fogNear: 4, fogFar: 22, gain: '#c4d4ff', lift: '#081030', vig: 0.66, sat: 1.15 },
 };
+const FOCUS = (S) => ({ hook1: O(-1, 1.6, 4), hook2: O(5, 13, 24), town: O(0, 1, 2), tom: O(1, 0.6, 0.3), ringer: Bf(-0.3, 1.4, -0.1), silas: Bf(-0.15, 1.45, -0.1), marks: Bf(0.2, 1.45, -1.68),
+    answered: Bf(-0.15, 1.45, -0.1), salt: C(0.5, 0.6, -1.5), rule: C(0.6, 1.0, -0.8), count: R(-0.7, 0.8, -1.0), twelve: R(-0.75, 0.85, -1.1), thirteen: O(5, 13.6, 24),
+    voices: O(1, 1.2, 9.5), peter: O(3.6, 1.1, 9.4), bolt: O(3.6, 1.0, 9.7), boy: O(3.6, 1.0, 9.7), morning: O(3.6, 1.0, 9.8), prints: O(5, 0, 3), watch: WATCH, stopped: WATCH,
+    vigil: C(0, 0.95, -0.2), count2: C(0, 0.95, -0.1), knock: C(0.6, 0.6, -2), annie: C(0.1, 0.95, -0.3), whistle: C(0.6, 0.5, -2), dad: C(0.55, 0.92, 0.05),
+    silence: C(-0.3, 0.9, -0.6), inside: C(-2.0, 2.2, -1.2), stairs: C(-2.0, 1.4, -0.4) }[S.id]);
 const K = makeStory({
   ids: IDS, cams: CAMS, lights: LIGHTS,
   light: (S, f) => {
@@ -71,18 +76,21 @@ const K = makeStory({
   },
   tweak: (L, S) => { if (S.id === 'stairs' || S.id === 'inside') L.vig = 0.74; },
   kicks: ['thirteen', 'knock', 'inside'],
-  focus: (S) => ({ hook1: O(-1, 1.6, 4), hook2: O(5, 13, 24), town: O(0, 1, 2), tom: O(1, 0.6, 0.3), ringer: Bf(-0.3, 1.4, -0.1), silas: Bf(-0.15, 1.45, -0.1), marks: Bf(0.2, 1.45, -1.68),
-    answered: Bf(-0.15, 1.45, -0.1), salt: C(0.5, 0.6, -1.5), rule: C(0.6, 1.0, -0.8), count: R(-0.7, 0.8, -1.0), twelve: R(-0.75, 0.85, -1.1), thirteen: O(5, 13.6, 24),
-    voices: O(1, 1.2, 9.5), peter: O(3.6, 1.1, 9.4), bolt: O(3.6, 1.0, 9.7), boy: O(3.6, 1.0, 9.7), morning: O(3.6, 1.0, 9.8), prints: O(5, 0, 3), watch: WATCH, stopped: WATCH,
-    vigil: C(0, 0.95, -0.2), count2: C(0, 0.95, -0.1), knock: C(0.6, 0.6, -2), annie: C(0.1, 0.95, -0.3), whistle: C(0.6, 0.5, -2), dad: C(0.55, 0.92, 0.05),
-    silence: C(-0.3, 0.9, -0.6), inside: C(-2.0, 2.2, -1.2), stairs: C(-2.0, 1.4, -0.4) }[S.id]),
+  focus: (S) => FOCUS(S),
   shadowAt: (S) => (S.i < 4 || (S.i >= 12 && S.i <= 20) ? O(2, 1, 6) : S.i < 8 ? Bf(0, 1, 0) : S.i < 10 || S.i > 20 ? C(0, 1, 0) : R(0, 1, 0)),
 });
 export const { FPS, TOTAL, DECK, SHOTS, shotAt, lightFor, dofAt } = K;
 export { LIGHTS };
 const CUTS = new Set(['town', 'ringer', 'salt', 'count', 'thirteen', 'voices', 'morning', 'vigil', 'knock', 'inside']), GLIDE = 24;
 const mix = (a, b, t) => ({ ...b, pos: lerp3(a.pos, b.pos, t), look: lerp3(a.look, b.look, t), fov: lerp(a.fov, b.fov, t) });
-export const camAt = (f) => { const S = shotAt(f), c = K.camAt(f); if (S.i === 0 || CUTS.has(S.id) || f - S.a >= GLIDE) return c; return mix(K.camAt(S.a - 1), c, smooth((f - S.a) / GLIDE)); };
+// Vertical framing: the cameras were set for 16:9, so in 9:16 each shot turns to centre its subject (the focus
+// point) and widens a little, so faces and props are not cut off at the sides.
+const SUBJ = (S) => FOCUS(S);
+const VERT = { pull: 0.8, wide: 1.28 };
+const NEAR = { watch: 0.5 };                     // shots whose subject is small: move the camera closer as well
+const vert = (c, S) => { const p = SUBJ(S); if (!p) return c; const look = lerp3(c.look, p, VERT.pull), pos = NEAR[S.id] ? lerp3(c.pos, p, NEAR[S.id]) : c.pos; return { ...c, pos, look, fov: Math.min(75, c.fov * VERT.wide) }; };
+const cam = (f) => vert(K.camAt(f), shotAt(f));
+export const camAt = (f) => { const S = shotAt(f), c = cam(f); if (S.i === 0 || CUTS.has(S.id) || f - S.a >= GLIDE) return c; return mix(cam(S.a - 1), c, smooth((f - S.a) / GLIDE)); };
 
 // ---------- canvases ----------
 const tally = (g, w, h) => { const s = g.createLinearGradient(0, 0, 0, h); s.addColorStop(0, '#8a8278'); s.addColorStop(1, '#6e665e'); g.fillStyle = s; g.fillRect(0, 0, w, h);

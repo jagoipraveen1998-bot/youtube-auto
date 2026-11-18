@@ -29,6 +29,8 @@ jobs:
           for p in sorted(pathlib.Path("horror/episodes").glob("*.json")):
               e = json.loads(p.read_text(encoding="utf-8"))
               built = pathlib.Path("horror3d/stories", e.get("three_d", ""), "story.js").exists()
+              if e.get("parts"):          # cut into Shorts: those go out through data/upload_queue.json
+                  continue
               if e.get("approved") and built and e["id"] not in done and e.get("release_from", "") <= today:
                   pick = str(p); break
           print(f"Next episode: {pick or 'none due'}")

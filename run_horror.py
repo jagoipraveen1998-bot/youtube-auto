@@ -95,7 +95,7 @@ def main():
         story["script_pair"] = script.get("pair")
         story["three_d"] = script.get("three_d")
         story["cta"] = script.get("cta")
-        for k in ("episode", "series", "season", "format", "next"):   # a series episode: horizontal, published as a normal video
+        for k in ("episode", "series", "season", "format", "next", "parts", "part_covers", "speed"):   # a series episode: horizontal, published as a normal video
             if script.get(k) is not None:
                 story[k] = script[k]
         if story.get("episode"):
@@ -200,7 +200,7 @@ def main():
 
 
 def publish(args, cfg, hcfg, out, hist, hist_path, story, video, thumb, plan):
-    length = check_playable(video, 15, 900 if story.get("episode") else 175)   # Shorts up to 3 minutes; episodes up to 15
+    length = check_playable(video, 15, 900 if story.get("episode") and not story.get("parts") else 175)   # Shorts up to 3 minutes; episodes up to 15
 
     full = latest_long_video()
     if story.get("part") == 2 and story.get("script_pair"):
@@ -230,8 +230,9 @@ def publish(args, cfg, hcfg, out, hist, hist_path, story, video, thumb, plan):
     tags = list(dict.fromkeys(story.get("tags", []) + hcfg.get("extra_tags", [])))
     title = re.sub(r"\s*#\w+", "", story["title"]).strip()[:100]   # clean hook title; the hashtags live in the description
 
-    if args.no_upload:
-        log(f"Upload skipped. Files are in {out.name}/ ({length:.0f}s)")
+    if args.no_upload or story.get("parts"):     # an episode cut into parts goes out through data/upload_queue.json
+        log(f"Upload skipped. Files are in {out.name}/ ({length:.0f}s)"
+            + (f"; {len(story['parts'])} parts are published from the upload queue" if story.get("parts") else ""))
         return
 
     from autotube.uploader import _client, upload

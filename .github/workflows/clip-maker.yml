@@ -1,0 +1,77 @@
+name: Clip maker (Stream Snipz)
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Stream / video link (YouTube or Twitch)"
+        required: true
+      start:
+        description: "Start time, e.g. 1:02:10"
+        required: true
+      end:
+        description: "End time, e.g. 1:02:55 (max 3 min after start)"
+        required: true
+      hook:
+        description: "Hook title shown at the top"
+        required: false
+        default: ""
+      name:
+        description: "File name (no extension), e.g. tomo-01"
+        required: true
+      cta:
+        description: "End text (\\N = new line)"
+        required: false
+        default: "Subscribe to Tomo on YouTube\\N@Tomovids"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: clip-maker-${{ github.event.inputs.name }}
+
+jobs:
+  clip:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install tools
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-dejavu-core
+          pip install -q -U yt-dlp faster-whisper
+      - name: Make clip
+        env:
+          URL: ${{ github.event.inputs.url }}
+          START: ${{ github.event.inputs.start }}
+          END: ${{ github.event.inputs.end }}
+          HOOK: ${{ github.event.inputs.hook }}
+          NAME: ${{ github.event.inputs.name }}
+          CTA: ${{ github.event.inputs.cta }}
+        run: |
+          python tools/clipmaker.py --url "$URL" --start "$START" --end "$END" \
+            --hook "$HOOK" --cta "$CTA" --out "out/$NAME.mp4"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.event.inputs.name }}
+          path: out/
+      - name: Save to clips branch
+        env:
+          NAME: ${{ github.event.inputs.name }}
+        run: |
+          git config user.name "clip-bot"
+          git config user.email "clip-bot@users.noreply.github.com"
+          mkdir -p /tmp/c && cp out/* /tmp/c/
+          git fetch origin clips || true
+          if git rev-parse --verify origin/clips >/dev/null 2>&1; then
+            git checkout -B clips origin/clips
+          else
+            git checkout --orphan clips && git rm -rf -q . && git clean -fdq
+          fi
+          cp /tmp/c/* .
+          git add "$NAME.mp4" "$NAME.txt"
+          git commit -m "clip: $NAME"
+          for i in 1 2 3; do git push origin clips && break; git pull --rebase origin clips; done

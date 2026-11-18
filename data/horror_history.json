@@ -45,7 +45,8 @@
     "borrowed-shadow: In my town, you get your shadow on your thirteenth birthday.",
     "babysitter-rules: Congratulations. You got the babysitting job at the Marlow house.",
     "last-bus-seat: Imagine you catch the last bus home. It's empty.",
-    "hide-and-seek: Imagine you're babysitting your little cousin."
+    "hide-and-seek: Imagine you're babysitting your little cousin.",
+    "ice-cream-van-3am: Imagine you hear the ice cream van song. At three a.m."
   ],
   "videos": [
     {
@@ -424,6 +425,13 @@
       "video_id": "9pt6YH7jl0I",
       "length": "51s",
       "instagram_id": "18133933021697416"
+    },
+    {
+      "date": "2026-11-18 09:57",
+      "title": "The Ice Cream Van Came At 3AM",
+      "video_id": "Rpr0vbhCPFU",
+      "length": "64s",
+      "instagram_id": "18166009030501006"
     }
   ],
   "long_videos": [

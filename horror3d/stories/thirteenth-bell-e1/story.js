@@ -14,8 +14,12 @@ const BO = [360, 0, 0], Bf = at(BO);           // belfry
 const CO = [380, 0, 0], C = at(CO);            // the Bramwells' kitchen
 const RO = [400, 0, 0], R = at(RO);            // Tom and Annie's room
 
-const TOM = { ...OUTFITS.kid, tunic: '#5a6a7a', hair: '#4a2e1c' }, ANNIE = { ...OUTFITS.kid, tunic: '#b8606e', hair: '#8a5a2a' };
-const MARY = { ...OUTFITS.mum, tunic: '#4f5a7a', hair: '#5a3424' }, DROWNED = { ...OUTFITS.kid, tunic: '#2a4048' };
+// The cast must read apart at a glance: Tom wears a flat cap, Mary (Mum) has long hair, a bun, a dress and an apron,
+// Annie has pigtails with ribbons, the drowned boy is a pale sea-green kid.
+const TOM = { ...OUTFITS.kid, tunic: '#5a6a7a', hair: '#4a2e1c', cap: '#3c3a44', brim: '#2c2a32' };
+const ANNIE = { ...OUTFITS.kid, tunic: '#b8606e', hair: '#c07a3a', pigtails: '#c07a3a', ribbon: '#f2d24a' };
+const MARY = { ...OUTFITS.mum, tunic: '#4f5a7a', hair: '#7a3a22', long: '#7a3a22', bun: '#7a3a22', dress: '#3e4a6a', apron: '#e6dcc4' };
+const DROWNED = { ...OUTFITS.kid, tunic: '#2a4048' };
 const HALE_DOOR = O(3.6, 0, 9.9), BRAM_DOOR = O(0, 0, 9.9), WATCH = O(0.15, 0.03, 9.35), STEPS = O(6.2, 0, 0.2);
 
 const IDS = ['hook1', 'hook2', 'town', 'tom', 'ringer', 'silas', 'marks', 'answered', 'salt', 'rule', 'count', 'twelve', 'thirteen', 'voices', 'peter',

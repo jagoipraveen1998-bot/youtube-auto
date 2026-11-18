@@ -1,7 +1,8 @@
 """Sound for The Thirteenth Bell, Episode 1: quiet room tone throughout; a church bell for each stroke the
 story counts; a door bolt, a creak; a heartbeat under the second night; two seconds of silence before the
 thirteenth stroke, before the knock and before the voice upstairs, each followed by one hit; soft knocks on the
-door; the three-note whistle; wet steps on the stairs. No music, no wind or sea hiss."""
+door; the three-note whistle; wet steps on the stairs. Our own mild score (D minor strings and a music box), quieter in
+the daylight scenes and silent in each hush. No wind or sea hiss."""
 import sys, pathlib
 import numpy as np
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2]))
@@ -26,6 +27,7 @@ def whistle(m, at, g=0.35):
 def build(shots, total, FPS, SR):
     m = Mix(shots, total, FPS, SR, IDS, seed=88)
     m.room(0.45)
+    m.score(quiet=[(m.a('morning'), m.b('stopped'), 0.45)])   # mild under the whole episode, softer by day
     bell(m, m.a('hook1', 4), 0.35)
     for k in range(3): bell(m, m.a('count', 20) + k * 1.2, 0.4)            # one, two, three
     for k in range(3): bell(m, m.a('twelve', 2) + k * 1.0, 0.45)            # ten, eleven, twelve

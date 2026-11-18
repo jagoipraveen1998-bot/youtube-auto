@@ -18,7 +18,7 @@ class Mix:
         self.N = int(total / FPS * SR)
         self.t = np.arange(self.N) / SR
         self.S = dict(zip(ids, shots))
-        self.amb, self.sfx, self.mus = np.zeros(self.N), np.zeros(self.N), np.zeros(self.N)
+        self.amb, self.sfx, self.mus, self.bgm = np.zeros(self.N), np.zeros(self.N), np.zeros(self.N), np.zeros(self.N)
 
     # ---- timing ----
     def a(self, id, off=0): return (self.S[id]['a'] + off) / self.FPS
@@ -134,15 +134,53 @@ class Mix:
             th = np.sin(2 * np.pi * (58 - 60 * tt) * tt) * np.exp(-tt * 22)
             self.put(self.mus, t, th, g * (0.6 + 0.4 * k)); self.put(self.mus, t + 0.19, th, g * 0.6 * (0.6 + 0.4 * k))
             t += 60 / (bpm0 + (bpm1 - bpm0) * k)
+    def score(self, t0=0.0, t1=None, seed=13, key=62, bar=4.0, quiet=()):
+        """Our own background music, written here note by note (no outside music): a slow minor-key string pad
+        (i - VI - iv - V), a low drone and a sparse music-box melody picked from the chord tones. It sits in its own
+        track (self.bgm) so it stays mild; quiet = [(t0, t1, level)] spans where it drops (daylight scenes)."""
+        t1 = self.N / self.SR if t1 is None else t1
+        rng = np.random.default_rng(seed)
+        hz = lambda n: 440 * 2 ** ((n - 69) / 12)
+        prog = [(0, 3, 7), (-4, 0, 3), (5, 8, 12), (7, 11, 14)]        # i, VI, iv, V in the key's minor
+        n0, n1 = int(t0 * self.SR), int(t1 * self.SR)
+        tt = np.arange(n1 - n0) / self.SR
+        pad = np.zeros(len(tt)); chord_len = 2 * bar
+        for c in range(int(np.ceil(len(tt) / self.SR / chord_len))):
+            a, b = int(c * chord_len * self.SR), min(len(tt), int((c + 1) * chord_len * self.SR + self.SR))
+            if a >= len(tt): break
+            seg = tt[a:b] - tt[a]
+            env = np.minimum(1, seg / 1.6) * np.minimum(1, (seg[-1] - seg + 1e-3) / 1.4)
+            for k, iv in enumerate(prog[c % 4]):
+                f = hz(key - 12 + iv)
+                for det in (-0.004, 0.0, 0.005):                       # three slightly detuned voices = a soft string section
+                    pad[a:b] += np.sin(2 * np.pi * f * (1 + det) * seg + k) * env * (0.5 if det else 0.7)
+            pad[a:b] += 0.5 * np.sin(2 * np.pi * hz(key - 24 + prog[c % 4][0]) * seg) * env    # bass under each chord
+        pad = self.lp(pad, 900) * (0.85 + 0.15 * np.sin(2 * np.pi * 0.07 * tt))
+        drone = self.lp(np.sin(2 * np.pi * hz(key - 24) * tt) + 0.4 * np.sin(2 * np.pi * hz(key - 17) * tt), 300) * 0.5
+        box = np.zeros(len(tt)); at = 1.5
+        while at < tt[-1] - 2:                                          # sparse melody: 1 note every 1.5-3 s, chord tones up high
+            c = int(at // chord_len) % 4
+            n = key + 12 + int(rng.choice(prog[c])) + int(rng.choice([0, 0, 12]))
+            seg = np.arange(int(2.2 * self.SR)) / self.SR; f = hz(n)
+            note = (np.sin(2 * np.pi * f * seg) + 0.3 * np.sin(2 * np.pi * f * 2.01 * seg) + 0.1 * np.sin(2 * np.pi * f * 3.98 * seg)) * np.exp(-seg * 2.4) * np.minimum(1, seg / 0.004)
+            i = int(at * self.SR); box[i:i + len(note)] += note[:len(box) - i]
+            at += rng.choice([1.5, 2.0, 2.0, 3.0])
+        x = pad / max(1e-6, np.abs(pad).max()) + drone + 0.45 * box / max(1e-6, np.abs(box).max())
+        x *= np.minimum(1, tt / 3) * np.minimum(1, (tt[-1] - tt + 1e-3) / 3)   # fade in and out
+        lvl = np.ones(len(tt))
+        for q0, q1, g in quiet:
+            w = np.clip(np.minimum((tt + t0 - q0) / 1.5, (q1 - tt - t0) / 1.5), 0, 1)
+            lvl = np.minimum(lvl, 1 - (1 - g) * w)
+        self.bgm[n0:n1] += x * lvl
     def hush(self, t0, t1):                             # dead silence before a scare (applied when the mix is finished)
         self._hush = getattr(self, '_hush', []) + [(t0, t1)]
     def tail(self, t0, g=0.4):
         tt = np.arange(max(0, self.N - int(t0 * self.SR))) / self.SR
         self.put(self.mus, t0, self.lp(np.sin(2 * np.pi * 49 * tt), 200) * np.minimum(1, tt / 3), g)
 
-    def done(self, amb=0.05, sfx=0.30, mus=0.26):          # background kept very low under the voice
+    def done(self, amb=0.05, sfx=0.30, mus=0.26, bgm=0.07):  # background kept very low under the voice; bgm = the mild score
         for t0, t1 in getattr(self, '_hush', []):
             w = np.clip(np.minimum((t0 - self.t) / 0.25 + 1, (self.t - t1) / 0.02 + 1), 0, 1) if True else 1
-            for b in (self.amb, self.mus): b *= np.where((self.t > t0 - 0.25) & (self.t < t1), w, 1.0)
+            for b in (self.amb, self.mus, self.bgm): b *= np.where((self.t > t0 - 0.25) & (self.t < t1), w, 1.0)
         norm = lambda x, p: x / max(1e-6, np.percentile(np.abs(x), 99.7)) * p if np.abs(x).max() > 0 else x
-        return norm(self.amb, amb) + norm(self.sfx, sfx) + norm(self.mus, mus)
+        return norm(self.amb, amb) + norm(self.sfx, sfx) + norm(self.mus, mus) + norm(self.bgm, bgm)

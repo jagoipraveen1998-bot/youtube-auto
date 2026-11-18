@@ -2660,6 +2660,20 @@ export const romanFront = (p, key, opts = {}) => {
   if (helmet) galea(p, H, cx, hc, light, thick, ow, old, u);
   const hp = blobPts(cx, hc, H);
   if (O.hair && !helmet) { const hb = blobPts(cx, hc - 0.03 * HH, { ...H, a: H.a * 1.04, b: H.b * 1.05 }); p.poly(hb, O.hair, 0); }
+  // Character features that tell the cast apart at a glance (drawn behind the face)
+  if (O.long && !helmet) {        // long hair falling past the shoulders
+    const top = hc - 0.9 * H.b, bot = chin + 0.55 * HH, w = 1.22 * H.a;
+    const lp = [[cx - w, hc - 0.1 * H.b], ...ellPts(cx, hc - 0.05 * H.b, w, 0.98 * H.b, 180, 360, 0, 24), [cx + w, hc - 0.1 * H.b],
+      [cx + w * 1.08, bot - 0.1 * HH], [cx + w * 0.8, bot], [cx + w * 0.35, bot - 0.06 * HH], [cx - w * 0.35, bot - 0.06 * HH], [cx - w * 0.8, bot], [cx - w * 1.08, bot - 0.1 * HH]];
+    p.shadedFill(lp, O.long, mul(O.long, [0.7, 0.7, 0.78]), light, w, 0.35); p.inkRing(lp, ow * 0.85, thick);
+    for (const sx of [-0.7, -0.35, 0.35, 0.7]) p.stroke([[cx + sx * w, hc + 0.9 * H.b], [cx + sx * w * 1.05, bot - 0.08 * HH]], 1.4 * u, mul(O.long, [0.55, 0.55, 0.62]));
+  }
+  if (O.bun && !helmet) { const by = hc - 1.02 * H.b; p.ell(cx, by, 0.42 * H.a, 0.3 * H.b, O.bun, ow * 0.85); }
+  if (O.pigtails && !helmet) for (const sd of [-1, 1]) {
+    const px = cx + sd * 1.1 * H.a, py = hc + 0.15 * H.b;
+    p.ell(px + sd * 6 * u, py + 0.35 * H.b, 0.26 * H.a, 0.55 * H.b, O.pigtails, ow * 0.8);
+    p.ell(px, py - 0.12 * H.b, 0.12 * H.a, 0.1 * H.b, O.ribbon || "#e04a6a", ow * 0.6);
+  }
   p.shadedFill(hp, skin, mul(skin, SH_SKIN), light, H.a);
   p.inkRing(hp, ow, thick);
   if (helmet) {
@@ -2671,7 +2685,12 @@ export const romanFront = (p, key, opts = {}) => {
     p.band([[cx - H.a * 1.05, bandY], [cx + H.a * 1.05, bandY]], old ? "#a88a4a" : BRASS, 7 * u, 1.8 * u, "round");
     p.poly(rrect(cx - 4 * u, bandY - 0.55 * H.b, cx + 4 * u, bandY - 3 * u, 2 * u), old ? "#a88a4a" : BRASS, 1.5 * u);
     cheeks(p, H, cx, hc, light, ow, old, u);
-  } else if (O.cap) hatOn(p, { hat: "cap", cap: O.cap, jacket: O.tunic }, hp, H, cx, hc, light, seed, facing, false);
+  } else if (O.cap) {
+    hatOn(p, { hat: "cap", cap: O.cap, jacket: O.tunic }, hp, H, cx, hc, light, seed, facing, false);
+    if (O.brim) { const by = hc - H.b + 0.3 * HH, d = facing || 1;   // a flat cap's peak
+      const bp = [[cx - 0.75 * H.a, by - 2 * u], [cx + 0.75 * H.a, by - 2 * u], [cx + (0.75 + 0.3 * d) * H.a, by + 0.1 * H.b], [cx + 0.1 * d * H.a, by + 0.2 * H.b], [cx - (0.75 - 0.3 * d) * H.a, by + 0.1 * H.b]];
+      p.shadedFill(bp, O.brim, mul(O.brim, [0.7, 0.7, 0.75]), light, H.a, 0.3); p.inkRing(bp, ow * 0.8, thick); }
+  }
   else if (O.hair) hatOn(p, { hat: "hair", hair: O.hair, jacket: O.tunic }, hp, H, cx, hc, light, seed, facing, false);
   else if (O.helmet && nohelmet) { // bald old head with white side tufts
     for (const s of [-1, 1]) p.ell(cx + s * 0.9 * H.a, hc - 0.1 * H.b, 0.22 * H.a, 0.3 * H.b, "#f4f1ea", 3 * u);

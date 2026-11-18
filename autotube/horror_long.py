@@ -113,7 +113,7 @@ def _gemini(prompt: str, cfg: dict, tries: int = 6) -> dict:
     from google import genai
     from google.genai import types
 
-    client = genai.Client(api_key=env("GEMINI_API_KEY"))
+    client = genai.Client(api_key=env("GEMINI_API_KEY"), http_options=types.HttpOptions(timeout=240_000))
     models = pick_models(client, cfg.get("ai", {}).get("gemini_model", "auto"))
     models += [m for m in ("gemini-flash-lite-latest", "gemini-2.5-flash-lite", "gemini-2.5-flash") if m not in models]
     last = None

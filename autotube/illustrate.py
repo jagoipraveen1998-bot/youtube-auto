@@ -91,7 +91,7 @@ def storyboard(cfg: dict, data: dict) -> bool:
     listing = "\n\n".join(f'id "{pid}" - {want[pid]} shot(s):\n{text}' for pid, text in pieces)
     prompt = PLAN.format(title=data["title"], parts=listing)
 
-    client = genai.Client(api_key=env("GEMINI_API_KEY"))
+    client = genai.Client(api_key=env("GEMINI_API_KEY"), http_options=types.HttpOptions(timeout=240_000))
     models = pick_models(client, cfg["ai"].get("gemini_model", "auto"))
     for attempt in range(6):
         model = models[min(attempt, len(models) - 1)]
@@ -209,7 +209,7 @@ class Painter:
         from google import genai
         from google.genai import types
         if self._client is None:
-            self._client = genai.Client(api_key=self.key)
+            self._client = genai.Client(api_key=self.key, http_options=types.HttpOptions(timeout=240_000))
         try:
             image_cfg = types.ImageConfig(aspect_ratio=aspect, image_size=self.size)
         except Exception:

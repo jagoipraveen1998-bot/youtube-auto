@@ -139,7 +139,7 @@ def write_short(cfg: dict, used: list[str], topic: str | None = None) -> dict:
     topic = topic or choose_topic(used)
     prompt = PROMPT.format(channel=cfg["channel"]["name"], topic=topic, beats=beats,
                            last=beats - 1, visuals=VISUALS, used=", ".join(used[-40:]) or "none")
-    client = genai.Client(api_key=env("GEMINI_API_KEY"))
+    client = genai.Client(api_key=env("GEMINI_API_KEY"), http_options=types.HttpOptions(timeout=240_000))
     models = pick_models(client, cfg["ai"].get("gemini_model", "auto"))
     last = None
     for attempt in range(5):

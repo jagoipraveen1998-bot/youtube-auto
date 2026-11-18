@@ -59,7 +59,7 @@ def write_long_script(cfg: dict, used: list[str]) -> dict:
     from google import genai
     from google.genai import types
 
-    client = genai.Client(api_key=env("GEMINI_API_KEY"))
+    client = genai.Client(api_key=env("GEMINI_API_KEY"), http_options=types.HttpOptions(timeout=240_000))
     scenes = "\n".join(f"- {k}: {v}" for k, v in SCENES.items())
     prompt = PROMPT.format(scenes=scenes, used="; ".join(used[-80:]) or "none yet")
     models = pick_models(client, cfg.get("ai", {}).get("gemini_model", "auto"))

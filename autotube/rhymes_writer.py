@@ -80,7 +80,7 @@ def write_rhymes(cfg: dict, lang: str, used_titles: list[str]) -> dict:
         themes="; ".join(themes), used=", ".join(used_titles[-80:]) or "none",
         ids=", ".join(CHARACTERS), settings=", ".join(SETTINGS),
     )
-    client = genai.Client(api_key=env("GEMINI_API_KEY"))
+    client = genai.Client(api_key=env("GEMINI_API_KEY"), http_options=types.HttpOptions(timeout=240_000))
     models = pick_models(client, cfg["ai"].get("gemini_model", "auto"))
     last = None
     for attempt in range(5):

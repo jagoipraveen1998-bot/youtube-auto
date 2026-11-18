@@ -98,7 +98,7 @@ def write_trend(cfg: dict, used_topics: list[str], used_links: set, n_lines: int
         raise RuntimeError("No light, fresh world stories in the feeds right now")
     listing = "\n".join(f"{i}. {s['title']} :: {s['summary']}" for i, s in enumerate(stories))
     prompt = PROMPT.format(used="; ".join(used_topics[-40:]) or "none", n=n_lines, stories=listing)
-    client = genai.Client(api_key=env("GEMINI_API_KEY"))
+    client = genai.Client(api_key=env("GEMINI_API_KEY"), http_options=types.HttpOptions(timeout=240_000))
     models = pick_models(client, cfg.get("ai", {}).get("gemini_model", "auto"))
     models += [m for m in ("gemini-flash-lite-latest", "gemini-2.5-flash") if m not in models]
     dead, last = set(), None

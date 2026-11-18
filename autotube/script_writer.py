@@ -83,7 +83,7 @@ def write_script(cfg: dict, news: list[dict]) -> dict:
     from google import genai
     from google.genai import types
 
-    client = genai.Client(api_key=env("GEMINI_API_KEY"))
+    client = genai.Client(api_key=env("GEMINI_API_KEY"), http_options=types.HttpOptions(timeout=240_000))
     now = datetime.now(IST)
     v = cfg["video"]
     headlines = "\n".join(

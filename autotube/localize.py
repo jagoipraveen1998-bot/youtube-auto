@@ -34,7 +34,7 @@ def translate(cfg: dict, title: str, description: str, lines: list[str]) -> dict
     from google import genai
     from google.genai import types
     from .script_writer import pick_models
-    client = genai.Client(api_key=env("GEMINI_API_KEY"))
+    client = genai.Client(api_key=env("GEMINI_API_KEY"), http_options=types.HttpOptions(timeout=240_000))
     prompt = (
         "Translate this animated horror Short for viewers in other languages. Keep it natural and spoken, the same "
         "creepy-funny tone, the same number of subtitle lines in the same order. Keep hashtags like #shorts #horror "

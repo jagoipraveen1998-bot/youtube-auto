@@ -87,7 +87,7 @@ def main():
     shutil.rmtree(out, ignore_errors=True)
     work.mkdir(parents=True)
 
-    if args.story and "script_queue" in args.story:      # remake one approved script (word for word)
+    if args.story and ("script_queue" in args.story or "horror/episodes" in args.story):   # an approved script (word for word): a queued Short, or a series episode
         script = json.loads(Path(args.story).read_text(encoding="utf-8"))
         log(f"Approved script (remake): {script['id']}")
         story = write_story(cfg, hist["stories"], script=script)
@@ -95,6 +95,17 @@ def main():
         story["script_pair"] = script.get("pair")
         story["three_d"] = script.get("three_d")
         story["cta"] = script.get("cta")
+        for k in ("episode", "series", "season", "format", "next"):   # a series episode: horizontal, published as a normal video
+            if script.get(k) is not None:
+                story[k] = script[k]
+        if story.get("episode"):
+            story["title"] = script["title"]
+            story["description"] = script.get("description", story.get("description", ""))
+            story["story_id"] = script["id"]
+            done = {x.split(":")[0] for x in hist["stories"]}
+            if script["id"] in done and not args.no_upload:
+                log(f"{script['id']} is already published: nothing to do")
+                return
         if script.get("part"):
             story["min_len"] = 93
     elif args.story:
@@ -189,7 +200,7 @@ def main():
 
 
 def publish(args, cfg, hcfg, out, hist, hist_path, story, video, thumb, plan):
-    length = check_playable(video, 15, 175)   # Shorts may run up to 3 minutes
+    length = check_playable(video, 15, 900 if story.get("episode") else 175)   # Shorts up to 3 minutes; episodes up to 15
 
     full = latest_long_video()
     if story.get("part") == 2 and story.get("script_pair"):
@@ -207,7 +218,11 @@ def publish(args, cfg, hcfg, out, hist, hist_path, story, video, thumb, plan):
         story["description"] = (CAST_CALL + "\n\n" + story["description"])
     if story.get("cta"):                                  # the end line also opens the description
         story["description"] = story["cta"] + " \U0001F447\n\n" + story["description"]
-    description = "\n".join([story["description"], "",
+    if story.get("episode"):                     # a series episode: no Shorts tags, point to the next one
+        description = "\n".join([story["description"], "", *([f"Next: {story['next']}.", ""] if story.get("next") else []),
+                                 "#horror #animation #horrorstory"])
+    else:
+        description = "\n".join([story["description"], "",
                              *([f"🎬 Full animated horror story: {full['title']} → https://youtu.be/{full['video_id']}", ""] if full else []),
                              "A Creepy Cartoon Tale: an original animated horror short. New horror Shorts every day.",
                              "", " ".join(hcfg.get("hashtags", ["#shorts", "#horror"]))])
@@ -241,15 +256,18 @@ def publish(args, cfg, hcfg, out, hist, hist_path, story, video, thumb, plan):
         hist.pop("open_part", None)
     hist_path.parent.mkdir(parents=True, exist_ok=True)
     hist_path.write_text(json.dumps(hist, indent=2, ensure_ascii=False), encoding="utf-8")
-    log(f"Horror Short uploaded: https://youtube.com/shorts/{video_id}")
+    log(f"Horror {'episode' if story.get('episode') else 'Short'} uploaded: https://youtu.be/{video_id}")
     (out / "uploaded.json").write_text(json.dumps({"video_id": video_id, "title": title, "date": today,
                                                    "part": story.get("part"), "pair": story.get("script_pair")}), encoding="utf-8")
     if story.get("part") == 2:                       # Part 1 now points straight to Part 2
         p1 = next((v for v in reversed(hist["videos"][:-1]) if story.get("script_pair") and v.get("pair") == story["script_pair"]), None)
         if p1:
             link_part2(p1["video_id"], video_id)
-    # the same Short goes to Instagram as a Reel straight away (skipped quietly if IG_ACCESS_TOKEN is not set)
+    # the same Short goes to Instagram as a Reel straight away (skipped quietly if IG_ACCESS_TOKEN is not set);
+    # horizontal episodes are not Reels
     try:
+        if story.get("episode"):
+            raise RuntimeError("episodes are horizontal, not posted as Reels")
         from autotube.instagram import ig_caption, publish_reel
         ig_id = publish_reel(video, ig_caption(title, story.get("description", ""),
                                                hcfg.get("instagram_hashtags", ["#horror", "#reels"])))

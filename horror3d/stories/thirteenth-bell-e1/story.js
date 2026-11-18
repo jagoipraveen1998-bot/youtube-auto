@@ -34,7 +34,7 @@ const CAMS = {
   count: [{ pos: R(1.4, 1.4, 1.2), look: R(-0.6, 0.8, -1.0), fov: 46 }, { pos: R(1.0, 1.3, 0.8), look: R(-0.7, 0.8, -1.0), fov: 42 }],
   twelve: [{ pos: R(0.2, 1.0, -0.1), look: R(-0.75, 0.85, -1.1), fov: 34 }, { pos: R(0.0, 0.98, -0.3), look: R(-0.75, 0.85, -1.1), fov: 30 }],
   thirteen: [{ pos: O(2, 10.5, 14), look: O(5, 13.0, 24), fov: 30 }, { pos: O(2.8, 11.5, 16), look: O(5, 13.0, 24), fov: 26 }],
-  voices: [{ pos: O(-7, 2.6, 4.5), look: O(-1, 1.2, 9.5), fov: 40 }, { pos: O(-1, 2.4, 5), look: O(3, 1.2, 9.5), fov: 40 }],
+  voices: [{ pos: O(-5.5, 1.9, 6.4), look: O(-2.5, 1.1, 9.4), fov: 40 }, { pos: O(0.5, 1.8, 6.6), look: O(3.4, 1.1, 9.4), fov: 38 }],
   peter: [{ pos: O(5.8, 1.5, 6.6), look: O(3.6, 1.1, 9.4), fov: 36 }, { pos: O(5.0, 1.4, 7.4), look: O(3.6, 1.1, 9.5), fov: 32 }],
   bolt: [{ pos: O(1.4, 3.3, 8.6), look: O(3.6, 1.0, 9.6), fov: 38 }, { pos: O(1.6, 3.2, 8.8), look: O(3.6, 1.0, 9.7), fov: 34 }],
   boy: [{ pos: O(1.6, 3.2, 8.8), look: O(3.6, 1.0, 9.7), fov: 34 }, { pos: O(1.8, 3.1, 9.0), look: O(3.6, 1.0, 9.7), fov: 30 }],
@@ -50,10 +50,10 @@ const CAMS = {
   dad: [{ pos: C(1.3, 1.0, 1.3), look: C(0.8, 0.9, 0.35), fov: 32 }, { pos: C(1.2, 0.98, 1.15), look: C(0.8, 0.9, 0.35), fov: 28 }],
   silence: [{ pos: C(0.3, 1.6, 2.05), look: C(-0.1, 0.9, -0.6), fov: 50 }, { pos: C(0.25, 1.55, 1.95), look: C(-0.3, 1.0, -0.6), fov: 48 }],
   inside: [{ pos: C(0.9, 1.4, 1.9), look: C(-2.0, 1.6, -0.6), fov: 46 }, { pos: C(0.7, 1.35, 1.7), look: C(-2.0, 1.7, -0.7), fov: 42 }],
-  stairs: [{ pos: C(0.4, 1.2, 1.9), look: C(-2.05, 1.5, -0.4), fov: 44 }, { pos: C(-0.2, 1.05, 1.7), look: C(-2.05, 1.2, 0.0), fov: 38 }],
+  stairs: [{ pos: C(-0.85, 2.45, 2.05), look: C(-2.1, 1.0, 0.0), fov: 50 }, { pos: C(-0.95, 2.3, 1.95), look: C(-2.1, 0.8, 0.5), fov: 44 }],
 };
 const LIGHTS = {
-  night: { ...MOODS.night, hemi: 0.6, sky: '#3a5aa8', ground: '#101830', fog: '#1a2848', fogNear: 6, fogFar: 46, gain: '#c8d8ff', lift: '#0a1028', vig: 0.55, sat: 1.15 },
+  night: { ...MOODS.night, hemi: 0.6, sky: '#3a5aa8', ground: '#101830', fog: '#22325a', fogNear: 3, fogFar: 26, gain: '#c8d8ff', lift: '#0a1028', vig: 0.55, sat: 1.15 },
   day: { ...MOODS.morning, hemi: 1.0, sky: '#c8ccd0', ground: '#4a4438', fog: '#c0c4c8', fogNear: 10, fogFar: 70, gain: '#fff4e8', vig: 0.3, sat: 1.05 },
   dusk: { ...MOODS.evening, hemi: 0.8, fog: '#a8786a', fogNear: 6, fogFar: 40, vig: 0.4, sat: 1.15 },
   lamp: { ...MOODS.night, hemi: 0.42, sky: '#5a4838', ground: '#1a120c', fog: '#140c08', fogNear: 4, fogFar: 18, gain: '#ffe4c4', lift: '#0e0810', vig: 0.5, sat: 1.15 },
@@ -118,7 +118,7 @@ export const build = (ctx) => {
     add(new THREE.CylinderGeometry(0.05, 0.06, 4, 8), wood, 0, 2.4, 0.4, b); return b; });
   const lamps = [-10, -3, 4, 11].map((x) => { add(new THREE.CylinderGeometry(0.06, 0.08, 3, 8), toon({ color: '#2a2a30' }), x, 1.5, 1.0, G);
     const l = add(box(0.3, 0.38, 0.3), lit.clone(), x, 3.1, 1.0, G, { cast: false }); return l; });
-  const lampLights = [-3, 4].map((x) => { const l = new THREE.PointLight('#ffc070', 0, 12, 1.3); l.position.set(x, 3.0, 1.2); G.add(l); return l; });
+  const lampLights = [-10, -3, 4, 11].map((x) => { const l = new THREE.PointLight('#ffc070', 0, 12, 1.3); l.position.set(x, 3.0, 1.2); G.add(l); return l; });
   for (const [x, z] of [[-1.5, 1.4], [0.4, 1.8], [-8, 1.6]]) { const n = add(new THREE.SphereGeometry(0.55, 12, 8), toon({ color: '#7a6a48' }), x, 0.12, z, G); n.scale.y = 0.35; }
   for (const [x, z] of [[2.2, 1.6], [2.9, 1.7], [-12, 2]]) add(box(0.6, 0.5, 0.6), wood, x, 0.25, z, G);
   // Fish Lane: a row of cottages facing the harbour (front at z = 10)
@@ -177,7 +177,8 @@ export const build = (ctx) => {
   const flame = add(new THREE.SphereGeometry(0.018, 8, 6), lit, 0, 0.17, 0, candle, { cast: false }); flame.scale.y = 1.8;
   const candleL = new THREE.PointLight('#ffb060', 0, 7, 1.3); candleL.position.set(0, 1.0, 0); candleL.castShadow = true; Kc.add(candleL);
   const steps = []; for (let k = 0; k < 10; k++) steps.push(add(box(0.8, (k + 1) * 0.26, 0.32), wood, -2.1, (k + 1) * 0.13, 1.6 - 0.16 - 0.32 * k, Kc));
-  const wet = []; for (let k = 9; k >= 0; k--) for (const s of [-1, 1]) { const m = add(new THREE.CircleGeometry(0.06, 10), new THREE.MeshBasicMaterial({ color: '#1e2c34', transparent: true, opacity: 0.75, depthWrite: false }), -2.1 + s * 0.11, (k + 1) * 0.26 + 0.004, 1.6 - 0.16 - 0.32 * k, Kc, { cast: false }); m.rotation.x = -Math.PI / 2; m.scale.set(0.8, 1.5, 1); wet.push(m); }
+  const stairL = new THREE.SpotLight('#8ab0ff', 0, 8, 0.5, 0.7, 1.1); stairL.position.set(...C(-0.4, 2.5, 1.6)); stairL.target.position.set(...C(-2.1, 1.2, 0.0)); ctx.world.add(stairL); ctx.world.add(stairL.target);
+  const wet = []; for (let k = 9; k >= 0; k--) for (const s of [-1, 1]) { const m = add(new THREE.CircleGeometry(0.085, 10), new THREE.MeshBasicMaterial({ color: '#9ec8e0', transparent: true, opacity: 0.85, depthWrite: false }), -2.1 + s * 0.11, (k + 1) * 0.26 + 0.004, 1.6 - 0.16 - 0.32 * k, Kc, { cast: false }); m.rotation.x = -Math.PI / 2; m.scale.set(0.8, 1.5, 1); wet.push(m); }
   for (let k = -1; k <= 1; k++) add(box(0.04, 0.9, 0.04), wood, -1.72, 0.45 + (k + 1) * 0.78 + 0.4, 1.0 - (k + 1) * 0.9, Kc);
   add(box(0.06, 0.06, 3.3), wood, -1.72, 0, 0, Kc).position.set(-1.72, 1.55, 0); 
   add(box(0.05, 0.7, 0.9), toon({ color: '#3a2e24' }), 2.48, 1.5, -0.4, Kc);                          // shuttered window
@@ -190,25 +191,25 @@ export const build = (ctx) => {
   const moon = new THREE.SpotLight('#9ab4ff', 6, 10, 0.5, 0.6, 1.2); moon.position.set(...R(3.5, 2.2, 0.3)); moon.target.position.set(...R(-0.8, 0.5, -0.8)); ctx.world.add(moon); ctx.world.add(moon.target);
   // a black card that hides everything (the hard cut to black)
   const black = new THREE.Mesh(new THREE.PlaneGeometry(4, 4), new THREE.MeshBasicMaterial({ color: '#000', depthTest: false, transparent: true })); black.renderOrder = 999; black.visible = false; ctx.world.add(black);
-  return { boats, lamps, lampLights, doors, haleGlow, tBell, bBell, rope, prints, watch, water, candle, flame, candleL, wet, black, lanL };
+  return { boats, lamps, lampLights, doors, haleGlow, tBell, bBell, rope, prints, watch, water, candle, flame, candleL, wet, black, lanL, stairL };
 };
 export const update = (W, f, P) => {
   if (!P.boats) return;
   P.boats.forEach((b, i) => { b.position.y = -0.85 + Math.sin(f * 0.05 + i) * 0.05; b.rotation.z = Math.sin(f * 0.04 + i * 2) * 0.04; });
-  P.lamps.forEach((m) => m.material.color.set(W.lamps ? '#ffd28a' : '#4a4a40')); P.lampLights.forEach((l) => (l.intensity = W.lamps ? 2.2 : 0));
+  P.lamps.forEach((m) => m.material.color.set(W.lamps ? '#ffd28a' : '#4a4a40')); P.lampLights.forEach((l) => (l.intensity = W.lamps ? 4.0 : 0));
   P.doors[1].rotation.y = -W.hale * 1.3; P.haleGlow.intensity = W.haleGlow;
   P.tBell.rotation.z = W.swing * Math.sin(f * 0.22); P.bBell.rotation.z = W.swing * 0.8 * Math.sin(f * 0.22); P.rope.position.y = 1.3 + W.swing * 0.15 * Math.sin(f * 0.22);
   P.prints.forEach((m, i) => (m.visible = W.prints));
   P.watch.visible = W.watch; P.watch.position.y = W.watchY;
   P.water.scale.set(0.9, Math.max(0.001, W.water * 1.2), 1); P.water.position.z = -1.95 + W.water * 0.6;
   const fl = 1 + 0.12 * Math.sin(f * 0.9) + 0.08 * Math.sin(f * 2.3); P.candle.visible = W.candle; P.candleL.intensity = W.candle ? W.burn * fl : 0;
-  P.wet.forEach((m, i) => (m.visible = i < W.wet));
+  P.wet.forEach((m, i) => (m.visible = i < W.wet)); P.stairL.intensity = W.stairLight * 5;
   P.black.visible = W.black > 0; P.black.material.opacity = W.black;
   if (W.black > 0) { const c = camAt(f), d = [c.look[0] - c.pos[0], c.look[1] - c.pos[1], c.look[2] - c.pos[2]], n = Math.hypot(...d); P.black.position.set(c.pos[0] + d[0] / n * 0.3, c.pos[1] + d[1] / n * 0.3, c.pos[2] + d[2] / n * 0.3); P.black.lookAt(...c.pos); }
 };
 export const worldAt = (f) => {
   const S = shotAt(f), id = S.id, i = S.i;
-  const W = { lamps: true, hale: 0, haleGlow: 0, swing: 0, prints: false, watch: false, watchY: 0.03, water: 0, candle: true, burn: 2.4, wet: 0, black: 0 };
+  const W = { stairLight: 0, lamps: true, hale: 0, haleGlow: 0, swing: 0, prints: false, watch: false, watchY: 0.03, water: 0, candle: true, burn: 2.4, wet: 0, black: 0 };
   if (['town', 'tom', 'morning', 'prints', 'watch', 'stopped'].includes(id)) W.lamps = false;
   if (['count', 'twelve', 'thirteen', 'count2'].includes(id)) W.swing = 0.25;
   if (id === 'bolt') { W.hale = 0.25 * smooth(ramp(f, S.beat, S.b)); W.haleGlow = 1.6 * W.hale / 0.25; }
@@ -217,7 +218,7 @@ export const worldAt = (f) => {
   if (id === 'watch' || id === 'stopped') { W.watch = true; W.watchY = 0.03; }
   if (['knock', 'annie', 'whistle', 'dad'].includes(id)) W.water = smooth(ramp(f, S.a, S.b)) * 0.5 + (['annie', 'whistle', 'dad'].indexOf(id) + 1) * 0.15;
   if (id === 'silence' || id === 'inside' || id === 'stairs') W.water = 0.65;
-  if (id === 'stairs') { W.wet = Math.floor(ramp(f, S.a + 6, S.b - 40) * 20); W.burn = f > S.b - 50 ? 0 : 2.4; }
+  if (id === 'stairs') { W.wet = Math.floor(ramp(f, S.a + 6, S.b - 60) * 20); W.burn = f > S.b - 40 ? 0.6 : 1.6; W.stairLight = 1; }
   return W;
 };
 
@@ -229,7 +230,7 @@ export const actorsAt = (f, T) => {
   const mary = (expr, o, pos, x = {}) => out.push(actor(T, MARY, { seed: 9, expr, blink: blinkAt(f, 9), ...o, who: 'mary' }, pos, { s: 0.82, ...x }));
   const annie = (expr, o, pos, x = {}) => out.push(actor(T, ANNIE, { seed: 44, expr, blink: blinkAt(f, 44), ...o, who: 'annie' }, pos, { s: 0.52, ...x }));
   const silas = (expr, o) => out.push(actor(T, 'grandpa', { seed: 21, expr, blink: blinkAt(f, 21), R: 'lift', ...o, who: 'silas' }, Bf(-0.15, 0, -0.1), { s: AS }));
-  const drowned = (pos, seed, o = {}) => out.push(actor(T, DROWNED, { seed, expr: 'neutral', blink: 0, look: 0.3, ...o, who: 'drowned' + seed }, pos, { s: KS, tint: '#2a4a52', alpha: 0.82, blob: false, shadow: false }));
+  const drowned = (pos, seed, o = {}) => out.push(actor(T, DROWNED, { seed, expr: 'neutral', blink: 0, look: 0.3, ...o, who: 'drowned' + seed }, pos, { s: 0.66, tint: '#4a7a84', alpha: 0.9, blob: false, shadow: false }));
   if (id === 'tom') tom('neutral', { look: -0.3, R: 'lift' }, O(1, 0.0, 0.5));
   if (id === 'ringer') { silas('neutral', { look: 0.5 }); tom('neutral', { look: -0.5, R: 'lift' }, Bf(0.9, 0, 0.7)); }
   if (id === 'silas' || id === 'answered') silas(id === 'answered' ? 'stern' : 'squint', { look: 0.6 });

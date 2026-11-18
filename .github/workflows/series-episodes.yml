@@ -1,0 +1,44 @@
+name: Series episodes (The Thirteenth Bell)
+
+# Monday, Wednesday and Friday: publish the next approved episode of the CreepyCartoonTales series.
+# It hands the episode to the Shorts workflow (same voice, 3D render machines and upload), so the two never
+# run at once. 09:31 UTC = 15:01 IST: the render finishes well before the 14:07 UTC Short, and the episode is
+# out around 12:00 UTC (7 am New York, 8 pm Manila).
+on:
+  schedule:
+    - cron: "31 9 * * 1,3,5"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  next-episode:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Find the next episode that is approved, built and due
+        id: pick
+        run: |
+          python3 - <<'EOF'
+          import json, os, pathlib, datetime
+          done = {x.split(":")[0] for x in json.load(open("data/horror_history.json"))["stories"]}
+          today = datetime.date.today().isoformat()
+          pick = ""
+          for p in sorted(pathlib.Path("horror/episodes").glob("*.json")):
+              e = json.loads(p.read_text(encoding="utf-8"))
+              built = pathlib.Path("horror3d/stories", e.get("three_d", ""), "story.js").exists()
+              if e.get("parts"):          # cut into Shorts: those go out through data/upload_queue.json
+                  continue
+              if e.get("approved") and built and e["id"] not in done and e.get("release_from", "") <= today:
+                  pick = str(p); break
+          print(f"Next episode: {pick or 'none due'}")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as gh:
+              gh.write(f"story={pick}\n")
+          EOF
+      - name: Hand it to the horror workflow to render and publish
+        if: steps.pick.outputs.story != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run "Horror shorts (CreepyCartoonTales)" -f mode=full -f story="${{ steps.pick.outputs.story }}"

@@ -1,0 +1,76 @@
+{
+  "id": "thirteenth-bell-e1",
+  "series": "The Thirteenth Bell",
+  "season": 1,
+  "episode": 1,
+  "title": "The Thirteenth Bell (Season 1, Episode 1)",
+  "approved": true,
+  "three_d": "thirteenth-bell-e1",
+  "format": "short",
+  "cta": "Tag a friend who would have opened the door",
+  "description": "Greywick, 1888. When the church bell rings a thirteenth time, the sea sends someone back, and they call your name. Episode 1 of The Thirteenth Bell, a CreepyCartoonTales horror series. New episodes Monday, Wednesday and Friday.",
+  "lines": [
+    "In Greywick, the church bell rings twelve times at midnight.",
+    "And every soul in town lies awake, praying it stops at twelve.",
+    "Greywick, 1888. A fishing town on the English coast, where the fog rolls in thick enough to lose your own hand.",
+    "Tom Bramwell is twelve. Since his father's boat went down last winter, Tom mends nets on the harbour wall from dawn till dark, so his mother and little sister can eat.",
+    "Old Silas Crane rings the bell. Every evening Tom climbs the tower stairs with his supper,",
+    "and every evening Silas says the same thing. \"Twelve is the hour, boy. Thirteen is the sea.\"",
+    "On the tower wall there are marks carved into the stone, rows and rows of them.",
+    "\"One for every thirteenth bell,\" Silas says. \"And one for every soul that answered.\"",
+    "That night, Tom's mother bolts the door. She lays a line of salt along every sill.",
+    "And she tells him the rule of Greywick. \"If the bell rings thirteen, you don't open that door. And you never, ever answer anyone who calls your name.\"",
+    "At midnight the bell begins. One. Two. Three. Tom counts them in the dark.",
+    "Ten. Eleven. Twelve. Silence.",
+    "Then: thirteen.",
+    "Out in the fog, voices start to call. Soft, patient voices, calling names up and down Fish Lane.",
+    "And next door, Tom hears Mrs Hale's son, the one the sea took two years ago. \"Mother? Mother, open the door. I'm home.\"",
+    "Mrs Hale has waited two years to hear that voice. Tom hears her bolt slide back.",
+    "He hears her say, \"Oh, Peter. Oh, my boy.\" Then he hears nothing at all.",
+    "In the morning, Mrs Hale's door stands open. Her bed hasn't been slept in.",
+    "And from her doorstep to the sea runs a line of wet footprints. Two pairs going down to the water. Only one coming back.",
+    "That afternoon, Tom finds something on his own doorstep. His father's pocket watch, the one that went down with the boat.",
+    "It is dripping wet. And it has stopped at thirteen minutes past twelve.",
+    "Mum doesn't sleep that night. She sits at the kitchen table with the candle and the bolt and the salt, and she makes Tom and Annie sit with her.",
+    "One. Two. Eleven. Twelve. Thirteen.",
+    "A knock at the door. Then a voice Tom would know anywhere. \"Tommy. Tommy, it's Dad. I'm cold, son. Open the door.\"",
+    "Annie is already halfway out of her chair. \"It's Daddy!\" Mum catches her arm and puts a hand over Tom's mouth.",
+    "Then the voice outside does something only his father ever did. It whistles their tune, the three short notes Dad whistled every time he came up the harbour steps.",
+    "And Tom can't help it. He pulls his mother's hand away and he whispers, \"Dad?\"",
+    "The knocking stops. The voice stops. For a long moment there is nothing but the sea.",
+    "Then, from upstairs, from inside the house, behind them, Tom hears his father's voice again. \"Thank you, Tommy. I'm inside now.\"",
+    "And wet footsteps start, slowly, down the stairs."
+  ],
+  "ending": "cliffhanger",
+  "speed": 1.1,
+  "parts": [
+    [
+      0,
+      9
+    ],
+    [
+      10,
+      18
+    ],
+    [
+      19,
+      23
+    ],
+    [
+      24,
+      29
+    ]
+  ],
+  "part_covers": [
+    1,
+    14,
+    20,
+    29
+  ],
+  "part_titles": [
+    "Never answer the 13th bell | The Thirteenth Bell, Part 1",
+    "Her drowned son knocked at midnight | The Thirteenth Bell, Part 2",
+    "His drowned father's watch came back | The Thirteenth Bell, Part 3",
+    "The voice was already inside | The Thirteenth Bell, Part 4"
+  ]
+}

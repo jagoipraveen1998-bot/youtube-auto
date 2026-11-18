@@ -69,13 +69,45 @@ const tbox = (w, h, d, t = 2) => {
   return g;
 };
 // ---------- sky ----------
-const skyU = { top: { value: new THREE.Color() }, hor: { value: new THREE.Color() }, sunDir: { value: new THREE.Vector3() }, sunCol: { value: new THREE.Color() }, sunSize: { value: 0 } };
-const sky = new THREE.Mesh(new THREE.SphereGeometry(1200, 32, 16), new THREE.ShaderMaterial({
+// Gradient + sun with glow, drifting fBm clouds (lit from the sun or moon, silver edges), a cratered moon with a halo,
+// and stars. Driven by the light mood: clouds 0..1 (coverage), cloudCol/cloudDark, moonAz/moonEl/moonSize/moonCol, stars 0..1.
+const skyU = { top: { value: new THREE.Color() }, hor: { value: new THREE.Color() }, sunDir: { value: new THREE.Vector3() }, sunCol: { value: new THREE.Color() }, sunSize: { value: 0 },
+  cloud: { value: 0 }, cloudCol: { value: new THREE.Color('#ffffff') }, cloudDark: { value: new THREE.Color('#888888') }, moonDir: { value: new THREE.Vector3(0, 1, 0) },
+  moonCol: { value: new THREE.Color('#e8eeff') }, moonSize: { value: 0 }, stars: { value: 0 }, t: { value: 0 } };
+const sky = new THREE.Mesh(new THREE.SphereGeometry(1200, 48, 24), new THREE.ShaderMaterial({
   uniforms: skyU, side: THREE.BackSide, depthWrite: false, fog: false,
   vertexShader: `varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }`,
-  fragmentShader: `uniform vec3 top, hor, sunDir, sunCol; uniform float sunSize; varying vec3 vP;
-    void main(){ float h = clamp(vP.y,0.,1.); vec3 c = mix(hor, top, pow(h, .55)); if(vP.y<0.) c = hor;
-      float s = dot(normalize(vP), normalize(sunDir)); c += sunCol * (smoothstep(1.-sunSize, 1.-sunSize*.6, s) + .35*pow(max(s,0.), 24.)*step(.001,sunSize));
+  fragmentShader: `uniform vec3 top, hor, sunDir, sunCol, cloudCol, cloudDark, moonDir, moonCol; uniform float sunSize, cloud, moonSize, stars, t; varying vec3 vP;
+    float h21(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+    float vn(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.-2.*f);
+      return mix(mix(h21(i), h21(i+vec2(1,0)), f.x), mix(h21(i+vec2(0,1)), h21(i+vec2(1,1)), f.x), f.y); }
+    float fbm(vec2 p){ float a = .5, s = 0.; for(int i=0;i<6;i++){ s += a*vn(p); p = p*2.03 + vec2(1.7, 9.2); a *= .5; } return s; }
+    void main(){
+      vec3 d = normalize(vP); float h = clamp(d.y,0.,1.);
+      vec3 c = mix(hor, top, pow(h, .55)); if(d.y<0.) c = hor;
+      // stars (only up high, twinkling a little)
+      if (stars > 0.) { vec2 g = vec2(atan(d.z, d.x)*120., d.y*160.); vec2 id = floor(g); float r = h21(id);
+        float st = step(.985, r) * smoothstep(.35, .05, length(fract(g)-.5)) * (0.6 + 0.4*sin(t*.2 + r*40.));
+        c += vec3(.9,.95,1.) * st * stars * smoothstep(.05, .35, d.y); }
+      // sun disc + glow
+      float s = dot(d, normalize(sunDir));
+      vec3 sunL = sunCol * (smoothstep(1.-sunSize, 1.-sunSize*.6, s) + .35*pow(max(s,0.), 24.)*step(.001,sunSize));
+      // moon: disc with soft craters, plus halo
+      float m = dot(d, normalize(moonDir)); vec3 moonL = vec3(0.);
+      if (moonSize > 0.) { float disc = smoothstep(1.-moonSize, 1.-moonSize*.92, m);
+        vec3 tng = normalize(cross(normalize(moonDir), vec3(0.,1.,0.))); vec2 uv = vec2(dot(d, tng), dot(d, cross(tng, normalize(moonDir)))) / sqrt(moonSize*2.);
+        float cr = .78 + .22*fbm(uv*9. + 3.);
+        moonL = moonCol * (disc*cr*1.25 + .45*pow(max(m,0.), 90.) + .18*pow(max(m,0.), 12.)); }
+      // clouds on a flat layer above the camera
+      float cov = 0.;
+      if (cloud > 0. && d.y > 0.) { vec2 p = d.xz / (d.y + .12) * .9 + vec2(t*.0009, t*.0004);
+        float n = fbm(p*1.4); float n2 = fbm(p*4.1 + 5.);
+        cov = smoothstep(1. - cloud*.95 - .05, 1. - cloud*.95 + .28, n*.8 + n2*.35) * smoothstep(0., .12, d.y);
+        float lit = clamp(.55 + .9*(n2 - .45), 0., 1.);
+        vec3 cc = mix(cloudDark, cloudCol, lit);
+        float rim = pow(max(max(s, m*step(.001,moonSize)), 0.), 10.) * (1.-cov) * 2.;   // silver lining around the sun / moon
+        c = mix(c + sunL + moonL, cc + (sunCol + moonCol*step(.001,moonSize))*rim*.25, cov);
+      } else c += sunL + moonL;
       gl_FragColor = vec4(c,1.); }`,
 }));
 sky.userData.sky = true; scene.add(sky);
@@ -171,6 +203,36 @@ const motes = new THREE.Points(new THREE.BufferGeometry().setAttribute('position
   new THREE.PointsMaterial({ color: '#cfe0ff', size: 0.012, transparent: true, opacity: 0.5 }));
 motes.userData.ndSkip = true; scene.add(motes);
 
+// rain: streaks falling around the camera and splashes on the ground. Driven by the light mood: rain 0..1,
+// rainCol, rainFloor (ground height), rainWind (slant). Deterministic per frame, so render machines agree.
+const RAIN_N = 4200, SPL_N = 900, RAIN_R = 9, RAIN_H = 9;
+const rainGeo = new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(RAIN_N * 6), 3));
+const rain = new THREE.LineSegments(rainGeo, new THREE.LineBasicMaterial({ color: '#c8d4e8', transparent: true, opacity: 0.45, depthWrite: false, fog: true }));
+rain.userData.ndSkip = true; rain.frustumCulled = false; rain.renderOrder = 4; scene.add(rain);
+const splGeo = new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(SPL_N * 3), 3));
+const splash = new THREE.Points(splGeo, new THREE.PointsMaterial({ color: '#dbe6f6', size: 0.035, transparent: true, opacity: 0.7, depthWrite: false }));
+splash.userData.ndSkip = true; splash.frustumCulled = false; scene.add(splash);
+const hr = (n) => { const x = Math.sin(n * 12.9898 + 78.233) * 43758.5453; return x - Math.floor(x); };   // a well-mixed hash (P.rng's first draw follows the seed)
+const rainSeed = Array.from({ length: RAIN_N }, (_, i) => [hr(i * 3 + 101), hr(i * 3 + 102.7), hr(i * 3 + 103.3)]);
+function placeRain(L, f) {
+  const on = (L.rain || 0) > 0; rain.visible = splash.visible = on; if (!on) return;
+  const n = Math.floor(RAIN_N * Math.min(1, L.rain)), cx = camera.position.x, cz = camera.position.z, fl = L.rainFloor ?? 0, wind = L.rainWind ?? 0.12;
+  const pa = rainGeo.attributes.position; rain.material.color.set(L.rainCol || '#c8d4e8'); rain.material.opacity = 0.35 + 0.4 * L.rain;
+  for (let i = 0; i < RAIN_N; i++) {
+    const [a, b, c] = rainSeed[i];
+    if (i >= n) { pa.setXYZ(i * 2, 0, -99, 0); pa.setXYZ(i * 2 + 1, 0, -99, 0); continue; }
+    const x = cx + (a * 2 - 1) * RAIN_R, z = cz + (b * 2 - 1) * RAIN_R, y = fl + RAIN_H - ((c * RAIN_H + f * 0.42 * (0.9 + 0.2 * a)) % RAIN_H), len = 0.42 + 0.18 * b;
+    pa.setXYZ(i * 2, x, y, z); pa.setXYZ(i * 2 + 1, x - wind * len, y - len, z);
+  }
+  pa.needsUpdate = true; rainGeo.setDrawRange(0, n * 2);
+  const ps = splGeo.attributes.position;
+  for (let i = 0; i < SPL_N; i++) {                                  // each splash lives 3 frames at a new spot
+    const k = Math.floor((f + i * 7) / 3), r1 = hr(k * 13.1 + i * 1.7), r2 = hr(k * 17.3 + i * 2.9 + 5);
+    ps.setXYZ(i, cx + (r1 * 2 - 1) * RAIN_R * 0.7, fl + 0.02, cz + (r2 * 2 - 1) * RAIN_R * 0.7);
+  }
+  ps.needsUpdate = true; splash.material.opacity = 0.35 + 0.4 * L.rain;
+}
+
 // a story can add its own props (a laptop, a cassette, a dog bed…) and hide house pieces it doesn't need
 const STORY_PROPS = ST.build ? ST.build({ THREE, world, scene, camera, add, box, tbox, toon, texM, M, P, grad, chair, tvG, rug, clockG, lights: { lamp, tvLight, porchLight, fillLight } }) || {} : {};
 // ---------- cards ----------
@@ -194,6 +256,7 @@ class Card {
     const p = new T.Pen(g); fn(p); this.t.needsUpdate = true;
   }
 }
+const CARD_GAIN = 1.3;
 const cards = []; const getCard = (i) => cards[i] || (cards[i] = new Card());
 // ---------- render targets & post ----------
 const rtColor = new THREE.WebGLRenderTarget(W, H, { samples: 4, type: THREE.HalfFloatType });
@@ -252,6 +315,9 @@ function applyLight(L, f) {
   sun.color.set(L.sun); sun.intensity = L.sunI;
   scene.fog.color.set(L.fog); scene.fog.near = L.fogNear; scene.fog.far = L.fogFar;
   skyU.top.value.set(L.skyTop); skyU.hor.value.set(L.skyHor); skyU.sunCol.value.set(L.sunDisc || '#000'); skyU.sunSize.value = L.sunSize || 0;
+  skyU.cloud.value = L.clouds || 0; skyU.cloudCol.value.set(L.cloudCol || '#f4f6fa'); skyU.cloudDark.value.set(L.cloudDark || '#8a92a6');
+  skyU.moonSize.value = L.moonSize || 0; skyU.moonCol.value.set(L.moonCol || '#e8eeff'); skyU.stars.value = L.stars || 0; skyU.t.value = f;
+  { const a = rx(L.moonAz ?? 200), e = rx(L.moonEl ?? 30); skyU.moonDir.value.set(Math.cos(e) * Math.cos(a), Math.sin(e), Math.cos(e) * Math.sin(a)); }
   inkU.sat.value = L.sat; inkU.gain.value.set(L.gain || '#ffffff'); inkU.lift.value.set(L.lift || '#000000');
   lamp.intensity = L.lamp ?? 0; tvLight.intensity = (L.tv ?? 0) * (0.85 + 0.15 * Math.sin(f * 0.9) * Math.sin(f * 0.37)); porchLight.intensity = L.porch ?? 0; fillLight.intensity = L.fill ?? 0;
   shade.material.color.set(L.lamp ? '#ffe6b0' : '#8a7d68'); screenMat.color.set(L.tv ? (f % 40 < 20 ? '#8fc4ff' : '#a8d4ff') : '#0c0d12');
@@ -284,7 +350,8 @@ function drawActors(list, cam) {
     c.mesh.visible = true; c.mesh.position.set(a.x, a.y, a.z);
     const s = a.s || 1; c.mesh.scale.set(s * (a.flip ? -1 : 1), s, s);
     c.mesh.rotation.set(0, Math.atan2(cam.position.x - a.x, cam.position.z - a.z) + (a.yaw || 0), a.roll || 0);
-    c.mat.color.set(a.tint || '#ffffff'); c.mat.opacity = a.alpha ?? 1;
+    // characters are lifted above the set so they read clearly, even at night (a.gain overrides; tinted ghosts lift less)
+    c.mat.color.set(a.tint || '#ffffff').multiplyScalar(a.gain ?? (a.tint ? 1.12 : CARD_GAIN)); c.mat.opacity = a.alpha ?? 1;
     c.mesh.castShadow = a.shadow !== false;
     c.mesh.renderOrder = a.order || 2;
     if (a.blob !== false && a.y < DECK + 0.5 && a.y > -0.05) { c.blob.visible = true; c.blob.position.set(a.x, (a.ground ?? DECK) + 0.02, a.z); c.blob.scale.set(0.95 * s, 0.6 * s, 1); }
@@ -311,6 +378,7 @@ window.renderFrame = (f) => {
   camera.fov = C.fov; camera.updateProjectionMatrix(); camera.updateMatrixWorld();
   const W_ = worldAt(f); worldState(W_, f);
   placeSun(L, new THREE.Vector3(...(C.shadowAt || C.look)));
+  placeRain(L, f);
   drawActors([...actorsAt(f, T), ...fxAt(f, T)], camera);
   sky.position.copy(camera.position);
 

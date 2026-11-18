@@ -2525,7 +2525,9 @@ const cobweb = (p, cx, cy, r, u) => {
 
 /** front-facing Roman-era character. opts: expr, blink, look, facing, seed, L/R arm poses, tilt, headTilt, bob, nohelmet, light */
 export const romanFront = (p, key, opts = {}) => {
-  const O = typeof key === "string" ? OUTFITS[key] : key;
+  const O0 = typeof key === "string" ? OUTFITS[key] : key, wet = opts.wet || 0;
+  // wet: soaked by rain or the sea - darker cloth and hair (drips are drawn at the end)
+  const O = wet ? Object.fromEntries(Object.entries(O0).map(([k, v]) => [k, typeof v === "string" && v[0] === "#" && k !== "skin" ? mix(v, INK, 0.28 * wet) : v])) : O0;
   const { expr = "neutral", blink = 0, look = 0, facing = 0, seed = 3, L = "hang", R = O.spear ? "spear" : "hang", tilt = 0, headTilt = 0,
     bob = 0, nohelmet = false, light = rad(-120), web = false, step = 0 } = opts;
   const lid = lidOf(blink), skin = O.skin ?? SKIN;
@@ -2660,6 +2662,20 @@ export const romanFront = (p, key, opts = {}) => {
   if (helmet) galea(p, H, cx, hc, light, thick, ow, old, u);
   const hp = blobPts(cx, hc, H);
   if (O.hair && !helmet) { const hb = blobPts(cx, hc - 0.03 * HH, { ...H, a: H.a * 1.04, b: H.b * 1.05 }); p.poly(hb, O.hair, 0); }
+  // Character features that tell the cast apart at a glance (drawn behind the face)
+  if (O.long && !helmet) {        // long hair falling past the shoulders
+    const top = hc - 0.9 * H.b, bot = chin + 0.55 * HH, w = 1.22 * H.a;
+    const lp = [[cx - w, hc - 0.1 * H.b], ...ellPts(cx, hc - 0.05 * H.b, w, 0.98 * H.b, 180, 360, 0, 24), [cx + w, hc - 0.1 * H.b],
+      [cx + w * 1.08, bot - 0.1 * HH], [cx + w * 0.8, bot], [cx + w * 0.35, bot - 0.06 * HH], [cx - w * 0.35, bot - 0.06 * HH], [cx - w * 0.8, bot], [cx - w * 1.08, bot - 0.1 * HH]];
+    p.shadedFill(lp, O.long, mul(O.long, [0.7, 0.7, 0.78]), light, w, 0.35); p.inkRing(lp, ow * 0.85, thick);
+    for (const sx of [-0.7, -0.35, 0.35, 0.7]) p.stroke([[cx + sx * w, hc + 0.9 * H.b], [cx + sx * w * 1.05, bot - 0.08 * HH]], 1.4 * u, mul(O.long, [0.55, 0.55, 0.62]));
+  }
+  if (O.bun && !helmet) { const by = hc - 1.02 * H.b; p.ell(cx, by, 0.42 * H.a, 0.3 * H.b, O.bun, ow * 0.85); }
+  if (O.pigtails && !helmet) for (const sd of [-1, 1]) {
+    const px = cx + sd * 1.1 * H.a, py = hc + 0.15 * H.b;
+    p.ell(px + sd * 6 * u, py + 0.35 * H.b, 0.26 * H.a, 0.55 * H.b, O.pigtails, ow * 0.8);
+    p.ell(px, py - 0.12 * H.b, 0.12 * H.a, 0.1 * H.b, O.ribbon || "#e04a6a", ow * 0.6);
+  }
   p.shadedFill(hp, skin, mul(skin, SH_SKIN), light, H.a);
   p.inkRing(hp, ow, thick);
   if (helmet) {
@@ -2671,7 +2687,12 @@ export const romanFront = (p, key, opts = {}) => {
     p.band([[cx - H.a * 1.05, bandY], [cx + H.a * 1.05, bandY]], old ? "#a88a4a" : BRASS, 7 * u, 1.8 * u, "round");
     p.poly(rrect(cx - 4 * u, bandY - 0.55 * H.b, cx + 4 * u, bandY - 3 * u, 2 * u), old ? "#a88a4a" : BRASS, 1.5 * u);
     cheeks(p, H, cx, hc, light, ow, old, u);
-  } else if (O.cap) hatOn(p, { hat: "cap", cap: O.cap, jacket: O.tunic }, hp, H, cx, hc, light, seed, facing, false);
+  } else if (O.cap) {
+    hatOn(p, { hat: "cap", cap: O.cap, jacket: O.tunic }, hp, H, cx, hc, light, seed, facing, false);
+    if (O.brim) { const by = hc - H.b + 0.3 * HH, d = facing || 1;   // a flat cap's peak
+      const bp = [[cx - 0.75 * H.a, by - 2 * u], [cx + 0.75 * H.a, by - 2 * u], [cx + (0.75 + 0.3 * d) * H.a, by + 0.1 * H.b], [cx + 0.1 * d * H.a, by + 0.2 * H.b], [cx - (0.75 - 0.3 * d) * H.a, by + 0.1 * H.b]];
+      p.shadedFill(bp, O.brim, mul(O.brim, [0.7, 0.7, 0.75]), light, H.a, 0.3); p.inkRing(bp, ow * 0.8, thick); }
+  }
   else if (O.hair) hatOn(p, { hat: "hair", hair: O.hair, jacket: O.tunic }, hp, H, cx, hc, light, seed, facing, false);
   else if (O.helmet && nohelmet) { // bald old head with white side tufts
     for (const s of [-1, 1]) p.ell(cx + s * 0.9 * H.a, hc - 0.1 * H.b, 0.22 * H.a, 0.3 * H.b, "#f4f1ea", 3 * u);
@@ -2693,6 +2714,20 @@ export const romanFront = (p, key, opts = {}) => {
     const a = arms.find((x) => x.swirl), [hx, hy] = a.pts[2], ph = opts.swirl || 0, pts = [];
     for (let i = 0; i < 40; i++) { const t = i / 40 * Math.PI * 4 + ph, r = (4 + i * 0.7) * u; pts.push([hx + Math.cos(t) * r, hy - 40 * u + Math.sin(t) * r]); }
     p.stroke(pts, 3 * u, "#ffffff"); p.stroke(pts, 1.4 * u, INK);
+  }
+  if (wet) {                                    // soaked: hair stuck to the forehead, beads of water, drops falling
+    const hairCol = O.long || O.hair || O.cap;
+    if (hairCol && !helmet) for (let k = -2; k <= 2; k++) {
+      const x0 = cx + k * 0.3 * H.a, y0 = hc - 0.75 * H.b; p.stroke([[x0, y0], [x0 + 2 * u * k, y0 + 0.4 * H.b], [x0 + 4 * u * k, y0 + (0.55 + 0.08 * (k & 1)) * H.b]], 3.2 * u, hairCol);
+    }
+    const bead = (x, y, r) => { p.ell(x, y, r * 0.8, r, "#a8d8ff", 1.2 * u); p.ell(x - r * 0.25, y - r * 0.35, r * 0.25, r * 0.25, "#ffffff", 0); };
+    const R = (i) => { const v = Math.sin((seed + 1) * 91.7 + i * 37.3) * 43758.5; return v - Math.floor(v); };
+    for (let i = 0; i < Math.round(8 * wet); i++) bead(cx + (R(i) * 2 - 1) * H.a * 0.95, hc + (R(i + 50) * 1.6 - 0.9) * H.b, (2.6 + 2 * R(i + 9)) * u);
+    for (let i = 0; i < Math.round(6 * wet); i++) bead(cx + (R(i + 20) * 2 - 1) * 0.55 * W, chin + R(i + 30) * 0.8 * HH, (2.4 + 1.6 * R(i + 40)) * u);
+    const dr = opts.drip || 0;                  // drops falling from the chin and the hem, frame by frame
+    for (const [x, y, ph] of [[cx + 0.2 * H.a, hc + 1.05 * H.b, 0], [cx - 0.5 * W, torsoBot + 0.05 * HH, 7], [cx + 0.45 * W, torsoBot + 0.08 * HH, 13]]) {
+      const k = ((dr + ph + seed) % 18) / 18; bead(x, y + k * k * 0.9 * HH, (3.2 - 1.2 * k) * u);
+    }
   }
 };
 

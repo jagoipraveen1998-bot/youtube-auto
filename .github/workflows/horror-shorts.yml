@@ -108,6 +108,8 @@ jobs:
           path: |
             output_horror/short.mp4
             output_horror/cover.jpg
+            output_horror/part*.mp4
+            output_horror/part*.jpg
             output_horror/story.json
             output_horror/description.txt
             output_horror/REVIEW.txt
@@ -247,6 +249,8 @@ jobs:
           path: |
             output_horror/short.mp4
             output_horror/cover.jpg
+            output_horror/part*.mp4
+            output_horror/part*.jpg
             output_horror/story.json
             output_horror/description.txt
             output_horror/REVIEW.txt

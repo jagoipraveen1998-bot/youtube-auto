@@ -3,7 +3,9 @@
 data/upload_queue.json holds a list of items:
   {"run_id": "...", "artifact": "horror-short-11", "title": "...", "description": "...", "tags": [...],
    "publish_at": "2026-11-08T18:00"   (India time; omit or past = publish straight away),
-   "privacy": "private"   (optional: upload private and leave it there)}
+   "privacy": "private"   (optional: upload private and leave it there),
+   "file": "part2.mp4", "cover": "part2.jpg"   (optional: which video and thumbnail in the artifact; several items can share one artifact),
+   "instagram": true   (optional: also post it as a Reel once its YouTube publish time has passed)}
 Each run downloads and uploads items in order, stops quietly at YouTube's daily limit, and removes what went up.
 """
 import json
@@ -30,6 +32,18 @@ def publish_time(s: str | None) -> str | None:
     return t.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
 
+def reel(item: dict, art: Path, hcfg: dict, hist: dict) -> None:
+    """Post a queued Short to Instagram as a Reel (never stops the queue)."""
+    try:
+        from autotube.instagram import ig_caption, publish_reel
+        video = next(art.rglob(item.get("file", "*.mp4")))
+        ig = publish_reel(video, ig_caption(item["title"], item.get("description", ""),
+                                            hcfg.get("instagram_hashtags", ["#horror", "#reels"])))
+        log(f"Instagram Reel for {item['title'][:50]}: {ig or 'not posted'}")
+    except Exception as e:  # noqa: BLE001
+        log(f"Instagram Reel failed ({e}); the YouTube Short is fine")
+
+
 def main():
     queue = json.loads(QUEUE.read_text(encoding="utf-8")) if QUEUE.exists() else []
     if not queue:
@@ -47,13 +61,23 @@ def main():
     left = []
     for i, item in enumerate(queue):
         art = ROOT / "art" / item["artifact"]
+        if item.get("yt_done"):                      # on YouTube already (scheduled): only the Instagram Reel is left
+            if publish_time(item.get("publish_at")):
+                left.append(item)                    # not public yet: the Reel waits for it
+                continue
+            if not art.exists():
+                subprocess.run(["gh", "run", "download", str(item["run_id"]), "-R", REPO, "-n", item["artifact"], "-D", str(art)], check=False)
+            reel(item, art, hcfg, hist)
+            continue
         try:
-            subprocess.run(["gh", "run", "download", str(item["run_id"]), "-R", REPO, "-n", item["artifact"], "-D", str(art)], check=True)
+            if not art.exists():                      # several parts can come from one run's files
+                subprocess.run(["gh", "run", "download", str(item["run_id"]), "-R", REPO, "-n", item["artifact"], "-D", str(art)], check=True)
         except subprocess.CalledProcessError:
             log(f"Artifact {item['artifact']} is gone (older than its keep time); dropping it from the queue.")
             continue
-        video = next(art.rglob("*.mp4"))
-        cover = ROOT / item["thumb"] if item.get("thumb") else next(art.rglob("cover.jpg"), None)
+        video = next(art.rglob(item.get("file", "*.mp4")))
+        cover = (ROOT / item["thumb"] if item.get("thumb")
+                 else next(art.rglob(item["cover"]), None) if item.get("cover") else next(art.rglob("cover.jpg"), None))
         desc = item.get("description") or next(art.rglob("description.txt")).read_text(encoding="utf-8")
         tags = list(dict.fromkeys(item.get("tags", []) + hcfg.get("extra_tags", [])))
         try:
@@ -69,6 +93,12 @@ def main():
         log(f"Uploaded {item['title'][:60]} -> https://youtu.be/{vid} ({item.get('privacy') or 'goes public ' + (item.get('publish_at') or 'now')})")
         hist.setdefault("videos", []).append({"date": datetime.now(IST).strftime("%Y-%m-%d %H:%M"), "title": item["title"],
                                              "video_id": vid, "from_queue": True, "publish_at": item.get("publish_at")})
+        if item.get("instagram"):                   # the Reel goes out once the Short is public
+            item["yt_done"] = vid
+            if publish_time(item.get("publish_at")):
+                left.append(item)
+            else:
+                reel(item, art, hcfg, hist)
         if item.get("long"):
             hist.setdefault("long_videos", []).append({"date": datetime.now(IST).strftime("%Y-%m-%d"), "title": item["title"], "video_id": vid})
         try:

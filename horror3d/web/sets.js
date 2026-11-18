@@ -297,3 +297,146 @@ export function street(ctx, { at = [0, 0, 60] } = {}) {
     },
   };
 }
+
+// ---------- detailed real-world architecture (use for every new set; no bare boxes) ----------
+// Modelled on real 19th-century English / coastal cottages: stone plinth, corner quoins, sash windows with glazing bars,
+// stone sills and lintels, a panelled door in an architrave with a fanlight, knocker and doorstep, a gabled slate or
+// tile roof with eaves board, ridge, chimney stack with pots, a gutter and a downpipe, and a little life (flower box,
+// house number). Front faces -z. Returns { g, door (hinge group; rotate .y to open), glass: [materials] }.
+const MATS = new WeakMap();
+function archMats(ctx) {
+  if (MATS.has(ctx)) return MATS.get(ctx);
+  const { THREE, texM, toon, P } = ctx;
+  const m = {
+    stone: texM(P.weather(P.rubble(51), 52), 2.2, 2, '#c8c0b2'), stoneB: texM(P.weather(P.stone(53, 30, 12, 62), 54), 2, 2, '#c4bcae'),
+    plaster: texM(P.weather(P.plaster(55, 42), 56, 1.2), 1.5, 1.5, '#ece4d4'), plasterB: texM(P.weather(P.plaster(57, 200), 58, 1.2), 1.5, 1.5, '#d8e0e4'),
+    brick: texM(P.weather(P.brick(59), 60, 0.8), 2, 3, '#ffffff'), slate: texM(P.slate(61), 3, 2, '#c8ccd4'), tile: texM(P.roof(62), 3, 2, '#b08070'),
+    dress: texM(P.stone(63, 38, 10, 74, 96, 48), 1, 1, '#e4dcca'), plinth: texM(P.stone(64, 30, 8, 46), 2, 1, '#9a948a'),
+    frame: toon({ color: '#ece6da' }), frameD: toon({ color: '#3a3430' }), iron: toon({ color: '#22242a' }), brass: toon({ color: '#c8a048' }),
+    fascia: toon({ color: '#2a2c30' }), pot: toon({ color: '#a8583a' }), wood: texM(P.planks(65), 1, 1, '#8a6a4a'),
+    glassD: new THREE.MeshBasicMaterial({ map: P.tex(P.glass(false, 66)) }), glassL: new THREE.MeshBasicMaterial({ map: P.tex(P.glass(true, 67)) }),
+    reveal: toon({ color: '#1a1a20' }), flower: ['#d84a5a', '#f2c84a', '#e8e8f0', '#b85ad8'].map((c) => toon({ color: c })), leaf: toon({ color: '#3f6a34' }),
+  };
+  MATS.set(ctx, m); return m;
+}
+/** a sash window with frame, glazing bars, sill and lintel; lit = warm room behind it */
+export function sashWindow(ctx, parent, x, y, z, w = 0.8, h = 1.1, { lit = false, frame = null, shutters = null } = {}) {
+  const { THREE, add, box } = ctx, M = archMats(ctx), fr = frame ? ctx.toon({ color: frame }) : M.frame;
+  const g = new THREE.Group(); g.position.set(x, y, z); parent.add(g);
+  add(box(w + 0.04, h + 0.04, 0.1), M.reveal, 0, 0, 0.03, g, { cast: false });                  // dark reveal
+  const gm = lit ? M.glassL.clone() : M.glassD.clone(); const pane = add(new THREE.PlaneGeometry(w - 0.06, h - 0.06), gm, 0, 0, -0.025, g, { cast: false }); pane.rotation.y = Math.PI;
+  for (const [bw, bh, bx, by] of [[w + 0.1, 0.07, 0, h / 2 + 0.01], [w + 0.1, 0.07, 0, -h / 2 - 0.01], [0.07, h + 0.1, -w / 2 - 0.01, 0], [0.07, h + 0.1, w / 2 + 0.01, 0]]) add(box(bw, bh, 0.08), fr, bx, by, -0.04, g);
+  add(box(w, 0.05, 0.06), fr, 0, 0, -0.05, g);                                                   // meeting rail
+  for (const bx of [-w / 6, w / 6]) add(box(0.025, h, 0.04), fr, bx, 0, -0.055, g, { cast: false }); // glazing bars: 6 over 6
+  for (const by of [-h / 4, h / 4]) add(box(w, 0.025, 0.04), fr, 0, by, -0.055, g, { cast: false });
+  add(box(w + 0.3, 0.08, 0.2), M.dress, 0, -h / 2 - 0.08, -0.08, g);                             // stone sill
+  add(box(w + 0.3, 0.14, 0.08), M.dress, 0, h / 2 + 0.1, -0.02, g);                              // lintel
+  if (shutters) for (const s of [-1, 1]) { const sh = add(box(w / 2 + 0.02, h + 0.04, 0.04), ctx.toon({ color: shutters }), s * (w * 0.75 + 0.06), 0, -0.04, g);
+    for (let k = -2; k <= 2; k++) add(box(w / 2 - 0.04, 0.02, 0.02), ctx.toon({ color: '#00000040'.slice(0, 7) }), s * (w * 0.75 + 0.06), k * h / 6, -0.065, g, { cast: false }); }
+  return { g, glass: gm };
+}
+/** a panelled front door in an architrave, with fanlight, knocker, handle and a stone step. Hinge on the left. */
+export function panelDoor(ctx, parent, x, z, { w = 0.9, h = 2.0, color = '#3a4a5a', fan = true } = {}) {
+  const { THREE, add, box, toon } = ctx, M = archMats(ctx), paint = toon({ color }), panelC = toon({ color: ctx.P ? color : color });
+  const g = new THREE.Group(); g.position.set(x, 0, z); parent.add(g);
+  add(box(w + 0.02, h + 0.02, 0.12), M.reveal, 0, h / 2, 0.04, g, { cast: false });
+  for (const [bw, bh, bx, by] of [[0.12, h + 0.2, -w / 2 - 0.06, h / 2 + 0.05], [0.12, h + 0.2, w / 2 + 0.06, h / 2 + 0.05], [w + 0.36, 0.14, 0, h + 0.12 + (fan ? 0.36 : 0)]]) add(box(bw, bh, 0.1), M.frame, bx, by, -0.03, g);
+  if (fan) { const fl = add(new THREE.CircleGeometry(w / 2 - 0.02, 20, 0, Math.PI), M.glassD, 0, h + 0.02, -0.01, g, { cast: false }); fl.rotation.y = Math.PI;
+    add(box(w + 0.1, 0.06, 0.08), M.frame, 0, h + 0.02, -0.03, g); for (let k = 1; k < 5; k++) { const b = add(box(0.02, w / 2 - 0.04, 0.03), M.frame, 0, h + 0.02, -0.03, g, { cast: false }); b.geometry.translate(0, (w / 2 - 0.04) / 2, 0); b.rotation.z = Math.PI / 2 - k * Math.PI / 5; } }
+  add(box(w + 0.5, 0.14, 0.42), M.dress, 0, 0.07, -0.2, g);                                     // doorstep
+  const hinge = new THREE.Group(); hinge.position.set(-w / 2, 0, -0.02); g.add(hinge);
+  add(box(w, h, 0.07), paint, w / 2, h / 2, 0, hinge);
+  for (const [px, py, ph] of [[-0.2, 0.42, 0.62], [0.2, 0.42, 0.62], [-0.2, 1.3, 0.85], [0.2, 1.3, 0.85]]) {     // four raised panels
+    add(box(w * 0.36, ph, 0.025), panelC, w / 2 + px * w / 0.9, py + ph / 2 - 0.1, -0.045, hinge);
+    add(box(w * 0.38, 0.015, 0.03), toon({ color: '#00000000'.slice(0, 7) }), w / 2 + px * w / 0.9, py - 0.1 + ph, -0.05, hinge, { cast: false });
+  }
+  add(new THREE.TorusGeometry(0.06, 0.012, 6, 14), M.brass, w / 2, 1.45, -0.07, hinge);           // knocker
+  add(new THREE.SphereGeometry(0.035, 10, 8), M.brass, w - 0.12, 1.0, -0.07, hinge);               // knob
+  add(box(0.22, 0.04, 0.02), M.brass, w / 2, 0.98, -0.045, hinge, { cast: false });                 // letter slot
+  return { g, door: hinge };
+}
+/** a terraced cottage. wall: 'stone' | 'stoneB' | 'plaster' | 'plasterB' | 'brick'; roof: 'slate' | 'tile' */
+export function cottage(ctx, parent, { x = 0, z = 0, w = 3.5, h = 4.4, d = 4, wall = 'stone', roof = 'slate', door = '#3a4a5a', seed = 1, lit = [], doorX = 0, number = null, ry = 0, ends = true } = {}) {
+  const { THREE, add, box, tbox, toon } = ctx, M = archMats(ctx), R = (k) => { const v = Math.sin(seed * 71.3 + k * 13.7) * 43758.5; return v - Math.floor(v); };
+  const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = ry; parent.add(g);
+  add(tbox(w, h, d, 1.4), M[wall], 0, h / 2, 0, g);
+  add(tbox(w + 0.08, 0.45, d + 0.08, 1), M.plinth, 0, 0.22, 0, g);                                  // plinth
+  if (wall !== 'brick') for (const s of [-1, 1]) for (let k = 0; k < Math.floor(h / 0.3); k++)       // corner quoins
+    add(box(k % 2 ? 0.34 : 0.22, 0.26, 0.05), M.dress, s * (w / 2 - (k % 2 ? 0.17 : 0.11)), 0.6 + k * 0.3, -d / 2 - 0.02, g, { cast: false });
+  // roof: a real gable (prism) with overhang, eaves board, ridge and a chimney stack with pots
+  const rh = 1.7, ov = 0.25, sh = new THREE.Shape(); sh.moveTo(-d / 2 - ov, 0); sh.lineTo(d / 2 + ov, 0); sh.lineTo(0, rh); sh.lineTo(-d / 2 - ov, 0);
+  const rg = new THREE.ExtrudeGeometry(sh, { depth: w + 0.2, bevelEnabled: false }); rg.translate(0, 0, -(w + 0.2) / 2); rg.rotateY(Math.PI / 2);
+  const uv = rg.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * 0.35, uv.getY(i) * 0.35);
+  add(rg, M[roof], 0, h, 0, g);
+  if (ends) for (const s of [-1, 1]) { const gs = new THREE.Shape(); gs.moveTo(-d / 2, 0); gs.lineTo(d / 2, 0); gs.lineTo(0, rh - 0.15); const ge = add(new THREE.ShapeGeometry(gs), M[wall], s * w / 2, h, 0, g); ge.rotation.y = s * Math.PI / 2; }
+  add(box(w + 0.22, 0.12, 0.12), M.fascia, 0, rh + h + 0.02, 0, g);                                  // ridge
+  for (const s of [-1, 1]) add(box(w + 0.22, 0.16, 0.05), M.fascia, 0, h - 0.04, s * (d / 2 + ov - 0.02), g);   // eaves boards
+  const gut = add(new THREE.CylinderGeometry(0.06, 0.06, w + 0.2, 8, 1, false, 0, Math.PI), M.iron, 0, h - 0.06, -d / 2 - ov - 0.02, g); gut.rotation.z = Math.PI / 2;
+  const dpx = w / 2 - 0.12; add(new THREE.CylinderGeometry(0.035, 0.035, h, 8), M.iron, dpx, h / 2, -d / 2 - 0.08, g);   // downpipe
+  for (let k = 1; k < 4; k++) add(box(0.1, 0.03, 0.06), M.iron, dpx, k * h / 4, -d / 2 - 0.05, g, { cast: false });
+  const cx = (R(1) > 0.5 ? 1 : -1) * (w / 2 - 0.45);
+  add(tbox(0.7, 1.4, 0.55, 1), wall === 'brick' ? M.brick : M.stoneB, cx, h + rh - 0.1, 0.2, g);
+  add(box(0.8, 0.1, 0.65), M.dress, cx, h + rh + 0.62, 0.2, g);
+  for (const px of [-0.16, 0.16]) add(new THREE.CylinderGeometry(0.07, 0.09, 0.32, 10), M.pot, cx + px, h + rh + 0.83, 0.2, g);
+  // ground floor: door + window; first floor: two windows
+  const dx = doorX - 0.45 + 0.45, dr = panelDoor(ctx, g, dx, -d / 2 - 0.01, { color: door, fan: R(2) > 0.3 });
+  const glass = [];
+  const wx = dx < 0 ? w / 2 - 0.9 : -w / 2 + 0.9;
+  glass.push(sashWindow(ctx, g, wx, 1.35, -d / 2 - 0.01, 0.8, 1.05, { lit: lit.includes(0), shutters: R(3) > 0.6 ? ['#3a5a4a', '#5a3a2a', '#2a3a5a'][(R(4) * 3) | 0] : null }).glass);
+  for (const [i, ux] of [[1, -w / 4 - 0.05], [2, w / 4 + 0.05]]) glass.push(sashWindow(ctx, g, ux, 3.15, -d / 2 - 0.01, 0.72, 0.95, { lit: lit.includes(i) }).glass);
+  if (R(5) > 0.45) {                                                                                  // a flower box under the window
+    add(box(0.95, 0.18, 0.22), M.wood, wx, 0.66, -d / 2 - 0.2, g);
+    for (let k = 0; k < 7; k++) add(new THREE.SphereGeometry(0.06, 8, 6), k % 2 ? M.leaf : M.flower[(R(10 + k) * 4) | 0], wx - 0.4 + k * 0.13, 0.8 + R(20 + k) * 0.06, -d / 2 - 0.2, g);
+  }
+  if (number != null) { const pl = canvasPlane(ctx, 0.22, 0.16, 128, g, { lit: true }); pl.draw('n', (cg, cw, ch) => { cg.fillStyle = '#e8e2d0'; cg.fillRect(0, 0, cw, ch); cg.strokeStyle = '#2a2a2a'; cg.lineWidth = 6; cg.strokeRect(4, 4, cw - 8, ch - 8); cg.fillStyle = '#1a1a1a'; cg.font = 'bold 60px Georgia'; cg.textAlign = 'center'; cg.fillText(String(number), cw / 2, ch * 0.72); });
+    pl.mesh.position.set(dx + 0.75, 1.75, -d / 2 - 0.02); pl.mesh.rotation.y = Math.PI; }
+  return { g, door: dr.door, glass };
+}
+/** a Victorian street lamp: base, fluted post, ladder bar, glazed lantern with a cap. Returns { g, glass (material), light } */
+export function streetLamp(ctx, parent, x, z, { h = 3.2, on = false } = {}) {
+  const { THREE, add, box, toon } = ctx, M = archMats(ctx);
+  const g = new THREE.Group(); g.position.set(x, 0, z); parent.add(g);
+  add(new THREE.CylinderGeometry(0.16, 0.22, 0.45, 12), M.iron, 0, 0.22, 0, g);
+  add(new THREE.CylinderGeometry(0.06, 0.09, h - 0.6, 10), M.iron, 0, h / 2, 0, g);
+  for (const y of [0.55, 1.1, h - 0.45]) add(new THREE.TorusGeometry(0.08, 0.02, 6, 14), M.iron, 0, y, 0, g).rotation.x = Math.PI / 2;
+  add(box(0.6, 0.04, 0.04), M.iron, 0, h - 0.55, 0, g);                                               // ladder bar
+  const glassM = new THREE.MeshBasicMaterial({ color: on ? '#ffd28a' : '#4a4a40' });
+  const lan = add(new THREE.CylinderGeometry(0.2, 0.14, 0.42, 4, 1), glassM, 0, h + 0.05, 0, g, { cast: false }); lan.rotation.y = Math.PI / 4;
+  for (const [dx, dz] of [[0.14, 0.14], [-0.14, 0.14], [0.14, -0.14], [-0.14, -0.14]]) add(box(0.025, 0.44, 0.025), M.iron, dx * 1.05, h + 0.05, dz * 1.05, g);
+  const cap = add(new THREE.ConeGeometry(0.28, 0.22, 4), M.iron, 0, h + 0.38, 0, g); cap.rotation.y = Math.PI / 4;
+  add(new THREE.SphereGeometry(0.04, 8, 6), M.iron, 0, h + 0.52, 0, g);
+  const light = new THREE.PointLight('#ffc070', on ? 4 : 0, 12, 1.3); light.position.set(0, h, 0); g.add(light);
+  return { g, glass: glassM, light };
+}
+/** harbour / street clutter: barrel, crate, rope coil, lobster pot, fishing net on a frame */
+export function barrel(ctx, parent, x, z, s = 1) {
+  const { THREE, add } = ctx, M = archMats(ctx);
+  const b = add(new THREE.CylinderGeometry(0.3 * s, 0.3 * s, 0.8 * s, 16), M.wood, x, 0.4 * s, z, parent); b.scale.set(1, 1, 1);
+  const bulge = add(new THREE.CylinderGeometry(0.33 * s, 0.33 * s, 0.3 * s, 16), M.wood, x, 0.4 * s, z, parent);
+  for (const y of [0.12, 0.4, 0.68]) add(new THREE.TorusGeometry(0.315 * s, 0.018 * s, 6, 20), M.iron, x, y * s, z, parent).rotation.x = Math.PI / 2;
+  return b;
+}
+export function crate(ctx, parent, x, z, s = 1, ry = 0) {
+  const { THREE, add, box } = ctx, M = archMats(ctx), g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = ry; parent.add(g);
+  add(box(0.6 * s, 0.5 * s, 0.6 * s), M.wood, 0, 0.25 * s, 0, g);
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) add(box(0.06 * s, 0.52 * s, 0.06 * s), M.frameD, sx * 0.28 * s, 0.25 * s, sz * 0.28 * s, g);
+  for (const y of [0.1, 0.4]) add(box(0.62 * s, 0.05 * s, 0.62 * s), M.frameD, 0, y * s, 0, g);
+  return g;
+}
+export function ropeCoil(ctx, parent, x, z, s = 1) {
+  const { THREE, add, toon } = ctx, m = toon({ color: '#b89a6a' });
+  for (let k = 0; k < 4; k++) add(new THREE.TorusGeometry((0.26 - k * 0.03) * s, 0.035 * s, 6, 20), m, x, (0.035 + k * 0.06) * s, z, parent).rotation.x = Math.PI / 2;
+}
+export function lobsterPot(ctx, parent, x, z, s = 1) {
+  const { THREE, add, toon } = ctx, M = archMats(ctx), net = toon({ color: '#6a5a3a', wireframe: true });
+  const p = add(new THREE.CylinderGeometry(0.3 * s, 0.3 * s, 0.6 * s, 10, 2, false, 0, Math.PI), net, x, 0.02, z, parent); p.rotation.z = Math.PI / 2; p.rotation.y = Math.PI / 2;
+  add(new THREE.BoxGeometry(0.62 * s, 0.04 * s, 0.6 * s), M.wood, x, 0.02, z, parent);
+}
+export function netFrame(ctx, parent, x, z, ry = 0) {
+  const { THREE, add, box, toon } = ctx, M = archMats(ctx), g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = ry; parent.add(g);
+  for (const s of [-1, 1]) add(box(0.08, 1.8, 0.08), M.wood, s * 1.0, 0.9, 0, g);
+  add(box(2.1, 0.06, 0.06), M.wood, 0, 1.78, 0, g);
+  const nm = toon({ color: '#5a6a5a', wireframe: true, side: THREE.DoubleSide }); const n = add(new THREE.PlaneGeometry(1.9, 1.5, 18, 14), nm, 0, 1.0, 0, g, { cast: false });
+  const pa = n.geometry.attributes.position; for (let i = 0; i < pa.count; i++) pa.setZ(i, Math.sin(pa.getX(i) * 3) * 0.05 + (1 - Math.abs(pa.getX(i))) * 0.08 * (pa.getY(i) < 0 ? 1 : 0.3));
+  return g;
+}

@@ -128,7 +128,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     ev = []
     cta_from = max(0.0, dur - cta_secs)
     if hook:
-        ev.append(f"Dialogue: 2,{ts(0)},{ts(cta_from)},Hook,,0,0,0,,{wrap(esc(hook.upper()), 24)}")
+        ev.append(f"Dialogue: 2,{ts(0)},{ts(cta_from)},Hook,,0,0,0,,{wrap(esc(hook.upper()), 17)}")
     # 3-word chunks, highlight the word being spoken (yellow)
     i = 0
     while i < len(words):

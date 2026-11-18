@@ -27,7 +27,7 @@ def whistle(m, at, g=0.35):
 def build(shots, total, FPS, SR):
     m = Mix(shots, total, FPS, SR, IDS, seed=88)
     m.room(0.45)
-    m.score(quiet=[(m.a('morning'), m.b('stopped'), 0.45)])   # mild under the whole episode, softer by day
+    m.score(style='creepy', quiet=[(m.a('morning'), m.b('stopped'), 0.45)])   # creepy: drone, pulse, out-of-tune music box; softer by day
     bell(m, m.a('hook1', 4), 0.35)
     for k in range(3): bell(m, m.a('count', 20) + k * 1.2, 0.4)            # one, two, three
     for k in range(3): bell(m, m.a('twelve', 2) + k * 1.0, 0.45)            # ten, eleven, twelve

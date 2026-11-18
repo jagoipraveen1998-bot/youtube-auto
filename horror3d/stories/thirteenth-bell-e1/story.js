@@ -5,7 +5,7 @@
 // the stairs) is held.
 import { OUTFITS } from './toon.js';
 import * as SETS from './sets.js';
-import { makeStory, MOODS, smooth, ramp, lerp, lerp3, q, blinkAt, actor, fx, word } from './kit.js';
+import { makeStory, MOODS, SHOT, smooth, ramp, lerp, lerp3, q, blinkAt, actor, fx, word } from './kit.js';
 
 // vertical 9:16 Shorts (the default size)
 const at = (o) => (x, y, z) => [o[0] + x, o[1] + y, o[2] + z];
@@ -27,7 +27,7 @@ const IDS = ['hook1', 'hook2', 'town', 'tom', 'ringer', 'silas', 'marks', 'answe
 const CAMS = {
   hook1: [{ pos: O(-3, 1.6, -2.5), look: O(-1, 1.6, 4), fov: 40 }, { pos: O(-2, 3.0, -1.5), look: O(5, 10, 24), fov: 36 }],
   hook2: [{ pos: O(-1, 4.5, 2), look: O(5, 12, 24), fov: 34 }, { pos: O(2, 8, 10), look: O(5, 14, 24), fov: 30 }],
-  town: [{ pos: O(-10, 3.2, -1.5), look: O(0, 1.2, 4), fov: 40 }, { pos: O(-7, 2.6, -0.8), look: O(1, 1.0, 3), fov: 38 }],
+  town: SHOT.wideHero(O(1.5, 0, 9.5), [0.55, -0.83], 19),                       // the cottage row small under a huge cloudy sky
   tom: [{ pos: O(4.2, 1.4, 3.2), look: O(1, 0.6, 0.3), fov: 36 }, { pos: O(3.0, 1.2, 2.2), look: O(1, 0.6, 0.3), fov: 32 }],
   ringer: [{ pos: Bf(1.3, 1.5, 1.4), look: Bf(-0.4, 1.4, -0.2), fov: 50 }, { pos: Bf(1.1, 1.45, 1.2), look: Bf(-0.3, 1.5, -0.2), fov: 46 }],
   silas: [{ pos: Bf(1.2, 1.45, 1.4), look: Bf(-0.15, 1.35, -0.1), fov: 38 }, { pos: Bf(1.05, 1.45, 1.25), look: Bf(-0.15, 1.4, -0.1), fov: 36 }],
@@ -39,7 +39,7 @@ const CAMS = {
   twelve: [{ pos: R(0.2, 1.0, -0.1), look: R(-0.75, 0.85, -1.1), fov: 34 }, { pos: R(0.0, 0.98, -0.3), look: R(-0.75, 0.85, -1.1), fov: 30 }],
   thirteen: [{ pos: O(2, 10.5, 14), look: O(5, 13.0, 24), fov: 30 }, { pos: O(2.8, 11.5, 16), look: O(5, 13.0, 24), fov: 26 }],
   voices: [{ pos: O(-5.5, 1.9, 6.4), look: O(-2.5, 1.1, 9.4), fov: 40 }, { pos: O(0.5, 1.8, 6.6), look: O(3.4, 1.1, 9.4), fov: 38 }],
-  peter: [{ pos: O(5.8, 1.5, 6.6), look: O(3.6, 1.1, 9.4), fov: 36 }, { pos: O(5.0, 1.4, 7.4), look: O(3.6, 1.1, 9.5), fov: 32 }],
+  peter: SHOT.lowAngle(O(3.6, 0, 9.4), [0.62, -0.79], 2.6),                     // looking up at the drowned boy
   bolt: [{ pos: O(1.4, 3.3, 8.6), look: O(3.6, 1.0, 9.6), fov: 38 }, { pos: O(1.6, 3.2, 8.8), look: O(3.6, 1.0, 9.7), fov: 34 }],
   boy: [{ pos: O(1.6, 3.2, 8.8), look: O(3.6, 1.0, 9.7), fov: 34 }, { pos: O(1.8, 3.1, 9.0), look: O(3.6, 1.0, 9.7), fov: 30 }],
   morning: [{ pos: O(6.4, 1.7, 5.4), look: O(3.6, 1.0, 9.7), fov: 40 }, { pos: O(5.6, 1.6, 6.4), look: O(3.6, 1.0, 9.8), fov: 36 }],
@@ -48,7 +48,7 @@ const CAMS = {
   stopped: [{ pos: O(0.25, 0.55, 8.95), look: WATCH, fov: 30 }, { pos: O(0.2, 0.42, 9.1), look: WATCH, fov: 26 }],
   vigil: [{ pos: C(0.3, 1.55, 2.0), look: C(0, 0.9, -0.4), fov: 48 }, { pos: C(0.25, 1.45, 1.6), look: C(0, 0.95, -0.4), fov: 44 }],
   count2: [{ pos: C(0.2, 1.1, 1.1), look: C(-0.1, 0.95, -0.5), fov: 40 }, { pos: C(0.15, 1.05, 0.85), look: C(-0.1, 0.95, -0.5), fov: 36 }],
-  knock: [{ pos: C(1.3, 1.1, 0.4), look: C(0.6, 0.8, -2), fov: 42 }, { pos: C(1.0, 0.9, -0.4), look: C(0.6, 0.5, -2), fov: 38 }],
+  knock: SHOT.symmetric(C(0.6, 1.2, -2), [0, 1], 2.6),                         // dead-centre on the door
   annie: [{ pos: C(0.1, 1.35, 1.8), look: C(-0.2, 0.95, -0.3), fov: 46 }, { pos: C(0.05, 1.3, 1.5), look: C(-0.25, 0.95, -0.3), fov: 42 }],
   whistle: [{ pos: C(0.9, 1.0, -0.6), look: C(0.6, 0.6, -2), fov: 38 }, { pos: C(0.75, 0.85, -1.1), look: C(0.6, 0.4, -2), fov: 34 }],
   dad: [{ pos: C(1.3, 1.0, 1.3), look: C(0.8, 0.9, 0.35), fov: 32 }, { pos: C(1.2, 0.98, 1.15), look: C(0.8, 0.9, 0.35), fov: 28 }],
@@ -57,11 +57,12 @@ const CAMS = {
   stairs: [{ pos: C(-0.85, 2.45, 2.05), look: C(-2.1, 1.0, 0.0), fov: 50 }, { pos: C(-0.95, 2.3, 1.95), look: C(-2.1, 0.8, 0.5), fov: 44 }],
 };
 const LIGHTS = {
-  night: { ...MOODS.night, hemi: 0.6, sky: '#3a5aa8', ground: '#101830', fog: '#22325a', fogNear: 3, fogFar: 26, gain: '#c8d8ff', lift: '#0a1028', vig: 0.55, sat: 1.15 },
-  day: { ...MOODS.morning, hemi: 1.0, sky: '#c8ccd0', ground: '#4a4438', fog: '#c0c4c8', fogNear: 10, fogFar: 70, gain: '#fff4e8', vig: 0.3, sat: 1.05 },
-  dusk: { ...MOODS.evening, hemi: 0.8, fog: '#a8786a', fogNear: 6, fogFar: 40, vig: 0.4, sat: 1.15 },
+  night: { ...MOODS.moonNight, hemi: 0.6, sky: '#3a5aa8', ground: '#101830', fog: '#22325a', fogNear: 3, fogFar: 26, gain: '#c8d8ff', lift: '#0a1028', vig: 0.55, sat: 1.1,
+    moonAz: 72, moonEl: 24, clouds: 0.45 },   // full moon beside the bell tower, moonlit clouds, stars
+  day: { ...MOODS.sunClouds, hemi: 1.0, sky: '#c8d4e0', ground: '#4a4438', fog: '#c4ccd4', fogNear: 14, fogFar: 90, gain: '#fff4e8', vig: 0.3, sat: 1.0, clouds: 0.6 },   // cold sun, sea clouds
+  dusk: { ...MOODS.evening, hemi: 0.8, fog: '#a8786a', fogNear: 6, fogFar: 40, vig: 0.4, sat: 1.15, clouds: 0.5, cloudCol: '#ffc8a0', cloudDark: '#6a4a5a' },
   lamp: { ...MOODS.night, hemi: 0.42, sky: '#5a4838', ground: '#1a120c', fog: '#140c08', fogNear: 4, fogFar: 18, gain: '#ffe4c4', lift: '#0e0810', vig: 0.5, sat: 1.15 },
-  blue: { ...MOODS.night, hemi: 0.5, sky: '#3a58c0', ground: '#101a40', fog: '#0a1238', fogNear: 4, fogFar: 22, gain: '#c4d4ff', lift: '#081030', vig: 0.66, sat: 1.15 },
+  blue: { ...MOODS.moonNight, hemi: 0.5, sky: '#3a58c0', ground: '#101a40', fog: '#0a1238', fogNear: 4, fogFar: 22, gain: '#c4d4ff', lift: '#081030', vig: 0.66, sat: 1.1, clouds: 0.7 },
 };
 const FOCUS = (S) => ({ hook1: O(-1, 1.6, 4), hook2: O(5, 13, 24), town: O(0, 1, 2), tom: O(1, 0.6, 0.3), ringer: Bf(-0.3, 1.4, -0.1), silas: Bf(-0.15, 1.45, -0.1), marks: Bf(0.2, 1.45, -1.68),
     answered: Bf(-0.15, 1.45, -0.1), salt: C(0.5, 0.6, -1.5), rule: C(0.6, 1.0, -0.8), count: R(-0.7, 0.8, -1.0), twelve: R(-0.75, 0.85, -1.1), thirteen: O(5, 13.6, 24),
@@ -90,9 +91,9 @@ const mix = (a, b, t) => ({ ...b, pos: lerp3(a.pos, b.pos, t), look: lerp3(a.loo
 // Vertical framing: the cameras were set for 16:9, so in 9:16 each shot turns to centre its subject (the focus
 // point) and widens a little, so faces and props are not cut off at the sides.
 const SUBJ = (S) => FOCUS(S);
-const VERT = { pull: 0.8, wide: 1.28 };
+const VERT = { pull: 0.8, wide: 1.28 }, PULL = { town: 0.15, peter: 0.3, knock: 0 };   // composed shots keep their own aim
 const NEAR = { watch: 0.5 };                     // shots whose subject is small: move the camera closer as well
-const vert = (c, S) => { const p = SUBJ(S); if (!p) return c; const look = lerp3(c.look, p, VERT.pull), pos = NEAR[S.id] ? lerp3(c.pos, p, NEAR[S.id]) : c.pos; return { ...c, pos, look, fov: Math.min(75, c.fov * VERT.wide) }; };
+const vert = (c, S) => { const p = SUBJ(S); if (!p) return c; const look = lerp3(c.look, p, PULL[S.id] ?? VERT.pull), pos = NEAR[S.id] ? lerp3(c.pos, p, NEAR[S.id]) : c.pos; return { ...c, pos, look, fov: Math.min(75, c.fov * VERT.wide) }; };
 const cam = (f) => vert(K.camAt(f), shotAt(f));
 export const camAt = (f) => { const S = shotAt(f), c = cam(f); if (S.i === 0 || CUTS.has(S.id) || f - S.a >= GLIDE) return c; return mix(cam(S.a - 1), c, smooth((f - S.a) / GLIDE)); };
 
@@ -242,7 +243,7 @@ export const actorsAt = (f, T) => {
   const mary = (expr, o, pos, x = {}) => out.push(actor(T, MARY, { seed: 9, expr, blink: blinkAt(f, 9), ...o, who: 'mary' }, pos, { s: 0.82, ...x }));
   const annie = (expr, o, pos, x = {}) => out.push(actor(T, ANNIE, { seed: 44, expr, blink: blinkAt(f, 44), ...o, who: 'annie' }, pos, { s: 0.52, ...x }));
   const silas = (expr, o) => out.push(actor(T, 'grandpa', { seed: 21, expr, blink: blinkAt(f, 21), R: 'lift', ...o, who: 'silas' }, Bf(-0.15, 0, -0.1), { s: AS }));
-  const drowned = (pos, seed, o = {}) => out.push(actor(T, DROWNED, { seed, expr: 'neutral', blink: 0, look: 0.3, ...o, who: 'drowned' + seed }, pos, { s: 0.66, tint: '#4a7a84', alpha: 0.9, blob: false, shadow: false }));
+  const drowned = (pos, seed, o = {}) => out.push(actor(T, DROWNED, { seed, expr: 'neutral', blink: 0, look: 0.3, wet: 1, drip: f % 18, ...o, who: 'drowned' + seed }, pos, { s: 0.66, tint: '#4a7a84', alpha: 0.9, blob: false, shadow: false }));
   if (id === 'tom') tom('neutral', { look: -0.3, R: 'lift' }, O(1, 0.0, 0.5));
   if (id === 'ringer') { silas('neutral', { look: 0.5 }); tom('neutral', { look: -0.5, R: 'lift' }, Bf(0.9, 0, 0.7)); }
   if (id === 'silas' || id === 'answered') silas(id === 'answered' ? 'stern' : 'squint', { look: 0.6 });

@@ -134,7 +134,73 @@ class Mix:
             th = np.sin(2 * np.pi * (58 - 60 * tt) * tt) * np.exp(-tt * 22)
             self.put(self.mus, t, th, g * (0.6 + 0.4 * k)); self.put(self.mus, t + 0.19, th, g * 0.6 * (0.6 + 0.4 * k))
             t += 60 / (bpm0 + (bpm1 - bpm0) * k)
-    def score(self, t0=0.0, t1=None, seed=13, key=62, bar=4.0, quiet=()):
+    def score(self, t0=0.0, t1=None, seed=13, key=62, bar=4.0, quiet=(), style='strings'):
+        if style != 'strings':
+            return self.score_style(style, t0, t1, seed, key, quiet)
+        return self._strings(t0, t1, seed, key, bar, quiet)
+
+    def _level(self, tt, t0, quiet):
+        lvl = np.ones(len(tt))
+        for q0, q1, g in quiet:
+            w = np.clip(np.minimum((tt + t0 - q0) / 1.5, (q1 - tt - t0) / 1.5), 0, 1)
+            lvl = np.minimum(lvl, 1 - (1 - g) * w)
+        return lvl
+
+    def score_style(self, style, t0=0.0, t1=None, seed=13, key=62, quiet=()):
+        """More of our own background music, all written here (no outside music):
+        creepy  - low cello drone + slow heartbeat pulse + an out-of-tune music-box waltz, a sour note creeping in (default for horror)
+        tension - the drone and pulse only, the sour note rising
+        lullaby - the out-of-tune music box alone, slowly winding down
+        piano   - slow, lonely minor piano chords with a few melody notes
+        choir   - soft ghostly "ooh" voices, minor chords"""
+        t1 = self.N / self.SR if t1 is None else t1
+        rng = np.random.default_rng(seed); SR = self.SR
+        hz = lambda n: 440 * 2 ** ((n - 69) / 12)
+        n0, n1 = int(t0 * SR), int(t1 * SR); tt = np.arange(n1 - n0) / SR; D = tt[-1] if len(tt) else 0
+        x = np.zeros(len(tt))
+        def put(at, y, g=1.0):
+            i = int(at * SR); x[i:i + len(y)] += y[:max(0, len(x) - i)] * g
+        def box(f):
+            s_ = np.arange(int(1.8 * SR)) / SR
+            return (np.sin(2 * np.pi * f * s_) + .3 * np.sin(2 * np.pi * f * 2.01 * s_) + .12 * np.sin(2 * np.pi * f * 3.98 * s_)) * np.exp(-s_ * 3) * np.minimum(1, s_ / 0.004)
+        def piano(f, d=5.0):
+            s_ = np.arange(int(d * SR)) / SR
+            return sum(a * np.sin(2 * np.pi * f * k * s_ * (1 + 0.0004 * k * k)) * np.exp(-s_ * (0.9 + 0.6 * k)) for k, a in ((1, 1), (2, .45), (3, .25), (4, .12))) * np.minimum(1, s_ / 0.003)
+        if style in ('creepy', 'tension'):
+            for f, g in ((hz(key - 24), 1), (hz(key - 17), .55), (hz(key - 12), .3)):
+                x += g * self.lp(0.5 * np.sign(np.sin(2 * np.pi * f * tt)) + np.sin(2 * np.pi * f * tt), 500) * (0.8 + 0.2 * np.sin(2 * np.pi * 0.11 * tt))
+            x += 0.3 * np.sin(2 * np.pi * hz(key - 11) * tt) * np.clip((tt - D * 0.35) / (D * 0.5 + 1e-3), 0, 1)     # the sour minor second creeps in
+            x /= max(1e-6, np.abs(x).max())
+            for at in np.arange(0.5, D, 1.6 if style == 'creepy' else 1.3):
+                s_ = np.arange(int(0.6 * SR)) / SR; put(at, np.sin(2 * np.pi * 52 * s_) * np.exp(-s_ * 9), 0.55)
+        if style in ('creepy', 'lullaby'):
+            tune = [key + 12, key + 15, key + 19, key + 17, key + 15, key + 14, key + 15, key + 12, key + 10, key + 12, key + 14, key + 15, key + 14, key + 12, key + 11, key + 12]
+            at, i, g = (6.0 if style == 'creepy' else 1.0), 0, (0.35 if style == 'creepy' else 1.0)
+            while at < D - 2:
+                slow = 1 + 0.25 * max(0, (at - D * 0.6) / (D * 0.4 + 1e-3))
+                put(at, box(hz(tune[i % 16]) * (1 - 0.007 * np.sin(i * 1.3))), g)
+                if i % 3 == 0: put(at, box(hz(tune[i % 16] - 17)), g * 0.5)
+                at += 0.66 * slow * (2 if style == 'creepy' and i % 4 == 3 else 1); i += 1
+        if style == 'piano':
+            seq = [(0, 12, 15), (-4, 8, 12), (-7, 5, 8), (-5, 7, 11)]
+            for bar_ in range(int(D // 4)):
+                ch = seq[bar_ % 4]; at = bar_ * 4.0
+                for k, iv in enumerate(ch): put(at + 0.05 * k, piano(hz(key - 12 + iv)), (0.8, 0.4, 0.35)[k])
+                if bar_ % 2: put(at + 2.0, piano(hz(key + 7 - int(rng.integers(0, 5))), 4), 0.5)
+        if style == 'choir':
+            chords = [(0, 3, 7), (-4, 0, 3), (-7, -4, 0), (-5, -1, 2)]
+            for c in range(int(D // 8) + 1):
+                a, b = int(c * 8 * SR), min(len(tt), int((c + 1) * 8 * SR + SR))
+                if a >= len(tt): break
+                s_ = tt[a:b] - tt[a]; env = np.minimum(1, s_ / 2) * np.minimum(1, (s_[-1] - s_ + 1e-3) / 2)
+                for nn in chords[c % 4]:
+                    f = hz(key + nn); v = sum(np.sin(2 * np.pi * f * k * s_ * (1 + 0.003 * np.sin(2 * np.pi * 5.2 * s_ + k))) / k ** 1.4 for k in range(1, 7))
+                    x[a:b] += self.lp(v, 1200) * env
+        x /= max(1e-6, np.abs(x).max())
+        x *= np.minimum(1, tt / 3) * np.minimum(1, (D - tt + 1e-3) / 3)
+        self.bgm[n0:n1] += x * self._level(tt, t0, quiet)
+
+    def _strings(self, t0=0.0, t1=None, seed=13, key=62, bar=4.0, quiet=()):
         """Our own background music, written here note by note (no outside music): a slow minor-key string pad
         (i - VI - iv - V), a low drone and a sparse music-box melody picked from the chord tones. It sits in its own
         track (self.bgm) so it stays mild; quiet = [(t0, t1, level)] spans where it drops (daylight scenes)."""
@@ -172,6 +238,7 @@ class Mix:
             w = np.clip(np.minimum((tt + t0 - q0) / 1.5, (q1 - tt - t0) / 1.5), 0, 1)
             lvl = np.minimum(lvl, 1 - (1 - g) * w)
         self.bgm[n0:n1] += x * lvl
+
     def hush(self, t0, t1):                             # dead silence before a scare (applied when the mix is finished)
         self._hush = getattr(self, '_hush', []) + [(t0, t1)]
     def tail(self, t0, g=0.4):

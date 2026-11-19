@@ -333,7 +333,7 @@ def acted_take(lines: list[str], cfg: dict, out: Path) -> Path | None:
     import soundfile as sf
     clean = [TAG.sub("", l.replace("*", "")).strip() for l in lines]
     vcfg = {"gemini_voice": cfg.get("gemini_voice", "Charon"), "persona": cfg.get("persona", "a storyteller"),
-            "style": ("tell it as one continuous story, like the best animated story channels: natural rhythm, dry humour "
+            "style": cfg.get("style") or ("tell it as one continuous story, like the best animated story channels: natural rhythm, dry humour "
                       "on the funny lines, a hushed tense voice on the scary ones, give quoted characters their own voice. "
                       "Leave a clear, silent pause of about three quarters of a second after every line (this matters: the video cuts on those pauses)")}
     import numpy as np
@@ -350,7 +350,7 @@ def acted_take(lines: list[str], cfg: dict, out: Path) -> Path | None:
             wav = out.with_suffix(".wav")
             subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(mp3), "-ar", str(SR), "-ac", "1", str(wav)], check=True)
             a, sr = sf.read(str(wav), dtype="float32")
-            a = _squeeze_silence(a, sr)          # long dramatic pauses become ~0.9 s: the cuts still land on them
+            a = _squeeze_silence(a, sr, longest=float(cfg.get("max_pause", 0.9)))   # long dramatic pauses get capped: the cuts still land on them
             sf.write(str(wav), a, sr)
             dur = len(a) / sr
             if not (words / 4.2 < dur < words / 1.4):      # Gemini skipped or repeated text: do not trust the take

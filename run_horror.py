@@ -95,7 +95,7 @@ def main():
         story["script_pair"] = script.get("pair")
         story["three_d"] = script.get("three_d")
         story["cta"] = script.get("cta")
-        for k in ("episode", "series", "season", "format", "next", "parts", "part_covers", "speed", "cover_line", "cover_offset", "cover_text"):   # a series episode: horizontal, published as a normal video
+        for k in ("episode", "series", "season", "format", "next", "parts", "part_covers", "speed", "cover_line", "cover_offset", "cover_text", "pace"):   # a series episode: horizontal, published as a normal video
             if script.get(k) is not None:
                 story[k] = script[k]
         if story.get("episode"):
@@ -132,6 +132,9 @@ def main():
                 story["script_pair"] = script.get("pair")
                 story["three_d"] = script.get("three_d")
                 story["cta"] = script.get("cta")
+                for k in ("speed", "cover_line", "cover_offset", "cover_text", "pace"):   # per-script look and pace
+                    if script.get(k) is not None:
+                        story[k] = script[k]
                 if script.get("part"):
                     story["min_len"] = 93               # two-part stories stay at least 1:30; one-part stories run 50-60 s
             elif hcfg.get("approved_scripts_only"):
@@ -170,7 +173,13 @@ def main():
         if os.environ.get("GEMINI_API_KEY"):
             from autotube.voice import acted_take
             work.mkdir(parents=True, exist_ok=True)
-            take = acted_take([b["line"] for b in story["beats"]], hcfg["acted_take"], work / "take")
+            tcfg = dict(hcfg["acted_take"])
+            if story.get("pace") == "brisk":          # a quicker read: short breaths between lines, no long dramatic pauses
+                tcfg["style"] = ("a gripping storyteller on the best animated story channels: quick, confident pace, tense and hushed on the "
+                                 "scary words, give quoted characters (and any radio or phone) their own voice; only a short breath "
+                                 "between lines, no long dramatic pauses")
+                tcfg["max_pause"] = 0.45
+            take = acted_take([b["line"] for b in story["beats"]], tcfg, work / "take")
         if take is None:
             log(f"Storyteller voice not available for {story.get('story_id')}: nothing uploaded; the script waits for the next run")
             (out / "WAITING_FOR_VOICE").write_text(story.get("story_id", ""), encoding="utf-8")

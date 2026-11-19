@@ -20,7 +20,7 @@ import requests
 
 API = "https://api.elevenlabs.io/v1"
 JEREMY = "bVMeCyTHy58xNoL34h3p"          # ElevenLabs' premade "Jeremy": young American male, excited, narration
-SR = 44100
+SR = 24000                               # pcm_24000: plain PCM on every plan (44.1 kHz PCM needs Pro)
 
 
 def log(msg: str):
@@ -60,13 +60,13 @@ def _model(cfg: dict) -> str:
 
 
 def _say(text: str, vid: str, model: str, prev: str, nxt: str, settings: dict) -> tuple[np.ndarray, list]:
-    body = {"text": text, "model_id": model, "voice_settings": settings, "output_format": "pcm_44100"}
+    body = {"text": text, "model_id": model, "voice_settings": settings, "output_format": "pcm_24000"}
     if prev:
         body["previous_text"] = prev
     if nxt:
         body["next_text"] = nxt
     for attempt in range(4):
-        r = requests.post(f"{API}/text-to-speech/{vid}/with-timestamps?output_format=pcm_44100", headers=_h(), json=body, timeout=180)
+        r = requests.post(f"{API}/text-to-speech/{vid}/with-timestamps?output_format=pcm_24000", headers=_h(), json=body, timeout=180)
         if r.status_code == 400 and ("previous_text" in body or "next_text" in body):
             body.pop("previous_text", None); body.pop("next_text", None)      # some models don't take context
             continue

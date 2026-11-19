@@ -18,6 +18,8 @@ class Mix:
         self.N = int(total / FPS * SR)
         self.t = np.arange(self.N) / SR
         self.S = dict(zip(ids, shots))
+        self.shots = list(shots)
+        self.cut_sounds = True          # a soft whoosh on every cut (set False for a story that adds its own)
         self.amb, self.sfx, self.mus, self.bgm = np.zeros(self.N), np.zeros(self.N), np.zeros(self.N), np.zeros(self.N)
 
     # ---- timing ----
@@ -25,6 +27,10 @@ class Mix:
     def b(self, id, off=0): return (self.S[id]['b'] + off) / self.FPS
     def beat(self, id, off=0): return (self.S[id]['beat'] + off) / self.FPS
     def span(self, t0, t1): return (self.t >= t0) & (self.t < t1)
+    def word(self, id, w, nth=0, off=0):
+        """seconds when a word is spoken in a shot (first word starting with w), else the shot's beat"""
+        hits = [x for x in self.S[id].get('words', []) if x[0].lower().strip(".,!?;:'\"").startswith(w.lower())]
+        return ((hits[min(nth, len(hits) - 1)][1] if hits else self.S[id]['beat']) + off) / self.FPS
 
     # ---- filters / noise ----
     def lp(self, x, fc):
@@ -87,6 +93,23 @@ class Mix:
     def whoosh(self, at, d=0.8, g=0.6):
         n = int(d * self.SR); tt = np.arange(n) / self.SR
         self.put(self.sfx, at, self.bp(self.rng.standard_normal(n), 300, 2500) * np.sin(np.pi * tt / d) ** 2 * g)
+    def pop(self, at, g=0.4, pitch=900):         # a small cartoon pop: something appears
+        n = int(0.09 * self.SR); tt = np.arange(n) / self.SR
+        self.put(self.sfx, at, np.sin(2 * np.pi * pitch * (1 + 2 * tt) * tt) * np.exp(-tt * 45) * g)
+    def thud(self, at, g=0.7):                    # a body, a box, a fist
+        n = int(0.35 * self.SR); tt = np.arange(n) / self.SR
+        self.put(self.sfx, at, (np.sin(2 * np.pi * 70 * tt) * 1.2 + self.lp(self.rng.standard_normal(n), 400) * 0.6) * np.exp(-tt * 14) * g)
+    def step(self, at, g=0.35, hard=True):          # one footstep
+        n = int(0.12 * self.SR); tt = np.arange(n) / self.SR
+        x = self.bp(self.rng.standard_normal(n), 300 if hard else 150, 3000 if hard else 900) * np.exp(-tt * (40 if hard else 25))
+        self.put(self.sfx, at, x * g)
+    def steps(self, t0, t1, every=0.42, g=0.32, hard=True):
+        t = t0
+        while t < t1:
+            self.step(t, g * (0.85 + 0.3 * self.rng.random()), hard); t += every * (0.92 + 0.16 * self.rng.random())
+    def cloth(self, at, d=0.35, g=0.25):            # a sleeve, a coat going on
+        n = int(d * self.SR); tt = np.arange(n) / self.SR
+        self.put(self.sfx, at, self.bp(self.rng.standard_normal(n), 1200, 6000) * np.sin(np.pi * tt / d) ** 2 * g)
     def sting(self, at, g=1.0):
         st = np.arange(int(4 * self.SR)) / self.SR
         x = (np.sin(2 * np.pi * (40 + 25 * np.exp(-st * 5)) * st) * np.exp(-st * 1.2) * 1.4 + self.hp(self.rng.standard_normal(len(st)), 2500) * np.exp(-st * 3) * 0.5
@@ -246,6 +269,9 @@ class Mix:
         self.put(self.mus, t0, self.lp(np.sin(2 * np.pi * 49 * tt), 200) * np.minimum(1, tt / 3), g)
 
     def done(self, amb=0.05, sfx=0.30, mus=0.26, bgm=0.07):  # background kept very low under the voice; bgm = the mild score
+        if self.cut_sounds:                      # Rick's Clips rule: a little sound on (almost) every cut
+            for sh in self.shots[1:]:
+                self.whoosh(sh['a'] / self.FPS - 0.16, 0.34, 0.22)
         for t0, t1 in getattr(self, '_hush', []):
             w = np.clip(np.minimum((t0 - self.t) / 0.25 + 1, (self.t - t1) / 0.02 + 1), 0, 1) if True else 1
             for b in (self.amb, self.mus, self.bgm): b *= np.where((self.t > t0 - 0.25) & (self.t < t1), w, 1.0)

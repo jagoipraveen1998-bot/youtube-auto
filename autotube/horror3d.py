@@ -36,6 +36,35 @@ def line_frames(timing: list[dict], tail: float = TAIL) -> tuple[list[dict], int
     return out, total
 
 
+def _word_frames(story: dict, take: Path | None, shots: list[dict], timing: list[dict]):
+    """shots[k]["words"] = [[word, first frame, last frame], ...]: when each word is spoken. Exact when the take came
+    with word timings (ElevenLabs writes take.words.json), otherwise spread over the line by word length."""
+    import re as _re
+    exact = None
+    wj = take.with_suffix(".words.json") if take else None
+    if wj is None or not wj.exists():
+        wj = (take.parent / "take.words.json") if take else None
+    if wj is not None and wj.exists():
+        try:
+            exact = json.loads(wj.read_text(encoding="utf-8"))
+            if len(exact) != len(shots):
+                exact = None
+        except Exception:
+            exact = None
+    sp = float(story.get("speed") or 1.0)
+    for k, s in enumerate(shots):
+        if exact:
+            s["words"] = [[w, int(round(a / sp * FPS)), int(round(b / sp * FPS))] for w, a, b in exact[k]["words"]]
+            continue
+        words = _re.findall(r"[A-Za-z0-9'][A-Za-z0-9'.,!?;:\-]*", story["beats"][k]["line"].replace("*", ""))
+        t0, t1 = timing[k]["start"] * FPS, timing[k]["end"] * FPS
+        wts = [len(w) + 2 for w in words]; tot = sum(wts) or 1; acc = t0; out = []
+        for w, wt in zip(words, wts):
+            d = (t1 - t0) * wt / tot
+            out.append([w, int(round(acc)), int(round(acc + d))]); acc += d
+        s["words"] = out
+
+
 def _captions(frames_dir: Path, lines: list[str], shots: list[dict], total: int, cta: str = ""):
     """Yield every frame as JPEG bytes with the word-by-word caption burned in."""
     from io import BytesIO
@@ -43,6 +72,13 @@ def _captions(frames_dir: Path, lines: list[str], shots: list[dict], total: int,
     fonts = ["/usr/share/fonts/truetype/google-fonts/Poppins-Bold.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
              "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"]
     font = ImageFont.truetype(next(f for f in fonts if Path(f).exists()), 64)
+    fpath = next(f for f in fonts if Path(f).exists())
+    big = 128
+    _fc = {}
+    def _font_cap(n):
+        if n not in _fc:
+            _fc[n] = ImageFont.truetype(fpath, n)
+        return _fc[n]
     for f in range(total):
         im = Image.open(frames_dir / f"f{f:05d}.jpg").convert("RGB")
         cx, wrap = im.width / 2, min(920, im.width * 0.7)
@@ -64,28 +100,21 @@ def _captions(frames_dir: Path, lines: list[str], shots: list[dict], total: int,
             d.rounded_rectangle((cx - wmax / 2 - 44, y0 - 26, cx + wmax / 2 + 44, y0 + len(rows) * 84 + 14), 34, fill=(20, 12, 28, 215))
             for i, row in enumerate(rows):
                 d.text((cx - d.textlength(row, font=font) / 2, y0 + i * 84), row, font=font, fill=(255, 225, 74), stroke_width=4, stroke_fill=(20, 12, 28))
-        elif k is not None:
-            d = ImageDraw.Draw(im)
-            words = lines[k].split()
-            said = shots[k].get("said", shots[k]["b"])                      # frame where the line's last word ends
-            shown = min(len(words), int((f - shots[k]["a"]) / max(1, said - shots[k]["a"]) * len(words)) + 1)
-            rows, cur = [], ""
-            for w in words:
-                t = (cur + " " + w).strip()
-                if d.textlength(t, font=font) > wrap and cur:
-                    rows.append(cur); cur = w
-                else:
-                    cur = t
-            rows.append(cur)
-            y, n = base - (len(rows) - 1) * 42, 0
-            for row in rows:
-                x = cx - d.textlength(row, font=font) / 2
-                for w in row.split():
-                    if n < shown:
-                        d.text((x, y), w, font=font, fill=(255, 225, 74) if n == shown - 1 else (255, 255, 255),
-                               stroke_width=9, stroke_fill=(20, 12, 28))
-                    x += d.textlength(w + " ", font=font); n += 1
-                y += 84
+        elif k is not None and shots[k].get("words"):
+            # one word at a time, big, popping in on the word (Rick's Clips / top story Shorts)
+            ws = shots[k]["words"]
+            j = max((i for i, w in enumerate(ws) if w[1] <= f), default=None)
+            if j is not None and f <= max(ws[j][2], (ws[j + 1][1] - 1) if j + 1 < len(ws) else shots[k].get("said", shots[k]["b"])) + 3:
+                d = ImageDraw.Draw(im)
+                word = ws[j][0].strip(".,;:!?\"'")
+                age = f - ws[j][1]
+                size = int(big * (1.18 if age <= 1 else 1.07 if age <= 3 else 1.0))
+                fnt = _font_cap(size)
+                while d.textlength(word, font=fnt) > im.width * 0.86 and size > 50:
+                    size -= 6; fnt = _font_cap(size)
+                col = (255, 225, 74) if (lines[k].strip().startswith("*") or word.isupper() or j == len(ws) - 1) else (255, 255, 255)
+                d.text((cx - d.textlength(word, font=fnt) / 2, base - size * 0.6), word, font=fnt, fill=col,
+                       stroke_width=max(8, size // 9), stroke_fill=(20, 12, 28))
         buf = BytesIO(); im.save(buf, "JPEG", quality=93)
         yield f, im, buf.getvalue()
 
@@ -128,13 +157,15 @@ def make_short(story: dict, take: Path | None, work: Path, stage: str = "all"):
     shots, total = line_frames(timing, 3.4 if story.get("cta") else TAIL)       # hold longer when an end line is shown
     for s, t in zip(shots, timing):
         s["said"] = int(round(t["end"] * FPS))
+    _word_frames(story, take, shots, timing)
     need = int((src / "LINES").read_text().strip()) if (src / "LINES").exists() else len(shots)
     if len(shots) != need:
         raise ValueError(f"the 3D set '{name}' was built for {need} lines but the script has {len(shots)}")
     shutil.rmtree(web, ignore_errors=True)
     shutil.copytree(KIT / "web", web)
     shutil.copy(src / "story.js", web / "story.js")
-    (web / "timing.js").write_text(f"export const TIMING = {json.dumps(shots)};\nexport const TOTAL = {total};\n", encoding="utf-8")
+    (web / "timing.js").write_text(f"export const TIMING = {json.dumps(shots)};\nexport const TOTAL = {total};\n"
+                                   f"export const WORDS = {json.dumps([s.get('words', []) for s in shots])};\n", encoding="utf-8")
     log(f"3D Short '{name}': {len(shots)} shots, {total} frames ({total / FPS:.1f}s)")
     shutil.rmtree(frames, ignore_errors=True)
     if stage == "prepare":
@@ -163,6 +194,8 @@ def _finish(story, work, src, name, shots, total, voice, frames):
     lines = [b["line"].replace("*", "") for b in story["beats"]]
     tw = next((i for i, b in enumerate(story["beats"]) if b.get("twist")), len(shots) - 2)
     cover_f = min(total - 1, shots[tw]["beat"] + 14)
+    if story.get("cover_line") is not None:      # a chosen moment for the thumbnail (line index, frames after its beat)
+        cover_f = min(total - 1, shots[int(story["cover_line"])]["beat"] + int(story.get("cover_offset", 0)))
     if story.get("parts"):                       # a series episode cut into vertical Shorts: Part 1, Part 2, ...
         return _finish_parts(story, work, name, shots, total, frames, lines, mix, bed, out_dir)
     ff = subprocess.Popen(["ffmpeg", "-y", "-v", "error", "-f", "image2pipe", "-framerate", str(FPS), "-c:v", "mjpeg", "-i", "-", "-i", str(wav),
@@ -173,6 +206,8 @@ def _finish(story, work, src, name, shots, total, voice, frames):
         if f == cover_f:
             Image_open = __import__("PIL.Image", fromlist=["open"]).open
             Image_open(frames / f"f{f:05d}.jpg").save(thumb, quality=92)      # the thumbnail carries no caption
+            if story.get("cover_text"):
+                _text_cover(thumb, story["cover_text"])
     ff.stdin.close()
     if ff.wait() != 0 or not video.exists():
         raise RuntimeError("ffmpeg could not encode the 3D Short")
@@ -214,6 +249,26 @@ def _end_card(im, rows: list[str]):
     for i, r in enumerate(rows):
         d.text((cx - d.textlength(r, font=f) / 2, y0 + i * 92), r, font=f, fill=(255, 225, 74) if i == 0 else (255, 255, 255),
                stroke_width=4, stroke_fill=(12, 8, 20))
+
+
+def _text_cover(path: Path, rows: list[str]):
+    """Thumbnail words: up to three short rows, huge and outlined, high in the frame so the face and the danger stay
+    clear below. Row 1 white, the rest yellow; a row starting with ! is red. Readable at phone-grid size."""
+    from PIL import Image, ImageDraw, ImageEnhance
+    im = ImageEnhance.Contrast(Image.open(path).convert("RGB")).enhance(1.12)
+    d = ImageDraw.Draw(im, "RGBA")
+    d.rectangle((0, 0, im.width, int(im.height * 0.36)), fill=(0, 0, 0, 70))
+    y = int(im.height * 0.06)
+    for i, r in enumerate(rows):
+        col = (255, 60, 50) if r.startswith("!") else (255, 255, 255) if i == 0 else (255, 225, 74)
+        r = r.lstrip("!")
+        size = 200
+        while size > 60 and d.textlength(r, font=_font(size)) > im.width * 0.92:
+            size -= 6
+        f = _font(size)
+        d.text((im.width / 2 - d.textlength(r, font=f) / 2, y), r, font=f, fill=col, stroke_width=max(8, size // 14), stroke_fill=(10, 6, 16))
+        y += int(size * 1.08)
+    im.save(path, quality=92)
 
 
 def _cover(frame_path: Path, out: Path, series: str, k: int, n: int):

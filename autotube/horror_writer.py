@@ -298,7 +298,7 @@ def write_story(cfg: dict, used: list[str], hint: str | None = None, part_of: di
     from google import genai
     from google.genai import types
 
-    client = genai.Client(api_key=env("GEMINI_API_KEY"))
+    client = genai.Client(api_key=env("GEMINI_API_KEY"), http_options=types.HttpOptions(timeout=240_000))
     scenes = "\n".join(f"- {k}: {v}" for k, v in SCENES.items())
     places = town_places()
     if places:

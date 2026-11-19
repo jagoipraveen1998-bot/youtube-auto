@@ -72,7 +72,8 @@ def _say(text: str, vid: str, model: str, prev: str, nxt: str, settings: dict) -
             continue
         if r.status_code in (429, 500, 502, 503):
             time.sleep(10 * (attempt + 1)); continue
-        r.raise_for_status()
+        if r.status_code != 200:
+            raise RuntimeError(f"ElevenLabs {r.status_code}: {r.text[:300]}")
         j = r.json()
         pcm = np.frombuffer(base64.b64decode(j["audio_base64"]), dtype=np.int16).astype(np.float32) / 32768
         al = j.get("alignment") or {}

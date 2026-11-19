@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -q faster-whisper "av>=14"
+      - run: pip install -q faster-whisper soundfile
       - name: Transcribe
         run: |
           python - <<'PY'
@@ -24,7 +24,9 @@ jobs:
           import pathlib
           m = WhisperModel("small.en", device="cpu", compute_type="int8")
           for f in pathlib.Path("incoming_audio").glob("*.mp3"):
-              segs, _ = m.transcribe(str(f), vad_filter=True)
+              import soundfile as sf, numpy as np
+              a, sr = sf.read(str(f), dtype="float32")
+              segs, _ = m.transcribe(a if a.ndim == 1 else a.mean(1), vad_filter=True)
               out = "\n".join(f"[{int(s.start//60)}:{s.start%60:04.1f}] {s.text.strip()}" for s in segs)
               f.with_suffix(".txt").write_text(out)
           PY

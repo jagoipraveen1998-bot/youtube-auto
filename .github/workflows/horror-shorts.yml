@@ -34,6 +34,8 @@ jobs:
       frames: ${{ steps.make.outputs.frames }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}      # the branch as it is NOW: a run that waited in the queue sees the history the run before it saved
 
       - uses: actions/setup-python@v5
         with:

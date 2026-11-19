@@ -1,0 +1,95 @@
+{
+ "id": "rich-kid-spider",
+ "title": "What If The Spider Bit A Rich Kid?",
+ "approved": true,
+ "release_from": "2026-11-20",
+ "three_d": "rich-kid-spider",
+ "pace": "brisk",
+ "hashtags": [
+  "#superhero",
+  "#spiderpowers",
+  "#richkid"
+ ],
+ "cover_line": 10,
+ "cover_offset": 6,
+ "cover_text": [
+  "RICH KID",
+  "GOT",
+  "!POWERS"
+ ],
+ "description": "A spoiled rich kid gets spider powers, and uses them for all the wrong things. Then his butler needs saving... and his dad has a secret.\nWho's worse, Peter or his dad? Tell me below.\n\nTwist Tales: original animated stories, and every one ends with a twist.",
+ "lines": [
+  "One day in New York, Peter Sterling got bitten by a glowing spider.",
+  "His father, Dr. Thomas Sterling, was the city's richest surgeon, famous for giving millions to hospitals.",
+  "But at home, Peter got everything he ever asked for.",
+  "By morning, Peter could climb walls, lift cars, and hear a whisper three streets away.",
+  "He stuck the school trophy to his own shelf.",
+  "He climbed straight past the queue at every club.",
+  "He swung to school just to show off his new gold sneakers.",
+  "Only one person ever told him no: Walter, the family's old butler.",
+  "Then Peter heard it. Three streets away. Walter's voice. \"Help!\"",
+  "Two thieves had grabbed Walter in the middle of the city's busiest crossing.",
+  "Peter swung down, shot webs at both of them, and stopped all the traffic.",
+  "The whole city filmed it. Back home, his father was waiting at the door... smiling.",
+  "*\"I hired those thieves. Now our family is trending number one!\"",
+  "\"Walter... you're fired. You took too long to scream.\""
+ ],
+ "shots": [
+  {
+   "set": "3d",
+   "v": "s0"
+  },
+  {
+   "set": "3d",
+   "v": "s1"
+  },
+  {
+   "set": "3d",
+   "v": "s2"
+  },
+  {
+   "set": "3d",
+   "v": "s3"
+  },
+  {
+   "set": "3d",
+   "v": "s4"
+  },
+  {
+   "set": "3d",
+   "v": "s5"
+  },
+  {
+   "set": "3d",
+   "v": "s6"
+  },
+  {
+   "set": "3d",
+   "v": "s7"
+  },
+  {
+   "set": "3d",
+   "v": "s8"
+  },
+  {
+   "set": "3d",
+   "v": "s9"
+  },
+  {
+   "set": "3d",
+   "v": "s10"
+  },
+  {
+   "set": "3d",
+   "v": "s11"
+  },
+  {
+   "set": "3d",
+   "v": "s12"
+  },
+  {
+   "set": "3d",
+   "v": "s13"
+  }
+ ]
+}

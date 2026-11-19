@@ -4,8 +4,8 @@
  "approved": true,
  "release_from": "2026-11-19",
  "three_d": "radio-tomorrow",
- "cta": "Tag a friend who'd want to hear tomorrow's news",
- "description": "Grandpa's old radio warned him about tomorrow, and he used it to save a stranger. Then it said his name.\nWould YOU listen to tomorrow's news? Tell me in the comments.\n\nA CreepyCartoonTales story.",
+ "cta": "SAVE HIM or LET IT HIT? Top comment decides Part 2",
+ "description": "SAVE HIM: someone changes tomorrow one more time, but what does the radio take in return?\nLET IT HIT: tomorrow happens the way the radio said.\nChoose, and tell me why. The top comment decides Part 2.\n\nMy Grandpa's Radio, Part 1. A CreepyCartoonTales story.",
  "lines": [
   "Grandpa's old radio doesn't play today's news. It plays tomorrow's.",
   "\"Ten fifteen tomorrow,\" it crackled. \"A girl on a red bicycle. Mill Road corner. A runaway lorry.\"",
@@ -14,13 +14,15 @@
   "Grandpa stepped out and grabbed her handlebars.",
   "The lorry thundered past... right where she would have been.",
   "She was shaking. Grandpa was smiling.",
-  "That night, the radio crackled again.",
+  "The next night, it crackled again. \"Eight o'clock. Number twelve, Mill Road. A kitchen fire. A baby asleep upstairs.\"",
+  "At eight, Grandpa hammered on number twelve's door.",
+  "Smoke rolled out. A mum ran past him, holding her baby.",
+  "Two lives saved. Then, on the third night, the radio crackled again.",
   "\"Ten fifteen tomorrow. An old man. Mill Road corner.\"",
   "Grandpa switched it off and looked at me.",
   "\"Whatever happens... don't let me go out tomorrow.\"",
   "It's ten fourteen. His chair is empty.",
-  "*Ten fifteen. Mill Road corner.",
-  "Then the radio went quiet."
+  "*Ten fifteen. Mill Road corner."
  ],
  "shots": [
   {
@@ -78,6 +80,14 @@
   {
    "set": "3d",
    "v": "s13"
+  },
+  {
+   "set": "3d",
+   "v": "s14"
+  },
+  {
+   "set": "3d",
+   "v": "s15"
   }
  ]
 }

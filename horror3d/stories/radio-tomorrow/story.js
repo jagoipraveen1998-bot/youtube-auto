@@ -1,8 +1,9 @@
-// "My Grandpa's Radio Plays Tomorrow's News". Grandpa's old valve radio glows amber at night and reads out
-// tomorrow. It warns of a girl on a red bicycle at the Mill Road corner; next morning Grandpa grabs her handlebars
-// and a runaway lorry thunders past where she would have been. That night the radio names an old man. He begs me
-// not to let him go out. Ten fourteen: his chair is empty and his coat is gone. Ten fifteen at the corner: the lorry.
-// The radio goes quiet.
+// "My Grandpa's Radio Plays Tomorrow's News" (Part 1). Grandpa's old valve radio glows amber at night and reads out
+// tomorrow. First it warns of a girl on a red bicycle at the Mill Road corner: he grabs her handlebars and a runaway
+// lorry thunders past where she would have been. Next it warns of a kitchen fire at number twelve: he hammers on the
+// door and the mum runs out with her baby. The third night it names an old man. He begs me not to let him go out.
+// Ten fourteen: his chair is empty. Ten fifteen at the corner: the lorry is metres away, and the picture freezes.
+// The end line asks viewers: SAVE HIM or LET IT HIT? The top comment decides Part 2.
 // Look: bright cards with bold ink edges; Grandpa with white hair, white moustache and round glasses; a detailed
 // sitting room (wallpaper, planks, armchair, standard lamp, bookshelf, clock, moonlit window); Mill Road as a real
 // steep street of terraced houses running down to a junction with a street clock; a real bicycle (spoked wheels,
@@ -24,12 +25,14 @@ const GP = { tunic: '#8a6440', skin: '#f2d2b6', hair: '#dfe2e8', moustache: '#ee
 const GPC = { ...GP, tunic: '#40536e', cap: '#6a5a48', brim: '#6a5a48' };                                                                      // in his coat and flat cap
 const ME = { tunic: '#2f86d8', skin: '#f5c9a0', hair: '#2a1a12' };                                                                             // me: blue hoodie
 const GIRL = { tunic: '#f4c534', skin: '#e8b48e', hair: '#5a2e16', long: '#5a2e16' };                                                         // yellow top, long brown hair
-const GPS = 0.8, MES = 0.62, GIS = 0.7;
+const MUM = { tunic: '#2a9a8a', skin: '#c99067', hair: '#1e1410', long: '#1e1410', dress: '#2a9a8a' };                                        // the mum at number twelve: teal dress, long black hair
+const GPS = 0.8, MES = 0.62, GIS = 0.7, MUS = 0.76;
+const N12 = { x: -6.6, z: -28.5 }, N12DOOR = ME_(-6.62, -28.5), N12WIN = ME_(-6.62, -29.55, 1.35), GPKNOCK = ME_(-6.05, -28.15, 0.13);
 
 const RADIO = R(-0.25, 0.62, -1.45), DIAL = R(-0.25, 0.74, -1.31), GPROOM = R(-0.66, 0, -0.9), MEROOM = R(0.6, 0, 0.55), CHAIR = R(0.75, 0.7, -1.35);
 const BIKE_X = 0.7, STOP_Z = -5.2, GPGRAB = ME_(-0.25, -5.0), LANE_Z = 1.3, HIT_X = -2.0, GPHIT = M(HIT_X, 0, 1.45), SCLOCK = M(-4.3, 0, -4.4);
 
-const IDS = ['radio', 'broadcast', 'coat', 'hill', 'grab', 'lorry', 'shaking', 'night2', 'oldman', 'switch', 'plea', 'empty', 'corner', 'quiet'];
+const IDS = ['radio', 'broadcast', 'coat', 'hill', 'grab', 'lorry', 'shaking', 'warn2', 'knock', 'smoke', 'night2', 'oldman', 'switch', 'plea', 'empty', 'corner'];
 const CAMS = {
   radio: [{ pos: R(0.35, 1.15, 0.9), look: R(-0.5, 1.0, -1.3), fov: 46 }, { pos: R(0.05, 1.05, -0.1), look: R(-0.5, 0.95, -1.3), fov: 42 }],          // push in from the room to the radio
   broadcast: [{ pos: R(-0.18, 0.8, -0.72), look: DIAL, fov: 34 }, { pos: R(-0.22, 0.77, -0.92), look: DIAL, fov: 28 }],                          // the glowing dial, closer and closer
@@ -38,45 +41,48 @@ const CAMS = {
   grab: [{ pos: ME_(-1.4, -1.9, 0.4), look: ME_(0.3, -6, 0.9), fov: 44 }, { pos: ME_(-1.1, -2.6, 0.35), look: ME_(0.3, -5.4, 1.0), fov: 40 }],    // low angle as he steps out
   lorry: [{ pos: ME_(1.6, -10.5, 1.45), look: M(0.2, 1.4, 0.8), fov: 42 }, { pos: ME_(1.5, -10.0, 1.4), look: M(0.0, 1.5, 0.8), fov: 40 }],        // from up the hill: them in front, the lorry behind
   shaking: [{ pos: ME_(-0.7, -2.2, 1.4), look: ME_(0.15, -5.1, 1.25), fov: 46 }, { pos: ME_(-0.6, -2.7, 1.38), look: ME_(0.15, -5.1, 1.25), fov: 42 }],
+  warn2: [{ pos: R(0.3, 1.2, -0.2), look: R(-0.45, 1.05, -1.25), fov: 44 }, { pos: R(0.12, 1.1, -0.5), look: R(-0.4, 0.95, -1.35), fov: 40 }],          // the second warning
+  knock: [{ pos: ME_(-2.6, -25.4, 1.6), look: ME_(-6.4, -28.6, 1.5), fov: 44 }, { pos: ME_(-3.2, -26.2, 1.5), look: ME_(-6.4, -28.6, 1.45), fov: 40 }],
+  smoke: [{ pos: ME_(-2.4, -31.6, 1.35), look: ME_(-6.2, -28.6, 1.5), fov: 46 }, { pos: ME_(-2.2, -31.2, 1.3), look: ME_(-5.4, -28.4, 1.4), fov: 48 }],
   night2: [{ pos: R(0.85, 1.4, 1.35), look: R(-0.4, 0.95, -1.3), fov: 42 }, { pos: R(0.7, 1.35, 1.0), look: R(-0.4, 0.9, -1.35), fov: 38 }],       // over my shoulder
   oldman: [{ pos: R(-0.1, 0.9, -0.2), look: R(-0.75, 1.35, -0.95), fov: 48 }, { pos: R(-0.2, 0.95, -0.38), look: R(-0.76, 1.4, -0.95), fov: 44 }],   // low past the radio up to his face
   switch: [{ pos: R(0.95, 1.3, 1.25), look: R(-0.6, 1.2, -1.1), fov: 40 }, { pos: R(0.75, 1.3, 1.0), look: R(-0.75, 1.35, -1.0), fov: 36 }],
   plea: [{ pos: R(-0.3, 1.5, 0.95), look: R(-0.78, 1.45, -0.95), fov: 38 }, { pos: R(-0.45, 1.5, 0.4), look: R(-0.78, 1.47, -0.95), fov: 34 }],   // push in on his face
   empty: [{ pos: R(-0.5, 1.6, 1.85), look: R(0.6, 1.0, -1.4), fov: 50 }, { pos: R(-0.1, 1.35, 1.0), look: R(0.6, 0.95, -1.4), fov: 44 }],          // wide: the empty chair, the radio glowing, the clock
-  corner: [{ pos: M(-7.4, 1.25, 4.7), look: M(3.0, 1.5, 1.3), fov: 46 }, { pos: M(-7.2, 1.2, 4.5), look: M(0.0, 1.3, 1.3), fov: 44 }],
-  quiet: [{ pos: R(0.2, 1.1, 0.4), look: RADIO.map((v, i) => v + [0, 0.12, 0][i]), fov: 40 }, { pos: R(-0.05, 0.95, -0.35), look: RADIO.map((v, i) => v + [0, 0.12, 0][i]), fov: 34 }],
+  corner: [{ pos: M(-7.4, 1.25, 4.7), look: M(3.0, 1.5, 1.3), fov: 46 }, { pos: M(-6.2, 1.15, 4.1), look: M(-0.6, 1.5, 1.3), fov: 38 }],
 };
 const room = (L) => ({ ...L, fogNear: 8, fogFar: 40 });
 const LIGHTS = {
   night: room({ ...MOODS.moonNight, hemi: 0.6, sky: '#8a9ad0', ground: '#3a2a22', gain: '#fff2e2', lift: '#06040a', vig: 0.42, sat: 1.12 }),
   morning: room({ ...MOODS.sunClouds, hemi: 1.05, sky: '#d8e8f8', ground: '#8a6a50', gain: '#ffffff', lift: '#000000', vig: 0.22, sat: 1.14 }),
   street: { ...MOODS.sunClouds, fogNear: 30, fogFar: 160, clouds: 0.5, sat: 1.16, vig: 0.2 },
+  dusk: { ...MOODS.evening, fogNear: 20, fogFar: 120, hemi: 0.85, vig: 0.34, sat: 1.15, clouds: 0.45, cloudCol: '#ffb88a', cloudDark: '#6a4a6a' },
 };
 const FOCUS = (S) => ({ radio: RADIO.map((v, i) => v + [0, 0.15, 0][i]), broadcast: DIAL, coat: R(1.5, 1.35, 0.65), hill: ME_(0.6, -18, 1.2), grab: ME_(0.3, -5.2, 0.95),
   lorry: M(0.2, 1.3, 0.5), shaking: ME_(0.25, -5.1, 1.2), night2: R(-0.5, 1.0, -1.2), oldman: R(-0.76, 1.4, -0.95), switch: R(-0.7, 1.3, -0.95), plea: R(-0.78, 1.47, -0.95),
-  empty: CHAIR, corner: M(HIT_X, 1.2, 1.4), quiet: RADIO.map((v, i) => v + [0, 0.12, 0][i]) }[S.id]);
-const NIGHT = new Set(['radio', 'broadcast', 'night2', 'oldman', 'switch', 'plea']);
+  empty: CHAIR, corner: M(HIT_X, 1.2, 1.4), warn2: RADIO.map((v, i) => v + [0, 0.25, 0][i]), knock: ME_(-6.3, -28.4, 1.4), smoke: ME_(-5.6, -28.6, 1.3) }[S.id]);
+const NIGHT = new Set(['radio', 'broadcast', 'warn2', 'night2', 'oldman', 'switch', 'plea']);
+const STREET = ['hill', 'grab', 'lorry', 'shaking', 'corner'], DUSK = ['knock', 'smoke'];
 const K = makeStory({
   ids: IDS, cams: CAMS, lights: LIGHTS,
-  light: (S) => (['hill', 'grab', 'lorry', 'shaking', 'corner'].includes(S.id) ? 'street' : NIGHT.has(S.id) ? 'night' : 'morning'),
+  light: (S) => (STREET.includes(S.id) ? 'street' : DUSK.includes(S.id) ? 'dusk' : NIGHT.has(S.id) ? 'night' : 'morning'),
   tweak: (L_, S, f) => {
     if (S.id === 'plea') L_.vig = 0.6;
     if (S.id === 'empty') L_.vig = 0.4 + 0.2 * ramp(f, S.a, S.b);
-    if (S.id === 'quiet') { L_.vig = 0.45 + 0.3 * ramp(f, S.a, S.b); L_.sat = 1.0 - 0.35 * ramp(f, S.a, S.b); }
-    if (S.id === 'corner' && f >= S.beat && f < S.beat + 3) { L_.gain = '#ffffff'; L_.lift = '#6a6a72'; L_.vig = 0.05; }       // the impact: one white frame
+    if (S.id === 'corner' && f >= S.beat) { const t = ramp(f, S.beat, S.beat + 8); L_.sat = 1.16 - 0.8 * t; L_.vig = 0.2 + 0.4 * t; }   // freeze: the colour drains out
   },
-  kicks: ['lorry', 'corner'],
+  kicks: ['lorry', 'knock'],
   focus: (S) => FOCUS(S),
-  shadowAt: (S) => (['hill', 'grab', 'lorry', 'shaking', 'corner'].includes(S.id) ? FOCUS(S) : R(0, 1, -0.6)),
+  shadowAt: (S) => (STREET.includes(S.id) || DUSK.includes(S.id) ? FOCUS(S) : R(0, 1, -0.6)),
 });
 export const { FPS, TOTAL, DECK, SHOTS, shotAt, lightFor, dofAt } = K;
 export { LIGHTS };
 // vertical 9:16: centre each shot on its subject; glide between shots in one place, hard cuts between places
-const CUTS = new Set(['coat', 'hill', 'grab', 'lorry', 'night2', 'empty', 'corner', 'quiet']), GLIDE = 20, PULL = { hill: 0.35, corner: 0.55, lorry: 0.6, coat: 0.5, empty: 0.5 };
+const CUTS = new Set(['coat', 'hill', 'grab', 'lorry', 'warn2', 'knock', 'night2', 'empty', 'corner']), GLIDE = 20, PULL = { hill: 0.35, corner: 0.55, lorry: 0.6, coat: 0.5, empty: 0.5 };
 const mix = (a, b, t) => ({ ...b, pos: lerp3(a.pos, b.pos, t), look: lerp3(a.look, b.look, t), fov: lerp(a.fov, b.fov, t) });
 const vert = (c, S) => { const p = FOCUS(S); return { ...c, look: lerp3(c.look, p, PULL[S.id] ?? 0.65), fov: Math.min(75, c.fov * 1.2) }; };
 const cam = (f) => vert(K.camAt(f), shotAt(f));
-export const camAt = (f) => { const S = shotAt(f), c = cam(f); if (S.i === 0 || CUTS.has(S.id) || f - S.a >= GLIDE) return c; return mix(cam(S.a - 1), c, smooth((f - S.a) / GLIDE)); };
+export const camAt = (f) => { const S = shotAt(f); if (S.id === 'corner' && f > S.beat) f = S.beat; const c = cam(f); if (S.i === 0 || CUTS.has(S.id) || f - S.a >= GLIDE) return c; return mix(cam(S.a - 1), c, smooth((f - S.a) / GLIDE)); };
 
 // ---------- textures painted here ----------
 const cv = (w, h, fn) => { const c = document.createElement('canvas'); c.width = w; c.height = h; fn(c.getContext('2d'), w, h); return c; };
@@ -253,9 +259,17 @@ export const build = (ctx) => {
     if (z === -3.8) add(new THREE.SphereGeometry(0.15, 14, 10), new THREE.MeshBasicMaterial({ color: '#ffb020' }), s * 3.6, 2.25, -3.6, S_, { cast: false }); }     // belisha beacons
   // houses up both sides of the hill, stepped down the slope
   const walls = ['brick', 'plaster', 'stone', 'plasterB', 'brick', 'stoneB', 'plaster', 'brick', 'stone', 'plasterB'], doors = ['#2a3a5a', '#5a2a2a', '#2a4a3a', '#6a4a1a', '#3a2a4a'];
+  let n12 = null;
   for (const s of [-1, 1]) for (let k = 0; k < 10; k++) { const z = -9 - k * 3.9, y = elev(z + 1.95), x = s * 8.6;
     const c = SETS.cottage(ctx, S_, { x, z, w: 3.9, wall: walls[(k + (s > 0 ? 3 : 0)) % walls.length], roof: k % 2 ? 'slate' : 'tile', door: doors[(k * 2 + (s > 0 ? 1 : 0)) % doors.length], seed: k * 3 + (s > 0 ? 50 : 10), ry: s < 0 ? -Math.PI / 2 : Math.PI / 2, number: s < 0 ? 2 + k * 2 : 1 + k * 2, lit: [] });
-    c.g.position.y = y; add(tbox(4, 1.6, 3.9, 1), toon({ color: '#6a665e' }), x, y - 0.8, z, S_); }
+    c.g.position.y = y; add(tbox(4, 1.6, 3.9, 1), toon({ color: '#6a665e' }), x, y - 0.8, z, S_); if (s < 0 && k === 5) n12 = c; }
+  // number twelve: a kitchen fire behind the ground-floor window, a glow inside, the front door that bursts open
+  const fireTex = P.tex(cv(128, 192, (g, w, h) => { const gr = g.createLinearGradient(0, h, 0, 0); gr.addColorStop(0, '#fff4a0'); gr.addColorStop(0.4, '#ff8a1a'); gr.addColorStop(1, '#5a1a0a');
+    g.fillStyle = gr; g.fillRect(0, 0, w, h); g.fillStyle = 'rgba(40,20,20,0.75)'; g.fillRect(0, 0, w, h * 0.3);
+    g.fillStyle = '#ffd040'; for (let i = 0; i < 7; i++) { g.beginPath(); const x = 10 + i * 18; g.moveTo(x - 10, h); g.quadraticCurveTo(x, h * (0.3 + (i % 3) * 0.1), x + 10, h); g.fill(); } }));
+  const n12glass = n12.glass[0], n12map = n12glass.map;
+  const fireL = new THREE.PointLight('#ff7a20', 0, 9, 1.4); fireL.position.set(N12WIN[0] - MB[0] - 0.9, N12WIN[1] - MB[1], N12WIN[2] - MB[2]); S_.add(fireL);
+  const fireOut = new THREE.PointLight('#ff8a30', 0, 6, 1.6); fireOut.position.set(N12WIN[0] - MB[0] + 0.6, N12WIN[1] - MB[1], N12WIN[2] - MB[2]); S_.add(fireOut);
   // corner buildings around the junction
   const corner = [[-11, -6.2, 'brick', 0], [11, -6.2, 'plaster', 0], [-14, 10, 'stone', Math.PI], [-6, 10, 'brick', Math.PI], [2, 10, 'plasterB', Math.PI], [10, 10, 'stoneB', Math.PI], [18, 10, 'brick', Math.PI], [-22, 10, 'plaster', Math.PI]];
   corner.forEach(([x, z, wall, ry], i) => SETS.cottage(ctx, S_, { x, z, w: 7.6, wall, roof: i % 2 ? 'tile' : 'slate', seed: 70 + i, ry, door: doors[i % doors.length], lit: [] }));
@@ -268,7 +282,7 @@ export const build = (ctx) => {
   add(box(0.72, 0.72, 0.72), iron, 0, 3.15, 0, sc); add(new THREE.ConeGeometry(0.5, 0.35, 4), iron, 0, 3.68, 0, sc).rotation.y = Math.PI / 4; add(new THREE.SphereGeometry(0.08, 10, 8), toon({ color: '#c8a040' }), 0, 3.9, 0, sc);
   const sfaces = [0, 1, 2, 3].map((k) => { const p = SETS.canvasPlane(ctx, 0.6, 0.6, 256, sc, { lit: true }); const a = k * Math.PI / 2; p.mesh.position.set(Math.sin(a) * 0.37, 3.15, Math.cos(a) * 0.37); p.mesh.rotation.y = a; return p; });
   // lamps, trees, a postbox, a bench
-  for (const z of [-8, -18, -28, -38]) for (const s of [-1, 1]) { const lg = new THREE.Group(); lg.position.y = elev(z); S_.add(lg); SETS.streetLamp(ctx, lg, s * 5.4, z); }
+  for (const z of [-8, -19, -33, -42]) for (const s of [-1, 1]) { const lg = new THREE.Group(); lg.position.y = elev(z); S_.add(lg); SETS.streetLamp(ctx, lg, s * 5.4, z); }
   for (const [x, z] of [[-5.6, -13], [5.6, -23], [-5.6, -33], [14, 6.8], [-18, 6.8], [24, 6.8]]) { const tg = new THREE.Group(); tg.position.y = elev(z); S_.add(tg); SETS.tree(ctx, tg, x, z, 0.9); }
   add(new THREE.CylinderGeometry(0.24, 0.24, 1.1, 18), toon({ color: '#c41e1e' }), -5.4, 0.68, -4.0, S_); add(new THREE.SphereGeometry(0.25, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), toon({ color: '#c41e1e' }), -5.4, 1.23, -4.0, S_);
   add(box(0.3, 0.05, 0.02), toon({ color: '#1a1a1a' }), -5.4, 1.0, -3.76, S_, { cast: false });
@@ -281,7 +295,7 @@ export const build = (ctx) => {
   const glG = new THREE.Group(); S_.add(glG); const rimM = toon({ color: '#2a2420' });
   for (const s of [-1, 1]) { const r_ = new THREE.Mesh(new THREE.TorusGeometry(0.035, 0.005, 6, 20), rimM); r_.rotation.x = Math.PI / 2; r_.position.set(s * 0.042, 0.01, 0); glG.add(r_); }
   tube(ctx, [-0.08, 0.01, 0], [-0.12, 0.012, -0.11], 0.003, rimM, glG); tube(ctx, [0.08, 0.01, 0], [0.13, 0.012, -0.09], 0.003, rimM, glG);
-  return { G, dial, grille, knobs, radLight, lampL, face, hung, doorH, hallL, sfaces, bike, truck, capG, glG };
+  return { G, dial, grille, knobs, radLight, lampL, face, hung, doorH, hallL, sfaces, bike, truck, capG, glG, n12, n12glass, n12map, fireTex, fireL, fireOut };
 };
 
 export const update = (W, f, P) => {
@@ -295,6 +309,10 @@ export const update = (W, f, P) => {
   const T_ = W.lorry; P.truck.g.visible = !!T_; if (T_) { P.truck.g.position.set(T_.x, 0, LANE_Z); P.truck.wheels.forEach((w) => (w.rotation.z = -T_.x / 0.52)); P.truck.g.rotation.z = T_.shake ? 0.004 * Math.sin(f * 3) : 0; }
   P.capG.visible = !!W.cap; if (W.cap) { P.capG.position.set(...W.cap.p); P.capG.rotation.set(0, W.cap.r, 0); }
   P.glG.visible = !!W.glasses; if (W.glasses) P.glG.position.set(...W.glasses);
+  const fl = W.fire ? W.fire * (0.75 + 0.25 * Math.sin(f * 1.7) * Math.sin(f * 0.63)) : 0;
+  if ((P.n12glass.map === P.fireTex) !== !!W.fire) { P.n12glass.map = W.fire ? P.fireTex : P.n12map; P.n12glass.needsUpdate = true; }
+  if (W.fire) P.n12glass.color.setRGB(1.2 + fl * 0.6, 0.9 + fl * 0.3, 0.8);
+  P.fireL.intensity = 6 * fl; P.fireOut.intensity = 2.2 * fl; P.n12.door.rotation.y = -W.door12 * 1.5;
 };
 
 // bike: distance travelled at frame f in the shots where she rides
@@ -306,21 +324,19 @@ const bikeAt = (f, S) => {
 };
 export const worldAt = (f) => {
   const S = shotAt(f), id = S.id, i = S.i;
-  const W = { radio: 0, talk: false, knob: 0, lamp: 0, hh: 9, mm: 0, coatHung: true, door: 0, smm: 14, bike: bikeAt(f, S), lorry: null, cap: null, glasses: null };
-  if (NIGHT.has(id)) { W.lamp = 0.9; W.radio = 1; W.hh = i < 2 ? 9 : 10; W.mm = i < 2 ? 2 : 41; W.talk = id === 'broadcast' || id === 'oldman'; }
+  const W = { radio: 0, talk: false, knob: 0, lamp: 0, hh: 9, mm: 0, coatHung: true, door: 0, smm: 14, bike: bikeAt(f, S), lorry: null, cap: null, glasses: null, fire: 0, door12: 0 };
+  if (NIGHT.has(id)) { W.lamp = 0.9; W.radio = 1; W.hh = i < 2 ? 9 : 10; W.mm = i < 2 ? 2 : id === 'warn2' ? 12 : 41; W.talk = ['broadcast', 'warn2', 'oldman'].includes(id); }
+  if (id === 'knock') W.fire = 0.8;
+  if (id === 'smoke') { W.fire = 1; W.door12 = smooth(ramp(f, S.a, S.a + 8)); }
   if (id === 'radio') W.radio = smooth(ramp(f, S.a, S.a + 14));
   if (id === 'switch') { const t = ramp(f, S.a + 6, S.beat); W.knob = -2 * t; W.radio = 1 - smooth(t); }
   if (id === 'plea') W.radio = 0;
   if (id === 'coat') { W.hh = 9; W.mm = 58; W.coatHung = false; W.door = smooth(ramp(f, S.beat, S.b - 4)); }
   if (id === 'empty') { W.radio = 1; W.talk = true; W.hh = 10; W.mm = 14; W.coatHung = false; W.door = 0.35; }
-  if (id === 'quiet') { W.hh = 10; W.mm = 15; W.coatHung = false; W.door = 0.35; W.radio = 1 - smooth(ramp(f, S.a + 6, S.beat + 8)); W.talk = f < S.beat; }
   if (id === 'hill') W.smm = 14;
   if (['grab', 'lorry', 'shaking'].includes(id)) W.smm = 15;
   if (id === 'lorry') W.lorry = { x: lerp(24, -30, ramp(f, S.a + 2, S.b - 2)), shake: true };
-  if (id === 'corner') {
-    W.smm = 15; const v = 0.6; W.lorry = { x: HIT_X + 4.55 + (S.beat - f) * v, shake: true };
-    if (f > S.beat + 6) { const t = ramp(f, S.beat + 6, S.beat + 26); W.cap = { p: [lerp(HIT_X - 1.0, HIT_X - 2.6, smooth(t)), 0.0, LANE_Z + lerp(1.2, 2.4, smooth(t))], r: t * 9 }; W.glasses = [HIT_X - 1.4, 0.0, 1.6 + LANE_Z]; }
-  }
+  if (id === 'corner') { const ff = Math.min(f, S.beat); W.smm = 15; W.lorry = { x: HIT_X + 4.55 + 1.1 + (S.beat - ff) * 0.6, shake: f <= S.beat }; }   // freezes a metre from him
   return W;
 };
 
@@ -332,7 +348,8 @@ export const actorsAt = (f, T) => {
   const girl = (expr, o = {}, pos, x = {}) => out.push(actor(T, GIRL, { seed: 41, expr, blink: blinkAt(f, 41), bold: BOLD, ...o, who: 'girl' }, pos, { s: GIS, ...x }));
   if (id === 'radio') gp('wary', { R: 'cheek', look: 0.5, tilt: 4 });
   if (id === 'coat') { gp('stubborn', { L: 'belly', R: 'reach', look: 0.3 }, R(1.5, 0, 0.62), true); me('wary', { look: 0.7 }, R(0.15, 0, 1.0)); }
-  if (id === 'night2') { gp('shock', { R: 'cheek', look: 0.3 }); me('scared', { look: -0.6 }, R(0.55, 0, 0.75)); }
+  if (id === 'warn2') gp(f < S.beat ? 'wary' : 'stern', { R: 'cheek', look: 0.5, tilt: 4 });
+  if (id === 'night2') { const late = f > S.beat; gp(late ? 'shock' : 'smile', { R: late ? 'cheek' : 'hang', look: 0.3 }); me(late ? 'scared' : 'grin', { look: -0.6 }, R(0.55, 0, 0.75)); }
   if (id === 'oldman') gp('shock', { L: 'cheek', R: 'cheek', look: 0.4 });
   if (id === 'switch') { const t = ramp(f, S.a + 6, S.beat); gp(f < S.beat + 4 ? 'stern' : 'pained', { R: f < S.beat + 4 ? 'reach' : 'hang', lift: 0.2, look: f < S.beat + 4 ? 0.5 * (1 - t) : -0.8 }); }
   if (id === 'plea') gp('pained', { L: 'reach', look: 0.9, headTilt: -5 });
@@ -348,24 +365,37 @@ export const actorsAt = (f, T) => {
   if (id === 'grab') { const t = smooth(ramp(f, S.a + 2, S.beat - 2)); gp(f < S.beat ? 'stern' : 'relief', { R: 'reach', lift: 0.15, look: 0.6 }, lerp3(ME_(-3.6, -5.0), GPGRAB, t), true); }
   if (id === 'lorry') gp(f > S.beat ? 'shock' : 'relief', { R: 'reach', lift: 0.1, look: 0.8 }, GPGRAB, true);
   if (id === 'shaking') gp('smile', { L: 'reach', look: 0.5 }, GPGRAB, true);
-  if (id === 'corner' && f < S.beat + 12) {
-    if (f < S.beat) gp(f < S.beat - 14 ? 'neutral' : 'shock', { look: f < S.beat - 14 ? -0.6 : 0.9, R: f < S.beat - 6 ? 'hang' : 'up', L: f < S.beat - 6 ? 'hang' : 'up' }, GPHIT, true);
-    else { const t = (f - S.beat) / FPS; gp('shock', { R: 'up', L: 'up' }, [GPHIT[0] - 24 * t, GPHIT[1] + 4.0 * t - 7 * t * t, GPHIT[2] + 4.5 * t], true); out[out.length - 1].roll = t * 9; out[out.length - 1].blob = false; }
-  }
+  if (id === 'corner') { const ff = Math.min(f, S.beat);                       // he turns, sees it, and the picture freezes
+    gp(ff < S.beat - 14 ? 'neutral' : 'shock', { look: ff < S.beat - 14 ? -0.6 : 0.9, R: ff < S.beat - 6 ? 'hang' : 'up', L: ff < S.beat - 6 ? 'hang' : 'up', blink: ff < S.beat - 14 ? blinkAt(ff, 4) : 0 }, GPHIT, true); }
+  // number twelve: he hammers on the door; smoke rolls out and the mum runs past him with her baby
+  if (id === 'knock') gp('stern', { R: 'knock', kn: Math.abs(Math.sin(f * 0.9)), look: 0.6 }, GPKNOCK, true);
+  if (id === 'smoke') { gp(f < S.beat ? 'shock' : 'relief', { R: 'reach', look: -0.4 }, lerp3(GPKNOCK, ME_(-5.4, -27.4, 0.13), smooth(ramp(f, S.a, S.a + 12))), true);
+    const t = smooth(ramp(f, S.a + 6, S.b - 4)), mp = lerp3(ME_(-6.7, -28.5, 0.1), ME_(-4.4, -29.5, 0.13), t);
+    out.push(actor(T, MUM, { seed: 15, expr: t < 0.7 ? 'scared' : 'relief', blink: blinkAt(f, 15), bold: BOLD, R: 'belly', L: 'belly', step: (f * 0.09) % 1, who: 'mum' }, mp, { s: MUS }));
+    out.push(fx('baby' + (f % 20 < 10 ? 0 : 1), baby(f % 20 < 10), [mp[0] + 0.12, mp[1] + 0.62, mp[2] - 0.1], 0.3, { order: 4 })); }
   // dust behind the lorry, and the impact burst
   if (id === 'lorry' && f > S.beat - 2) { const k = ramp(f, S.beat - 2, S.b); out.push(fx('du' + q(k, 2), (p) => T.fxDust(p, k), M(lerp(4, -8, k), 0.0, LANE_Z - 0.4), 1.4)); }
-  if (id === 'corner' && f >= S.beat && f < S.beat + 14) { const k = (f - S.beat) / 14; out.push(fx('du' + q(k, 2), (p) => T.fxDust(p, k), M(HIT_X - 1.5, 0.0, LANE_Z - 0.2), 1.8));
-    out.push(fx('bu' + q(k, 2), (p) => T.fxBurst(p, k, '#ffffff', 14, 60, 300), M(HIT_X, 0.4, LANE_Z - 0.6), 1.6, { order: 8 })); }
   return out;
 };
 // fx: crackle rings from the speaker, the lorry's horn, the time words
+const baby = (cry) => (p) => { const g = p.g; g.save(); g.lineWidth = 14; g.strokeStyle = '#241726';            // a swaddled baby: blanket, little face
+  g.fillStyle = '#f4ecd8'; g.beginPath(); g.ellipse(300, 520, 210, 150, -0.3, 0, 7); g.fill(); g.stroke();
+  g.fillStyle = '#f2c8a4'; g.beginPath(); g.ellipse(200, 470, 82, 78, 0, 0, 7); g.fill(); g.stroke();
+  g.fillStyle = '#241726'; for (const x of [175, 225]) { g.beginPath(); g.ellipse(x, 462, 8, cry ? 3 : 8, 0, 0, 7); g.fill(); }
+  g.beginPath(); g.ellipse(200, 505, 16, cry ? 14 : 5, 0, 0, 7); g.fill(); g.strokeStyle = '#8ab4e0'; g.lineWidth = 10; g.beginPath(); g.moveTo(110, 560); g.quadraticCurveTo(300, 470, 470, 600); g.stroke(); g.restore(); };
+const smokeDraw = (k, dark) => (p) => { const g = p.g; g.save();
+  for (let i = 0; i < 6; i++) { const a = i * 1.7, r = 110 + 90 * k + (i % 3) * 30; g.globalAlpha = Math.max(0, 0.85 - k * 0.8);
+    g.fillStyle = i % 2 ? dark : '#8a8a90'; g.beginPath(); g.ellipse(300 + Math.cos(a) * 90 * (0.4 + k), 600 - k * 260 + Math.sin(a) * 60, r, r * 0.8, 0, 0, 7); g.fill(); }
+  g.restore(); };
 const rings = (t, col = '#ffd890') => (p) => { const g = p.g; g.save(); g.strokeStyle = col; g.lineCap = 'round';
   for (let k = 0; k < 3; k++) { const r = ((t + k / 3) % 1); g.globalAlpha = (1 - r) * 0.9; g.lineWidth = 14 * (1 - r) + 3; g.beginPath(); g.arc(300, 500, 80 + r * 260, -0.9, 0.9); g.stroke(); g.beginPath(); g.arc(300, 500, 80 + r * 260, Math.PI - 0.9, Math.PI + 0.9); g.stroke(); }
   g.restore(); };
 export const fxAt = (f) => {
   const S = shotAt(f), id = S.id, out = [];
-  if (['broadcast', 'oldman', 'empty'].includes(id) || (id === 'quiet' && f < S.beat)) out.push(fx('rg' + (f % 30), rings((f % 30) / 30), RADIO.map((v, i) => v + [0, 0.27, 0.18][i]), 0.32, { order: 6 }));
-  if (id === 'corner' && f > S.beat - 22 && f < S.beat - 4) { const k = ramp(f, S.beat - 22, S.beat - 4); out.push(fx('hn' + q(k, 1), word('HOOONK', k, '#ffd23f'), M(HIT_X + 4, 2.6, LANE_Z - 0.8), 0.5)); }
+  if (id === 'knock' || id === 'smoke') for (let j = 0; j < 4; j++) { const k = ((f * 0.025) + j / 4) % 1, src = id === 'smoke' && j % 2 ? N12DOOR : N12WIN;     // smoke from the window (and the open door)
+    out.push(fx('sm' + j + q(k, 2), smokeDraw(k, '#3a3a40'), [src[0] + 0.5 + k * 0.8, src[1] + (src === N12DOOR ? 0.6 : 0.2) + k * 2.2, src[2] + (j - 1.5) * 0.25], 0.9 + k * 0.6, { order: 3 })); }
+  if (['broadcast', 'warn2', 'oldman', 'empty'].includes(id)) out.push(fx('rg' + (f % 30), rings((f % 30) / 30), RADIO.map((v, i) => v + [0, 0.27, 0.18][i]), 0.32, { order: 6 }));
+  if (id === 'corner' && f > S.beat - 22 && f < S.beat) { const k = ramp(f, S.beat - 22, S.beat - 4); out.push(fx('hn' + q(k, 1), word('HOOONK', k, '#ffd23f'), M(HIT_X + 4, 2.6, LANE_Z - 0.8), 0.5)); }
   if (id === 'hill' && f < S.a + 30) out.push(fx('t1014', word('10:14', ramp(f, S.a, S.a + 30) * 0.6, '#ffffff'), SCLOCK.map((v, i) => v + [0.4, 1.9, 0.8][i]), 0.45));
   if (id === 'corner' && f < S.a + 26) out.push(fx('t1015', word('10:15', ramp(f, S.a, S.a + 26) * 0.6, '#ff5040'), M(HIT_X - 1.2, 2.9, LANE_Z - 0.5), 0.45));
   return out;

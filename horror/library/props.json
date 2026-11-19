@@ -245,6 +245,16 @@
    "h": 220,
    "kind": "object",
    "prompt": "A vintage metal wind-up toy box with faded circus decals and a popped-open lid revealing a wide-eyed, goofy-grinning jester puppet on a coiled spring."
+  },
+  "robot_vacuum": {
+   "h": 45,
+   "kind": "object",
+   "prompt": "A small circular robotic vacuum cleaner creeping along the floor with a glowing red sensor light and two plastic googly eyes taped to its bumper."
+  },
+  "pelican": {
+   "h": 280,
+   "kind": "animal",
+   "prompt": "An unblinking, scruffy pelican standing bolt upright with a deadpan expression and an unnervingly lumpy throat pouch."
   }
  }
 }

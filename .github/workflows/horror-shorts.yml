@@ -2,10 +2,8 @@ name: Horror shorts (CreepyCartoonTales)
 
 on:
   schedule:
-    # three a day; GitHub often starts scheduled runs 10-40 minutes late
-    - cron: "7 3 * * *"     # 03:07 UTC = 08:37 IST, out by ~09:00
-    - cron: "7 8 * * *"     # 08:07 UTC = 13:37 IST, out by ~14:00
-    - cron: "7 14 * * *"    # 14:07 UTC = 19:37 IST, out by ~20:00
+    # one a day (each Short is a bigger build now); GitHub often starts scheduled runs 10-40 minutes late
+    - cron: "7 14 * * *"    # 14:07 UTC = 19:37 IST (8:07 am New York, 10:07 pm Manila), out by ~20:00
   workflow_dispatch:
     inputs:
       mode:

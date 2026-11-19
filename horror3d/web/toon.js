@@ -2534,7 +2534,7 @@ export const romanFront = (p, key, opts = {}) => {
   const H = headBlob(seed, 118, facing), W = 2 * H.a, HH = 2 * H.b, u = W / 100;
   const torsoL = O.stout ? 1.12 : 1.08, legsL = 1.38, sole = 975;
   const torsoBot = sole - legsL * HH - bob * HH, chin = torsoBot - torsoL * HH, hc = chin - H.b, hipY = torsoBot - 0.12 * HH;
-  const thick = thickAngle(light), ow = 5 * u, cx = 300;
+  const thick = thickAngle(light), ow = 5 * u * (opts.bold || 1), cx = 300;
   const legCol = mix(O.tunic, INK, 0.62), armCol = mix(O.tunic, INK, 0.5);
   const helmet = !!O.helmet && !nohelmet, old = O.helmet === "old";
   p.rot = null;
@@ -2706,6 +2706,16 @@ export const romanFront = (p, key, opts = {}) => {
   faceFront(p, cx, hc, W, expr, facing, look, lid, helmet, skin, O.beard ? O.beard : O.moustache, !!O.stout);
   for (const a of arms) if (a.fingerUp) drawArm(a);          // the shushing hand goes over the face
   if (O.brows) for (const s of [-1, 1]) p.ell(cx + 7 * u * facing + s * 14 * u, hc - 20 * u, 11 * u, 5 * u, O.brows, 2 * u);
+  if (O.glasses) {                              // round wire-rim spectacles over the eyes (O.glasses = frame colour)
+    const fx0 = cx + 7 * u * facing, gy = hc + 1 * u, r = 12.5 * u, g = p.g;
+    for (const s of [-1, 1]) { const x = fx0 + s * 13 * u;
+      const rim = ellPts(x, gy, r, r * 0.86, 0, 360, 0, 32);
+      g.save(); g.globalAlpha = 0.18; p.poly(rim, "#e8f4ff", 0); g.restore();
+      p.stroke(rim, 2.6 * u * (opts.bold || 1)); p.stroke(rim, 1.3 * u, O.glasses);
+      p.stroke([[x - s * 0.2 * r - 4 * u, gy - 0.5 * r], [x - s * 0.2 * r - 1 * u, gy - 0.7 * r]], 1.6 * u, "#ffffff");      // glint
+      p.stroke([[x + s * r, gy - 2 * u], [cx + s * 0.98 * H.a, gy - 5 * u]], 1.8 * u, O.glasses); }
+    p.stroke([[fx0 - 0.5 * r - 1 * u, gy - 2 * u], [fx0, gy - 5 * u], [fx0 + 0.5 * r + 1 * u, gy - 2 * u]], 1.8 * u, O.glasses);   // bridge
+  }
   if (O.beard) { // re-draw the mouth over the beard for open mouths
     if (expr === "shock" || expr === "snore") p.ell(cx + 8 * u * facing, hc + 22 * u, 6 * u, 7 * u, "#5a1e28", 2 * u);
   }

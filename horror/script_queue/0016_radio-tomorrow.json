@@ -1,0 +1,101 @@
+{
+ "id": "radio-tomorrow",
+ "title": "My Grandpa's Radio Plays Tomorrow's News",
+ "approved": true,
+ "release_from": "2026-11-19",
+ "three_d": "radio-tomorrow",
+ "cta": "SAVE HIM or LET IT HIT? Top comment decides Part 2",
+ "description": "SAVE HIM: someone changes tomorrow one more time, but what does the radio take in return?\nLET IT HIT: tomorrow happens the way the radio said.\nChoose, and tell me why. The top comment decides Part 2.\n\nMy Grandpa's Radio, Part 1. A CreepyCartoonTales story.",
+ "lines": [
+  "Grandpa's old radio doesn't play today's news. It plays tomorrow's.",
+  "\"Ten fifteen tomorrow,\" it crackled. \"A girl on a red bicycle. Mill Road corner. A runaway lorry.\"",
+  "The next morning, Grandpa put on his coat.",
+  "At ten fourteen, the girl came flying down the hill.",
+  "Grandpa stepped out and grabbed her handlebars.",
+  "The lorry thundered past... right where she would have been.",
+  "She was shaking. Grandpa was smiling.",
+  "The next night, it crackled again. \"Eight o'clock. Number twelve, Mill Road. A kitchen fire. A baby asleep upstairs.\"",
+  "At eight, Grandpa hammered on number twelve's door.",
+  "Smoke rolled out. A mum ran past him, holding her baby.",
+  "Two lives saved. Then, on the third night, the radio crackled again.",
+  "\"Ten fifteen tomorrow. An old man. Mill Road corner.\"",
+  "Grandpa switched it off and looked at me.",
+  "\"Whatever happens... don't let me go out tomorrow.\"",
+  "It's ten fourteen. His chair is empty.",
+  "*Ten fifteen. Mill Road corner."
+ ],
+ "shots": [
+  {
+   "set": "3d",
+   "v": "s0"
+  },
+  {
+   "set": "3d",
+   "v": "s1"
+  },
+  {
+   "set": "3d",
+   "v": "s2"
+  },
+  {
+   "set": "3d",
+   "v": "s3"
+  },
+  {
+   "set": "3d",
+   "v": "s4"
+  },
+  {
+   "set": "3d",
+   "v": "s5"
+  },
+  {
+   "set": "3d",
+   "v": "s6"
+  },
+  {
+   "set": "3d",
+   "v": "s7"
+  },
+  {
+   "set": "3d",
+   "v": "s8"
+  },
+  {
+   "set": "3d",
+   "v": "s9"
+  },
+  {
+   "set": "3d",
+   "v": "s10"
+  },
+  {
+   "set": "3d",
+   "v": "s11"
+  },
+  {
+   "set": "3d",
+   "v": "s12"
+  },
+  {
+   "set": "3d",
+   "v": "s13"
+  },
+  {
+   "set": "3d",
+   "v": "s14"
+  },
+  {
+   "set": "3d",
+   "v": "s15"
+  }
+ ],
+ "cover_line": 15,
+ "cover_offset": 0,
+ "cover_text": [
+  "THE RADIO",
+  "SAID HIS",
+  "!NAME"
+ ],
+ "pace": "brisk"
+}

@@ -2549,7 +2549,7 @@ export const romanFront = (p, key, opts = {}) => {
     const up = Math.max(0, Math.sin(Math.PI * 2 * (step + (side > 0 ? 0.5 : 0)))) * 30 * (step ? 1 : 0);
     const hx = cx + side * 16 * u, fx = cx + side * 22 * u, fy = sole - 4 * u - up;
     p.stroke(curve([hx, hipY], [(hx + fx) / 2 + side * 2 * u, (hipY + fy) / 2], [fx, fy]), 5.8 * u, legCol);
-    const sandal = O.helmet ? LEATHER : "#5a3b2a";
+    const sandal = O.shoes || (O.helmet ? LEATHER : "#5a3b2a");                // O.shoes: e.g. gold sneakers
     p.stroke([[fx - side * 3 * u, fy], [fx + side * 13 * u, fy + 0.5 * u]], 7.5 * u + 3, INK);
     p.stroke([[fx - side * 3 * u, fy], [fx + side * 13 * u, fy + 0.5 * u]], 7.5 * u, sandal);
     if (O.helmet) for (let k = 1; k <= 3; k++) p.stroke([[fx - 4 * u, fy - k * 0.07 * HH], [fx + 4 * u, fy - k * 0.07 * HH - 2 * u]], 2 * u, LEATHER);
@@ -2632,6 +2632,17 @@ export const romanFront = (p, key, opts = {}) => {
       if (O.toga) p.band([[tcx - 1.0 * T.a, chin - 0.1 * HH], [tcx + 1.1 * T.a, torsoBot - 0.1 * HH]], O.toga, 0.16 * HH, 1.6 * u);
       if (O.apron) p.poly([[tcx - 0.55 * T.a, torsoBot - 0.2 * HH], [tcx + 0.55 * T.a, torsoBot - 0.2 * HH], [tcx + 0.6 * T.a, torsoBot + 0.2 * HH], [tcx - 0.6 * T.a, torsoBot + 0.2 * HH]], O.apron, 1.6 * u);
       p.stroke([[tcx - 0.2 * T.a, chin + 0.02 * HH], [tcx, chin + 0.16 * HH], [tcx + 0.2 * T.a, chin + 0.02 * HH]], 2 * u);
+      // smart clothes and suits (Twist Tales cast): a shirt collar, a tie or a bow tie, suit stripes, a chest crest
+      if (O.shirt) p.poly([[tcx - 0.32 * T.a, chin - 0.02 * HH], [tcx + 0.32 * T.a, chin - 0.02 * HH], [tcx, chin + 0.32 * HH]], O.shirt, 1.6 * u);
+      if (O.tie) p.poly([[tcx - 0.07 * T.a, chin + 0.02 * HH], [tcx + 0.07 * T.a, chin + 0.02 * HH], [tcx + 0.11 * T.a, chin + 0.42 * HH], [tcx, chin + 0.5 * HH], [tcx - 0.11 * T.a, chin + 0.42 * HH]], O.tie, 1.6 * u);
+      if (O.bowtie) for (const sd of [-1, 1]) p.poly([[tcx, chin + 0.05 * HH], [tcx + sd * 0.26 * T.a, chin - 0.03 * HH], [tcx + sd * 0.26 * T.a, chin + 0.13 * HH]], O.bowtie, 1.6 * u);
+      if (O.stripes) for (const sd of [-1, 1]) p.band([[tcx + sd * 0.62 * T.a, chin + 0.02 * HH], [tcx + sd * 0.78 * T.a, torsoBot]], O.stripes, 0.05 * HH, 1.2 * u);
+      if (O.glitter) for (let k = 0; k < 18; k++) { const gx = tcx + (((k * 0.618034 + 0.13) % 1) * 2 - 1) * 1.05 * T.a, gy = chin + 0.08 * HH + ((k * 0.7548777 + 0.31) % 1) * (torsoBot - chin - 0.1 * HH);   // sparkles on a gold suit
+        const r = (k % 3 ? 3.5 : 6) * u; p.stroke([[gx - r, gy], [gx + r, gy]], 1.6 * u, O.glitter); p.stroke([[gx, gy - r], [gx, gy + r]], 1.6 * u, O.glitter); }
+      if (O.crest) { const ey = chin + 0.36 * HH, er = 0.14 * T.a;                     // an eight-legged crest on the chest
+        for (let k = 0; k < 4; k++) for (const sd of [-1, 1]) { const a0 = (-50 + k * 32) * Math.PI / 180;
+          p.stroke([[tcx + sd * er * 0.6, ey], [tcx + sd * (er + 0.22 * T.a) * Math.cos(a0), ey + (0.2 * T.a) * Math.sin(a0) - 0.04 * T.a], [tcx + sd * (er + 0.34 * T.a) * Math.cos(a0 * 0.6), ey + 0.26 * T.a * Math.sin(a0) + 0.06 * T.a]], 3.2 * u, O.crest); }
+        p.ell(tcx, ey - 0.12 * T.a, er * 0.7, er * 0.6, O.crest, 1.4 * u); p.ell(tcx, ey + 0.08 * T.a, er, er * 1.25, O.crest, 1.6 * u); }
     }
   });
   p.inkRing(tp, ow, thick);
@@ -2706,6 +2717,18 @@ export const romanFront = (p, key, opts = {}) => {
   faceFront(p, cx, hc, W, expr, facing, look, lid, helmet, skin, O.beard ? O.beard : O.moustache, !!O.stout);
   for (const a of arms) if (a.fingerUp) drawArm(a);          // the shushing hand goes over the face
   if (O.brows) for (const s of [-1, 1]) p.ell(cx + 7 * u * facing + s * 14 * u, hc - 20 * u, 11 * u, 5 * u, O.brows, 2 * u);
+  if (O.mask) {                                  // a hero's mask: a dark band across the eyes with two mirrored lenses (O.mask = lens colour)
+    const fx0 = cx + 7 * u * facing, gy = hc + 1 * u;
+    if (O.fullmask) {                            // a full-face hero mask (skin = the mask colour): big angled lenses, a gold seam
+      p.stroke([[fx0, hc - 0.95 * H.b], [fx0, gy - 16 * u]], 2.6 * u, O.mask);
+      for (const sd of [-1, 1]) { p.stroke([[fx0 + sd * 6 * u, hc - 0.7 * H.b], [fx0 + sd * 30 * u, gy - 20 * u], [fx0 + sd * 0.95 * H.a, gy + 4 * u]], 1.8 * u, O.mask);
+        const lp = [[fx0 + sd * 5 * u, gy - 2 * u], [fx0 + sd * 14 * u, gy - 15 * u], [fx0 + sd * 34 * u, gy - 12 * u], [fx0 + sd * 36 * u, gy + 4 * u], [fx0 + sd * 18 * u, gy + 12 * u]];
+        p.poly(lp, O.mask, 2.6 * u * (opts.bold || 1)); p.stroke([[fx0 + sd * 15 * u, gy - 9 * u], [fx0 + sd * 24 * u, gy - 10 * u]], 2 * u, "#fff8d8"); }
+    } else {
+    p.poly(rrect(fx0 - 34 * u, gy - 13 * u, fx0 + 34 * u, gy + 12 * u, 10 * u), O.maskBand || "#141418", 2.4 * u * (opts.bold || 1));
+    for (const sd of [-1, 1]) { const lp = ellPts(fx0 + sd * 14 * u, gy, 11 * u, 8 * u, 0, 360, sd * 12, 24); p.poly(lp, O.mask, 1.8 * u);
+      p.stroke([[fx0 + sd * 14 * u - 5 * u, gy - 3 * u], [fx0 + sd * 14 * u - 1 * u, gy - 5 * u]], 1.8 * u, "#ffffff"); } }
+  }
   if (O.glasses) {                              // round wire-rim spectacles over the eyes (O.glasses = frame colour)
     const fx0 = cx + 7 * u * facing, gy = hc + 1 * u, r = 12.5 * u, g = p.g;
     for (const s of [-1, 1]) { const x = fx0 + s * 13 * u;

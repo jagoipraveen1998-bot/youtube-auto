@@ -165,7 +165,8 @@ video:
 # Three a day (.github/workflows/horror-shorts.yml). Uploads with the YT_HORROR_REFRESH_TOKEN secret,
 # so they go to CreepyCartoonTales, never to Inner Mechanics.
 horror:
-  channel: "CreepyCartoonTales"
+  channel: "Twist Tales"                 # renamed from CreepyCartoonTales (19 Nov 2026)
+  channel_id: "UCEsCTfj0ZodFwEiEujMxLgQ"   # uploads are checked against this ID, so the name can change
   voice:                             # deep, slow storyteller
     engine: "kokoro"
     kokoro_lang: "b"                 # b = British English
@@ -177,6 +178,13 @@ horror:
     pitch: "-6Hz"
   approved_scripts_only: true        # Shorts use only scripts in horror/script_queue marked approved; none left = no Short
   three_d_only: true                 # every Short is made in 3D; a story without a 3D set waits, nothing drawn is uploaded
+  voice_provider: "elevenlabs"       # Praveen, 19 Nov 2026: Jeremy from ElevenLabs; Gemini (acted_take) is the fallback
+  eleven:
+    voice: "Jeremy"                  # looked up in the account's voices, else ElevenLabs' premade Jeremy
+    speed: 1.08                      # brisk, like the top story Shorts
+    stability: 0.4
+    style: 0.45
+    gap: 0.32                        # seconds of breath between lines (the video cuts there)
   acted_take:                        # one Gemini request performs the whole Short (fits the free daily limit)
     enabled: true
     gemini_voice: "Puck"
@@ -186,8 +194,8 @@ horror:
     category_id: "1"                 # 1 = Film & Animation
     made_for_kids: false             # horror is not for kids
     contains_synthetic_media: false  # clearly animated, no realistic people
-  hashtags: ["#shorts", "#horror", "#scary", "#animation", "#creepy"]
-  instagram_hashtags: ["#horrorstory", "#animatedhorror", "#scarystories", "#creepy", "#horror", "#animation", "#creepycartoontales", "#reels"]
+  hashtags: ["#shorts", "#twisttales", "#plottwist", "#whatif", "#animation", "#storytime", "#shortstory"]
+  instagram_hashtags: ["#twisttales", "#plottwist", "#whatif", "#animation", "#animatedstory", "#storytime", "#shortstory", "#cartoon", "#reels"]
   extra_tags: ["horror shorts", "animated horror", "scary stories", "creepy cartoon", "horror animation", "scary shorts"]
 
 # ---------------- Tamil world-trend Shorts on the Inner Mechanics channel (run_trends.py) ----------------

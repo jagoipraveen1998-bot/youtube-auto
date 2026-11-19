@@ -33,7 +33,7 @@ def latest_long_video() -> dict | None:
     return best
 
 
-CAST_CALL = ("Want to be in a CreepyCartoonTales story? 👻 Comment \"Put me in\" with your FIRST NAME and you might "
+CAST_CALL = ("Want to be in a Twist Tales story? 🌀 Comment \"Put me in\" with your FIRST NAME and you might "
              "become the next character! (If you enjoyed this one, a like and follow helps a lot 🙏)")
 
 
@@ -95,7 +95,7 @@ def main():
         story["script_pair"] = script.get("pair")
         story["three_d"] = script.get("three_d")
         story["cta"] = script.get("cta")
-        for k in ("episode", "series", "season", "format", "next", "parts", "part_covers", "speed", "cover_line", "cover_offset", "cover_text", "pace"):   # a series episode: horizontal, published as a normal video
+        for k in ("episode", "series", "season", "format", "next", "parts", "part_covers", "speed", "cover_line", "cover_offset", "cover_text", "pace", "hashtags"):   # a series episode: horizontal, published as a normal video
             if script.get(k) is not None:
                 story[k] = script[k]
         if story.get("episode"):
@@ -132,7 +132,7 @@ def main():
                 story["script_pair"] = script.get("pair")
                 story["three_d"] = script.get("three_d")
                 story["cta"] = script.get("cta")
-                for k in ("speed", "cover_line", "cover_offset", "cover_text", "pace"):   # per-script look and pace
+                for k in ("speed", "cover_line", "cover_offset", "cover_text", "pace", "hashtags"):   # per-script look, pace and tags
                     if script.get(k) is not None:
                         story[k] = script[k]
                 if script.get("part"):
@@ -170,7 +170,13 @@ def main():
         # Praveen's rule: ONLY the storyteller voice. If it can't be had right now, nothing is uploaded:
         # the script stays first in the queue and the next run (03:07 / 08:07 / 14:07 UTC) tries again.
         take = None
-        if os.environ.get("GEMINI_API_KEY"):
+        if hcfg.get("voice_provider") == "elevenlabs" and os.environ.get("ELEVENLABS_API_KEY"):
+            from autotube.eleven import eleven_take           # Praveen, 19 Nov 2026: the ElevenLabs "Jeremy" voice
+            work.mkdir(parents=True, exist_ok=True)
+            take = eleven_take([b["line"] for b in story["beats"]], hcfg.get("eleven", {}), work / "take")
+            if take is None:
+                log("ElevenLabs not available: falling back to the Gemini storyteller")
+        if take is None and os.environ.get("GEMINI_API_KEY"):
             from autotube.voice import acted_take
             work.mkdir(parents=True, exist_ok=True)
             tcfg = dict(hcfg["acted_take"])
@@ -229,12 +235,12 @@ def publish(args, cfg, hcfg, out, hist, hist_path, story, video, thumb, plan):
         story["description"] = story["cta"] + " \U0001F447\n\n" + story["description"]
     if story.get("episode"):                     # a series episode: no Shorts tags, point to the next one
         description = "\n".join([story["description"], "", *([f"Next: {story['next']}.", ""] if story.get("next") else []),
-                                 "#horror #animation #horrorstory"])
+                                 " ".join(hcfg.get("hashtags", ["#twisttales"])[1:])])
     else:
         description = "\n".join([story["description"], "",
-                             *([f"🎬 Full animated horror story: {full['title']} → https://youtu.be/{full['video_id']}", ""] if full else []),
-                             "A Creepy Cartoon Tale: an original animated horror short. New horror Shorts every day.",
-                             "", " ".join(hcfg.get("hashtags", ["#shorts", "#horror"]))])
+                             *([f"🎬 Full animated story: {full['title']} → https://youtu.be/{full['video_id']}", ""] if full else []),
+                             "Twist Tales: original animated stories, and every one ends with a twist. New Short every day.",
+                             "", " ".join(list(dict.fromkeys(hcfg.get("hashtags", ["#shorts"]) + story.get("hashtags", [])))[:12])])   # channel tags + the story's own (e.g. #superhero)
     (out / "description.txt").write_text(description, encoding="utf-8")
     tags = list(dict.fromkeys(story.get("tags", []) + hcfg.get("extra_tags", [])))
     title = re.sub(r"\s*#\w+", "", story["title"]).strip()[:100]   # clean hook title; the hashtags live in the description
@@ -248,10 +254,10 @@ def publish(args, cfg, hcfg, out, hist, hist_path, story, video, thumb, plan):
     # safety: never post a horror Short to the wrong channel
     me = _client("YT_HORROR_REFRESH_TOKEN").channels().list(part="snippet", mine=True).execute()
     names = [c["snippet"]["title"] for c in me.get("items", [])]
-    want = hcfg.get("channel", "CreepyCartoonTales").lower().replace(" ", "")
-    if not any(want in n.lower().replace(" ", "").replace(".", "") for n in names):
+    ids = [c["id"] for c in me.get("items", [])]
+    if hcfg.get("channel_id") not in ids:            # by channel ID: the name changed (CreepyCartoonTales -> Twist Tales)
         raise SystemExit(f"YT_HORROR_REFRESH_TOKEN belongs to {names}, not {hcfg.get('channel')}. "
-                         "Re-run get_youtube_token.py and pick CreepyCartoonTales.")
+                         "Re-run get_youtube_token.py and pick Twist Tales (formerly CreepyCartoonTales).")
     ycfg = {"youtube": hcfg["youtube"], "channel": {"language": "en"}}
     video_id = upload(video, thumb, title, description, tags, ycfg, token_env="YT_HORROR_REFRESH_TOKEN")
     today = datetime.now(IST).strftime("%Y-%m-%d %H:%M")

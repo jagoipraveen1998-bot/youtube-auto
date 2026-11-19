@@ -265,9 +265,9 @@ const rtInk = new THREE.WebGLRenderTarget(W, H, { type: THREE.HalfFloatType });
 const fsCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1), fsGeo = new THREE.PlaneGeometry(2, 2);
 const fs = (mat) => { const s = new THREE.Scene(); s.add(new THREE.Mesh(fsGeo, mat)); return s; };
 const inkU = { col: { value: rtColor.texture }, nd: { value: rtNd.texture }, res: { value: new THREE.Vector2(W, H) }, px: { value: 1.6 }, fogCol: { value: new THREE.Color() },
-  sat: { value: 1.08 }, lift: { value: new THREE.Color(0, 0, 0) }, gain: { value: new THREE.Color(1, 1, 1) }, vig: { value: 0.22 }, flash: { value: 0 } };
+  sat: { value: 1.08 }, grade: { value: 1 }, lift: { value: new THREE.Color(0, 0, 0) }, gain: { value: new THREE.Color(1, 1, 1) }, vig: { value: 0.22 }, flash: { value: 0 } };
 const inkScene = fs(new THREE.ShaderMaterial({ uniforms: inkU, vertexShader: `varying vec2 vUv; void main(){ vUv=uv; gl_Position=vec4(position.xy,0.,1.); }`,
-  fragmentShader: `uniform sampler2D col, nd; uniform vec2 res; uniform float px, sat, vig, flash; uniform vec3 fogCol, lift, gain; varying vec2 vUv;
+  fragmentShader: `uniform sampler2D col, nd; uniform vec2 res; uniform float px, sat, vig, flash, grade; uniform vec3 fogCol, lift, gain; varying vec2 vUv;
   float edgeAt(vec2 uv, float r){
     vec4 c = texture2D(nd, uv); if (dot(c.rgb,c.rgb) < .01) return 0.; float d = c.a; vec3 n = c.rgb*2.-1.;
     float e = 0.; float rr = r * clamp(7./d, .62, 1.25);
@@ -287,7 +287,10 @@ const inkScene = fs(new THREE.ShaderMaterial({ uniforms: inkU, vertexShader: `va
     float e = edgeAt(vUv, px);
     c = mix(c, vec3(.012,.01,.014), e);
     if (flash < -0.5) c = vec3(e);
-    float l = dot(c, vec3(.299,.587,.114)); c = mix(vec3(l), c, sat);
+    float l = dot(c, vec3(.299,.587,.114)); c = mix(vec3(l), c, sat * (1. + .08*grade));
+    float l2 = dot(c, vec3(.299,.587,.114));
+    c *= mix(vec3(1.), mix(vec3(.95,.99,1.07), vec3(1.04,1.,.95), smoothstep(.15,.65,l2)), grade);   // cool shadows, warm light
+    c += grade * vec3(.006,.010,.024) * (1. - smoothstep(0.,.25,l2));                                  // shadows lift a little, towards blue
     c = c*gain + lift;
     vec2 q = vUv-.5; c *= 1. - vig*dot(q*vec2(1.,.75), q*vec2(1.,.75))*2.2;
     c = mix(c, vec3(1.), flash);
@@ -318,7 +321,7 @@ function applyLight(L, f) {
   skyU.cloud.value = L.clouds || 0; skyU.cloudCol.value.set(L.cloudCol || '#f4f6fa'); skyU.cloudDark.value.set(L.cloudDark || '#8a92a6');
   skyU.moonSize.value = L.moonSize || 0; skyU.moonCol.value.set(L.moonCol || '#e8eeff'); skyU.stars.value = L.stars || 0; skyU.t.value = f;
   { const a = rx(L.moonAz ?? 200), e = rx(L.moonEl ?? 30); skyU.moonDir.value.set(Math.cos(e) * Math.cos(a), Math.sin(e), Math.cos(e) * Math.sin(a)); }
-  inkU.sat.value = L.sat; inkU.gain.value.set(L.gain || '#ffffff'); inkU.lift.value.set(L.lift || '#000000');
+  inkU.sat.value = L.sat; inkU.grade.value = L.grade ?? 1; inkU.gain.value.set(L.gain || '#ffffff'); inkU.lift.value.set(L.lift || '#000000');
   lamp.intensity = L.lamp ?? 0; tvLight.intensity = (L.tv ?? 0) * (0.85 + 0.15 * Math.sin(f * 0.9) * Math.sin(f * 0.37)); porchLight.intensity = L.porch ?? 0; fillLight.intensity = L.fill ?? 0;
   shade.material.color.set(L.lamp ? '#ffe6b0' : '#8a7d68'); screenMat.color.set(L.tv ? (f % 40 < 20 ? '#8fc4ff' : '#a8d4ff') : '#0c0d12');
 }
@@ -342,14 +345,17 @@ function worldState(S, f) {
   if (ST.update) ST.update(S, f, STORY_PROPS);
   motes.visible = !!S.motes; gap.visible = !!S.gap; feet.forEach((m) => { m.visible = !!S.feet; }); porchLight.position.set(0, 2.3, BZ - 1.2);
 }
-function drawActors(list, cam) {
+function drawActors(list, cam, f = 0) {
   cards.forEach((c) => { c.mesh.visible = c.blob.visible = false; });
   list.forEach((a, i) => {
     const c = getCard(i);
     c.draw(a.key, a.draw);
     c.mesh.visible = true; c.mesh.position.set(a.x, a.y, a.z);
-    const s = a.s || 1; c.mesh.scale.set(s * (a.flip ? -1 : 1), s, s);
-    c.mesh.rotation.set(0, Math.atan2(cam.position.x - a.x, cam.position.z - a.z) + (a.yaw || 0), a.roll || 0);
+    const s = a.s || 1, live = a.shadow !== false && !a.still;                // cast cards breathe and sway (never a frozen pose)
+    let h = 0; for (let k = 0; k < Math.min(12, a.key.length); k++) h = (h * 31 + a.key.charCodeAt(k)) % 997;
+    const br = live ? Math.sin(f * 0.19 + h) : 0, sw = live ? Math.sin(f * 0.061 + h * 0.37) : 0;
+    c.mesh.scale.set(s * (a.flip ? -1 : 1) * (1 - 0.005 * br), s * (1 + 0.011 * br), s);
+    c.mesh.rotation.set(0, Math.atan2(cam.position.x - a.x, cam.position.z - a.z) + (a.yaw || 0), (a.roll || 0) + 0.011 * sw);
     // characters are lifted above the set so they read clearly, even at night (a.gain overrides; tinted ghosts lift less)
     c.mat.color.set(a.tint || '#ffffff').multiplyScalar(a.gain ?? (a.tint ? 1.12 : CARD_GAIN)); c.mat.opacity = a.alpha ?? 1;
     c.mesh.castShadow = a.shadow !== false;
@@ -379,7 +385,7 @@ window.renderFrame = (f) => {
   const W_ = worldAt(f); worldState(W_, f);
   placeSun(L, new THREE.Vector3(...(C.shadowAt || C.look)));
   placeRain(L, f);
-  drawActors([...actorsAt(f, T), ...fxAt(f, T)], camera);
+  drawActors([...actorsAt(f, T), ...fxAt(f, T)], camera, f);
   sky.position.copy(camera.position);
 
   // pass A: colour

@@ -289,6 +289,13 @@ export const build = (ctx) => {
   for (const s of [-1, 1]) add(box(1.6, 0.06, 0.4), wood, 6.0 + s * 0.0, 0.5, -4.6, S_);
   // parked cars along the cross road
   for (const [x, col] of [[-16, '#3a6a9a'], [9, '#c8c8c0'], [20, '#7a2a2a']]) { const c = SETS.car(ctx, S_, { color: col }); c.g.position.set(x, 0, 3.0); }
+  // the sewer cover in the road at the corner: Grandpa is standing right on it at ten fifteen (Part 2 starts here)
+  const mh = add(new THREE.CylinderGeometry(0.42, 0.44, 0.04, 40), toon({ color: '#3a3a40' }), HIT_X, 0.015, 1.45, S_, { cast: false });
+  const mhTop = add(new THREE.CircleGeometry(0.38, 40), texM(cv(256, 256, (g, w) => { g.fillStyle = '#4a4a50'; g.fillRect(0, 0, w, w);
+    g.strokeStyle = '#2a2a2e'; g.lineWidth = 8; for (const r of [120, 96, 40]) { g.beginPath(); g.arc(w / 2, w / 2, r, 0, 7); g.stroke(); }
+    g.lineWidth = 6; for (let k = -4; k <= 4; k++) { const o = k * 20; g.beginPath(); g.moveTo(w / 2 + o, 40); g.lineTo(w / 2 + o, w - 40); g.stroke(); g.beginPath(); g.moveTo(40, w / 2 + o); g.lineTo(w - 40, w / 2 + o); g.stroke(); }
+    g.fillStyle = '#6a6a72'; g.font = '900 30px Arial Black, Arial'; g.textAlign = 'center'; g.fillText('SEWER', w / 2, 70); g.fillText('1908', w / 2, w - 52); })), HIT_X, 0.04, 1.45, S_, { cast: false });
+  mhTop.rotation.x = -Math.PI / 2;
   const bike = bicycle(ctx, S_), truck = lorry(ctx, S_);
   // what he leaves on the road: his flat cap and his glasses
   const capG = new THREE.Group(); S_.add(capG); add(new THREE.CylinderGeometry(0.15, 0.16, 0.08, 16), toon({ color: GPC.cap }), 0, 0.04, 0, capG); add(box(0.22, 0.02, 0.12), toon({ color: GPC.cap }), 0, 0.02, 0.17, capG);

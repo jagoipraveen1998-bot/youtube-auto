@@ -239,7 +239,7 @@ def publish(args, cfg, hcfg, out, hist, hist_path, story, video, thumb, plan):
     else:
         description = "\n".join([story["description"], "",
                              *([f"🎬 Full animated story: {full['title']} → https://youtu.be/{full['video_id']}", ""] if full else []),
-                             "Twist Tales: original animated stories with a twist, and YOU decide what happens next. New Short every day.",
+                             "Twist Tales: original animated stories, and every one ends with a twist. New Short every day.",
                              "", " ".join(list(dict.fromkeys(hcfg.get("hashtags", ["#shorts"]) + story.get("hashtags", [])))[:12])])   # channel tags + the story's own (e.g. #superhero)
     (out / "description.txt").write_text(description, encoding="utf-8")
     tags = list(dict.fromkeys(story.get("tags", []) + hcfg.get("extra_tags", [])))

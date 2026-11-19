@@ -95,7 +95,7 @@ def main():
         story["script_pair"] = script.get("pair")
         story["three_d"] = script.get("three_d")
         story["cta"] = script.get("cta")
-        for k in ("episode", "series", "season", "format", "next", "parts", "part_covers", "speed"):   # a series episode: horizontal, published as a normal video
+        for k in ("episode", "series", "season", "format", "next", "parts", "part_covers", "speed", "cover_line", "cover_offset", "cover_text"):   # a series episode: horizontal, published as a normal video
             if script.get(k) is not None:
                 story[k] = script[k]
         if story.get("episode"):

@@ -163,6 +163,8 @@ def _finish(story, work, src, name, shots, total, voice, frames):
     lines = [b["line"].replace("*", "") for b in story["beats"]]
     tw = next((i for i, b in enumerate(story["beats"]) if b.get("twist")), len(shots) - 2)
     cover_f = min(total - 1, shots[tw]["beat"] + 14)
+    if story.get("cover_line") is not None:      # a chosen moment for the thumbnail (line index, frames after its beat)
+        cover_f = min(total - 1, shots[int(story["cover_line"])]["beat"] + int(story.get("cover_offset", 0)))
     if story.get("parts"):                       # a series episode cut into vertical Shorts: Part 1, Part 2, ...
         return _finish_parts(story, work, name, shots, total, frames, lines, mix, bed, out_dir)
     ff = subprocess.Popen(["ffmpeg", "-y", "-v", "error", "-f", "image2pipe", "-framerate", str(FPS), "-c:v", "mjpeg", "-i", "-", "-i", str(wav),
@@ -173,6 +175,8 @@ def _finish(story, work, src, name, shots, total, voice, frames):
         if f == cover_f:
             Image_open = __import__("PIL.Image", fromlist=["open"]).open
             Image_open(frames / f"f{f:05d}.jpg").save(thumb, quality=92)      # the thumbnail carries no caption
+            if story.get("cover_text"):
+                _text_cover(thumb, story["cover_text"])
     ff.stdin.close()
     if ff.wait() != 0 or not video.exists():
         raise RuntimeError("ffmpeg could not encode the 3D Short")
@@ -214,6 +218,26 @@ def _end_card(im, rows: list[str]):
     for i, r in enumerate(rows):
         d.text((cx - d.textlength(r, font=f) / 2, y0 + i * 92), r, font=f, fill=(255, 225, 74) if i == 0 else (255, 255, 255),
                stroke_width=4, stroke_fill=(12, 8, 20))
+
+
+def _text_cover(path: Path, rows: list[str]):
+    """Thumbnail words: up to three short rows, huge and outlined, high in the frame so the face and the danger stay
+    clear below. Row 1 white, the rest yellow; a row starting with ! is red. Readable at phone-grid size."""
+    from PIL import Image, ImageDraw, ImageEnhance
+    im = ImageEnhance.Contrast(Image.open(path).convert("RGB")).enhance(1.12)
+    d = ImageDraw.Draw(im, "RGBA")
+    d.rectangle((0, 0, im.width, int(im.height * 0.36)), fill=(0, 0, 0, 70))
+    y = int(im.height * 0.06)
+    for i, r in enumerate(rows):
+        col = (255, 60, 50) if r.startswith("!") else (255, 255, 255) if i == 0 else (255, 225, 74)
+        r = r.lstrip("!")
+        size = 200
+        while size > 60 and d.textlength(r, font=_font(size)) > im.width * 0.92:
+            size -= 6
+        f = _font(size)
+        d.text((im.width / 2 - d.textlength(r, font=f) / 2, y), r, font=f, fill=col, stroke_width=max(8, size // 14), stroke_fill=(10, 6, 16))
+        y += int(size * 1.08)
+    im.save(path, quality=92)
 
 
 def _cover(frame_path: Path, out: Path, series: str, k: int, n: int):

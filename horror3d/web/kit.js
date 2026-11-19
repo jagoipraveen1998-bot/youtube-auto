@@ -2,7 +2,8 @@
 //   import { makeStory } from './kit.js';
 //   const K = makeStory({ ids: [...], cams: { id: [from, to] }, lights: {...}, light: (S, f) => 'night', focus: (S, C) => [x, y, z] });
 //   export const { FPS, TOTAL, SHOTS, shotAt, camAt, dofAt, LIGHTS, lightFor } = K;
-import { TIMING, TOTAL as T_TOTAL } from './timing.js';
+import * as TM from './timing.js';
+const TIMING = TM.TIMING, T_TOTAL = TM.TOTAL, WORDS = TM.WORDS || [];
 
 export const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
 export const smooth = (t) => { t = clamp(t); return t * t * t * (t * (t * 6 - 15) + 10); };
@@ -13,6 +14,10 @@ export const q = (x, n = 2) => Math.round(x * 10 ** n) / 10 ** n;
 export const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 export const add3 = (a, b) => a.map((v, i) => v + b[i]);
 export const INK = '#241726';
+/** motion with wind-up, strike, overshoot and settle (t = 0..1 over the move): fast in the middle, soft at the ends */
+export const windUp = (t) => { t = clamp(t); const a = 1.7; return t < 0.22 ? -0.08 * Math.sin((t / 0.22) * Math.PI) : (() => { const u = (t - 0.22) / 0.78; return 1 + (a + 1) * Math.pow(u - 1, 3) + a * Math.pow(u - 1, 2); })(); };
+export const settle = (t) => { t = clamp(t); return 1 - Math.exp(-6 * t) * Math.cos(9 * t); };
+export const snap = (t) => { t = clamp(t); return 1 - Math.pow(1 - t, 4); };
 export const blinkAt = (f, seed) => { const per = 38 + (seed * 17) % 31, ph = (f + seed * 13) % per; return ph < 2 ? 0.5 : ph < 4 ? 1 : 0; };
 
 /** a cast card (romanFront) placed in the world */
@@ -24,21 +29,46 @@ export const word = (txt, t, col = '#ffd23f') => (p) => { const g = p.g; g.save(
   g.globalAlpha = Math.max(0, 1 - t * 1.1); g.translate(300, 500); g.scale(1 + t * 0.35, 1 + t * 0.35); g.rotate(-0.08);
   g.lineWidth = 22; g.strokeStyle = INK; g.strokeText(txt, 0, 0); g.fillStyle = col; g.fillText(txt, 0, 0); g.restore(); };
 
-export function makeStory({ ids, cams, lights, light = () => Object.keys(lights)[0], tweak, focus, kicks = [], shadowAt, cinf = 6 }) {
+export function makeStory({ ids, cams, lights, light = () => Object.keys(lights)[0], tweak, focus, kicks = [], shadowAt, cinf = 6, fly = {} }) {
   if (TIMING.length !== ids.length) console.warn(`story has ${ids.length} shots, timing has ${TIMING.length}`);
-  const SHOTS = ids.map((id, i) => ({ id, i, a: TIMING[i].a, b: TIMING[i].b, beat: TIMING[i].beat }));
+  const SHOTS = ids.map((id, i) => ({ id, i, a: TIMING[i].a, b: TIMING[i].b, beat: TIMING[i].beat, words: WORDS[i] || [] }));
+  // the frame a word is spoken in a shot (first word starting with w; falls back to the shot's beat)
+  const wordF = (S, w, nth = 0) => { const hits = S.words.filter((x) => x[0].toLowerCase().replace(/[^a-z0-9']/g, '').startsWith(w.toLowerCase())); return hits.length ? hits[Math.min(nth, hits.length - 1)][1] : S.beat; };
   const shotAt = (f) => SHOTS.find((s) => f >= s.a && f <= s.b) || SHOTS[SHOTS.length - 1];
   const sh = (id) => SHOTS[ids.indexOf(id)];
   const lightFor = (S, f) => { const L = { ...lights[light(S, f)] }; if (tweak) tweak(L, S, f); return L; };
+  const mixK = (a, b, t) => ({ pos: lerp3(a.pos, b.pos, t), look: lerp3(a.look, b.look, t), fov: lerp(a.fov, b.fov, t), roll: lerp(a.roll || 0, b.roll || 0, t) });
+  // the camera within one shot. Keys with  at: 'word'  are ON-THE-WORD moves: the camera rests (a slow drift) until
+  // that word is spoken, then pushes to the key in  dur  frames (default 12, under half a second) and rests again.
+  const baseCam = (f, S) => {
+    const K = cams[S.id];
+    if (!K.some((k) => k.at)) { const t = smooth(ramp(f, S.a, S.b)); return mixK(K[0], K[1] || K[0], t); }
+    let c = { ...K[0], roll: K[0].roll || 0 };
+    for (let i = 1; i < K.length; i++) {
+      const k = K[i], t0 = typeof k.at === 'number' ? k.at : wordF(S, k.at, k.nth || 0), d = k.dur || 12;
+      if (f < t0) { const nx = K[i]; c = mixK(c, mixK(c, nx, 0.08), ramp(f, S.a, t0)); break; }
+      c = mixK(c, k, k.ease === 'smooth' ? smooth(ramp(f, t0, t0 + d)) : snap(ramp(f, t0, t0 + d)));
+    }
+    return c;
+  };
   const camAt = (f) => {
-    const S = shotAt(f), K = cams[S.id], t = smooth(ramp(f, S.a, S.b)), a = K[0], b = K[1] || K[0];
-    const c = { pos: lerp3(a.pos, b.pos, t), look: lerp3(a.look, b.look, t), fov: lerp(a.fov, b.fov, t), roll: lerp(a.roll || 0, b.roll || 0, t) };
+    const S = shotAt(f);
+    let c = baseCam(f, S);
+    // FLY-THROUGH: instead of a cut, the camera flies from the last shot, through a point (a window, a dial, a hole), into this one
+    const F = fly[S.id];
+    if (F && S.i > 0) { const n = F.frames || 16, t = ramp(f, S.a, S.a + n);
+      if (t < 1) { const P = SHOTS[S.i - 1], from = baseCam(P.b, P), e = smooth(t), thr = F.through;
+        const bz = (p0, p1, p2) => p0.map((v, j) => (1 - e) * (1 - e) * v + 2 * (1 - e) * e * p1[j] + e * e * p2[j]);
+        c = { pos: bz(from.pos, thr, c.pos), look: e < 0.5 ? lerp3(from.look, thr, smooth(e * 2)) : lerp3(thr, c.look, smooth(e * 2 - 1)),
+              fov: lerp(from.fov, c.fov, e) - 14 * Math.sin(e * Math.PI), roll: lerp(from.roll || 0, c.roll || 0, e) + (F.spin || 0) * Math.sin(e * Math.PI) };
+        if (F.whiteout) c.flash = Math.max(0, 1 - Math.abs(e - 0.5) * 6) * F.whiteout; } }
+    c.flash = c.flash || 0;
     for (const id of kicks) { const k = sh(id).beat, d = f - k; if (d >= 0 && d < 7) { const s = (d % 2 ? -1 : 1) * 0.03 * (1 - d / 7); c.look = [c.look[0], c.look[1] + s * 2, c.look[2] + s]; c.roll += s * 18; } }
-    c.flash = 0; c.shadowAt = shadowAt ? shadowAt(S) : c.look;
+    c.shadowAt = shadowAt ? shadowAt(S) : c.look;
     return c;
   };
   const dofAt = (f) => { const S = shotAt(f), C = camAt(f), p = focus ? focus(S, C, f) : C.look; return Array.isArray(p) ? { focus: dist(C.pos, p), cinf } : p; };
-  return { FPS: 30, TOTAL: T_TOTAL, DECK: 0, SHOTS, shotAt, sh, camAt, dofAt, LIGHTS: lights, lightFor };
+  return { FPS: 30, TOTAL: T_TOTAL, DECK: 0, SHOTS, shotAt, sh, camAt, dofAt, LIGHTS: lights, lightFor, wordF };
 }
 
 /** stock lighting moods any set can use */

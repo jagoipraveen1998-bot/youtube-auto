@@ -165,7 +165,8 @@ video:
 # Three a day (.github/workflows/horror-shorts.yml). Uploads with the YT_HORROR_REFRESH_TOKEN secret,
 # so they go to CreepyCartoonTales, never to Inner Mechanics.
 horror:
-  channel: "CreepyCartoonTales"
+  channel: "Twist Tales"                 # renamed from CreepyCartoonTales (19 Nov 2026)
+  channel_id: "UCEsCTfj0ZodFwEiEujMxLgQ"   # uploads are checked against this ID, so the name can change
   voice:                             # deep, slow storyteller
     engine: "kokoro"
     kokoro_lang: "b"                 # b = British English
@@ -193,8 +194,8 @@ horror:
     category_id: "1"                 # 1 = Film & Animation
     made_for_kids: false             # horror is not for kids
     contains_synthetic_media: false  # clearly animated, no realistic people
-  hashtags: ["#shorts", "#horror", "#scary", "#animation", "#creepy"]
-  instagram_hashtags: ["#horrorstory", "#animatedhorror", "#scarystories", "#creepy", "#horror", "#animation", "#creepycartoontales", "#reels"]
+  hashtags: ["#shorts", "#twisttales", "#plottwist", "#whatif", "#animation", "#storytime", "#youdecide"]
+  instagram_hashtags: ["#twisttales", "#plottwist", "#whatif", "#animation", "#animatedstory", "#storytime", "#youdecide", "#cartoon", "#reels"]
   extra_tags: ["horror shorts", "animated horror", "scary stories", "creepy cartoon", "horror animation", "scary shorts"]
 
 # ---------------- Tamil world-trend Shorts on the Inner Mechanics channel (run_trends.py) ----------------

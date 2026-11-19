@@ -110,8 +110,8 @@ def make(stories_file: Path, index: int, start_ist: str, every_min: int) -> None
     from autotube.uploader import _client, upload
     me = _client("YT_HORROR_REFRESH_TOKEN").channels().list(part="snippet", mine=True).execute()
     names = [c["snippet"]["title"] for c in me.get("items", [])]
-    want = hcfg.get("channel", "CreepyCartoonTales").lower().replace(" ", "")
-    if not any(want in n.lower().replace(" ", "").replace(".", "") for n in names):
+    ids = [c["id"] for c in me.get("items", [])]
+    if hcfg.get("channel_id") not in ids:            # by channel ID: the name changed (CreepyCartoonTales -> Twist Tales)
         raise SystemExit(f"YT_HORROR_REFRESH_TOKEN belongs to {names}, not {hcfg.get('channel')}.")
     ycfg = {"youtube": hcfg["youtube"], "channel": {"language": "en"}}
     video_id = upload(video, None, title, description, tags, ycfg, token_env="YT_HORROR_REFRESH_TOKEN", publish_at=when)

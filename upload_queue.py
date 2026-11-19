@@ -53,8 +53,8 @@ def main():
     from autotube.uploader import _client, upload
     me = _client("YT_HORROR_REFRESH_TOKEN").channels().list(part="snippet", mine=True).execute()
     names = [c["snippet"]["title"] for c in me.get("items", [])]
-    if not any("creepycartoontales" in n.lower().replace(" ", "").replace(".", "") for n in names):
-        raise SystemExit(f"YT_HORROR_REFRESH_TOKEN belongs to {names}, not CreepyCartoonTales.")
+    if hcfg.get("channel_id") not in [c["id"] for c in me.get("items", [])]:      # by ID: the channel's name changes
+        raise SystemExit(f"YT_HORROR_REFRESH_TOKEN belongs to {names}, not {hcfg.get('channel')}.")
     ycfg = {"youtube": hcfg["youtube"], "channel": {"language": "en"}}
     hist_path = ROOT / "data" / "horror_history.json"
     hist = json.loads(hist_path.read_text(encoding="utf-8")) if hist_path.exists() else {"stories": [], "videos": []}

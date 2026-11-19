@@ -1,0 +1,83 @@
+{
+ "id": "radio-tomorrow",
+ "title": "My Grandpa's Radio Plays Tomorrow's News",
+ "approved": true,
+ "release_from": "2026-11-23",
+ "three_d": "radio-tomorrow",
+ "cta": "Tag a friend who'd want to hear tomorrow's news",
+ "description": "Grandpa's old radio warned him about tomorrow, and he used it to save a stranger. Then it said his name.\nWould YOU listen to tomorrow's news? Tell me in the comments.\n\nA CreepyCartoonTales story.",
+ "lines": [
+  "Grandpa's old radio doesn't play today's news. It plays tomorrow's.",
+  "\"Ten fifteen tomorrow,\" it crackled. \"A girl on a red bicycle. Mill Road corner. A runaway lorry.\"",
+  "The next morning, Grandpa put on his coat.",
+  "At ten fourteen, the girl came flying down the hill.",
+  "Grandpa stepped out and grabbed her handlebars.",
+  "The lorry thundered past... right where she would have been.",
+  "She was shaking. Grandpa was smiling.",
+  "That night, the radio crackled again.",
+  "\"Ten fifteen tomorrow. An old man. Mill Road corner.\"",
+  "Grandpa switched it off and looked at me.",
+  "\"Whatever happens... don't let me go out tomorrow.\"",
+  "It's ten fourteen. His chair is empty.",
+  "*Ten fifteen. Mill Road corner.",
+  "Then the radio went quiet."
+ ],
+ "shots": [
+  {
+   "set": "3d",
+   "v": "s0"
+  },
+  {
+   "set": "3d",
+   "v": "s1"
+  },
+  {
+   "set": "3d",
+   "v": "s2"
+  },
+  {
+   "set": "3d",
+   "v": "s3"
+  },
+  {
+   "set": "3d",
+   "v": "s4"
+  },
+  {
+   "set": "3d",
+   "v": "s5"
+  },
+  {
+   "set": "3d",
+   "v": "s6"
+  },
+  {
+   "set": "3d",
+   "v": "s7"
+  },
+  {
+   "set": "3d",
+   "v": "s8"
+  },
+  {
+   "set": "3d",
+   "v": "s9"
+  },
+  {
+   "set": "3d",
+   "v": "s10"
+  },
+  {
+   "set": "3d",
+   "v": "s11"
+  },
+  {
+   "set": "3d",
+   "v": "s12"
+  },
+  {
+   "set": "3d",
+   "v": "s13"
+  }
+ ]
+}

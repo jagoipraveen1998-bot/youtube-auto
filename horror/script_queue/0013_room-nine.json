@@ -1,7 +1,7 @@
 {
  "id": "room-nine",
  "title": "My School Has One Rule: Never Look Into Room 9 After The Bell",
- "approved": true,
+ "approved": false,
  "three_d": "room-nine",
  "cta": "Tag a friend who is always late",
  "description": "A CreepyCartoonTales story. Would you have broken the rule? Tell us in the comments.",
@@ -64,5 +64,6 @@
    "v": "s10"
   }
  ],
- "ending": "finished"
+ "ending": "finished",
+ "hold": "paused 2026-11-19: rebuild its 3D scene in the upgraded style, then approve again"
 }

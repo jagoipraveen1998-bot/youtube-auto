@@ -1,7 +1,7 @@
 {
  "id": "shadow-fight",
  "title": "I Had To Fight For My Life Against My Own Shadow",
- "approved": true,
+ "approved": false,
  "three_d": "shadow-fight",
  "cta": "Tag a friend who is scared of their own shadow",
  "description": "A CreepyCartoonTales story. Would you have turned around? Tell us in the comments.",
@@ -74,5 +74,6 @@
    "v": "s12"
   }
  ],
- "ending": "finished"
+ "ending": "finished",
+ "hold": "paused 2026-11-19: rebuild its 3D scene in the upgraded style, then approve again"
 }

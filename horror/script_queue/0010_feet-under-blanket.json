@@ -1,7 +1,7 @@
 {
  "id": "feet-under-blanket",
  "title": "My Friend's Mum Said: Keep Your Feet Under The Blanket",
- "approved": true,
+ "approved": false,
  "three_d": "feet-under-blanket",
  "cta": "Tag a friend who sleeps with one foot out",
  "description": "A CreepyCartoonTales story. Would you have broken the rule? Tell us in the comments.",
@@ -64,5 +64,6 @@
    "v": "s10"
   }
  ],
- "ending": "finished"
+ "ending": "finished",
+ "hold": "paused 2026-11-19: rebuild its 3D scene in the upgraded style, then approve again"
 }

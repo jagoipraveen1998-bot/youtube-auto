@@ -170,7 +170,13 @@ def main():
         # Praveen's rule: ONLY the storyteller voice. If it can't be had right now, nothing is uploaded:
         # the script stays first in the queue and the next run (03:07 / 08:07 / 14:07 UTC) tries again.
         take = None
-        if os.environ.get("GEMINI_API_KEY"):
+        if hcfg.get("voice_provider") == "elevenlabs" and os.environ.get("ELEVENLABS_API_KEY"):
+            from autotube.eleven import eleven_take           # Praveen, 19 Nov 2026: the ElevenLabs "Jeremy" voice
+            work.mkdir(parents=True, exist_ok=True)
+            take = eleven_take([b["line"] for b in story["beats"]], hcfg.get("eleven", {}), work / "take")
+            if take is None:
+                log("ElevenLabs not available: falling back to the Gemini storyteller")
+        if take is None and os.environ.get("GEMINI_API_KEY"):
             from autotube.voice import acted_take
             work.mkdir(parents=True, exist_ok=True)
             tcfg = dict(hcfg["acted_take"])

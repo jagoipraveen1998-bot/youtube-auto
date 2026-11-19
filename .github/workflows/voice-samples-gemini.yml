@@ -2,6 +2,8 @@ name: Voice samples (Gemini storytellers)
 
 on:
   workflow_dispatch:
+  push:
+    branches: [voice-samples]
 
 permissions:
   contents: write

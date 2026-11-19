@@ -57,11 +57,14 @@ export function makeStory({ ids, cams, lights, light = () => Object.keys(lights)
     // FLY-THROUGH: instead of a cut, the camera flies from the last shot, through a point (a window, a dial, a hole), into this one
     const F = fly[S.id];
     if (F && S.i > 0) { const n = F.frames || 16, t = ramp(f, S.a, S.a + n);
-      if (t < 1) { const P = SHOTS[S.i - 1], from = baseCam(P.b, P), e = smooth(t), thr = F.through;
-        const bz = (p0, p1, p2) => p0.map((v, j) => (1 - e) * (1 - e) * v + 2 * (1 - e) * e * p1[j] + e * e * p2[j]);
-        c = { pos: bz(from.pos, thr, c.pos), look: e < 0.5 ? lerp3(from.look, thr, smooth(e * 2)) : lerp3(thr, c.look, smooth(e * 2 - 1)),
-              fov: lerp(from.fov, c.fov, e) - 14 * Math.sin(e * Math.PI), roll: lerp(from.roll || 0, c.roll || 0, e) + (F.spin || 0) * Math.sin(e * Math.PI) };
-        if (F.whiteout) c.flash = Math.max(0, 1 - Math.abs(e - 0.5) * 6) * F.whiteout; } }
+      if (t < 1) { const P = SHOTS[S.i - 1], from = baseCam(P.b, P), thr = F.through;
+        // first half: push from the last shot INTO the bright thing; a white flash covers the jump;
+        // second half: glide forward into the new place from a little behind its first camera
+        if (t < 0.5) { const e = smooth(t * 2); c = { pos: lerp3(from.pos, thr, e * 0.85), look: lerp3(from.look, thr, Math.min(1, e * 1.6)), fov: from.fov - 16 * e, roll: (from.roll || 0) + (F.spin || 0) * e }; }
+        else { const e = smooth(t * 2 - 1), dir = c.pos.map((v, j) => v - c.look[j]), L = Math.hypot(...dir) || 1;
+          const back = c.pos.map((v, j) => v + dir[j] / L * (F.back || 2.5));
+          c = { ...c, pos: lerp3(back, c.pos, e), fov: c.fov + 12 * (1 - e), roll: (c.roll || 0) - (F.spin || 0) * (1 - e) }; }
+        if (F.whiteout) c.flash = Math.max(0, 1 - Math.abs(t - 0.5) * 3.2) * F.whiteout; } }
     c.flash = c.flash || 0;
     for (const id of kicks) { const k = sh(id).beat, d = f - k; if (d >= 0 && d < 7) { const s = (d % 2 ? -1 : 1) * 0.03 * (1 - d / 7); c.look = [c.look[0], c.look[1] + s * 2, c.look[2] + s]; c.roll += s * 18; } }
     c.shadowAt = shadowAt ? shadowAt(S) : c.look;

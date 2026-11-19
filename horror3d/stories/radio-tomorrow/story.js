@@ -51,6 +51,36 @@ const CAMS = {
   empty: [{ pos: R(-0.5, 1.6, 1.85), look: R(0.6, 1.0, -1.4), fov: 50 }, { pos: R(-0.1, 1.35, 1.0), look: R(0.6, 0.95, -1.4), fov: 44 }],          // wide: the empty chair, the radio glowing, the clock
   corner: [{ pos: M(-7.4, 1.25, 4.7), look: M(3.0, 1.5, 1.3), fov: 46 }, { pos: M(-6.2, 1.15, 4.1), look: M(-0.6, 1.5, 1.3), fov: 38 }],
 };
+// ON THE WORD: when the voice names a thing, the camera pushes in to it in under half a second (Rick's Clips rule)
+const up = (p, dy) => [p[0], p[1] + dy, p[2]];
+const PUSH = {
+  radio: [['radio', up(RADIO, 0.15), 0.45], ['tomorrow', DIAL, 0.55]],
+  broadcast: [['bicycle', DIAL, 0.3], ['lorry', DIAL, 0.35]],
+  coat: [['coat', R(1.5, 1.25, 0.65), 0.28]],
+  hill: [['girl', ME_(0.7, -18, 1.2), 0.3]],
+  grab: [['grabbed', ME_(0.3, -5.1, 0.95), 0.45]],
+  lorry: [['lorry', M(0, 1.4, 1.0), 0.3]],
+  shaking: [['shaking', ME_(0.7, -5.1, 1.35), 0.4], ['smiling', ME_(-0.25, -5.0, 1.5), 0.4]],
+  warn2: [['fire', DIAL, 0.45], ['baby', DIAL, 0.3]],
+  knock: [['hammered', ME_(-6.4, -28.4, 1.4), 0.45]],
+  smoke: [['baby', ME_(-4.6, -29.4, 1.2), 0.35]],
+  night2: [['saved', R(-0.66, 1.5, -0.9), 0.3], ['crackled', up(RADIO, 0.2), 0.45]],
+  oldman: [['man', R(-0.66, 1.42, -0.9), 0.45]],
+  switch: [['off', R(-0.07, 0.68, -1.31), 0.4], ['me', R(-0.66, 1.45, -0.9), 0.35]],
+  plea: [['tomorrow', R(-0.66, 1.47, -0.9), 0.45]],
+  empty: [['empty', CHAIR, 0.45]],
+  corner: [['corner', M(HIT_X, 1.3, 1.4), 0.35]],
+};
+CAMS.coat = [CAMS.coat[1]];                          // start wide on the room, then push to the coat on the word
+for (const [id, ps] of Object.entries(PUSH)) {
+  const ks = [CAMS[id][0]];
+  for (const [w, target, k] of ps) { const prev = ks[ks.length - 1]; ks.push({ pos: lerp3(prev.pos, target, k), look: target, fov: prev.fov - 5, at: w }); }
+  CAMS[id] = ks;
+}
+// FLY-THROUGH instead of a cut between places: push into something bright (the open door, the glowing dial, the sky,
+// the smoke, the window), a white flash covers the jump, and the camera lands in the next place
+const FLY = { hill: { through: R(2.4, 1.2, 0.7), whiteout: 1 }, warn2: { through: ME_(0.2, -9, 9), whiteout: 1 }, knock: { through: DIAL, whiteout: 1 },
+  night2: { through: N12WIN.map((v, i) => v + [1.0, 0.8, 0][i]), whiteout: 1 }, corner: { through: R(-1.2, 1.6, -2.3), whiteout: 1 } };
 const room = (L) => ({ ...L, fogNear: 8, fogFar: 40 });
 const LIGHTS = {
   night: room({ ...MOODS.moonNight, hemi: 0.6, sky: '#8a9ad0', ground: '#3a2a22', gain: '#fff2e2', lift: '#06040a', vig: 0.42, sat: 1.12 }),
@@ -72,6 +102,7 @@ const K = makeStory({
     if (S.id === 'corner' && f >= S.beat) { const t = ramp(f, S.beat, S.beat + 8); L_.sat = 1.16 - 0.8 * t; L_.vig = 0.2 + 0.4 * t; }   // freeze: the colour drains out
   },
   kicks: ['lorry', 'knock'],
+  fly: FLY,
   focus: (S) => FOCUS(S),
   shadowAt: (S) => (STREET.includes(S.id) || DUSK.includes(S.id) ? FOCUS(S) : R(0, 1, -0.6)),
 });

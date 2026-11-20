@@ -30,7 +30,7 @@ jobs:
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
         run: |
           STORIES="${{ inputs.story }}"
-          [ -z "$STORIES" ] && STORIES=$(git diff --name-only HEAD~1 HEAD -- 'horror3d/stories/*/plates.json' | cut -d/ -f3 | sort -u)
+          [ -z "$STORIES" ] && STORIES=$(ls horror3d/stories/*/plates.json | cut -d/ -f3)
           for s in $STORIES; do python tools/paint_plates.py "$s"; done
       - name: Save the plates to the branch
         run: |

@@ -119,6 +119,23 @@ def _captions(frames_dir: Path, lines: list[str], shots: list[dict], total: int,
         yield f, im, buf.getvalue()
 
 
+def _mouth_track(voice, total: int) -> str:
+    """Per frame: how open a speaking mouth is (0-9) and its shape (A open, E wide, O round), read from the voice itself,
+    so a character's lips follow the real words. Two characters per frame, e.g. '0A5E7O'."""
+    v = np.asarray(voice, dtype=np.float64); hop = ha.SR / FPS; out = []
+    rms = []; zc = []
+    for f in range(total):
+        a, b = int(f * hop), int((f + 1) * hop); seg = v[a:b] if a < len(v) else np.zeros(1)
+        if len(seg) < 2: seg = np.zeros(2)
+        rms.append(float(np.sqrt(np.mean(seg ** 2)))); zc.append(float(np.mean(np.abs(np.diff(np.sign(seg)))) / 2))
+    rms = np.array(rms); ref = np.percentile(rms[rms > 0], 95) if (rms > 0).any() else 1.0
+    for f in range(total):
+        lv = int(np.clip(rms[f] / max(ref, 1e-9) * 9, 0, 9)); lv = 0 if lv < 2 else lv
+        shape = "E" if zc[f] > 0.16 else ("O" if zc[f] < 0.05 else "A")
+        out.append(f"{lv}{shape}")
+    return "".join(out)
+
+
 def render_frames(web: Path, frames: Path, total: int, machines: int = 1, k: int = 0) -> None:
     """Render this machine's share of the frames (every machines-th frame from k), split over all its CPU cores."""
     mine = [f for f in range(total) if f % machines == k]
@@ -165,7 +182,8 @@ def make_short(story: dict, take: Path | None, work: Path, stage: str = "all"):
     shutil.copytree(KIT / "web", web)
     shutil.copy(src / "story.js", web / "story.js")
     (web / "timing.js").write_text(f"export const TIMING = {json.dumps(shots)};\nexport const TOTAL = {total};\n"
-                                   f"export const WORDS = {json.dumps([s.get('words', []) for s in shots])};\n", encoding="utf-8")
+                                   f"export const WORDS = {json.dumps([s.get('words', []) for s in shots])};\n"
+                                   f"export const VOICE = {json.dumps(_mouth_track(voice, total))};\n", encoding="utf-8")
     log(f"3D Short '{name}': {len(shots)} shots, {total} frames ({total / FPS:.1f}s)")
     shutil.rmtree(frames, ignore_errors=True)
     if stage == "prepare":

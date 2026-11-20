@@ -18,7 +18,13 @@ export const INK = '#241726';
 export const windUp = (t) => { t = clamp(t); const a = 1.7; return t < 0.22 ? -0.08 * Math.sin((t / 0.22) * Math.PI) : (() => { const u = (t - 0.22) / 0.78; return 1 + (a + 1) * Math.pow(u - 1, 3) + a * Math.pow(u - 1, 2); })(); };
 export const settle = (t) => { t = clamp(t); return 1 - Math.exp(-6 * t) * Math.cos(9 * t); };
 export const snap = (t) => { t = clamp(t); return 1 - Math.pow(1 - t, 4); };
-export const blinkAt = (f, seed) => { const per = 38 + (seed * 17) % 31, ph = (f + seed * 13) % per; return ph < 2 ? 0.5 : ph < 4 ? 1 : 0; };
+// a natural blink: lid comes down, stays shut a frame, opens a touch slower; every 2-4 s, now and then a double blink
+export const blinkAt = (f, seed) => { const per = 62 + (seed * 17) % 50, n = Math.floor((f + seed * 13) / per), ph = (f + seed * 13) % per;
+  const one = (x) => [0.45, 1, 1, 0.6, 0.25][x] || 0; let v = one(ph); if ((n + seed) % 4 === 1) v = Math.max(v, one(ph - 7)); return v; };
+// lip sync: how open a speaking mouth is on frame f (0..1) and its shape, read from the real voice (timing.js VOICE)
+export const talkAt = (f, gain = 1) => { const V = TM.VOICE; if (!V || f < 0 || 2 * f + 1 >= V.length) return null;
+  const lv = +V[2 * f], prev = +V[2 * Math.max(0, f - 1)], open = Math.min(1, (0.6 * lv + 0.4 * prev) / 9 * gain);
+  return open < 0.12 ? { open: 0, shape: 'M' } : { open, shape: V[2 * f + 1] }; };
 
 /** a cast card (romanFront) placed in the world */
 export const actor = (T, who, o, pos, extra = {}) => ({ key: who + JSON.stringify(o), draw: (p) => T.romanFront(p, who, o), x: pos[0], y: pos[1], z: pos[2], ...extra });

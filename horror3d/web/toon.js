@@ -790,7 +790,20 @@ const mouth = (p, kind, mx, my, u, k = 1)=>{
             break;
     }
 };
-const faceFront = (p, cx, cy, W, expr, facing, look, lid, brim, skin, moustache, stout = false)=>{
+// a talking mouth: open by the voice (talk.open 0..1), shaped A (open), E (wide, teeth), O (round); M = closed in the expression's mood
+const HAPPY = new Set(["grin", "laugh", "smileWide", "smile", "smirk", "teeth"]);
+const talkMouth = (p, talk, base, mx, my, u)=>{
+    const o = talk.open, sh = talk.shape, happy = HAPPY.has(base);
+    if (o <= 0) { if (happy) p.arc(mx, my - 3 * u, 9 * u, 4.5 * u, 20, 160, 4 * u); else p.stroke([[mx - 5.5 * u, my], [mx + 5.5 * u, my - 0.6 * u]], 4 * u); return; }
+    const rx = (sh === "E" ? 12 : sh === "O" ? 6.5 : 10) * u * (happy ? 1.12 : 1), ry = (sh === "O" ? 4 + 8 * o : sh === "E" ? 2.5 + 5 * o : 3 + 9 * o) * u, cy = my + 0.3 * ry;
+    p.ell(mx, cy, rx, ry, MOUTH, 0);
+    const band = Math.max(2 * u, (sh === "E" ? 0.5 : 0.32) * ry);
+    p.clip([[mx - rx, cy - ry], [mx + rx, cy - ry], [mx + rx, cy - ry + band], [mx - rx, cy - ry + band]], ()=>p.ell(mx, cy, rx, ry, WHITE, 0));
+    if (sh !== "E" && o > 0.35) p.ell(mx + u, cy + 0.55 * ry, 0.5 * rx, 0.3 * ry, TONGUE, 0);
+    p.ell(mx, cy, rx, ry, null, 3 * u);
+    if (happy) { p.arc(mx - rx - 1.5 * u, cy - 0.2 * ry, 2.2 * u, 2.2 * u, 200, 300, 2.6 * u); p.arc(mx + rx + 1.5 * u, cy - 0.2 * ry, 2.2 * u, 2.2 * u, 240, 340, 2.6 * u); }
+};
+const faceFront = (p, cx, cy, W, expr, facing, look, lid, brim, skin, moustache, stout = false, talk = null)=>{
     const u = W / 100, F = FACE[expr], fx = cx + 7 * u * facing;
     const ex = (F.eye[0] === "shock" ? 12 : 13) * u, ey = cy;
     for (const side of [
@@ -811,7 +824,7 @@ const faceFront = (p, cx, cy, W, expr, facing, look, lid, brim, skin, moustache,
         ], 5 * u, 2.5 * u);
     }
     const mx = cx + 8 * u * facing, my = cy + 20 * u;
-    mouth(p, F.mouth, mx, my, u);
+    if (talk) talkMouth(p, talk, F.mouth, mx, my, u); else mouth(p, F.mouth, mx, my, u);
     if (moustache) for (const s of [
         -1,
         1
@@ -2714,7 +2727,7 @@ export const romanFront = (p, key, opts = {}) => {
     p.clip(bd, () => { for (let i = -3; i <= 3; i++) p.stroke([[cx + i * 9 * u, hc + 0.45 * H.b], [cx + i * 7 * u, hc + 1.35 * H.b]], 1.2 * u, "#c9c4bb"); });
     p.inkRing(bd, ow * 0.8, thick);
   }
-  faceFront(p, cx, hc, W, expr, facing, look, lid, helmet, skin, O.beard ? O.beard : O.moustache, !!O.stout);
+  faceFront(p, cx, hc, W, expr, facing, look, lid, helmet, skin, O.beard ? O.beard : O.moustache, !!O.stout, opts.talk || null);
   for (const a of arms) if (a.fingerUp) drawArm(a);          // the shushing hand goes over the face
   if (O.brows) for (const s of [-1, 1]) p.ell(cx + 7 * u * facing + s * 14 * u, hc - 20 * u, 11 * u, 5 * u, O.brows, 2 * u);
   if (O.mask) {                                  // a hero's mask: a dark band across the eyes with two mirrored lenses (O.mask = lens colour)

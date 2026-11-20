@@ -7,7 +7,7 @@
 // Our own designs only: a red-and-gold suit with a full mask, gold lenses and a gold spider crest (no web pattern),
 // a fictional city with generic billboards and yellow cabs, no real brands or landmarks.
 import * as SETS from './sets.js';
-import { makeStory, MOODS, smooth, ramp, lerp, lerp3, q, blinkAt, actor, fx, word, windUp, settle, snap } from './kit.js';
+import { makeStory, MOODS, smooth, ramp, lerp, lerp3, q, blinkAt, talkAt, actor, fx, word, windUp, settle, snap } from './kit.js';
 
 // ---------- places (far apart in one world) ----------
 const B = { lab: [220, 0, 0], gala: [220, 0, 90], room: [300, 0, 0], city: [300, 0, 160], school: [380, 0, 0], club: [380, 0, 90], mansion: [460, 0, 0] };
@@ -115,8 +115,9 @@ const CLOSE = {
   bite: [['bitten', null, POS.peterLab, PS, 0.3]], gala: [['father', 'famous', POS.thomasGala, TS, -0.2]], gifts: [['everything', null, POS.peterPile, PS, 0.2]],
   powers: [['whisper', null, POS.peterCar, PS, 0.25]], trophy: [['shelf', null, POS.peterHall, PS, -0.25]], club: [['every', null, POS.queue0, 0.74, 0.3]],
   walter: [['no', null, POS.walterPorch, WS, 0.25]], hear: [['heard', 'help', POS.peterWin, PS, 0.2]], grabbed: [['grabbed', 'middle', POS.walterX, WS, -0.3]],
-  filmed: [['smiling', null, POS.thomasHome, TS, 0.15]], hired: [['hired', 'now', POS.thomasHome, TS, -0.15], ['trending', null, POS.heroHome, PS, 0.35]],
-  fired: [['fired', 'took', POS.walterHome, WS, 0.3], ['took', null, POS.thomasHome, TS, -0.2]] };
+  filmed: [['smiling', null, POS.thomasHome, TS, 0.15]],
+  hired: [['i', 'trending', POS.thomasHome, TS, -0.15], ['trending', 'number', POS.heroHome, PS, 0.35], ['number', null, POS.thomasHome, TS, 0.1]],
+  fired: [['walter', 'took', POS.thomasHome, TS, -0.2], ['took', 'scream', POS.walterHome, WS, 0.3], ['scream', null, POS.thomasHome, TS, 0.15]] };
 const closeAt = (f, S) => {
   for (const [w0, w1, p, sc, side] of CLOSE[S.id] || []) {
     const a = K.wordF(S, w0), b = w1 ? K.wordF(S, w1) : S.b + 1; if (f < a || f >= b || a === b) continue;
@@ -560,7 +561,8 @@ export const actorsAt = (f, T) => {
   if (['filmed', 'hired', 'fired'].includes(id)) {
     const fired = id === 'fired' && f >= w('fired'), smug = id === 'fired' && f >= w('took');
     thomas({ expr: id === 'hired' ? (f >= w('trending') ? 'grin' : 'laugh') : id === 'fired' ? (smug ? 'grin' : 'stern') : 'grin',
-      R: fired && !smug ? 'point' : id === 'hired' ? 'up' : 'hang', look: id === 'fired' && !smug ? -0.7 : 0.1 }, POS.thomasHome);
+      R: fired && !smug ? 'point' : id === 'hired' ? 'up' : 'hang', look: id === 'fired' && !smug ? -0.7 : 0.1,
+      talk: id === 'filmed' ? null : talkAt(f, 1.15) }, POS.thomasHome, { roll: id === 'filmed' ? 0 : 0.03 * ((talkAt(f) || { open: 0 }).open) * Math.sin(f * 0.7) });
     if (id !== 'hired') walter({ expr: fired ? 'shock' : 'relief', R: fired ? 'cheek' : 'hang', look: 0.5 }, POS.walterHome);
     heroOff({ expr: id === 'filmed' ? 'grin' : id === 'hired' ? (f >= w('trending') ? 'shock' : 'nervous') : 'dazed', look: -0.5, R: id === 'hired' && f >= w('trending') ? 'cheek' : 'hang' }, POS.heroHome);
     if (id === 'filmed') for (let i = 0; i < 7; i++) A(CROWD[i], 'g' + i, { expr: 'grin', R: 'phone', look: 0.2 }, MAN((i < 4 ? -8.5 + i * 1.5 : 3.5 + (i - 4) * 1.5), 0, 2.6 + rnd(i) * 1.2), 0.74); }

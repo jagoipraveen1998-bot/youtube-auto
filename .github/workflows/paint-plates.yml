@@ -1,0 +1,41 @@
+name: Paint background plates
+
+on:
+  push:
+    paths: ["horror3d/stories/*/plates.json"]
+  workflow_dispatch:
+    inputs:
+      story:
+        description: "Story folder under horror3d/stories"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  paint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -q requests pillow
+      - name: Paint
+        env:
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          STORIES="${{ inputs.story }}"
+          [ -z "$STORIES" ] && STORIES=$(git diff --name-only HEAD~1 HEAD -- 'horror3d/stories/*/plates.json' | cut -d/ -f3 | sort -u)
+          for s in $STORIES; do python tools/paint_plates.py "$s"; done
+      - name: Save the plates to the branch
+        run: |
+          git config user.name "autotube-bot"; git config user.email "actions@users.noreply.github.com"
+          git add horror3d/stories/*/plates/*.jpg 2>/dev/null || true
+          git diff --cached --quiet && exit 0
+          git commit -qm "Painted background plates"
+          for i in 1 2 3 4 5; do git pull -q --rebase && git push -q && exit 0; sleep 7; done

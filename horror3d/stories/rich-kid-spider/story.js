@@ -87,8 +87,8 @@ const LIGHTS = {
   night: { ...MOODS.moonNight, fogNear: 30, fogFar: 200, hemi: 0.95, sat: 1.14, vig: 0.34, clouds: 0.3 },
   roomNight: inside({ ...MOODS.moonNight, hemi: 0.8, sky: '#8a9ad0', ground: '#3a2a3a', gain: '#f2ecff', vig: 0.4 }),
 };
-const LIGHT_OF = { bite: 'lab', gala: 'day', gifts: 'room', powers: 'blue', trophy: 'room', club: 'night', swing: 'dusk', walter: 'day', hear: 'roomNight',
-  grabbed: 'dusk', webs: 'dusk', filmed: 'night', hired: 'night', fired: 'night' };
+const LIGHT_OF = { bite: 'lab', gala: 'day', gifts: 'room', powers: 'blue', trophy: 'room', club: 'night', swing: 'blue', walter: 'day', hear: 'room',
+  grabbed: 'blue', webs: 'blue', filmed: 'night', hired: 'night', fired: 'night' };
 const FOCUS = { bite: LAB(-0.25, 1.35, -1.6), gala: GALA(-1.2, 2.1, -5.6), gifts: ROOM(0.3, 1.6, -1.6), powers: CITY(-5.4, 1.6, 25.6), trophy: SCH(-0.4, 1.3, -2.6),
   club: CLUB(-0.4, 3.8, -4.9), swing: CITY(-1, 12, 26), walter: MAN(0.1, 1.4, -1.9), hear: ROOM(-3.0, 1.3, -3.0), grabbed: CITY(0, 1.4, 2),
   webs: CITY(0, 1.6, 1), filmed: MAN(0.3, 1.6, -2.2), hired: MAN(0.2, 1.8, -2.3), fired: MAN(-0.5, 1.5, -2.1) };
@@ -357,12 +357,137 @@ function streetBits(ctx, C) {
   for (const z of [-21, 36, 63]) mailbox(-7.9, z, Math.PI / 2); for (const z of [-48, 22, 56]) mailbox(7.9, z, -Math.PI / 2);
   kiosk(-9.6, 34, Math.PI / 2); kiosk(9.6, -38, -Math.PI / 2); kiosk(-14, 9.6, Math.PI);
   for (const [x, z] of [[2.2, 33], [-2.4, -27], [-1.6, 55], [16, -2.2], [-24, 2.0]]) steam(x, z);
-  for (const s of [-1, 1]) for (const z of [-64, -52, 38, 52, 77]) { const c = SETS.car(ctx, C, { color: ['#3a6aa8', '#e8e8ec', '#2a2a30', '#a82a2a', '#4a8a5a'][Math.floor(rnd(z * s) * 5)] }); c.g.position.set(s * 6.2, 0, z + s * 3); c.g.rotation.y = Math.PI / 2; }
+  for (const s of [-1, 1]) for (const z of [-64, -52, 38, 52, 77]) { const c = vehicle(ctx, C, { kind: rnd(z + s) < 0.4 ? 'taxi' : 'car', color: ['#3a6aa8', '#e8e8ec', '#2a2a30', '#a82a2a', '#4a8a5a'][Math.floor(rnd(z * s) * 5)], num: '4P' + Math.abs(z) }); c.g.position.set(s * 6.2, 0, z + s * 3); c.g.rotation.y = Math.PI / 2; }
   // bus shelter on the corner
   const bs = new THREE.Group(); bs.position.set(9.4, 0.16, 20); bs.rotation.y = -Math.PI / 2; C.add(bs);
   for (const x of [-1.8, 1.8]) add(box(0.08, 2.4, 0.08), iron, x, 1.2, -0.7, bs, nc);
   add(box(4, 0.1, 1.6), iron, 0, 2.45, 0, bs); add(box(3.6, 2.0, 0.04), new THREE.MeshBasicMaterial({ color: '#a8c8e0', transparent: true, opacity: 0.35 }), 0, 1.2, -0.75, bs, nc);
   const ad = SETS.canvasPlane(ctx, 1.4, 2.0, 256, bs); ad.draw('a', board(['#ff5a8a', '#7a1a8a'], [['FIZZ', 0.18], ['POP', 0.18]])); ad.mesh.position.set(1.15, 1.2, -0.72);
+}
+
+// ---------- vehicles: a rounded sedan body (side profile extruded), glass cabin, real wheels; taxi, police, plain car, box truck ----------
+function vehicle(ctx, parent, { kind = 'taxi', color = '#f2c21a', num = '7G12' } = {}) {
+  const { THREE, add, box, toon } = ctx, g = new THREE.Group(); parent.add(g); const nc = { cast: false };
+  const body = toon({ color: kind === 'police' ? '#f4f4f6' : color }), glass = matOf(ctx, 'vglass', () => toon({ color: '#24344a' })), black = matOf(ctx, 'vblack', () => toon({ color: '#141418' }));
+  const chrome = matOf(ctx, 'vchrome', () => toon({ color: '#c8ccd4' })), headM = matOf(ctx, 'vhead', () => new THREE.MeshBasicMaterial({ color: '#fff6d8' })), tailM = matOf(ctx, 'vtail', () => new THREE.MeshBasicMaterial({ color: '#ff2a2a' }));
+  if (kind === 'truck') {
+    add(box(4.2, 2.6, 2.3), toon({ color: '#f2f2ee' }), -0.9, 1.75, 0, g); add(box(1.8, 1.9, 2.2), toon({ color: color }), 2.1, 1.35, 0, g); add(box(0.9, 0.8, 2.22), glass, 2.55, 1.85, 0, g);
+    const side = SETS.canvasPlane(ctx, 4.0, 2.2, 512, g, { lit: true }); side.draw('t', board(['#ff7a1a', '#c81e3a'], [['QUICKBOX', 0.24], ['DELIVERY', 0.14]])); side.mesh.position.set(-0.9, 1.8, 1.16);
+    const side2 = SETS.canvasPlane(ctx, 4.0, 2.2, 512, g, { lit: true }); side2.draw('t', board(['#ff7a1a', '#c81e3a'], [['QUICKBOX', 0.24], ['DELIVERY', 0.14]])); side2.mesh.position.set(-0.9, 1.8, -1.16); side2.mesh.rotation.y = Math.PI;
+    for (const s of [-1, 1]) for (const x of [-2.2, 2.1]) { const w = add(new THREE.CylinderGeometry(0.48, 0.48, 0.34, 18), black, x, 0.48, s * 1.0, g); w.rotation.x = Math.PI / 2; const r = add(new THREE.CylinderGeometry(0.26, 0.26, 0.36, 12), chrome, x, 0.48, s * 1.0, g, nc); r.rotation.x = Math.PI / 2; }
+    add(box(0.06, 0.2, 0.4), headM, 3.01, 0.9, 0.75, g, nc); add(box(0.06, 0.2, 0.4), headM, 3.01, 0.9, -0.75, g, nc);
+    return { g };
+  }
+  const prof = new THREE.Shape([[2.3, 0.32], [2.36, 0.72], [2.2, 0.86], [1.15, 0.98], [-1.75, 1.0], [-2.25, 0.92], [-2.36, 0.62], [-2.3, 0.32]].map(([x, y]) => new THREE.Vector2(x, y)));
+  const ex = (shape, w, bev) => { const geo = new THREE.ExtrudeGeometry(shape, { depth: w, bevelEnabled: true, bevelThickness: bev, bevelSize: bev, bevelSegments: 3, curveSegments: 4 }); geo.translate(0, 0, -w / 2); return geo; };
+  add(ex(prof, 1.62, 0.09), body, 0, 0, 0, g);
+  const cab = new THREE.Shape([[0.95, 0.96], [0.25, 1.42], [-1.0, 1.46], [-1.65, 1.0]].map(([x, y]) => new THREE.Vector2(x, y)));
+  add(ex(cab, 1.46, 0.06), glass, 0, 0, 0, g);
+  const roofS = new THREE.Shape([[0.32, 1.38], [0.22, 1.47], [-0.98, 1.5], [-1.05, 1.41]].map(([x, y]) => new THREE.Vector2(x, y))); add(ex(roofS, 1.5, 0.04), body, 0, 0, 0, g);
+  for (const x of [-0.35]) add(box(0.12, 0.46, 1.5), body, x, 1.2, 0, g, nc);                       // B pillar
+  for (const s of [-1, 1]) for (const x of [-1.45, 1.45]) { const w = add(new THREE.CylinderGeometry(0.36, 0.36, 0.26, 20), black, x, 0.36, s * 0.8, g); w.rotation.x = Math.PI / 2;
+    const r = add(new THREE.CylinderGeometry(0.22, 0.22, 0.28, 14), chrome, x, 0.36, s * 0.8, g, nc); r.rotation.x = Math.PI / 2;
+    add(new THREE.TorusGeometry(0.42, 0.06, 6, 16, Math.PI), black, x, 0.36, s * 0.9, g, nc); }
+  for (const s of [-1, 1]) { add(box(0.05, 0.16, 0.38), headM, 2.42, 0.68, s * 0.58, g, nc); add(box(0.05, 0.14, 0.34), tailM, -2.42, 0.74, s * 0.6, g, nc); add(box(0.25, 0.06, 0.12), black, 1.0, 0.95, s * 0.9, g, nc); }
+  add(box(0.1, 0.18, 1.5), chrome, 2.43, 0.42, 0, g, nc); add(box(0.1, 0.18, 1.5), chrome, -2.43, 0.42, 0, g, nc);
+  add(box(0.06, 0.2, 0.9), black, 2.41, 0.6, 0, g, nc);                                                // grille
+  if (kind === 'taxi') {
+    const chk = matOf(ctx, 'checker', () => ctx.texM(cv(256, 32, (c, w, h) => { for (let i = 0; i < 16; i++) for (let j = 0; j < 2; j++) { c.fillStyle = (i + j) % 2 ? '#141414' : '#f4f4f4'; c.fillRect(i * 16, j * 16, 16, 16); } }), 1, 1));
+    for (const s of [-1, 1]) { const st = add(box(3.0, 0.14, 0.02), chk, -0.2, 0.74, s * 0.9, g, nc); st.material = chk;
+      const d = SETS.canvasPlane(ctx, 0.9, 0.3, 256, g, { lit: true }); d.draw('n', (c, w, h) => { c.fillStyle = '#f2c21a'; c.fillRect(0, 0, w, h); c.fillStyle = '#141414'; c.font = '900 64px Arial Black, Arial'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(num, w / 2, h / 2 + 3); });
+      d.mesh.position.set(-0.85, 0.55, s * 0.905); if (s < 0) d.mesh.rotation.y = Math.PI; }
+    add(box(0.75, 0.24, 0.28), matOf(ctx, 'taxisign', () => new THREE.MeshBasicMaterial({ color: '#fff8e0' })), -0.4, 1.62, 0, g, nc);
+    const ts = SETS.canvasPlane(ctx, 0.72, 0.2, 256, g); ts.draw('t', (c, w, h) => { c.fillStyle = '#fff8e0'; c.fillRect(0, 0, w, h); c.fillStyle = '#141414'; c.font = '900 52px Arial Black, Arial'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('TAXI', w / 2, h / 2 + 3); });
+    ts.mesh.position.set(-0.4, 1.62, 0.145); const ts2 = ts.mesh.clone(); ts2.position.z = -0.145; ts2.rotation.y = Math.PI; g.add(ts2);
+  }
+  if (kind === 'police') {
+    for (const s of [-1, 1]) { add(box(3.6, 0.22, 0.02), matOf(ctx, 'pblue', () => toon({ color: '#1e3a8a' })), 0, 0.72, s * 0.9, g, nc);
+      const d = SETS.canvasPlane(ctx, 1.4, 0.3, 256, g, { lit: true }); d.draw('p', (c, w, h) => { c.fillStyle = '#f4f4f6'; c.fillRect(0, 0, w, h); c.fillStyle = '#1e3a8a'; c.font = '900 50px Arial Black, Arial'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('POLICE', w / 2, h / 2 + 3); });
+      d.mesh.position.set(-0.6, 0.98 - 0.05, s * 0.9); if (s < 0) d.mesh.rotation.y = Math.PI; }
+    add(box(0.3, 0.14, 1.2), black, -0.4, 1.56, 0, g, nc); add(box(0.28, 0.14, 0.5), matOf(ctx, 'pr', () => new THREE.MeshBasicMaterial({ color: '#ff2a2a' })), -0.4, 1.62, -0.32, g, nc);
+    add(box(0.28, 0.14, 0.5), matOf(ctx, 'pb', () => new THREE.MeshBasicMaterial({ color: '#2a5aff' })), -0.4, 1.62, 0.32, g, nc);
+  }
+  return { g };
+}
+// ---------- giant LED screens (they glow; a few animate) ----------
+const ART = [
+  (g, w, h, t) => { const gr = g.createLinearGradient(0, 0, w, h); gr.addColorStop(0, '#5a1aa8'); gr.addColorStop(1, '#e83a8a'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    g.save(); g.translate(w / 2, h * 0.32); g.rotate(t * 0.6); g.strokeStyle = '#ffd23f'; g.lineWidth = w * 0.03; g.beginPath(); g.arc(0, 0, w * 0.16, 0.3, 5.2); g.stroke(); g.restore();
+    txt(g, 'TWIST', w / 2, h * 0.62, h * 0.2, '#ffffff'); txt(g, 'TALES', w / 2, h * 0.84, h * 0.2, '#ffd23f'); },
+  (g, w, h, t) => { g.fillStyle = '#06080e'; g.fillRect(0, 0, w, h); const x = ((t * 0.25) % 1.4 - 0.2) * w, gr = g.createLinearGradient(x - w * 0.3, 0, x + w * 0.3, 0); gr.addColorStop(0, 'rgba(60,140,255,0)'); gr.addColorStop(0.5, 'rgba(120,200,255,0.55)'); gr.addColorStop(1, 'rgba(60,140,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#1a2a4a'; g.strokeStyle = '#9ad0ff'; g.lineWidth = 6; rr(g, w * 0.36, h * 0.12, w * 0.28, h * 0.56, 20); g.fill(); g.stroke(); g.fillStyle = '#3a8ae8'; rr(g, w * 0.39, h * 0.16, w * 0.22, h * 0.46, 10); g.fill();
+    txt(g, 'NOVA 9', w / 2, h * 0.84, h * 0.13, '#ffffff'); },
+  (g, w, h, t) => { const gr = g.createRadialGradient(w / 2, h / 2, 10, w / 2, h / 2, w * 0.7); gr.addColorStop(0, '#ffd23f'); gr.addColorStop(1, '#ff4a1a'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    for (let i = 0; i < 9; i++) { g.fillStyle = 'rgba(255,255,255,0.6)'; g.beginPath(); g.arc((i * 97 + t * 40) % w, h - ((t * 60 + i * 53) % h), 8 + i % 4 * 4, 0, 7); g.fill(); }
+    g.fillStyle = '#c81e1e'; rr(g, w * 0.42, h * 0.18, w * 0.16, h * 0.5, 30); g.fill(); g.fillStyle = '#ffffff'; g.fillRect(w * 0.42, h * 0.36, w * 0.16, h * 0.08); txt(g, 'FIZZ POP', w / 2, h * 0.86, h * 0.13, '#ffffff'); },
+  (g, w, h, t) => { g.fillStyle = '#ff3a8a'; g.fillRect(0, 0, w, h); g.fillStyle = '#ffd23f'; g.beginPath(); g.ellipse(w / 2, h * 0.45, w * 0.32, h * 0.16, -0.15 + Math.sin(t) * 0.05, 0, 7); g.fill();
+    g.fillStyle = '#ffffff'; g.fillRect(w * 0.2, h * 0.52, w * 0.6, h * 0.05); txt(g, 'GOLD KICKS', w / 2, h * 0.82, h * 0.14, '#ffffff'); },
+  (g, w, h, t) => { g.fillStyle = '#0a1430'; g.fillRect(0, 0, w, h); g.fillStyle = '#c81e1e'; g.fillRect(0, 0, w * 0.4, h * 0.22); txt(g, 'NEWS 24', w * 0.2, h * 0.12, h * 0.11, '#ffffff');
+    g.fillStyle = '#1e3a7a'; g.fillRect(0, h * 0.3, w, h * 0.45); txt(g, 'LIVE', w * 0.5, h * 0.53, h * 0.24, '#ffffff'); g.fillStyle = '#ffd23f'; g.fillRect(0, h * 0.8, w, h * 0.2);
+    g.save(); g.beginPath(); g.rect(0, h * 0.8, w, h * 0.2); g.clip(); const s = 'MASKED HERO SPOTTED DOWNTOWN  +++  CITY TRAFFIC STOPPED  +++  '; g.fillStyle = '#141414'; g.font = `900 ${h * 0.12}px Arial Black, Arial`; g.textBaseline = 'middle'; g.textAlign = 'left';
+    const off = (t * 160) % (s.length * h * 0.08); g.fillText(s + s, -off, h * 0.9); g.restore(); },
+  (g, w, h, t) => { const cols = ['#ffffff', '#ffd23f', '#f2f2f2', '#e8a020', '#141414', '#c81e1e']; const k = Math.floor(t * 2);
+    for (let y = 0; y < 6; y++) for (let x = 0; x < 3; x++) { g.fillStyle = cols[(x * 5 + y * 3 + k) % cols.length]; g.fillRect(x * w / 3, y * h / 6, w / 3 - 4, h / 6 - 4); } },
+  (g, w, h, t) => { const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#1a0a3a'); gr.addColorStop(1, '#e83a5a'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    for (let i = 0; i < 6; i++) { const x = w * (0.12 + i * 0.15), b = Math.sin(t * 3 + i) * h * 0.03; g.fillStyle = '#141018'; g.beginPath(); g.arc(x, h * 0.42 + b, w * 0.035, 0, 7); g.fill(); g.fillRect(x - w * 0.03, h * 0.46 + b, w * 0.06, h * 0.2);
+      g.lineWidth = w * 0.015; g.strokeStyle = '#141018'; g.beginPath(); g.moveTo(x, h * 0.5 + b); g.lineTo(x + (i % 2 ? 1 : -1) * w * 0.06, h * 0.36 + b); g.stroke(); }
+    txt(g, 'THE BIG SHOW', w / 2, h * 0.18, h * 0.11, '#ffd23f'); txt(g, 'NOW PLAYING', w / 2, h * 0.84, h * 0.08, '#ffffff'); },
+  (g, w, h, t) => { g.fillStyle = Math.floor(t * 2) % 2 ? '#ffd23f' : '#c81e1e'; g.fillRect(0, 0, w, h); txt(g, 'MEGA', w / 2, h * 0.3, h * 0.22, Math.floor(t * 2) % 2 ? '#c81e1e' : '#ffd23f');
+    txt(g, 'SALE', w / 2, h * 0.55, h * 0.22, '#ffffff'); txt(g, '70% OFF', w / 2, h * 0.8, h * 0.13, '#141414'); },
+];
+function txt(g, s, x, y, size, col) { g.font = `900 ${size}px Arial Black, Arial`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineJoin = 'round'; g.lineWidth = size * 0.14; g.strokeStyle = '#141020'; g.strokeText(s, x, y); g.fillStyle = col; g.fillText(s, x, y); }
+function rr(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+// one screen: a glowing canvas in a dark frame, mounted at (x,y,z) facing ry; curved=true wraps a quarter cylinder round a corner
+function screen(ctx, parent, list, { x, y, z, w, h, ry = 0, art = 0, anim = false, curved = false, px = 512 }) {
+  const { THREE, add, box } = ctx; const c = document.createElement('canvas'); c.width = px; c.height = Math.round(px * h / w);
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4; const m = new THREE.MeshBasicMaterial({ map: tex });
+  let mesh;
+  if (curved) { const r = w / (Math.PI / 2); mesh = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 24, 1, true, 0, Math.PI / 2), m); mesh.position.set(x, y, z); mesh.rotation.y = ry; }
+  else { mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m); mesh.position.set(x, y, z); mesh.rotation.y = ry;
+    const fr = add(box(w + 0.3, h + 0.3, 0.3), matOf(ctx, 'scrframe', () => ctx.toon({ color: '#18181e' })), x, y, z, parent, { cast: false }); fr.rotation.y = ry; fr.translateZ(-0.17); }
+  mesh.userData.ndSkip = true; parent.add(mesh);
+  const draw = (t) => { const g = c.getContext('2d'); ART[art % ART.length](g, c.width, c.height, t); g.fillStyle = 'rgba(0,0,0,0.12)'; for (let yy = 0; yy < c.height; yy += 4) g.fillRect(0, yy, c.width, 1); tex.needsUpdate = true; };
+  draw(0); if (anim) list.push({ draw, last: -1 });
+  return mesh;
+}
+// Twist-Square crossing: every corner building wrapped in screens, a curved screen on each corner, blade signs, and a tower of screens closing the avenue
+function screensSquare(ctx, C, list) {
+  const { THREE, add, box, toon } = ctx; let a = 0;
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+    const fx = sx * 11.35, fz = sz * 11.35, ryA = -sx * Math.PI / 2, ryC = sz > 0 ? Math.PI : 0;
+    screen(ctx, C, list, { x: fx, y: 9.5, z: sz * 19, w: 9, h: 6.5, ry: ryA, art: a++, anim: true });               // on the avenue face
+    screen(ctx, C, list, { x: fx, y: 18.5, z: sz * 17, w: 12, h: 7, ry: ryA, art: a++, anim: a % 3 === 0 });
+    screen(ctx, C, list, { x: sx * 19, y: 10.5, z: fz, w: 10, h: 7.5, ry: ryC, art: a++, anim: true });             // on the cross-street face
+    screen(ctx, C, list, { x: sx * 24, y: 21, z: fz, w: 14, h: 8, ry: ryC, art: a++ });
+    const qy = sx > 0 ? (sz > 0 ? 0 : Math.PI / 2) : (sz > 0 ? -Math.PI / 2 : Math.PI);                              // quarter cylinder bulging out of the corner
+    screen(ctx, C, list, { x: sx * 13.6, y: 13, z: sz * 13.6, w: 5.2, h: 10, ry: qy, art: 5, anim: true, curved: true });
+    const bl = new THREE.Group(); bl.position.set(fx - sx * 0.1, 12, sz * 24); C.add(bl);                          // a vertical blade sign sticking out
+    add(box(0.35, 13, 2.0), toon({ color: '#141418' }), 0, 0, 0, bl, { cast: false });
+    for (const s of [-1, 1]) { const p = SETS.canvasPlane(ctx, 1.8, 12.6, 256, bl); p.draw('b', (g, w, h) => { g.fillStyle = '#141418'; g.fillRect(0, 0, w, h); const word = ['TWIST', 'SQUARE', 'NOVA', 'STAGE'][(a + (sz > 0 ? 1 : 0)) % 4];
+      g.font = `900 ${w * 0.62}px Arial Black, Arial`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#ffffff'; [...word].forEach((ch, i) => g.fillText(ch, w / 2, h * (i + 0.7) / (word.length + 0.4))); });
+      p.mesh.position.set(s * 0.19, 0, 0); p.mesh.rotation.y = s * Math.PI / 2; }
+  }
+  const T = new THREE.Group(); T.position.set(0, 0, -178); C.add(T);                                                // the tower of screens at the end of the avenue
+  add(ctx.tbox(14, 70, 12, 1), matOf(ctx, 'glass1', () => ctx.texM(facade('glass', 1), 1 / 12, 1 / 12)), 0, 35, 0, T);
+  for (let k = 0; k < 6; k++) screen(ctx, T, list, { x: 0, y: 7 + k * 9.6, z: 6.2, w: 12.5, h: 8.6, art: (k * 3 + 1) % ART.length, anim: k < 3 });
+  screen(ctx, T, list, { x: 0, y: 71.5, z: 4, w: 8, h: 5, art: 2 });
+  add(new THREE.CylinderGeometry(0.15, 0.3, 14, 8), toon({ color: '#8a8e96' }), 0, 84, 0, T);
+}
+// street dressing near the crossing: planters with shrubs, white bollards, manhole covers, NYC mast-arm signals
+function crossingBits(ctx, C) {
+  const { THREE, add, box, toon } = ctx; const nc = { cast: false };
+  const con = matOf(ctx, 'planter', () => toon({ color: '#d8d0c0' })), leaf = [toon({ color: '#2e7a3a' }), toon({ color: '#4a9a3a' }), toon({ color: '#7a3a6a' })], white = matOf(ctx, 'bol', () => toon({ color: '#eeeeea' }));
+  for (const s of [-1, 1]) for (let k = 0; k < 6; k++) { const x = s * 9.9, z = s * (14 + k * 3.2);
+    add(new THREE.CylinderGeometry(0.75, 0.55, 0.9, 16), con, x, 0.61, z, C); for (let j = 0; j < 4; j++) add(new THREE.SphereGeometry(0.42 - j * 0.05, 10, 8), leaf[(j + k) % 3], x + Math.cos(j * 2) * 0.3, 1.2 + j * 0.08, z + Math.sin(j * 2) * 0.3, C, nc); }
+  for (let k = 0; k < 12; k++) { const z = 16 + k * 1.4; add(new THREE.CylinderGeometry(0.15, 0.17, 0.95, 10), white, 0, 0.48, z, C); add(new THREE.SphereGeometry(0.15, 8, 6), white, 0, 0.95, z, C, nc); }
+  for (const [x, z] of [[2.5, 18], [-3, 26], [3.4, -22], [-2, -40], [1.5, 44]]) add(new THREE.CylinderGeometry(0.45, 0.45, 0.02, 18), matOf(ctx, 'manhole', () => toon({ color: '#2a2a2e' })), x, 0.012, z, C, nc);
+  for (const [sx, sz] of [[-1, -1], [1, 1], [-1, 1], [1, -1]]) {                                                    // mast-arm signals with yellow heads
+    const px = sx * 8.2, pz = sz * 8.2, pole = toon({ color: '#3a3e44' }); add(new THREE.CylinderGeometry(0.14, 0.18, 6.4, 10), pole, px, 3.2, pz, C);
+    const arm = add(box(5.5, 0.14, 0.14), pole, px - sx * 2.8, 6.1, pz, C, nc);
+    for (const d of [2.2, 4.6]) { const hx = px - sx * d; add(box(0.42, 1.25, 0.42), toon({ color: '#e8b81a' }), hx, 5.3, pz, C, nc);
+      ['#ff2a2a', '#ffb81a', '#2aff6a'].forEach((col, i) => add(new THREE.SphereGeometry(0.12, 8, 6), new THREE.MeshBasicMaterial({ color: i === ((sx * sz > 0) ? 0 : 2) ? col : '#2a2a2a' }), hx, 5.7 - i * 0.38, pz + sz * 0.22, C, nc)); }
+    const sg = SETS.canvasPlane(ctx, 2.4, 0.42, 256, C, { lit: true }); sg.draw('s', sign(sz > 0 ? 'W 44 ST' : 'TWIST AVE', '#1e6a3a', '#ffffff')); sg.mesh.position.set(px - sx * 1.2, 6.55, pz); sg.mesh.rotation.y = sz > 0 ? Math.PI : 0;
+  }
 }
 
 export const build = (ctx) => {
@@ -413,30 +538,22 @@ export const build = (ctx) => {
 
   // ===== the city: an avenue of towers, a big crossing with giant billboards, yellow cabs =====
   const C = grp('city');
-  add(tbox(14, 0.1, 400, 2), texM(P.stone(94, 30, 6, 30, 64, 64), 3, 80, '#55585e'), 0, -0.05, 0, C, { cast: false });
-  add(tbox(400, 0.1, 14, 2), texM(P.stone(94, 30, 6, 30, 64, 64), 80, 3, '#55585e'), 0, -0.06, 0, C, { cast: false });
+  add(tbox(14, 0.1, 400, 2), texM(P.stone(94, 30, 6, 30, 64, 64), 3, 80, '#7a7e86'), 0, -0.05, 0, C, { cast: false });
+  add(tbox(400, 0.1, 14, 2), texM(P.stone(94, 30, 6, 30, 64, 64), 80, 3, '#7a7e86'), 0, -0.06, 0, C, { cast: false });
   for (const s of [-1, 1]) { add(tbox(4, 0.16, 400, 1), texM(P.stone(95, 30, 8, 60), 1, 80, '#b0aca4'), s * 9, 0.08, 0, C, { cast: false }); add(tbox(400, 0.16, 4, 1), texM(P.stone(95, 30, 8, 60), 80, 1, '#b0aca4'), 0, 0.08, s * 9, C, { cast: false }); }
   for (let k = -6; k <= 6; k++) { if (k === 0) continue; for (let j = 0; j < 4; j++) add(box(0.3, 0.012, 2.5), basic('#f4f4ee'), 0, 0.01, k * 12 + j * 3 - 4.5, C, { cast: false }); }
   for (const s of [-1, 1]) for (let k = 0; k < 8; k++) add(box(0.7, 0.012, 3.2), basic('#f4f4ee'), -5.6 + k * 1.6, 0.01, s * 8.6, C, { cast: false });   // zebra
   for (const s of [-1, 1]) for (const zz of [-1, 1]) block(ctx, C, { x0: s * 19.5, z0: zz * 11.5, dx: 0, dz: zz, count: 10, face: [-s, 0], seed: 3 + s + zz * 2 + 4, first: (s + zz) % 4 ? 'glass' : 'deco' });   // the avenue
   for (const s of [-1, 1]) for (const xs of [-1, 1]) block(ctx, C, { x0: xs * 27.8, z0: s * 19.5, dx: xs, dz: 0, count: 6, face: [0, -s], seed: 30 + s + xs * 3, tall: 1.2 });   // the cross street
   streetBits(ctx, C); skylineRing(ctx, C, 240, false);
-  const ads = [[['#e8436a', '#7a1a8a'], [['GOLD KICKS', 0.26], ['JUST BOUGHT IT', 0.13]]], [['#1a6ae8', '#1ac8e8'], [['STERLING HEALTH', 0.18], ['WE CARE A LOT', 0.14]]],
-    [['#ffb020', '#ff5a2a'], [['FIZZ POP', 0.3], ['TASTE THE LOUD', 0.14]]], [['#141420', '#3a3a6a'], [['NEWS 24', 0.28], ['LIVE', 0.18]]]];
-  [[-19.5, 11, -11.3, 0, 12, 6.5], [19.5, 12, -11.3, 0, 12, 6.5], [-19.5, 12, 11.3, Math.PI, 12, 6.5], [19.5, 11, 11.3, Math.PI, 12, 6.5],
-   [-11.3, 13, -18, Math.PI / 2, 8, 5], [11.3, 14, 18, -Math.PI / 2, 8, 5], [-11.3, 14, 18, Math.PI / 2, 8, 5], [11.3, 13, -18, -Math.PI / 2, 8, 5]].forEach(([x, y, z, ry, bw, bh], i) => {
-    const bd = SETS.canvasPlane(ctx, bw, bh, 512, C); bd.draw('b', board(...ads[i % 4])); bd.mesh.position.set(x, y, z); bd.mesh.rotation.y = ry;
-    const fr = add(box(bw + 0.4, bh + 0.4, 0.2), darkM, x, y, z, C, { cast: false }); fr.rotation.y = ry; fr.translateZ(-0.12);
-    for (let k = 0; k < 6; k++) { const bulb = add(new THREE.SphereGeometry(0.09, 6, 5), basic('#fff2b0'), x, y + bh / 2 + 0.3, z, C, { cast: false }); bulb.rotation.y = ry; bulb.translateX(-bw / 2 + bw * (k + 0.5) / 6); bulb.translateZ(0.1); } });
-  for (const [x, z] of [[-7.5, -7.5], [7.5, 7.5], [-7.5, 7.5], [7.5, -7.5]]) { add(new THREE.CylinderGeometry(0.1, 0.12, 4.5, 8), darkM, x, 2.25, z, C); add(box(0.4, 1.1, 0.4), toon({ color: '#2a2a2e' }), x, 4.2, z, C);
-    add(new THREE.SphereGeometry(0.12, 10, 8), basic(['#ff3030', '#30ff60'][(x * z > 0) ? 0 : 1]), x, 4.45, z + 0.21, C, { cast: false }); }
+  const screens = []; screensSquare(ctx, C, screens); crossingBits(ctx, C);
   for (const z of [-40, -25, 25, 40, 60, 80]) for (const s of [-1, 1]) { const lg = new THREE.Group(); C.add(lg); SETS.streetLamp(ctx, lg, s * 7.6, z, { h: 5 }); }
   for (const [x, z] of [[-8.5, 30], [8.5, 46], [-8.5, 62], [8.5, -30]]) SETS.tree(ctx, C, x, z, 1.1);
-  const cabs = []; for (let i = 0; i < 9; i++) { const c = SETS.car(ctx, C, { color: i % 4 === 3 ? '#3a6aa8' : '#f2c21a' }); c.g.rotation.y = i % 2 ? -Math.PI / 2 : Math.PI / 2;
-    if (i % 4 !== 3) { add(box(0.5, 0.25, 0.25), basic('#ffffff'), -0.2, 1.45, 0, c.g, { cast: false }); add(box(4.02, 0.12, 1.72), darkM, 0, 0.75, 0, c.g, { cast: false }); }
-    cabs.push(c.g); }
-  const liftCab = SETS.car(ctx, C, { color: '#f2c21a' }); liftCab.g.rotation.y = Math.PI / 2;
-  const stuckCab = SETS.car(ctx, C, { color: '#f2c21a' }); stuckCab.g.position.set(...[CAB[0] - B.city[0], 0, CAB[2] - B.city[2]]); stuckCab.g.rotation.y = 0.4;
+  const cabs = []; for (let i = 0; i < 11; i++) { const kind = i === 4 ? 'police' : i === 8 ? 'truck' : i % 4 === 3 ? 'car' : 'taxi';
+    const c = vehicle(ctx, C, { kind, color: kind === 'car' ? ['#3a6aa8', '#e8e8ec', '#2a2a30'][i % 3] : kind === 'truck' ? '#2a5aa8' : '#f2c21a', num: (3 + i) + 'K' + (17 + i * 3) }); c.g.rotation.y = i % 2 ? -Math.PI / 2 : Math.PI / 2; cabs.push(c.g); }
+  const liftCab = vehicle(ctx, C, { kind: 'taxi', num: '5T88' }); liftCab.g.rotation.y = Math.PI / 2;
+  const stuckCab = vehicle(ctx, C, { kind: 'taxi', num: '9W21' }); stuckCab.g.position.set(...[CAB[0] - B.city[0], 0, CAB[2] - B.city[2]]); stuckCab.g.rotation.y = 0.4;
+  for (const [x, z, k] of [[-6.4, -16, 'police'], [6.4, 15, 'taxi'], [-6.4, 22, 'taxi'], [6.4, -19, 'truck']]) { const v = vehicle(ctx, C, { kind: k, color: '#2a5aa8', num: '2H' + Math.round(Math.abs(z)) }); v.g.position.set(x, 0, z); v.g.rotation.y = Math.PI / 2; }
 
 
   // ===== the school hall: trophy case and a banner =====
@@ -485,7 +602,7 @@ export const build = (ctx) => {
 
   // webs: four thin white lines we stretch between points each frame
   const webM = toon({ color: '#ffffff' }), webs = [0, 1, 2, 3].map(() => { const m = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 1, 6), webM); m.visible = false; ctx.world.add(m); return m; });
-  return { tank, tankL, sky1, skyDay, skyNight, roomL, cabs, liftCab: liftCab.g, cup, porch, webs, THREE };
+  return { tank, tankL, sky1, skyDay, skyNight, roomL, cabs, liftCab: liftCab.g, cup, porch, webs, screens, THREE };
 };
 
 const setWeb = (P, i, a, b) => { const m = P.webs[i]; if (!a) { m.visible = false; return; } const { THREE } = P;
@@ -498,6 +615,7 @@ export const update = (W, f, P) => {
   const sky = W.night ? P.skyNight : P.skyDay; P.sky1.draw(W.night ? 'n' : 'd', (g, w, h) => g.drawImage(sky, 0, 0, w, h)); P.roomL.intensity = W.night ? 2.0 : 0.6;
   P.cabs.forEach((c, i) => { const lane = i % 2 ? 4.2 : -4.2, dir = i % 2 ? -1 : 1, z0 = -150 + i * 33; let z = ((z0 + dir * W.traffic * 0.9 + 600) % 300) - 150;
     if (W.stopped && Math.abs(z) < 14) z = z > 0 ? 12 + i : -12 - i; c.position.set(lane, 0, z); });
+  if (P.screens && W.city) for (const sc of P.screens) { const k = Math.floor(f / 3); if (k !== sc.last) { sc.last = k; sc.draw(f / 30); } }
   P.liftCab.position.set(...W.liftCab); P.liftCab.rotation.y = 0;
   P.cup.position.set(...W.cup);
   P.porch.intensity = W.porch;
@@ -508,7 +626,7 @@ export const update = (W, f, P) => {
 const ptoward = (a, b, t) => lerp3(a, b, Math.max(0, Math.min(1, t)));
 export const worldAt = (f) => {
   const S = shotAt(f), id = S.id, w = (x, n = 0) => K.wordF(S, x, n);
-  const W = { night: ['hear'].includes(id), traffic: f, stopped: ['webs'].includes(id), liftCab: [-150, -10, 0], cup: [-1.8, 0.62, -4.15], porch: ['filmed', 'hired', 'fired'].includes(id) ? 4 : 0, webs: [] };
+  const W = { city: ['powers', 'swing', 'grabbed', 'webs'].includes(id), night: false, traffic: f, stopped: ['webs'].includes(id), liftCab: [-150, -10, 0], cup: [-1.8, 0.62, -4.15], porch: ['filmed', 'hired', 'fired'].includes(id) ? 4 : 0, webs: [] };
   W.liftCab = CITY(-14, 0, 60).map((v, i) => v - B.city[i]);                                                    // parked out of sight
   if (id === 'powers') { const t = windUp(ramp(f, w('cars'), w('cars') + 18)); W.liftCab = [-5.4, lerp(0, 1.65, t), 24.4]; }
   if (id === 'trophy') { const t = snap(ramp(f, w('trophy'), w('trophy') + 14)); W.cup = lerp3([-1.8, 0.62, -4.15], [0.2, 1.2, -1.8], t);

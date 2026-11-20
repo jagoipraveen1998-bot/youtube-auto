@@ -255,6 +255,16 @@
    "h": 280,
    "kind": "animal",
    "prompt": "An unblinking, scruffy pelican standing bolt upright with a deadpan expression and an unnervingly lumpy throat pouch."
+  },
+  "corgi": {
+   "h": 260,
+   "kind": "animal",
+   "prompt": "A stubby, cheerful corgi with unnaturally glowing yellow eyes and a permanent goofy grin."
+  },
+  "haunted_toaster": {
+   "h": 180,
+   "kind": "object",
+   "prompt": "A vintage shiny chrome toaster equipped with tiny bat-wing handles that occasionally sparks and pops out charred toast."
   }
  }
 }

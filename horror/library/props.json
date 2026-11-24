@@ -275,6 +275,16 @@
    "h": 320,
    "kind": "object",
    "prompt": "A vintage wooden nutcracker soldier with unnaturally wide staring glass eyes and a broad toothy grimace."
+  },
+  "ventriloquist_dummy": {
+   "h": 380,
+   "kind": "object",
+   "prompt": "A creepy vintage ventriloquist dummy wearing a tiny tuxedo, with glossy wooden cheeks and wide, glassy unblinking eyes."
+  },
+  "chameleon": {
+   "h": 220,
+   "kind": "animal",
+   "prompt": "A plump, bright green chameleon sitting awkwardly on its hind legs with mismatched wall-eyed pupils staring in two different directions."
   }
  }
 }

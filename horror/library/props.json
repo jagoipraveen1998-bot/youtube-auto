@@ -285,6 +285,16 @@
    "h": 220,
    "kind": "animal",
    "prompt": "A plump, bright green chameleon sitting awkwardly on its hind legs with mismatched wall-eyed pupils staring in two different directions."
+  },
+  "singing_wall_fish": {
+   "h": 140,
+   "kind": "object",
+   "prompt": "A mounted taxidermy animatronic bass on a wooden plaque with eerie glowing yellow eyes and a slightly open mouth."
+  },
+  "capybara": {
+   "h": 300,
+   "kind": "animal",
+   "prompt": "A completely stoic, unbothered brown capybara wearing a tiny white bedsheet ghost costume with cutout eye holes."
   }
  }
 }

@@ -295,6 +295,16 @@
    "h": 300,
    "kind": "animal",
    "prompt": "A completely stoic, unbothered brown capybara wearing a tiny white bedsheet ghost costume with cutout eye holes."
+  },
+  "screaming_rubber_chicken": {
+   "h": 140,
+   "kind": "object",
+   "prompt": "A bright yellow rubber chicken with wide startled eyes and an open beak perpetually frozen in a silent squawk."
+  },
+  "fuzzy_alpaca": {
+   "h": 540,
+   "kind": "animal",
+   "prompt": "A fluff-heavy alpaca with an unnervingly intense, unblinking stare and a stylishly side-swept hair tuft."
   }
  }
 }

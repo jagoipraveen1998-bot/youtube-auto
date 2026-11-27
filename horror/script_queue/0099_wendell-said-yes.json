@@ -6,8 +6,10 @@
  "three_d": "wendell-said-yes",
  "pace": "brisk",
  "hashtags": [
+  "#comedy",
   "#whatif",
-  "#comedy"
+  "#funny",
+  "#chemistry"
  ],
  "cover_line": 19,
  "cover_offset": 10,
@@ -15,8 +17,7 @@
   "HE SAID",
   "!YES"
  ],
- "private": true,
- "description": "Private comedy, not for the channel.",
+ "description": "A broke chemistry teacher gets cancer... then the call of a lifetime. This time, he says YES. Everyone's life gets better. Well, almost everyone's.\nWhose glow-up was the funniest? Tell me below.",
  "lines": [
   "On his fiftieth birthday, chemistry teacher Wendell Gray coughed so hard at the car wash, a customer tipped him out of pity.",
   "The doctor said: lung cancer. His insurance said: \"Have you tried... not having cancer?\"",
@@ -125,5 +126,6 @@
    "set": "3d",
    "v": "s20"
   }
- ]
+ ],
+ "cta": "Tag a friend who would say yes"
 }

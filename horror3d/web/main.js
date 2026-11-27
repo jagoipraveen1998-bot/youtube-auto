@@ -233,6 +233,26 @@ function placeRain(L, f) {
   ps.needsUpdate = true; splash.material.opacity = 0.35 + 0.4 * L.rain;
 }
 
+// snow: soft round flakes drifting down around the camera, swaying. Driven by the light mood: snow 0..1, snowFloor.
+const SNOW_N = 2600, SNOW_R = 10, SNOW_H = 9;
+const flakeTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d'); const gr = g.createRadialGradient(32, 32, 2, 32, 32, 30);
+  gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.5, 'rgba(255,255,255,0.8)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, 64, 64); const t = new THREE.CanvasTexture(c); return t; })();
+const snowGeo = new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(SNOW_N * 3), 3));
+const snow = new THREE.Points(snowGeo, new THREE.PointsMaterial({ map: flakeTex, color: '#ffffff', size: 0.07, transparent: true, opacity: 0.85, depthWrite: false, fog: false, sizeAttenuation: true, blending: THREE.AdditiveBlending, alphaTest: 0.02 }));
+snow.userData.ndSkip = true; snow.frustumCulled = false; snow.renderOrder = 4; scene.add(snow);
+const snowSeed = Array.from({ length: SNOW_N }, (_, i) => [hr(i * 5 + 301), hr(i * 5 + 302.3), hr(i * 5 + 303.9), hr(i * 5 + 304.1)]);
+function placeSnow(L, f) {
+  const on = (L.snow || 0) > 0; snow.visible = on; if (!on) return;
+  const n = Math.floor(SNOW_N * Math.min(1, L.snow)), cx = camera.position.x, cz = camera.position.z, cy = camera.position.y, fl = L.snowFloor ?? 0, pa = snowGeo.attributes.position;
+  for (let i = 0; i < SNOW_N; i++) {
+    const [a, b, c, d] = snowSeed[i];
+    if (i >= n) { pa.setXYZ(i, 0, -99, 0); continue; }
+    const y = fl + SNOW_H - ((c * SNOW_H + f * 0.03 * (0.7 + 0.6 * d)) % SNOW_H) + Math.max(0, cy - 4);
+    pa.setXYZ(i, cx + (a * 2 - 1) * SNOW_R + Math.sin(f * 0.04 + d * 9) * 0.35, y, cz + (b * 2 - 1) * SNOW_R + Math.cos(f * 0.03 + a * 7) * 0.25);
+  }
+  pa.needsUpdate = true; snowGeo.setDrawRange(0, n); snow.material.size = L.snowSize || 0.07;
+}
+
 // a story can add its own props (a laptop, a cassette, a dog bed…) and hide house pieces it doesn't need
 const STORY_PROPS = ST.build ? ST.build({ THREE, world, scene, camera, add, box, tbox, toon, texM, M, P, grad, chair, tvG, rug, clockG, lights: { lamp, tvLight, porchLight, fillLight } }) || {} : {};
 // ---------- cards ----------
@@ -366,7 +386,11 @@ function drawActors(list, cam, f = 0) {
 
 const swapForNd = (on) => {
   scene.traverse((o) => {
-    if (!o.isMesh) return;
+    if (!o.isMesh) {                                 // points and lines (snow, rain, motes): keep them out of the ink pass, or they ink as dots
+      if (!(o.isPoints || o.isLine) || !o.userData.ndSkip) return;
+      if (on) { o.userData.vis0 = o.visible; o.visible = false; } else if (o.userData.vis0 !== undefined) { o.visible = o.userData.vis0; delete o.userData.vis0; }
+      return;
+    }
     if (on) {
       o.userData.mat0 = o.material;
       if (o.userData.ndSkip) { o.userData.vis0 = o.visible; o.visible = false; return; }
@@ -384,7 +408,7 @@ window.renderFrame = (f) => {
   camera.fov = C.fov; camera.updateProjectionMatrix(); camera.updateMatrixWorld();
   const W_ = worldAt(f); worldState(W_, f);
   placeSun(L, new THREE.Vector3(...(C.shadowAt || C.look)));
-  placeRain(L, f);
+  placeRain(L, f); placeSnow(L, f);
   drawActors([...actorsAt(f, T), ...fxAt(f, T)], camera, f);
   sky.position.copy(camera.position);
 

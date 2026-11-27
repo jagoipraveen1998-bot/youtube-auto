@@ -305,6 +305,16 @@
    "h": 540,
    "kind": "animal",
    "prompt": "A fluff-heavy alpaca with an unnervingly intense, unblinking stare and a stylishly side-swept hair tuft."
+  },
+  "possessed_rocking_horse": {
+   "h": 280,
+   "kind": "object",
+   "prompt": "A worn vintage wooden rocking horse with chipped red paint, an eerie carved grin, and glowing yellow marble eyes."
+  },
+  "creepy_sloth": {
+   "h": 220,
+   "kind": "animal",
+   "prompt": "A shaggy brown sloth with slow deliberate movements, an unblinking wide-eyed stare, and a mysteriously permanent smirking expression."
   }
  }
 }

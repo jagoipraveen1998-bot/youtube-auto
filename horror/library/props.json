@@ -315,6 +315,16 @@
    "h": 220,
    "kind": "animal",
    "prompt": "A shaggy brown sloth with slow deliberate movements, an unblinking wide-eyed stare, and a mysteriously permanent smirking expression."
+  },
+  "shoebill_stork": {
+   "h": 490,
+   "kind": "animal",
+   "prompt": "A tall, completely motionless shoebill stork with slate-grey plumage, pale unblinking eyes, and an enormous wooden-looking clacking bill."
+  },
+  "cymbal_banging_monkey": {
+   "h": 240,
+   "kind": "object",
+   "prompt": "A retro mechanical wind-up monkey in a faded red vest, featuring bulging glassy eyes, an unsettling toothy grimace, and two tarnished brass cymbals poised to strike."
   }
  }
 }
